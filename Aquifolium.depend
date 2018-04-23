@@ -1,0 +1,27 @@
+# depslib dependency file v1.0
+1524451608 source:/home/arash/Projects/Aquifolium/main.cpp
+	<iostream>
+	"Expression.h"
+	"string"
+
+1524412035 source:/home/arash/Projects/Aquifolium/src/Block.cpp
+	"Block.h"
+
+1524427762 /home/arash/Projects/Aquifolium/include/Block.h
+	<map>
+	<string>
+	"Expression.h"
+
+1524448857 /home/arash/Projects/Aquifolium/include/Expression.h
+	<string>
+	<vector>
+
+1524451185 source:/home/arash/Projects/Aquifolium/src/Expression.cpp
+	"Expression.h"
+	"Expression.h"
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<cmath>
+	<iostream>
+
