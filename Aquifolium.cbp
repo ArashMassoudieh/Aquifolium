@@ -5,6 +5,7 @@
 		<Option title="Aquifolium" />
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
+		<Option virtualFolders="Aquifolium/include/;Aquifolium/src/;" />
 		<Build>
 			<Target title="Debug">
 				<Option output="bin/Debug/Aquifolium" prefix_auto="1" extension_auto="1" />
@@ -13,6 +14,8 @@
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-g" />
+					<Add option="-DDebug_mode" />
+					<Add directory="include" />
 				</Compiler>
 			</Target>
 			<Target title="Release">
@@ -22,6 +25,7 @@
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-O2" />
+					<Add directory="include" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -30,10 +34,57 @@
 		</Build>
 		<Compiler>
 			<Add option="-Wall" />
+			<Add option="-std=c++0x" />
 			<Add option="-fexceptions" />
+			<Add option="-DUSE_ARMA_LAPACK" />
+			<Add option="-DUSE_ARMA_BLAS" />
+			<Add directory="/home/arash/Projects/jsoncpp/include" />
 		</Compiler>
+		<Linker>
+			<Add library="../../../../usr/lib/libarmadillo.so" />
+			<Add library="../../../../usr/lib/libarpack.so" />
+			<Add library="../../../../usr/lib/libblas.so" />
+		</Linker>
+		<Unit filename="../jsoncpp/src/lib_json/json_reader.cpp" />
+		<Unit filename="../jsoncpp/src/lib_json/json_value.cpp" />
+		<Unit filename="../jsoncpp/src/lib_json/json_writer.cpp" />
+		<Unit filename="include/BTC.h" />
+		<Unit filename="include/Block.h" />
+		<Unit filename="include/Expression.h" />
+		<Unit filename="include/Link.h" />
+		<Unit filename="include/Matrix.h" />
+		<Unit filename="include/Matrix_arma.h" />
+		<Unit filename="include/NormalDist.h" />
+		<Unit filename="include/Object.h" />
+		<Unit filename="include/Quan.h" />
+		<Unit filename="include/QuickSort.h" />
+		<Unit filename="include/System.h" />
+		<Unit filename="include/Vector.h" />
+		<Unit filename="include/Vector_arma.h" />
 		<Unit filename="main.cpp" />
+		<Unit filename="src/BTC.cpp" />
+		<Unit filename="src/Block.cpp" />
+		<Unit filename="src/Expression.cpp" />
+		<Unit filename="src/Link.cpp" />
+		<Unit filename="src/Matrix.cpp" />
+		<Unit filename="src/Matrix_arma.cpp" />
+		<Unit filename="src/NormalDist.cpp" />
+		<Unit filename="src/Object.cpp" />
+		<Unit filename="src/Quan.cpp" />
+		<Unit filename="src/QuickSort.cpp" />
+		<Unit filename="src/System.cpp" />
+		<Unit filename="src/Vector.cpp">
+			<Option virtualFolder="Aquifolium/src/" />
+		</Unit>
+		<Unit filename="src/Vector_arma.cpp" />
+		<Unit filename="version.h" />
 		<Extensions>
+			<AutoVersioning>
+				<Scheme minor_max="10" build_max="0" rev_max="0" rev_rand_max="10" build_times_to_increment_minor="100" />
+				<Settings autoincrement="1" date_declarations="1" use_define="0" update_manifest="0" do_auto_increment="0" ask_to_increment="0" language="C++" svn="0" svn_directory="" header_path="version.h" />
+				<Changes_Log show_changes_editor="0" app_title="released version %M.%m.%b of %p" changeslog_path="ChangesLog.txt" />
+				<Code header_guard="VERSION_H" namespace="AutoVersion" prefix="" />
+			</AutoVersioning>
 			<code_completion />
 			<envvars />
 			<debugger />

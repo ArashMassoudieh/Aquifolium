@@ -3,26 +3,30 @@
 #include <map>
 #include <string>
 #include "Expression.h"
+#include "Quan.h"
+#include "Object.h"
 
 using namespace std;
 
-class Block
+class System;
+class Link;
+
+class Block: public Object
 {
     public:
         Block();
+        Block(System *parent);
+        Block(const Block& other);
+        Block& operator=(const Block& rhs);
         virtual ~Block();
-        double GetVal(const string&);
-        string GetProperty(const string&);
-        bool Set(const string& s, double value);
-        bool Set(const string& s, const string & value);
-        void AddProperty(const string &s, double val=0);
+        void AppendLink(Link* l, const Expression::loc &loc);
+
+
     protected:
 
     private:
-        map<string, double> properties;
-        map<string, string> setting;
-        map<string, double> state;
-        map<string, Expression> expression;
+        vector<Link*> links_from;
+        vector<Link*> links_to;
 };
 
 #endif // BLOCK_H

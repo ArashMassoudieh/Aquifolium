@@ -7,6 +7,12 @@
 #include <string.h>
 #include <cmath>
 #include <iostream>
+#include <Block.h>
+#include <fstream>
+#include <sstream>
+
+
+using namespace std;
 
 Expression::Expression(void)
 {
@@ -28,6 +34,10 @@ Expression::Expression(void)
 Expression::Expression(string S)
 {
 	text = S;
+	#ifdef Debug_mode
+	cout<<text<<endl;
+	#endif // Debug_mode
+
 	funcs.push_back("_min");
 	funcs.push_back("_max");
 	funcs.push_back("_exp");
@@ -47,7 +57,7 @@ Expression::Expression(string S)
 	unsigned int last_operator_location = -1;
 	if (!parantheses_balance(S))
 	{
-		_errors.push_back("Parantheses do not match in" + S);
+		_errors.push_back("Parentheses do not match in" + S);
 		return;
 	}
 	if (lookup(funcs,left(S,4))!=-1)
@@ -58,7 +68,7 @@ Expression::Expression(string S)
 	{
 		if (corresponding_parenthesis(S,0) == -1 )
 		{
-			_errors.push_back("Parantheses do not match in" + S);
+			_errors.push_back("Parentheses do not match in" + S);
 		}
 		else if (corresponding_parenthesis(S,0) == int(S.size()-1))
 		{
@@ -127,7 +137,23 @@ Expression::Expression(string S)
 		else
 		{
 			param_constant_expression = "parameter";
-			parameter = S;
+			if (split(S,'.').size()==1)
+			{   parameter = S;
+                location = loc::self;
+			}
+			else if (split(S,'.').size()==2)
+            {
+                if (tolower(split(S,'.')[1]) == "s")
+                {
+                    parameter = split(S,'.')[0];
+                    location = loc::source;
+                }
+                if (tolower(split(S,'.')[1]) == "e")
+                {
+                    parameter = split(S,'.')[0];
+                    location = loc::destination;
+                }
+            }
 		}
 	}
 
@@ -148,6 +174,7 @@ Expression::Expression(const Expression & S)
 	param_constant_expression = S.param_constant_expression;
 	unit = S.unit;
 	text = S.text;
+	location = S.location;
 }
 
 Expression & Expression::operator=(const Expression &S)
@@ -163,7 +190,7 @@ Expression & Expression::operator=(const Expression &S)
 	param_constant_expression = S.param_constant_expression;
 	unit = S.unit;
 	text = S.text;
-
+    location = S.location;
 	return *this;
 }
 
@@ -238,28 +265,33 @@ int lookup(const vector<vector<int> > &s, const vector<int> &s1)
 }
 
 
-/*double Expression::calc(Block *W)
+double Expression::calc(Object *W, const timing &tmg)
 {
-	if (this->param_constant_expression == "constant")
+	if (param_constant_expression == "constant")
 		return constant;
-	if (this->param_constant_expression == "parameter")
+	if (param_constant_expression == "parameter")
 	{
-		XString out;
-		out = W->get_parameter_value(parameter);
-		if (W->get_parameter_value(parameter).unit != "" && unit == "")
-			unit = W->get_parameter_value(parameter).unit;
-		return out.toDouble();
+		if (location == loc::self)
+            return W->GetVal(parameter, tmg);
+        else
+        {
+            if (W->GetConnectedBlock(location)!=nullptr)
+                return W->GetConnectedBlock(location)->GetVal(parameter, tmg);
+            else
+                return W->GetVal(parameter, tmg);
+        }
 	}
-	if (this->param_constant_expression == "expression")
+	if (param_constant_expression == "expression")
 	{
 
-		for (int i = 0; i < terms.size(); i++)
+		for (unsigned int i = 0; i < terms.size(); i++)
 		{
-			sources.append(QList<int>());
-			sources[i].append(i);
+			sources.push_back(vector<int>());
+			sources[i].push_back(i);
 		}
 		term_vals.resize(terms.size());
-		for (int i = 0; i < terms.size(); i++) terms_calculated.push_back(false);
+		for (unsigned int i = 0; i < terms.size(); i++) terms_calculated.push_back(false);
+
 		for (int i = operators.size() - 1; i >= 0; i--)
 		{
 			if (operators[i] == "^")
@@ -293,14 +325,15 @@ int lookup(const vector<vector<int> > &s, const vector<int> &s1)
 		}
 		if (function == "")
 			return term_vals[0];
-		else if (!operators.contains(";"))
+		else if (lookup_operators(";")!=-1)
 			return func(function, term_vals[0]);
 		else
 			return func(function, term_vals[0], term_vals[1]);
 	}
 
 }
-*/
+
+
 double Expression::func(string &f, double val)
 {
 
@@ -334,20 +367,23 @@ double Expression::oprt(string &f, double val1, double val2)
 	return 0;
 }
 
-/*double Expression::oprt(string &f, int i1, int i2, Block *W)
+double Expression::oprt(string &f, unsigned int i1, unsigned int i2, Object *W)
 {
 
+	#ifdef Debug_mode
+	cout<<i1<<","<<i2<<endl;
+	#endif // Debug_mode
 	for (unsigned int j = 0; j < sources[i1].size(); j++)
 	{
 		if (sources.size() > i2)
-			for (int k=0; k<sources[i2].size(); k++)
+			for (unsigned int k=0; k<sources[i2].size(); k++)
 				if (lookup(sources[sources[i2][k]],sources[i1][j])==-1) sources[sources[i2][k]].push_back(sources[i1][j]);
 
 	}
 	if (sources.size() > i2)
-	for (int j = 0; j < sources[i2].size(); j++)
+	for (unsigned int j = 0; j < sources[i2].size(); j++)
 	{
-		for (int k = 0; k<sources[i1].size(); k++)
+		for (unsigned int k = 0; k<sources[i1].size(); k++)
 			if (lookup(sources[sources[i1][k]],sources[i2][j])==-1) sources[sources[i1][k]].push_back(sources[i2][j]);
 
 	}
@@ -376,7 +412,7 @@ double Expression::oprt(string &f, double val1, double val2)
 		else if (terms[i2].unit != "") unit = terms[i2].unit;
 	}
 
-	for (int j = 0; j<sources[i1].size(); j++)
+	for (unsigned int j = 0; j<sources[i1].size(); j++)
 		term_vals[sources[i1][j]] = oprt(f, val1, val2);
 
 	terms_calculated[i1] = true;
@@ -384,7 +420,7 @@ double Expression::oprt(string &f, double val1, double val2)
 
 	return term_vals[sources[i1][0]];
 }
-*/
+
 int corresponding_parenthesis(string S, int i)
 {
 	string s = S;
@@ -618,6 +654,226 @@ vector<string> split(const string &s, char del)
             strings.pop_back();
 	return strings;
 
+}
+
+int Expression::lookup_operators(const string &s)
+{
+    for (int i=0; i<opts.size(); i++)
+        if (opts[i]==s)
+            return i;
+    return -1;
+
+}
+
+vector<string> getline(ifstream& file)
+{
+	string line;
+
+	while (!file.eof())
+	{
+		std::getline(file, line);
+		return split(line,',');
+	}
+	vector<string> x;
+	return x;
+}
+
+vector<string> getline(ifstream& file, char del1)
+{
+    string line;
+
+	while (!file.eof())
+	{
+		std::getline(file, line);
+		return split(line,del1);
+	}
+	vector<string> x;
+	return x;
+}
+
+vector<vector<string>> getline_op(ifstream& file,char del1)
+{
+	string line;
+	vector<vector<string>> s;
+	vector<string> ss;
+	while (file.good())
+	{
+		getline(file, line);
+		ss = split(line,',');
+		for (unsigned int i=0; i<ss.size(); i++)
+			s.push_back(split(ss[i],del1));
+	}
+	return s;
+
+}
+
+vector<vector<string>> getline_op(ifstream& file,vector<char> del1)
+{
+		string line;
+	vector<vector<string>> s;
+	vector<string> ss;
+	while (file.good())
+	{
+		getline(file, line);
+		ss = split(line,',');
+		for (unsigned int i=0; i<ss.size(); i++)
+			s.push_back(split(ss[i],del1));
+	}
+	return s;
+}
+
+vector<vector<string>> getline_op_eqplus(ifstream& file)
+{
+	vector<char> del1;
+	del1.push_back('=');
+	del1.push_back('+');
+	string line;
+	vector<vector<string>> s;
+	vector<string> ss;
+	while (file.good())
+	{
+		getline(file, line);
+		ss = split(line,',');
+		for (unsigned int i=0; i<ss.size(); i++)
+			s.push_back(split(ss[i],del1));
+	}
+	return s;
+
+
+}
+
+vector<string> split(const string &s, const vector<char> &del)
+{
+	unsigned int lastdel=0;
+	unsigned int j=0;
+	vector<string> strings;
+	for (unsigned int i=0; i<s.size(); i++)
+	{
+		for (unsigned int jj=0; jj<del.size(); jj++)
+		if (s[i]==del[jj])
+		{
+			strings.push_back(s.substr(lastdel, i-lastdel));
+			lastdel = i+1;
+			j++;
+		}
+	}
+	if (lastdel<s.size()) strings.push_back(trim(s.substr(lastdel, s.size()-lastdel)));
+	for (unsigned int i=0; i<strings.size(); i++) strings[i] = trim(strings[i]);
+	return strings;
+
+}
+
+vector<string> split_curly_semicolon(string s)
+{
+	vector<char> del2; del2.push_back('{'); del2.push_back('}'); del2.push_back(';');
+	return split(s,del2);
+}
+
+vector<int> look_up(string s, char del)  //Returns a vector with indices of "del"
+{
+	vector<int> out;
+	for (unsigned int i=0; i<s.size(); i++)
+		if (s[i]==del)
+			out.push_back(i);
+
+	return out;
+
+}
+
+vector<int> ATOI(vector<string> ii)
+{
+	vector<int> res;
+	for (unsigned int i=0; i<ii.size(); i++)
+		res.push_back(atoi(ii[i].c_str()));
+
+	return res;
+}
+
+vector<double> ATOF(vector<string> ii)
+{
+	vector<double> res;
+	for (unsigned int i=0; i<ii.size(); i++)
+		res.push_back(atof(ii[i].c_str()));
+
+	return res;
+}
+
+
+string tolower(const string &S)
+{
+	string SS = S;
+	for (unsigned int i=0; i<S.size(); i++)
+	{
+		SS[i] = tolower(S[i]);
+	}
+	return SS;
+}
+
+vector<string> tolower(const vector<string> &S)
+{
+	vector<string> SS = S;
+	for (unsigned int i = 0; i<S.size(); i++)
+	{
+		SS[i] = tolower(S[i]);
+	}
+	return SS;
+}
+
+void writeline(ofstream& f, vector<string> s, string del=",")
+{
+	for (unsigned int i=0; i<s.size()-1; i++)
+		f<<s[i]<<del;
+	f<<s[s.size()-1]<<endl;
+}
+
+void writeline(ofstream& f, vector<vector<string>> s, string del=",", string del2="&")
+{
+	for (unsigned int i=0; i<s.size()-1; i++)
+	{	for (unsigned int j=0; j<s[i].size()-1; j++)
+			f<<s[i][j]<<del2;
+		f<<s[i][s[i].size()-1]<<del;
+	}
+	f<<s[s.size()-1][s[s.size()-1].size()-1]<<endl;
+}
+void writestring(ofstream& f, string s)
+{
+	f<<s;
+}
+
+void writestring(string filename, string s)
+{
+	ofstream file(filename);
+	file << s + "\n";
+	file.close();
+
+}
+void writenumber(ofstream& f, double s)
+{
+	f<<s;
+}
+
+void writeendl(ofstream& f)
+{
+	f<<endl;
+}
+
+double Heavyside(double x)
+{
+	if (x>0) return 1; else return 0;
+}
+
+double Pos(double x)
+{
+	if (x>0) return x; else return 0;
+}
+
+string numbertostring(double x)
+{
+	string Result;          // string which will contain the result
+	ostringstream convert;   // stream used for the conversion
+	convert << x;      // insert the textual representation of 'Number' in the characters in the stream
+	Result = convert.str();
+	return Result;
 }
 
 
