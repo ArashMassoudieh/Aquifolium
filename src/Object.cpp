@@ -32,7 +32,12 @@ Object& Object::operator=(const Object& rhs)
 double Object::GetVal(const string& s,const Expression::timing &tmg)
 {
     if (var.count(s)==1)
+    {
+        #ifdef Debug_mode
+        cout<<"Object: "<<name<<" Variable: "<<s<< " Value: " << var[s].GetVal(tmg) <<endl;
+        #endif // Debug_mode
         return var[s].GetVal(tmg);
+    }
     else
     {
         last_error = "property '" + s + "' does not exist!";

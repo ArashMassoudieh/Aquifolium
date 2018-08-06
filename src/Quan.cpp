@@ -90,8 +90,13 @@ bool Quan::SetVal(const double &v, const Expression::timing &tmg)
 {
     if (tmg == Expression::timing::past)
         _val = v;
-    else
+    else if (tmg == Expression::timing::present)
         _val_star = v;
+    else if (tmg == Expression::timing::both)
+    {
+        _val = v;
+        _val_star = v;
+    }
 }
 
 void Quan::SetCorrespondingFlowVar(const string &s)

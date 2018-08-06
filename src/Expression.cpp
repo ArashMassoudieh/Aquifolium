@@ -267,6 +267,10 @@ int lookup(const vector<vector<int> > &s, const vector<int> &s1)
 
 double Expression::calc(Object *W, const timing &tmg)
 {
+    term_vals.clear();
+    terms_calculated.clear();
+    sources.clear();
+
 	if (param_constant_expression == "constant")
 		return constant;
 	if (param_constant_expression == "parameter")
@@ -323,6 +327,7 @@ double Expression::calc(Object *W, const timing &tmg)
 				oprt(operators[i], i, i + 1, W);
 			}
 		}
+
 		if (function == "")
 			return term_vals[0];
 		else if (lookup_operators(";")!=-1)
@@ -330,6 +335,7 @@ double Expression::calc(Object *W, const timing &tmg)
 		else
 			return func(function, term_vals[0], term_vals[1]);
 	}
+
 
 }
 

@@ -23,7 +23,7 @@ Block& Block::operator=(const Block& rhs)
 }
 
 
-void Block::AppendLink(Link* l, const Expression::loc &loc);
+void Block::AppendLink(Link* l, const Expression::loc &loc)
 {
     if (loc==Expression::loc::source)
         links_from.push_back(l);

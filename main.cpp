@@ -32,7 +32,7 @@ int main()
     Link L;
     L.SetName("myLink");
     S.AddLink(L,"myblock1","myblock2");
-    cout<<S.link("myLink")->GetVal("flow")<<endl;
+    cout<<"flow = " << S.link("myLink")->GetVal("flow")<<endl;
 
     //Quan X, Y;
     //X.SetType(Quan::_type::value);

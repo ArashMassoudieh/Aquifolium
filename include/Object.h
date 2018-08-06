@@ -18,8 +18,8 @@ class Object
         double GetVal(const string& s, const Expression::timing &tmg=Expression::timing::past);
         bool AddQnantity(const string &name,const Quan &Q);
         bool SetQuantities(const map<string, Quan> &Q);
-        bool SetVal(const string& s, double value, const Expression::timing &tmg = Expression::timing::present);
-        bool SetVal(const string& s, const string & value, const Expression::timing &tmg = Expression::timing::present);
+        bool SetVal(const string& s, double value, const Expression::timing &tmg = Expression::timing::past);
+        bool SetVal(const string& s, const string & value, const Expression::timing &tmg = Expression::timing::past);
         double GetProperty(const string&);
         System *GetParent() const {return parent;};
         string GetName() const;

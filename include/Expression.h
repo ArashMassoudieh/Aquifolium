@@ -25,7 +25,7 @@ class Expression
         vector<string> extract_operators(string s);
         vector<string> _errors;
         vector<string> extract_terms(string s);
-        enum class timing {past, present};
+        enum class timing {past, present, both};
         double calc(Object * W, const timing &tmg=timing::past);
         double func(string & f, double val);
         double func(string & f, double val1, double val2);
