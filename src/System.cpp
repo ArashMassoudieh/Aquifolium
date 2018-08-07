@@ -31,14 +31,14 @@ bool System::AddBlock(Block &blk)
 {
     blocks.push_back(blk);
     block(blk.GetName())->SetParent(this);
-    block(blk.GetName())->SetQuantities(quan_template);
+    block(blk.GetName())->SetQuantities(metamodel, blk.GetType());
 }
 
 bool System::AddLink(Link &lnk, const string &source, const string &destination)
 {
     links.push_back(lnk);
     link(lnk.GetName())->SetParent(this);
-    link(lnk.GetName())->SetQuantities(quan_template);
+    link(lnk.GetName())->SetQuantities(metamodel, lnk.GetType());
     link(lnk.GetName())->SetConnectedBlock(Expression::loc::source, source);
     link(lnk.GetName())->SetConnectedBlock(Expression::loc::destination, destination);
     block(source)->AppendLink(link(lnk.GetName()),Expression::loc::source);
@@ -81,34 +81,36 @@ bool System::GetQuanTemplate(string filename)
     }
 
 
-
-    for (Json::ValueIterator it=root.begin(); it!=root.end(); ++it)
-
+    for (Json::ValueIterator object_types=root.begin(); object_types!=root.end(); ++object_types)
     {
-        Quan Q;
-        if ((*it)["type"].asString()=="balance")
+        QuanSet quanset;
+        for (Json::ValueIterator it=object_types->begin(); it!=object_types->end(); ++it)
         {
-            Q.SetType(Quan::_type::balance);
-            Q.SetCorrespondingFlowVar((*it)["flow"].asString());
-        }
-        if ((*it)["type"].asString()=="constant")
-            Q.SetType(Quan::_type::constant);
-        if ((*it)["type"].asString()=="expression")
-        {
-            Q.SetType(Quan::_type::expression);
-            Q.SetExpression((*it)["expression"].asString());
-        }
-        if ((*it)["type"].asString()=="global")
-            Q.SetType(Quan::_type::global_quan);
-        if ((*it)["type"].asString()=="timeseries")
-            Q.SetType(Quan::_type::timeseries);
-        if ((*it)["type"].asString()=="value")
-            Q.SetType(Quan::_type::value);
+            Quan Q;
+            if ((*it)["type"].asString()=="balance")
+            {
+                Q.SetType(Quan::_type::balance);
+                Q.SetCorrespondingFlowVar((*it)["flow"].asString());
+            }
+            if ((*it)["type"].asString()=="constant")
+                Q.SetType(Quan::_type::constant);
+            if ((*it)["type"].asString()=="expression")
+            {
+                Q.SetType(Quan::_type::expression);
+                Q.SetExpression((*it)["expression"].asString());
+            }
+            if ((*it)["type"].asString()=="global")
+                Q.SetType(Quan::_type::global_quan);
+            if ((*it)["type"].asString()=="timeseries")
+                Q.SetType(Quan::_type::timeseries);
+            if ((*it)["type"].asString()=="value")
+                Q.SetType(Quan::_type::value);
 
-        cout<<it.key().asString()<<endl;
-        quan_template[it.key().asString()] = Q;
+            cout<<it.key().asString()<<endl;
+            quanset.Append(it.key().asString(),Q);
+        }
+        metamodel.Append(object_types.key().asString(),quanset);
     }
-
 }
 
 void System::CopyQuansToMembers()

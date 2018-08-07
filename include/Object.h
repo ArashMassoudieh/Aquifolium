@@ -5,6 +5,7 @@
 #include <vector>
 #include <map>
 #include "Quan.h"
+#include "MetaModel.h"
 
 using namespace std;
 
@@ -17,7 +18,7 @@ class Object
         Object& operator=(const Object& other);
         double GetVal(const string& s, const Expression::timing &tmg=Expression::timing::past);
         bool AddQnantity(const string &name,const Quan &Q);
-        bool SetQuantities(const map<string, Quan> &Q);
+        bool SetQuantities(MetaModel &m, const string& typ);
         bool SetVal(const string& s, double value, const Expression::timing &tmg = Expression::timing::past);
         bool SetVal(const string& s, const string & value, const Expression::timing &tmg = Expression::timing::past);
         double GetProperty(const string&);
@@ -30,10 +31,12 @@ class Object
         void SetParent(System *s);
         Quan* CorrespondingFlowVariable(const string &s);
         Quan* Variable(const string &s);
+        void SetType(const string &typ) {type = typ;};
+        string GetType() {return type;};
     protected:
 
     private:
-        map<string, Quan> var;
+        QuanSet var;
         vector<string> errors;
         string last_error;
         bool last_operation_success;
@@ -42,6 +45,7 @@ class Object
         string name;
         Object *s_Block;
         Object *e_Block;
+        string type;
 
 };
 

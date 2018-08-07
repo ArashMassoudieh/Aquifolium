@@ -6,6 +6,7 @@
 #include "Object.h"
 #include "Vector_arma.h"
 #include "Matrix_arma.h"
+#include "MetaModel.h"
 
 struct solversettings
 {
@@ -36,7 +37,7 @@ class System: public Object
         vector<Block> blocks;
         vector<Link> links;
         string last_error;
-        map<string,Quan> quan_template;
+        MetaModel metamodel;
         CVector_arma GetResiduals(const string &variable, CVector_arma &X);
         CVector_arma GetStateVariables(const string &variable, const Expression::timing &tmg = Expression::timing::past);
         solversettings SolverSettings;

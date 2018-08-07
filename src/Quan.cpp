@@ -86,6 +86,7 @@ bool Quan::SetExpression(const string &E)
     _expression = E;
 }
 
+
 bool Quan::SetVal(const double &v, const Expression::timing &tmg)
 {
     if (tmg == Expression::timing::past)

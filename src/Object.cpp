@@ -31,12 +31,12 @@ Object& Object::operator=(const Object& rhs)
 
 double Object::GetVal(const string& s,const Expression::timing &tmg)
 {
-    if (var.count(s)==1)
+    if (var.Count(s)==1)
     {
         #ifdef Debug_mode
-        cout<<"Object: "<<name<<" Variable: "<<s<< " Value: " << var[s].GetVal(tmg) <<endl;
+        cout<<"Object: "<<name<<" Variable: "<<s<< " Value: " << var[s]->GetVal(tmg) <<endl;
         #endif // Debug_mode
-        return var[s].GetVal(tmg);
+        return var[s]->GetVal(tmg);
     }
     else
     {
@@ -63,10 +63,15 @@ bool Object::AddQnantity(const string &name,const Quan &Q)
 
 }
 
-bool Object::SetQuantities(const map<string, Quan> &Q)
+bool Object::SetQuantities(MetaModel &m, const string& typ )
 {
-    var = Q;
-    for (map<string,Quan>::const_iterator s = Q.begin(); s != Q.end(); ++s)
+    if (m.Count(typ)==0)
+    {
+        last_error = "Type " + typ + "was not found";
+    }
+    else
+        var = m[typ];
+    for (m[typ]::const_iterator s = m.GetMetaModel().begin(); s != m.GetMetaModel().end(); ++s)
         var[s->first].SetParent(this);
 }
 
