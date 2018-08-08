@@ -54,6 +54,23 @@ Block *System::block(const string &s)
     return nullptr;
 }
 
+int System::blockid(const string &s)
+{
+    for (int i=0; i<blocks.size(); i++)
+        if (blocks[i].GetName() == s) return i;
+
+    AppendError("Block " + s + " was not found");
+    return -1;
+}
+
+int System::linkid(const string &s)
+{
+    for (int i=0; i<links.size(); i++)
+        if (links[i].GetName() == s) return i;
+
+    AppendError("Link " + s + " was not found");
+    return -1;
+}
 
 Link *System::link(const string &s)
 {
@@ -117,10 +134,10 @@ void System::CopyQuansToMembers()
 {
     for (unsigned int i=0; i<blocks.size(); i++)
     {
-        blocks[i].SetQuantities(quan_template);
+        blocks[i].SetQuantities(metamodel,blocks[i].GetType());
     }
     for (unsigned int i=0; i<links.size(); i++)
-        links[i].SetQuantities(quan_template);
+        links[i].SetQuantities(metamodel,blocks[i].GetType());
 
 }
 
@@ -129,11 +146,24 @@ bool System::OneStepSolve()
 
 }
 
+bool System::OneStepSolve(const string &variable)
+{
+    #ifdef Debug_mode
+    cout << "Calculating Residuals" <<endl;
+    #endif // Debug_mode
+    CVector_arma X = GetStateVariables(variable, Expression::timing::past);
+    cout<<"X: " << X.toString()<<endl;
+    CVector_arma F = GetResiduals(variable, X);
+    cout<<"F: " << F.toString()<<endl;
+    double err = F.norm2();
+}
+
 CVector_arma System::GetStateVariables(const string &variable, const Expression::timing &tmg)
 {
     CVector_arma X(blocks.size());
     for (unsigned int i=0; i<blocks.size(); i++)
         X[i] = blocks[i].GetVal(variable,tmg);
+    return X;
 }
 
 void System::SetStateVariables(const string &variable, CVector_arma &X, const Expression::timing &tmg)
@@ -150,8 +180,15 @@ CVector_arma System::GetResiduals(const string &variable, CVector_arma &X)
     CalculateFlows(Variable(variable)->GetCorrespondingFlowVar(),Expression::timing::present);
     for (unsigned int i=0; i<blocks.size(); i++)
     {
-        F[i] = (blocks[i].GetVal(variable) - X[i])/dt();
+        F[i] = (X[i]-blocks[i].GetVal(variable,Expression::timing::past))/dt();
     }
+
+    for (unsigned int i=0; i<links.size(); i++)
+    {
+        F[links[i].s_Block_No()] += links[i].GetVal(links[i].Variable(variable)->GetCorrespondingFlowVar(),Expression::timing::present);
+        F[links[i].e_Block_No()] -= links[i].GetVal(links[i].Variable(variable)->GetCorrespondingFlowVar(),Expression::timing::present);
+    }
+    return F;
 }
 
 bool System::CalculateFlows(const string &var, const Expression::timing &tmg)

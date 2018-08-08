@@ -13,7 +13,11 @@ class QuanSet
         QuanSet& operator=(const QuanSet& other);
         bool Append(const string &s, const Quan &q);
         int Count(const string &s) {return quans.count(s);};
-        Quan* operator[] (const string s);
+        Quan& operator[] (const string &s);
+        std::map<string,Quan>::iterator find(const string &name) {return quans.find(name);};
+        std::map<string,Quan>::iterator end() {return quans.end();};
+        std::map<string,Quan>::iterator begin() {return quans.begin();};
+        unsigned int size() {return quans.size();};
     protected:
 
     private:

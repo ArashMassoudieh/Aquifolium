@@ -33,6 +33,8 @@ class Object
         Quan* Variable(const string &s);
         void SetType(const string &typ) {type = typ;};
         string GetType() {return type;};
+        int s_Block_No() {return s_Block_no; };
+        int e_Block_No() {return e_Block_no; };
     protected:
 
     private:
@@ -45,6 +47,7 @@ class Object
         string name;
         Object *s_Block;
         Object *e_Block;
+        int s_Block_no, e_Block_no;
         string type;
 
 };

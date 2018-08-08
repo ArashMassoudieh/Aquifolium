@@ -7,6 +7,7 @@
 #include "Matrix_arma.h"
 #include <cfloat>
 #include "Vector.h"
+#include "Expression.h"
 
 
 //////////////////////////////////////////////////////////////////////
@@ -126,14 +127,14 @@ CVector_arma& CVector_arma::operator=(const double &v)
 	return *this;
 }
 
-CVector_arma& CVector_arma::operator+() 
+CVector_arma& CVector_arma::operator+()
 {return *this;}
 
 void CVector_arma::swap(int i, int j)
 {	double tmp = vect[range(i)];
 	vect(i) = vect(range(j));
 	vect(j) = tmp;
-	
+
 }
 
 int CVector_arma::getsize() {return num;}
@@ -167,22 +168,22 @@ CVector_arma& CVector_arma::operator-=(const CVector_arma &v)
 	return *this;
 }
 
-CVector_arma operator+(const CVector_arma &v1, const CVector_arma &v2) 
+CVector_arma operator+(const CVector_arma &v1, const CVector_arma &v2)
 {
-	CVector_arma v=v1; 
+	CVector_arma v=v1;
 	v.vect=v1.vect+v2.vect;
 	return v;
 }
 
-CVector_arma operator-(const CVector_arma &v1, const CVector_arma &v2) 
+CVector_arma operator-(const CVector_arma &v1, const CVector_arma &v2)
 {
-	CVector_arma v=v1; 
+	CVector_arma v=v1;
 	v.vect=v1.vect-v2.vect;
 	return v;
 
 }
 
-double dotproduct(CVector_arma v1, CVector_arma v2) 
+double dotproduct(CVector_arma v1, CVector_arma v2)
 {
 	return dot(v1.vect, v2.vect);
 }
@@ -193,9 +194,9 @@ CVector_arma& CVector_arma::operator*=(const CVector_arma& v)
 		vect(i) *= v.vect(i);
 	return *this;
 }
-	
 
-CVector_arma operator*(CVector_arma v1, CVector_arma v2) 
+
+CVector_arma operator*(CVector_arma v1, CVector_arma v2)
 {
 	return v1 *= v2;
 }
@@ -305,7 +306,7 @@ vector<int> CVector_arma::get_nan_elements()
 		if ((vect[i] == vect[i]) != true || !isfinite(vect[i]))
 			out.push_back(i);
 	}
-	return out; 
+	return out;
 }
 
 double CVector_arma::max()
@@ -314,7 +315,7 @@ double CVector_arma::max()
 }
 
 double max(CVector_arma &V)
-{	
+{
 	return V.max();
 }
 
@@ -324,7 +325,7 @@ double CVector_arma::min()
 }
 
 double min(CVector_arma &V)
-{	
+{
 	return V.min();
 }
 double CVector_arma::abs_max()
@@ -341,20 +342,20 @@ double CVector_arma::abs_max()
 int CVector_arma::abs_max_elems()
 {
 	double a = -1E14;
-	int ii; 
+	int ii;
 	for (int i = 0; i<num; i++)
 	{
 		if (fabs(vect(i)) > a)
 		{
 			a = fabs(vect(i));
-			ii = i; 
+			ii = i;
 		}
 	}
 	return ii;
 }
 
 double abs_max(CVector_arma &V)
-{	
+{
 	return V.abs_max();
 }
 
@@ -454,7 +455,7 @@ void CVector_arma::writetofile(ofstream &f)
 	for (int i=0; i<num-1; i++)
 		f<<vect(i)<<",";
 	f<<vect(num-1)<<endl;
-		
+
 }
 
 void CVector_arma::writetofile(string filename)
@@ -484,7 +485,7 @@ CMatrix_arma CVector_arma::diagmat()
 CVector_arma CVector_arma::append(const CVector_arma& V1)
 {
 	vect.set_size(num + V1.num);
-	
+
 	for (int i=0; i<V1.num; i++)
 		vect(i+num) = V1.vect(i);
 	num += V1.num;
@@ -540,7 +541,7 @@ CVector_arma CVector_arma::append(double d)
 			}
 		}
 	}
-	
+
 	return V3;
 
 }*/
@@ -570,25 +571,25 @@ CVector_arma operator*(CVector_arma &v, double d)
 }
 
 void CVector_arma::print(string s)
-{		
+{
 	ofstream Afile;
-	Afile.open(s);	
+	Afile.open(s);
 
 	for (int i=0; i<num; ++i)
 		Afile << vect(i) << endl;
 
-	Afile.close();							
-	
+	Afile.close();
+
 }
 
 CVector_arma CVector_arma::operator=(mat A)
 {
 	num = A.n_rows;
 	vect.set_size(num);
-		
-	for (int i = 0; i<num; ++i)		
+
+	for (int i = 0; i<num; ++i)
 			vect(i)=A(i,0);
-	
+
 	return *this;
 }
 
@@ -601,13 +602,23 @@ CVector_arma CVector_arma::sub(int i, int j)
 	return C;
 
 }
+
+string CVector_arma::toString()
+{
+    string s = "[" + numbertostring(vect(0));
+    for (int i=1; i<num; i++)
+        s += "," + numbertostring(vect(i));
+    s+= "]";
+    return s;
+
+}
 //mat CVector_arma::operator=(const CVector_arma&V)
 //{
 //	mat A(num,1);
-		
-//	for (int i = 0; i<num; ++i)		
+
+//	for (int i = 0; i<num; ++i)
 //			A(i,0) = vec[i];
-	
+
 //	return A;
 //}
 

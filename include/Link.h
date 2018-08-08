@@ -18,10 +18,12 @@ class Link: public Object
         virtual ~Link();
         Link(const Link& other);
         Link& operator=(const Link& other);
+        Block* GetConnectedBlock(Expression::loc l);
 
     protected:
 
     private:
+
 
 };
 

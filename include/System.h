@@ -27,10 +27,12 @@ class System: public Object
         bool AddLink(Link &lnk, const string &source, const string &destination);
         Block *block(const string &s);
         Link *link(const string &s);
+        int blockid(const string &s);
+        int linkid(const string &s);
         bool GetQuanTemplate(string filename);
         void CopyQuansToMembers();
         double &dt() {return SolverSettings.dt;};
-
+        bool OneStepSolve(const string &s);
     protected:
 
     private:
@@ -42,6 +44,7 @@ class System: public Object
         CVector_arma GetStateVariables(const string &variable, const Expression::timing &tmg = Expression::timing::past);
         solversettings SolverSettings;
         bool OneStepSolve();
+
         bool CalculateFlows(const string &var, const Expression::timing &tmg = Expression::timing::present);
         void SetStateVariables(const string &variable, CVector_arma &X, const Expression::timing &tmg = Expression::timing::present);
 };

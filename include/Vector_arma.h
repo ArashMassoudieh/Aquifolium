@@ -15,8 +15,8 @@ class SizeDist;
 class CVector_arma
 {
 private:
-	
-	
+
+
 public:
 	vec vect;
 	CVector_arma();
@@ -47,7 +47,7 @@ public:
 	CVector_arma& operator-=(const CVector_arma&);
 	CVector_arma& operator*=(const CVector_arma&);
 	friend double dotproduct(CVector_arma, CVector_arma);
-	friend CVector_arma mult(CMatrix_arma&, CVector_arma&);	
+	friend CVector_arma mult(CMatrix_arma&, CVector_arma&);
 	friend double norm(CVector_arma);			//Friend can be deleted. we don't have any private or protected variable in this class  //
 	friend double dotproduct(CVector_arma v1, CVector_arma v2);
 	bool operator==(double v);
@@ -77,6 +77,7 @@ public:
 	CVector_arma sub(int i, int j);
 	bool is_finite();
 	vector<int> get_nan_elements();
+	string toString();
 };
 
 CVector_arma Log(CVector_arma &);
@@ -94,7 +95,7 @@ CVector_arma operator-(double, CVector_arma&);
 CVector_arma operator*(CVector_arma, CVector_arma);
 CVector_arma operator*(double, CVector_arma);
 CVector_arma operator*(CVector_arma, double);
-CVector_arma operator/(CVector_arma, double); 
+CVector_arma operator/(CVector_arma, double);
 CVector_arma operator/(CVector_arma, CVector_arma);
 CVector_arma operator/(double, CVector_arma);
 CVector_arma zeros_ar(int i);

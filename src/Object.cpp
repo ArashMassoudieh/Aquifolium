@@ -34,9 +34,9 @@ double Object::GetVal(const string& s,const Expression::timing &tmg)
     if (var.Count(s)==1)
     {
         #ifdef Debug_mode
-        cout<<"Object: "<<name<<" Variable: "<<s<< " Value: " << var[s]->GetVal(tmg) <<endl;
+        cout<<"Object: "<<name<<" Variable: "<<s<< " Value: " << var[s].GetVal(tmg) <<endl;
         #endif // Debug_mode
-        return var[s]->GetVal(tmg);
+        return var[s].GetVal(tmg);
     }
     else
     {
@@ -70,8 +70,8 @@ bool Object::SetQuantities(MetaModel &m, const string& typ )
         last_error = "Type " + typ + "was not found";
     }
     else
-        var = m[typ];
-    for (m[typ]::const_iterator s = m.GetMetaModel().begin(); s != m.GetMetaModel().end(); ++s)
+        var = *m[typ];
+    for (map<string, Quan>::const_iterator s = var.begin(); s != var.end(); ++s)
         var[s->first].SetParent(this);
 }
 
@@ -136,9 +136,15 @@ void Object::SetConnectedBlock(Expression::loc l, const string &blockname)
     else
     {
         if (l==Expression::loc::source)
+        {
             s_Block = GetParent()->block(blockname);
+            s_Block_no = GetParent()->blockid(blockname);
+        }
         if (l==Expression::loc::destination)
+        {
             e_Block = GetParent()->block(blockname);
+            e_Block_no = GetParent()->blockid(blockname);
+        }
     }
 
 }
@@ -156,7 +162,7 @@ void Object::SetParent(System *s)
 
 Quan* Object::CorrespondingFlowVariable(const string &s)
 {
-    if (var.count(Variable(s)->GetCorrespondingFlowVar())==0)
+    if (var.Count(Variable(s)->GetCorrespondingFlowVar())==0)
     {
         AppendError("Variable '" + s +"' does not exist!");
         return nullptr;
@@ -167,7 +173,7 @@ Quan* Object::CorrespondingFlowVariable(const string &s)
 
 Quan* Object::Variable(const string &s)
 {
-    if (var.count(s)==0)
+    if (var.Count(s)==0)
     {
         AppendError("Variable '" + s + "' does not exist!");
         return nullptr;

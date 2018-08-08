@@ -24,7 +24,7 @@
 		},
 		"flow": {
 			"type": "expression",		
-			"expression": "reservoir_coeff.s*Storage.s^2"
+			"expression": "reservoir_coeff.s*Storage.s^1.5"
 		},
 		"reservoir_coeff": {
 			"type": "value"

@@ -35,13 +35,12 @@ bool QuanSet::Append(const string &s, const Quan &q)
     }
 }
 
-Quan* QuanSet::operator[] (const string s)
+Quan& QuanSet::operator[] (const string &s)
 {
     if (quans.count(s)==0)
     {
         last_error = "Variable " + s + " does not exist!";
-        return nullptr;
     }
     else
-        return quans(s);
+        return quans[s];
 }
