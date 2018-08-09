@@ -33,6 +33,7 @@ class System: public Object
         void CopyQuansToMembers();
         double &dt() {return SolverSettings.dt;};
         bool OneStepSolve(const string &s);
+		bool renew(const string &variable);
     protected:
 
     private:

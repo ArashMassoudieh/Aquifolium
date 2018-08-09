@@ -29,6 +29,7 @@ class Quan
         void SetMassBalance(bool on);
         void SetParent(Object *);
         Quan *Corresponding_flow_variable;
+		void renew();
 
     protected:
 

@@ -57,7 +57,7 @@ bool Object::AddQnantity(const string &name,const Quan &Q)
     }
     else
     {
-        var[name] = Q;
+		var.Append(name, Q);
         return true;
     }
 
@@ -68,11 +68,13 @@ bool Object::SetQuantities(MetaModel &m, const string& typ )
     if (m.Count(typ)==0)
     {
         last_error = "Type " + typ + "was not found";
-    }
+		return false; 
+	}
     else
         var = *m[typ];
     for (map<string, Quan>::const_iterator s = var.begin(); s != var.end(); ++s)
         var[s->first].SetParent(this);
+	return true; 
 }
 
 bool Object::SetVal(const string& s, double value, const Expression::timing &tmg)
@@ -180,4 +182,17 @@ Quan* Object::Variable(const string &s)
     }
     else
         return &var[s];
+}
+
+bool Object::renew(const string & variable)
+{
+	if (!Variable(variable))
+	{
+		AppendError("Variable " + variable + " does not exist!");
+		return false;
+	}
+	else
+		Variable(variable)->renew();
+	return true;
+	
 }

@@ -21,6 +21,7 @@ Quan::Quan(const Quan& other)
     _val = other._val;
     _parameters = other._parameters;
     type = other.type;
+	corresponding_flow_quan = other.corresponding_flow_quan;
 }
 
 Quan& Quan::operator=(const Quan& rhs)
@@ -32,6 +33,7 @@ Quan& Quan::operator=(const Quan& rhs)
     _val = rhs._val;
     _parameters = rhs._parameters;
     type = rhs.type;
+	corresponding_flow_quan = rhs.corresponding_flow_quan;
     return *this;
 }
 
@@ -84,6 +86,7 @@ double Quan::GetVal(const Expression::timing &tmg)
 bool Quan::SetExpression(const string &E)
 {
     _expression = E;
+	return true; 
 }
 
 
@@ -98,6 +101,7 @@ bool Quan::SetVal(const double &v, const Expression::timing &tmg)
         _val = v;
         _val_star = v;
     }
+	return true; 
 }
 
 void Quan::SetCorrespondingFlowVar(const string &s)
@@ -113,5 +117,10 @@ void Quan::SetMassBalance(bool on)
 void Quan::SetParent(Object *o)
 {
     parent = o;
+}
+
+void Quan::renew()
+{
+	_val_star = _val; 
 }
 

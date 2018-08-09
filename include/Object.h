@@ -19,8 +19,8 @@ class Object
         double GetVal(const string& s, const Expression::timing &tmg=Expression::timing::past);
         bool AddQnantity(const string &name,const Quan &Q);
         bool SetQuantities(MetaModel &m, const string& typ);
-        bool SetVal(const string& s, double value, const Expression::timing &tmg = Expression::timing::past);
-        bool SetVal(const string& s, const string & value, const Expression::timing &tmg = Expression::timing::past);
+        bool SetVal(const string& s, double value, const Expression::timing &tmg = Expression::timing::both);
+        bool SetVal(const string& s, const string & value, const Expression::timing &tmg = Expression::timing::both);
         double GetProperty(const string&);
         System *GetParent() const {return parent;};
         string GetName() const;
@@ -35,6 +35,7 @@ class Object
         string GetType() {return type;};
         int s_Block_No() {return s_Block_no; };
         int e_Block_No() {return e_Block_no; };
+		bool renew(const string &variable);
     protected:
 
     private:

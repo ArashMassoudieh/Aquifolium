@@ -3,3 +3,12 @@
 ################################################################################
 
 *.lastbuildstate
+/Aquifolium/Aquifolium/x64/Debug/Aquifolium.tlog/CL.command.1.tlog
+/Aquifolium/.vs/Aquifolium/v15/Browse.VC.opendb
+*.tlog
+*.idb
+/Aquifolium/.vs/Aquifolium/v15/ipch/AutoPCH
+/Aquifolium/.vs/Aquifolium/v15
+/.vs/Aquifolium/v15
+/Aquifolium
+/.vs

@@ -1,6 +1,7 @@
 #include "System.h"
 #include <fstream>
 #include <json/json.h>
+#pragma warning(disable : 4996)
 
 System::System():Object::Object()
 {
@@ -32,6 +33,7 @@ bool System::AddBlock(Block &blk)
     blocks.push_back(blk);
     block(blk.GetName())->SetParent(this);
     block(blk.GetName())->SetQuantities(metamodel, blk.GetType());
+	return true; 
 }
 
 bool System::AddLink(Link &lnk, const string &source, const string &destination)
@@ -43,6 +45,7 @@ bool System::AddLink(Link &lnk, const string &source, const string &destination)
     link(lnk.GetName())->SetConnectedBlock(Expression::loc::destination, destination);
     block(source)->AppendLink(link(lnk.GetName()),Expression::loc::source);
     block(destination)->AppendLink(link(lnk.GetName()),Expression::loc::destination);
+	return true; 
 }
 
 Block *System::block(const string &s)
@@ -87,7 +90,12 @@ bool System::GetQuanTemplate(string filename)
     Json::Reader reader;
 
     std::ifstream file(filename);
-    cout<<file.good()<<endl;
+	if (!file.good())
+	{
+		cout << "File " + filename + " was not found!";
+		return false;
+	}
+
     file >> root;
 
     if(!reader.parse(file, root, true)){
@@ -125,9 +133,11 @@ bool System::GetQuanTemplate(string filename)
 
             cout<<it.key().asString()<<endl;
             quanset.Append(it.key().asString(),Q);
+			AddQnantity(it.key().asString(), Q);
         }
         metamodel.Append(object_types.key().asString(),quanset);
     }
+	return true; 
 }
 
 void System::CopyQuansToMembers()
@@ -143,12 +153,13 @@ void System::CopyQuansToMembers()
 
 bool System::OneStepSolve()
 {
-
+	return true; 
 }
 
 bool System::OneStepSolve(const string &variable)
 {
-    #ifdef Debug_mode
+	renew(variable);
+	#ifdef Debug_mode
     cout << "Calculating Residuals" <<endl;
     #endif // Debug_mode
     CVector_arma X = GetStateVariables(variable, Expression::timing::past);
@@ -156,6 +167,19 @@ bool System::OneStepSolve(const string &variable)
     CVector_arma F = GetResiduals(variable, X);
     cout<<"F: " << F.toString()<<endl;
     double err = F.norm2();
+	return true; 
+}
+
+bool System::renew(const string & variable)
+{
+	bool out = true; 
+	for (unsigned int i = 0; i < blocks.size(); i++)
+		out &= blocks[i].renew(variable);
+
+	for (unsigned int i = 0; i < links.size(); i++)
+		out &= links[i].renew(variable);
+	
+	return out;
 }
 
 CVector_arma System::GetStateVariables(const string &variable, const Expression::timing &tmg)
@@ -197,4 +221,5 @@ bool System::CalculateFlows(const string &var, const Expression::timing &tmg)
     {
         links[i].SetVal(var,links[i].GetVal(var,tmg));
     }
+	return true; 
 }
