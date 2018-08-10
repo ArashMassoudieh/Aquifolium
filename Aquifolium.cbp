@@ -54,9 +54,11 @@
 		<Unit filename="include/Link.h" />
 		<Unit filename="include/Matrix.h" />
 		<Unit filename="include/Matrix_arma.h" />
+		<Unit filename="include/MetaModel.h" />
 		<Unit filename="include/NormalDist.h" />
 		<Unit filename="include/Object.h" />
 		<Unit filename="include/Quan.h" />
+		<Unit filename="include/QuanSet.h" />
 		<Unit filename="include/QuickSort.h" />
 		<Unit filename="include/System.h" />
 		<Unit filename="include/Vector.h" />
@@ -68,9 +70,11 @@
 		<Unit filename="src/Link.cpp" />
 		<Unit filename="src/Matrix.cpp" />
 		<Unit filename="src/Matrix_arma.cpp" />
+		<Unit filename="src/MetaModel.cpp" />
 		<Unit filename="src/NormalDist.cpp" />
 		<Unit filename="src/Object.cpp" />
 		<Unit filename="src/Quan.cpp" />
+		<Unit filename="src/QuanSet.cpp" />
 		<Unit filename="src/QuickSort.cpp" />
 		<Unit filename="src/System.cpp" />
 		<Unit filename="src/Vector.cpp">

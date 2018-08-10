@@ -33,7 +33,7 @@ bool System::AddBlock(Block &blk)
     blocks.push_back(blk);
     block(blk.GetName())->SetParent(this);
     block(blk.GetName())->SetQuantities(metamodel, blk.GetType());
-	return true; 
+	return true;
 }
 
 bool System::AddLink(Link &lnk, const string &source, const string &destination)
@@ -45,7 +45,7 @@ bool System::AddLink(Link &lnk, const string &source, const string &destination)
     link(lnk.GetName())->SetConnectedBlock(Expression::loc::destination, destination);
     block(source)->AppendLink(link(lnk.GetName()),Expression::loc::source);
     block(destination)->AppendLink(link(lnk.GetName()),Expression::loc::destination);
-	return true; 
+	return true;
 }
 
 Block *System::block(const string &s)
@@ -137,7 +137,7 @@ bool System::GetQuanTemplate(string filename)
         }
         metamodel.Append(object_types.key().asString(),quanset);
     }
-	return true; 
+	return true;
 }
 
 void System::CopyQuansToMembers()
@@ -153,7 +153,7 @@ void System::CopyQuansToMembers()
 
 bool System::OneStepSolve()
 {
-	return true; 
+	return true;
 }
 
 bool System::OneStepSolve(const string &variable)
@@ -167,18 +167,20 @@ bool System::OneStepSolve(const string &variable)
     CVector_arma F = GetResiduals(variable, X);
     cout<<"F: " << F.toString()<<endl;
     double err = F.norm2();
-	return true; 
+	CMatrix_arma M = Jacobian("Storage",X);
+	M.writetofile("M.txt");
+	return true;
 }
 
 bool System::renew(const string & variable)
 {
-	bool out = true; 
+	bool out = true;
 	for (unsigned int i = 0; i < blocks.size(); i++)
 		out &= blocks[i].renew(variable);
 
 	for (unsigned int i = 0; i < links.size(); i++)
 		out &= links[i].renew(variable);
-	
+
 	return out;
 }
 
@@ -212,6 +214,8 @@ CVector_arma System::GetResiduals(const string &variable, CVector_arma &X)
         F[links[i].s_Block_No()] += links[i].GetVal(links[i].Variable(variable)->GetCorrespondingFlowVar(),Expression::timing::present);
         F[links[i].e_Block_No()] -= links[i].GetVal(links[i].Variable(variable)->GetCorrespondingFlowVar(),Expression::timing::present);
     }
+    cout<<"X: "<<X.toString()<<endl;
+    cout<<"X: "<<F.toString()<<endl;
     return F;
 }
 
@@ -221,5 +225,44 @@ bool System::CalculateFlows(const string &var, const Expression::timing &tmg)
     {
         links[i].SetVal(var,links[i].GetVal(var,tmg));
     }
-	return true; 
+	return true;
 }
+
+CMatrix_arma System::Jacobian(const string &variable, CVector_arma &X)
+{
+	CMatrix_arma M(X.num);
+
+    CVector_arma F0 = GetResiduals(variable, X);
+    for (int i=0; i < X.num; i++)
+    {
+        CVector_arma V = Jacobian(variable, X, F0, i);
+        for (int j=0; j<X.num; j++)
+            M(i,j) = V[j];
+    }
+
+	return Transpose(M);
+}
+
+
+CVector_arma System::Jacobian(const string &variable, CVector_arma &V, CVector_arma &F0, int i)  //Works also w/o reference (&)
+{
+	double epsilon;
+	epsilon = -1e-6;
+	CVector_arma V1(V);
+	V1[i] += epsilon;
+	cout<<i<<":"<<V1.toString()<<endl;
+	CVector_arma F1;
+	F1 = GetResiduals(variable,V1);
+	CVector_arma grad = (F1 - F0) / epsilon;
+	if (grad.norm2() == 0)
+	{
+		epsilon = 1e-6;
+		V1 = V;
+		V1[i] += epsilon;
+		F1 = GetResiduals(variable,V1);
+		grad = (F1 - F0) / epsilon;
+	}
+	return grad;
+
+}
+
