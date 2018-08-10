@@ -36,8 +36,9 @@ int main()
     L.SetName("myLink");
     S.AddLink(L,"myblock1","myblock2");
     cout<<"flow = " << S.link("myLink")->GetVal("flow")<<endl;
-	S.dt() = 0.01; 
+	S.dt() = 0.01;
     S.OneStepSolve("Storage");
+
     //Quan X, Y;
     //X.SetType(Quan::_type::value);
     //X.SetVal(2);
