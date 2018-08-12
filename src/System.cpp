@@ -167,8 +167,26 @@ bool System::OneStepSolve(const string &variable)
     CVector_arma F = GetResiduals(variable, X);
     cout<<"F: " << F.toString()<<endl;
     double err = F.norm2();
+    double err_p = err;
+    while (err>solversettings.NRtolerance)
+    {
+        if (solvertemporaryvars.updatejacobian)
+        {
+            solvertemporaryvars.Inverse_Jacobian = Invert(Jacobian(variable,X));
+            solvertemporaryvars.updatejacobian = false;
+        }
+        X = X - solvertemporaryvars.NR_coefficient*solvertemporaryvars.Inverse_Jacobian*F;
+        F = CVector_arma F = GetResiduals(variable, X);
+        err_p = err;
+        err = F.norm2();
+        if (err>err_p)
+            solvertemporaryvars.NR_coefficient*=solversettings.NR_coeff_reduction_factor;
+
+    }
+	#ifdef Debug_mode
 	CMatrix_arma M = Jacobian("Storage",X);
 	M.writetofile("M.txt");
+	#endif // Debug_mode
 	return true;
 }
 
@@ -195,7 +213,12 @@ CVector_arma System::GetStateVariables(const string &variable, const Expression:
 void System::SetStateVariables(const string &variable, CVector_arma &X, const Expression::timing &tmg)
 {
     for (unsigned int i=0; i<blocks.size(); i++)
+    {
         blocks[i].SetVal(variable,X[i],tmg);
+        #ifdef Debug_mode
+        cout<<"Variable :"<< variable << "in " + blocks[i].GetName() << " was set to " + numbertostring(blocks[i].GetVal(variable,tmg)) << endl;
+        #endif // Debug_mode
+    }
 }
 
 
@@ -214,8 +237,10 @@ CVector_arma System::GetResiduals(const string &variable, CVector_arma &X)
         F[links[i].s_Block_No()] += links[i].GetVal(links[i].Variable(variable)->GetCorrespondingFlowVar(),Expression::timing::present);
         F[links[i].e_Block_No()] -= links[i].GetVal(links[i].Variable(variable)->GetCorrespondingFlowVar(),Expression::timing::present);
     }
+    #ifdef Debug_mode
     cout<<"X: "<<X.toString()<<endl;
     cout<<"X: "<<F.toString()<<endl;
+    #endif // Debug_mode
     return F;
 }
 
@@ -247,7 +272,7 @@ CMatrix_arma System::Jacobian(const string &variable, CVector_arma &X)
 CVector_arma System::Jacobian(const string &variable, CVector_arma &V, CVector_arma &F0, int i)  //Works also w/o reference (&)
 {
 	double epsilon;
-	epsilon = -1e-6;
+	epsilon = -1e-2;
 	CVector_arma V1(V);
 	V1[i] += epsilon;
 	cout<<i<<":"<<V1.toString()<<endl;

@@ -299,24 +299,24 @@ double Expression::calc(Object *W, const timing &tmg)
 		for (int i = operators.size() - 1; i >= 0; i--)
 		{
 			if (operators[i] == "^")
-				oprt(operators[i], i, i + 1, W);
+				oprt(operators[i], i, i + 1, W, tmg);
 		}
 		for (int i = operators.size() - 1; i >= 0; i--)
 		{
 			if (operators[i] == "*")
-				oprt(operators[i], i, i + 1, W);
+				oprt(operators[i], i, i + 1, W, tmg);
 		}
 
 		for (int i = operators.size() - 1; i >= 0; i--)
 		{
 			if (operators[i] == "/")
-				oprt(operators[i], i, i + 1, W);
+				oprt(operators[i], i, i + 1, W, tmg);
 		}
 
 		for (int i = operators.size() - 1; i >= 0; i--)
 		{
 			if (operators[i] == "+")
-				oprt(operators[i], i, i + 1, W);
+				oprt(operators[i], i, i + 1, W, tmg);
 
 		}
 
@@ -324,7 +324,7 @@ double Expression::calc(Object *W, const timing &tmg)
 		{
 			if (operators[i] == "-")
 			{
-				oprt(operators[i], i, i + 1, W);
+				oprt(operators[i], i, i + 1, W, tmg);
 			}
 		}
 
@@ -373,7 +373,7 @@ double Expression::oprt(string &f, double val1, double val2)
 	return 0;
 }
 
-double Expression::oprt(string &f, unsigned int i1, unsigned int i2, Object *W)
+double Expression::oprt(string &f, unsigned int i1, unsigned int i2, Object *W, const Expression::timing &tmg)
 {
 
 	#ifdef Debug_mode
@@ -396,13 +396,13 @@ double Expression::oprt(string &f, unsigned int i1, unsigned int i2, Object *W)
 
 	double val1;
 	double val2;
-	if (terms_calculated[i1]) val1 = term_vals[i1]; else val1 = terms[i1].calc(W);
+	if (terms_calculated[i1]) val1 = term_vals[i1]; else val1 = terms[i1].calc(W, tmg);
 	if (terms[i1].sign == "/") val1 = 1/val1;
 	if (terms[i1].sign == "-") val1 = -val1;
 	if (sources.size() > i2)
 		if (terms_calculated[i2]) val2 = term_vals[i2]; else
 		{
-			val2 = terms[i2].calc(W);
+			val2 = terms[i2].calc(W, tmg);
 			if (terms[i2].sign == "/") val2 = 1 / val2;
 			if (terms[i2].sign == "-") val2 = -val2;
 		}
