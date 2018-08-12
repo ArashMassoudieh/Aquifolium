@@ -13,7 +13,7 @@ struct solversettings
     double t;
     double dt;
     double C_N_weight; //Crank-Nicholson Weight
-    double NRtolerance; //Newton Raphson Tolerance
+    double NRtolerance = 1e-6; //Newton Raphson Tolerance
     double NR_coeff_reduction_factor; //The coefficient to reduce the Newton-Raphson coefficient
 };
 
@@ -21,7 +21,7 @@ struct solvertemporaryvars
 {
     CMatrix_arma Inverse_Jacobian;
     double NR_coefficient = 1;
-    bool updatejacobian;
+    bool updatejacobian = true;
 };
 
 class System: public Object

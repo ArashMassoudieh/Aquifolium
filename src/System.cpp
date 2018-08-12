@@ -166,21 +166,23 @@ bool System::OneStepSolve(const string &variable)
     cout<<"X: " << X.toString()<<endl;
     CVector_arma F = GetResiduals(variable, X);
     cout<<"F: " << F.toString()<<endl;
-    double err = F.norm2();
-    double err_p = err;
-    while (err>solversettings.NRtolerance)
+    double err_ini = F.norm2();
+    double err;
+    double err_p = err = err_ini;
+    while (err/err_ini>SolverSettings.NRtolerance)
     {
-        if (solvertemporaryvars.updatejacobian)
+        if (SolverTempVars.updatejacobian)
         {
-            solvertemporaryvars.Inverse_Jacobian = Invert(Jacobian(variable,X));
-            solvertemporaryvars.updatejacobian = false;
+            SolverTempVars.Inverse_Jacobian = Invert(Jacobian(variable,X));
+            SolverTempVars.updatejacobian = false;
+            SolverTempVars.NR_coefficient = 1;
         }
-        X = X - solvertemporaryvars.NR_coefficient*solvertemporaryvars.Inverse_Jacobian*F;
-        F = CVector_arma F = GetResiduals(variable, X);
+        X = X - SolverTempVars.NR_coefficient*SolverTempVars.Inverse_Jacobian*F;
+        F = GetResiduals(variable, X);
         err_p = err;
         err = F.norm2();
         if (err>err_p)
-            solvertemporaryvars.NR_coefficient*=solversettings.NR_coeff_reduction_factor;
+            SolverTempVars.NR_coefficient*=SolverSettings.NR_coeff_reduction_factor;
 
     }
 	#ifdef Debug_mode
@@ -248,3 +250,45 @@ bool System::CalculateFlows(const string &var, const Expression::timing &tmg)
     }
 	return true;
 }
+
+CMatrix_arma System::Jacobian(const string &variable, CVector_arma &X)
+{
+    CMatrix_arma M(X.num);
+
+    CVector_arma F0 = GetResiduals(variable, X);
+    for (int i=0; i < X.num; i++)
+    {
+        CVector_arma V = Jacobian(variable, X, F0, i);
+        for (int j=0; j<X.num; j++)
+            M(i,j) = V[j];
+    }
+
+  return Transpose(M);
+}
+
+
+CVector_arma System::Jacobian(const string &variable, CVector_arma &V, CVector_arma &F0, int i)  //Works also w/o reference (&)
+{
+  double epsilon;
+  epsilon = -1e-6;
+  CVector_arma V1(V);
+  V1[i] += epsilon;
+  #ifdef Debug_mode
+  cout<<i<<":"<<V1.toString()<<endl;
+  #endif // Debug_mode
+  CVector_arma F1;
+  F1 = GetResiduals(variable,V1);
+  CVector_arma grad = (F1 - F0) / epsilon;
+  if (grad.norm2() == 0)
+  {
+    epsilon = 1e-6;
+    V1 = V;
+    V1[i] += epsilon;
+    F1 = GetResiduals(variable,V1);
+    grad = (F1 - F0) / epsilon;
+  }
+  return grad;
+
+}
+
+
