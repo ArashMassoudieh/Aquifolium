@@ -35,7 +35,7 @@ Expression::Expression(string S)
 {
 	text = S;
 	#ifdef Debug_mode
-	cout<<text<<endl;
+	//cout<<text<<endl;
 	#endif // Debug_mode
 
 	funcs.push_back("_min");
@@ -377,7 +377,7 @@ double Expression::oprt(string &f, unsigned int i1, unsigned int i2, Object *W, 
 {
 
 	#ifdef Debug_mode
-	cout<<i1<<","<<i2<<endl;
+	//cout<<i1<<","<<i2<<endl;
 	#endif // Debug_mode
 	for (unsigned int j = 0; j < sources[i1].size(); j++)
 	{

@@ -34,7 +34,7 @@ double Object::GetVal(const string& s,const Expression::timing &tmg)
     if (var.Count(s)==1)
     {
         #ifdef Debug_mode
-        cout<<"Object: "<<name<<" Variable: "<<s<< " Value: " << var[s].GetVal(tmg) <<endl;
+//      cout<<"Object: "<<name<<" Variable: "<<s<< " Value: " << var[s].GetVal(tmg) <<endl;
         #endif // Debug_mode
         return var[s].GetVal(tmg);
     }
@@ -68,13 +68,13 @@ bool Object::SetQuantities(MetaModel &m, const string& typ )
     if (m.Count(typ)==0)
     {
         last_error = "Type " + typ + "was not found";
-		return false; 
+		return false;
 	}
     else
         var = *m[typ];
     for (map<string, Quan>::const_iterator s = var.begin(); s != var.end(); ++s)
         var[s->first].SetParent(this);
-	return true; 
+	return true;
 }
 
 bool Object::SetVal(const string& s, double value, const Expression::timing &tmg)
@@ -194,5 +194,5 @@ bool Object::renew(const string & variable)
 	else
 		Variable(variable)->renew();
 	return true;
-	
+
 }

@@ -160,12 +160,12 @@ bool System::OneStepSolve(const string &variable)
 {
 	renew(variable);
 	#ifdef Debug_mode
-    cout << "Calculating Residuals" <<endl;
+//  cout << "Calculating Residuals" <<endl;
     #endif // Debug_mode
     CVector_arma X = GetStateVariables(variable, Expression::timing::past);
-    cout<<"X: " << X.toString()<<endl;
+//  cout<<"X: " << X.toString()<<endl;
     CVector_arma F = GetResiduals(variable, X);
-    cout<<"F: " << F.toString()<<endl;
+//  cout<<"F: " << F.toString()<<endl;
     double err_ini = F.norm2();
     double err;
     double err_p = err = err_ini;
@@ -181,13 +181,16 @@ bool System::OneStepSolve(const string &variable)
         F = GetResiduals(variable, X);
         err_p = err;
         err = F.norm2();
+        #ifdef Debug_mode
+        cout << err << endl;
+        #endif // Debug_mode
         if (err>err_p)
             SolverTempVars.NR_coefficient*=SolverSettings.NR_coeff_reduction_factor;
 
     }
 	#ifdef Debug_mode
-	CMatrix_arma M = Jacobian("Storage",X);
-	M.writetofile("M.txt");
+//	CMatrix_arma M = Jacobian("Storage",X);
+//	M.writetofile("M.txt");
 	#endif // Debug_mode
 	return true;
 }
@@ -218,7 +221,7 @@ void System::SetStateVariables(const string &variable, CVector_arma &X, const Ex
     {
         blocks[i].SetVal(variable,X[i],tmg);
         #ifdef Debug_mode
-        cout<<"Variable :"<< variable << "in " + blocks[i].GetName() << " was set to " + numbertostring(blocks[i].GetVal(variable,tmg)) << endl;
+//      cout<<"Variable :"<< variable << "in " + blocks[i].GetName() << " was set to " + numbertostring(blocks[i].GetVal(variable,tmg)) << endl;
         #endif // Debug_mode
     }
 }
@@ -274,7 +277,7 @@ CVector_arma System::Jacobian(const string &variable, CVector_arma &V, CVector_a
   CVector_arma V1(V);
   V1[i] += epsilon;
   #ifdef Debug_mode
-  cout<<i<<":"<<V1.toString()<<endl;
+//cout<<i<<":"<<V1.toString()<<endl;
   #endif // Debug_mode
   CVector_arma F1;
   F1 = GetResiduals(variable,V1);
