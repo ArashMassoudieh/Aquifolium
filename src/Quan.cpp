@@ -19,6 +19,7 @@ Quan::Quan(const Quan& other)
     _timeseries = other._timeseries;
     _var_name = other._var_name;
     _val = other._val;
+    _val_star = other._val_star;
     _parameters = other._parameters;
     type = other.type;
 	corresponding_flow_quan = other.corresponding_flow_quan;
@@ -31,6 +32,7 @@ Quan& Quan::operator=(const Quan& rhs)
     _timeseries = rhs._timeseries;
     _var_name = rhs._var_name;
     _val = rhs._val;
+    _val_star = rhs._val_star;
     _parameters = rhs._parameters;
     type = rhs.type;
 	corresponding_flow_quan = rhs.corresponding_flow_quan;
@@ -42,7 +44,7 @@ double Quan::GetVal(Object *block, const Expression::timing &tmg)
     if (type == _type::constant)
         return _val;
     if (type == _type::expression)
-        return _expression.calc(block);
+        return _expression.calc(block,tmg);
     if (type == _type::timeseries)
         return _timeseries.interpol(block->GetParent()->GetTime());
     if (type == _type::value)
@@ -62,7 +64,7 @@ double Quan::GetVal(const Expression::timing &tmg)
             return _val_star;
     }
     if (type == _type::expression)
-        return _expression.calc(parent);
+        return _expression.calc(parent,tmg);
     if (type == _type::timeseries)
         return _timeseries.interpol(parent->GetParent()->GetTime());
     if (type == _type::value)
@@ -86,7 +88,7 @@ double Quan::GetVal(const Expression::timing &tmg)
 bool Quan::SetExpression(const string &E)
 {
     _expression = E;
-	return true; 
+	return true;
 }
 
 
@@ -101,7 +103,7 @@ bool Quan::SetVal(const double &v, const Expression::timing &tmg)
         _val = v;
         _val_star = v;
     }
-	return true; 
+	return true;
 }
 
 void Quan::SetCorrespondingFlowVar(const string &s)
@@ -121,6 +123,6 @@ void Quan::SetParent(Object *o)
 
 void Quan::renew()
 {
-	_val_star = _val; 
+	_val_star = _val;
 }
 

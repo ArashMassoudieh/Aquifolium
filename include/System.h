@@ -13,6 +13,15 @@ struct solversettings
     double t;
     double dt;
     double C_N_weight; //Crank-Nicholson Weight
+    double NRtolerance; //Newton Raphson Tolerance
+    double NR_coeff_reduction_factor; //The coefficient to reduce the Newton-Raphson coefficient
+};
+
+struct solvertemporaryvars
+{
+    CMatrix_arma Inverse_Jacobian;
+    double NR_coefficient = 1;
+    bool updatejacobian;
 };
 
 class System: public Object
@@ -49,6 +58,7 @@ class System: public Object
         CVector_arma Jacobian(const string &variable, CVector_arma &V, CVector_arma &F0, int i);  //Works also w/o reference (&)
         bool CalculateFlows(const string &var, const Expression::timing &tmg = Expression::timing::present);
         void SetStateVariables(const string &variable, CVector_arma &X, const Expression::timing &tmg = Expression::timing::present);
+        solvertemporaryvars SolverTempVars;
 };
 
 #endif // SYSTEM_H

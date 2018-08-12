@@ -12,3 +12,11 @@
 /.vs/Aquifolium/v15
 /Aquifolium
 /.vs
+
+bin/Debug/
+
+*.o
+
+*.depend
+
+*.txt
