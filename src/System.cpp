@@ -156,6 +156,37 @@ bool System::OneStepSolve()
 	return true;
 }
 
+bool System::Solve(const string &variable)
+{
+    SolverSettings.dt = SimulationParameters.dt0;
+    SolverSettings.t = SimulationParameters.tstart;
+    while (SolverSettings.t<SimulationParameters.tend+SolverSettings.dt)
+    {
+        #ifdef Debug_mode
+        cout << "t = " << SolverSettings.t << "dt = " << SolverSettings.dt << endl;
+        #endif // Debug_mode
+        bool success = OneStepSolve(variable);
+        if (!success)
+            SolverSettings.dt *= SolverSettings.NR_timestep_reduction_factor_fail;
+        else
+        {
+            SolverSettings.t += SolverSettings.dt;
+            if (SolverTempVars.numiterations>SolverSettings.NR_niteration_upper)
+                SolverSettings.dt *= SolverSettings.NR_timestep_reduction_factor;
+            if (SolverTempVars.numiterations<SolverSettings.NR_niteration_lower)
+                SolverSettings.dt /= SolverSettings.NR_timestep_reduction_factor;
+
+        }
+
+    }
+    return true;
+}
+
+bool SetProp(const string &s, const double &val)
+{
+
+}
+
 bool System::OneStepSolve(const string &variable)
 {
 	renew(variable);
@@ -169,8 +200,10 @@ bool System::OneStepSolve(const string &variable)
     double err_ini = F.norm2();
     double err;
     double err_p = err = err_ini;
+    SolverTempVars.numiterations = 0;
     while (err/err_ini>SolverSettings.NRtolerance)
     {
+        SolverTempVars.numiterations++;
         if (SolverTempVars.updatejacobian)
         {
             SolverTempVars.Inverse_Jacobian = Invert(Jacobian(variable,X));
