@@ -38,6 +38,7 @@ int main()
     cout<<"flow = " << S.link("myLink")->GetVal("flow")<<endl;
 	S.dt() = 0.01;
     S.Solve("Storage");
+    S.GetOutputs().writetofile("text.txt");
 
     //Quan X, Y;
     //X.SetType(Quan::_type::value);

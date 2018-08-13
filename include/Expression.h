@@ -96,4 +96,6 @@ void writeendl(ofstream& f);
 double Heavyside(double x);
 double Pos(double x);
 string numbertostring(double x);
+string tail(std::string const& source, size_t const length);
+string numbertostring(int x);
 

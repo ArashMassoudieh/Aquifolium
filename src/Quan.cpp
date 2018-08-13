@@ -23,6 +23,7 @@ Quan::Quan(const Quan& other)
     _parameters = other._parameters;
     type = other.type;
 	corresponding_flow_quan = other.corresponding_flow_quan;
+	includeinoutput = other.includeinoutput;
 }
 
 Quan& Quan::operator=(const Quan& rhs)
@@ -36,6 +37,7 @@ Quan& Quan::operator=(const Quan& rhs)
     _parameters = rhs._parameters;
     type = rhs.type;
 	corresponding_flow_quan = rhs.corresponding_flow_quan;
+	includeinoutput = rhs.includeinoutput;
     return *this;
 }
 

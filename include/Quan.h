@@ -30,7 +30,9 @@ class Quan
         void SetParent(Object *);
         Quan *Corresponding_flow_variable;
 		void renew();
-
+        void SetIncludeInOutput(bool x) {includeinoutput = x;};
+        string GetName() {return _var_name;};
+        bool IncludeInOutput() {return includeinoutput;};
     protected:
 
     private:
@@ -44,6 +46,7 @@ class Quan
         bool perform_mass_balance = false;
         string corresponding_flow_quan;
         Object *parent;
+        bool includeinoutput = false;
 
 };
 

@@ -882,6 +882,20 @@ string numbertostring(double x)
 	return Result;
 }
 
+string numbertostring(int x)
+{
+	string Result;          // string which will contain the result
+	ostringstream convert;   // stream used for the conversion
+	convert << x;      // insert the textual representation of 'Number' in the characters in the stream
+	Result = convert.str();
+	return Result;
+}
+
+string tail(std::string const& source, size_t const length) {
+	if (length >= source.size()) { return source; }
+	return source.substr(source.size() - length);
+} // tail
+
 
 
 

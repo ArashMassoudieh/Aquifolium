@@ -3,11 +3,13 @@
 		"Storage": {
 			"type": "balance",		
 			"massbalance": "true",
-			"flow": "flow"
+			"flow": "flow",
+			"includeinoutput": "true"
 		},
 		"flow": {
 			"type": "expression",		
-			"expression": "reservoir_coeff.s*Storage.s^reservoir_power.s"
+			"expression": "reservoir_coeff.s*Storage.s^reservoir_power.s",
+			"includeinoutput": "true"
 		},
 		"reservoir_power": {
 			"type": "value"
@@ -20,11 +22,13 @@
 		"Storage": {
 			"type": "balance",		
 			"massbalance": "true",
-			"flow": "flow"
+			"flow": "flow",
+			"includeinoutput": "true"
 		},
 		"flow": {
 			"type": "expression",		
-			"expression": "reservoir_coeff.s*Storage.s^1.5"
+			"expression": "reservoir_coeff.s*Storage.s^1.5",
+			"includeinoutput": "true"
 		},
 		"reservoir_coeff": {
 			"type": "value"

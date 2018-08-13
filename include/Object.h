@@ -36,6 +36,7 @@ class Object
         int s_Block_No() {return s_Block_no; };
         int e_Block_No() {return e_Block_no; };
 		bool renew(const string &variable);
+		QuanSet* GetVars() {return &var;};
     protected:
 
     private:

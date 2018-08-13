@@ -130,8 +130,16 @@ bool System::GetQuanTemplate(string filename)
                 Q.SetType(Quan::_type::timeseries);
             if ((*it)["type"].asString()=="value")
                 Q.SetType(Quan::_type::value);
-
-            cout<<it.key().asString()<<endl;
+            if (it->isMember("includeinoutput"))
+            {
+                if ((*it)["includeinoutput"].asString()=="true")
+                    Q.SetIncludeInOutput(true);
+                else
+                    Q.SetIncludeInOutput(false);
+            }
+            else
+                Q.SetIncludeInOutput(false);
+            //cout<<it.key().asString()<<endl;
             quanset.Append(it.key().asString(),Q);
 			AddQnantity(it.key().asString(), Q);
         }
@@ -158,6 +166,7 @@ bool System::OneStepSolve()
 
 bool System::Solve(const string &variable)
 {
+    InitiateOutputs();
     SolverSettings.dt = SimulationParameters.dt0;
     SolverSettings.t = SimulationParameters.tstart;
     while (SolverSettings.t<SimulationParameters.tend+SolverSettings.dt)
@@ -182,8 +191,27 @@ bool System::Solve(const string &variable)
     return true;
 }
 
-bool SetProp(const string &s, const double &val)
+bool System::SetProp(const string &s, const double &val)
 {
+
+}
+
+void System::InitiateOutputs()
+{
+    Outputs.AllOutPuts.clear();
+    for (unsigned int i=0; i<blocks.size(); i++)
+    {
+        for (map<string, Quan>::iterator it = blocks[i].GetVars()->begin(); it != blocks[i].GetVars()->end(); it++)
+            if (it->second.IncludeInOutput())
+                Outputs.AllOutPuts.append(CBTC(), blocks[i].GetName() + "_" + it->first);
+    }
+
+    for (unsigned int i=0; i<links.size(); i++)
+    {
+        for (map<string, Quan>::iterator it = links[i].GetVars()->begin(); it != links[i].GetVars()->end(); it++)
+            if (it->second.IncludeInOutput())
+                Outputs.AllOutPuts.append(CBTC(), links[i].GetName() + "_" + it->first);
+    }
 
 }
 

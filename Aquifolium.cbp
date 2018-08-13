@@ -16,6 +16,7 @@
 					<Add option="-g" />
 					<Add option="-DDebug_mode" />
 					<Add directory="include" />
+					<Add directory="Aquifolium/include" />
 				</Compiler>
 			</Target>
 			<Target title="Release">
@@ -26,6 +27,7 @@
 				<Compiler>
 					<Add option="-O2" />
 					<Add directory="include" />
+					<Add directory="Aquifolium/include" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />

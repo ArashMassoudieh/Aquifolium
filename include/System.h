@@ -7,6 +7,7 @@
 #include "Vector_arma.h"
 #include "Matrix_arma.h"
 #include "MetaModel.h"
+#include "BTCSet.h"
 
 struct solversettings
 {
@@ -20,6 +21,14 @@ struct solversettings
     double minimum_timestep = 1e-7;
     int NR_niteration_lower=20;
     int NR_niteration_upper=40;
+    bool makeresultsuniform = false;
+
+};
+
+struct outputs
+{
+    CBTCSet AllOutPuts;
+    CBTCSet ObservedOutputs;
 };
 
 struct solvertemporaryvars
@@ -58,6 +67,7 @@ class System: public Object
 		bool renew(const string &variable);
 		bool Solve(const string &variable);
 		bool SetProp(const string &s, const double &val);
+		CBTCSet& GetOutputs() {return Outputs.AllOutPuts;};
     protected:
 
     private:
@@ -75,6 +85,8 @@ class System: public Object
         bool CalculateFlows(const string &var, const Expression::timing &tmg = Expression::timing::present);
         void SetStateVariables(const string &variable, CVector_arma &X, const Expression::timing &tmg = Expression::timing::present);
         solvertemporaryvars SolverTempVars;
+        outputs Outputs;
+        void InitiateOutputs();
 };
 
 #endif // SYSTEM_H
