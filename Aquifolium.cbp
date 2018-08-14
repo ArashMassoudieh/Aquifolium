@@ -51,7 +51,9 @@
 		<Unit filename="../jsoncpp/src/lib_json/json_value.cpp" />
 		<Unit filename="../jsoncpp/src/lib_json/json_writer.cpp" />
 		<Unit filename="include/BTC.h" />
+		<Unit filename="include/BTCSet.h" />
 		<Unit filename="include/Block.h" />
+		<Unit filename="include/DistributionNUnif.h" />
 		<Unit filename="include/Expression.h" />
 		<Unit filename="include/Link.h" />
 		<Unit filename="include/Matrix.h" />
@@ -67,7 +69,9 @@
 		<Unit filename="include/Vector_arma.h" />
 		<Unit filename="main.cpp" />
 		<Unit filename="src/BTC.cpp" />
+		<Unit filename="src/BTCSet.cpp" />
 		<Unit filename="src/Block.cpp" />
+		<Unit filename="src/DistributionNUnif.cpp" />
 		<Unit filename="src/Expression.cpp" />
 		<Unit filename="src/Link.cpp" />
 		<Unit filename="src/Matrix.cpp" />
