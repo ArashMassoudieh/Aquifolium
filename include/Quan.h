@@ -17,7 +17,8 @@ class Quan
         Quan(const Quan& other);
         Quan& operator=(const Quan& other);
         enum class _type {constant, value, balance, expression, timeseries, global_quan};
-        double GetVal(Object *, const Expression::timing &tmg=Expression::timing::past);
+        double CalcVal(Object *, const Expression::timing &tmg=Expression::timing::past);
+        double CalcVal(const Expression::timing &tmg=Expression::timing::past);
         double GetVal(const Expression::timing &tmg=Expression::timing::past);
         string last_error;
         void SetType(const _type &t) {type = t;};
@@ -29,7 +30,8 @@ class Quan
         void SetMassBalance(bool on);
         void SetParent(Object *);
         Quan *Corresponding_flow_variable;
-		void renew();
+		void Renew();
+		void Update();
         void SetIncludeInOutput(bool x) {includeinoutput = x;};
         string GetName() {return _var_name;};
         bool IncludeInOutput() {return includeinoutput;};

@@ -41,7 +41,7 @@ Quan& Quan::operator=(const Quan& rhs)
     return *this;
 }
 
-double Quan::GetVal(Object *block, const Expression::timing &tmg)
+double Quan::CalcVal(Object *block, const Expression::timing &tmg)
 {
     if (type == _type::constant)
         return _val;
@@ -56,6 +56,14 @@ double Quan::GetVal(Object *block, const Expression::timing &tmg)
 }
 
 double Quan::GetVal(const Expression::timing &tmg)
+{
+    if (tmg==Expression::timing::past)
+        return _val;
+    else
+        return _val_star;
+}
+
+double Quan::CalcVal(const Expression::timing &tmg)
 {
 
     if (type == _type::constant)
@@ -123,8 +131,13 @@ void Quan::SetParent(Object *o)
     parent = o;
 }
 
-void Quan::renew()
+void Quan::Renew()
 {
 	_val_star = _val;
+}
+
+void Quan::Update()
+{
+	_val = _val_star;
 }
 

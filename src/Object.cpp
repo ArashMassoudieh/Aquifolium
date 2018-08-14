@@ -29,6 +29,24 @@ Object& Object::operator=(const Object& rhs)
     return *this;
 }
 
+double Object::CalcVal(const string& s,const Expression::timing &tmg)
+{
+    if (var.Count(s)==1)
+    {
+        #ifdef Debug_mode
+//      cout<<"Object: "<<name<<" Variable: "<<s<< " Value: " << var[s].GetVal(tmg) <<endl;
+        #endif // Debug_mode
+        return var[s].CalcVal(tmg);
+    }
+    else
+    {
+        last_error = "property '" + s + "' does not exist!";
+        last_operation_success = false;
+        return 0;
+    }
+
+}
+
 double Object::GetVal(const string& s,const Expression::timing &tmg)
 {
     if (var.Count(s)==1)
@@ -46,6 +64,7 @@ double Object::GetVal(const string& s,const Expression::timing &tmg)
     }
 
 }
+
 
 bool Object::AddQnantity(const string &name,const Quan &Q)
 {
@@ -184,7 +203,7 @@ Quan* Object::Variable(const string &s)
         return &var[s];
 }
 
-bool Object::renew(const string & variable)
+bool Object::Renew(const string & variable)
 {
 	if (!Variable(variable))
 	{
@@ -192,7 +211,20 @@ bool Object::renew(const string & variable)
 		return false;
 	}
 	else
-		Variable(variable)->renew();
+		Variable(variable)->Renew();
+	return true;
+
+}
+
+bool Object::Update(const string & variable)
+{
+	if (!Variable(variable))
+	{
+		AppendError("Variable " + variable + " does not exist!");
+		return false;
+	}
+	else
+		Variable(variable)->Update();
 	return true;
 
 }

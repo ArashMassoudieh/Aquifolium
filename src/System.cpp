@@ -167,24 +167,35 @@ bool System::OneStepSolve()
 bool System::Solve(const string &variable)
 {
     InitiateOutputs();
+    PopulateOutputs();
     SolverSettings.dt = SimulationParameters.dt0;
     SolverSettings.t = SimulationParameters.tstart;
     while (SolverSettings.t<SimulationParameters.tend+SolverSettings.dt)
     {
         #ifdef Debug_mode
-        cout << "t = " << SolverSettings.t << "dt = " << SolverSettings.dt << endl;
+        cout << "t = " << SolverSettings.t << ", dt = " << SolverSettings.dt << ", SolverTempVars.numiterations =" << SolverTempVars.numiterations << endl;
         #endif // Debug_mode
         bool success = OneStepSolve(variable);
         if (!success)
+        {
+            #ifdef Debug_mode
+            cout<<"failed!"<<endl;
+            #endif // Debug_mode
             SolverSettings.dt *= SolverSettings.NR_timestep_reduction_factor_fail;
+            SolverTempVars.updatejacobian = true;
+        }
         else
         {
             SolverSettings.t += SolverSettings.dt;
             if (SolverTempVars.numiterations>SolverSettings.NR_niteration_upper)
-                SolverSettings.dt *= SolverSettings.NR_timestep_reduction_factor;
+            {
+                SolverSettings.dt = max(SolverSettings.dt*SolverSettings.NR_timestep_reduction_factor,SolverSettings.minimum_timestep);
+                SolverTempVars.updatejacobian = true;
+            }
             if (SolverTempVars.numiterations<SolverSettings.NR_niteration_lower)
                 SolverSettings.dt /= SolverSettings.NR_timestep_reduction_factor;
-
+            PopulateOutputs();
+            Update(variable);
         }
 
     }
@@ -215,13 +226,33 @@ void System::InitiateOutputs()
 
 }
 
+
+void System::PopulateOutputs()
+{
+    for (unsigned int i=0; i<blocks.size(); i++)
+    {
+        for (map<string, Quan>::iterator it = blocks[i].GetVars()->begin(); it != blocks[i].GetVars()->end(); it++)
+            if (it->second.IncludeInOutput())
+                Outputs.AllOutPuts[blocks[i].GetName() + "_" + it->first].append(SolverSettings.t,blocks[i].GetVal(it->first,Expression::timing::present));
+    }
+
+    for (unsigned int i=0; i<links.size(); i++)
+    {
+        for (map<string, Quan>::iterator it = links[i].GetVars()->begin(); it != links[i].GetVars()->end(); it++)
+            if (it->second.IncludeInOutput())
+                Outputs.AllOutPuts[links[i].GetName() + "_" + it->first].append(SolverSettings.t,links[i].GetVal(it->first,Expression::timing::present));
+    }
+
+}
+
+
 bool System::OneStepSolve(const string &variable)
 {
-	renew(variable);
+	Renew(variable);
 	#ifdef Debug_mode
 //  cout << "Calculating Residuals" <<endl;
     #endif // Debug_mode
-    CVector_arma X = GetStateVariables(variable, Expression::timing::past);
+    CVector_arma X = CalcStateVariables(variable, Expression::timing::past);
 //  cout<<"X: " << X.toString()<<endl;
     CVector_arma F = GetResiduals(variable, X);
 //  cout<<"F: " << F.toString()<<endl;
@@ -247,7 +278,10 @@ bool System::OneStepSolve(const string &variable)
         #endif // Debug_mode
         if (err>err_p)
             SolverTempVars.NR_coefficient*=SolverSettings.NR_coeff_reduction_factor;
-
+        //else
+        //    SolverTempVars.NR_coefficient/=SolverSettings.NR_coeff_reduction_factor;
+        if (SolverTempVars.numiterations>SolverSettings.NR_niteration_max)
+            return false;
     }
 	#ifdef Debug_mode
 //	CMatrix_arma M = Jacobian("Storage",X);
@@ -256,23 +290,36 @@ bool System::OneStepSolve(const string &variable)
 	return true;
 }
 
-bool System::renew(const string & variable)
+bool System::Renew(const string & variable)
 {
 	bool out = true;
 	for (unsigned int i = 0; i < blocks.size(); i++)
-		out &= blocks[i].renew(variable);
+		out &= blocks[i].Renew(variable);
 
 	for (unsigned int i = 0; i < links.size(); i++)
-		out &= links[i].renew(variable);
+		out &= links[i].Renew(variable);
 
 	return out;
 }
 
-CVector_arma System::GetStateVariables(const string &variable, const Expression::timing &tmg)
+bool System::Update(const string & variable)
+{
+	bool out = true;
+	for (unsigned int i = 0; i < blocks.size(); i++)
+		out &= blocks[i].Update(variable);
+
+	for (unsigned int i = 0; i < links.size(); i++)
+		out &= links[i].Update(variable);
+
+	return out;
+}
+
+
+CVector_arma System::CalcStateVariables(const string &variable, const Expression::timing &tmg)
 {
     CVector_arma X(blocks.size());
     for (unsigned int i=0; i<blocks.size(); i++)
-        X[i] = blocks[i].GetVal(variable,tmg);
+        X[i] = blocks[i].CalcVal(variable,tmg);
     return X;
 }
 
@@ -300,8 +347,8 @@ CVector_arma System::GetResiduals(const string &variable, CVector_arma &X)
 
     for (unsigned int i=0; i<links.size(); i++)
     {
-        F[links[i].s_Block_No()] += links[i].GetVal(links[i].Variable(variable)->GetCorrespondingFlowVar(),Expression::timing::present);
-        F[links[i].e_Block_No()] -= links[i].GetVal(links[i].Variable(variable)->GetCorrespondingFlowVar(),Expression::timing::present);
+        F[links[i].s_Block_No()] += links[i].GetVal(blocks[links[i].s_Block_No()].Variable(variable)->GetCorrespondingFlowVar(),Expression::timing::present);
+        F[links[i].e_Block_No()] -= links[i].GetVal(blocks[links[i].s_Block_No()].Variable(variable)->GetCorrespondingFlowVar(),Expression::timing::present);
     }
     return F;
 }
@@ -310,7 +357,7 @@ bool System::CalculateFlows(const string &var, const Expression::timing &tmg)
 {
     for (int i=0; i<links.size(); i++)
     {
-        links[i].SetVal(var,links[i].GetVal(var,tmg));
+        links[i].SetVal(var,links[i].CalcVal(var,tmg));
     }
 	return true;
 }

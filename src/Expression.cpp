@@ -276,13 +276,13 @@ double Expression::calc(Object *W, const timing &tmg)
 	if (param_constant_expression == "parameter")
 	{
 		if (location == loc::self)
-            return W->GetVal(parameter, tmg);
+            return W->CalcVal(parameter, tmg);
         else
         {
             if (W->GetConnectedBlock(location)!=nullptr)
-                return W->GetConnectedBlock(location)->GetVal(parameter, tmg);
+                return W->GetConnectedBlock(location)->CalcVal(parameter, tmg);
             else
-                return W->GetVal(parameter, tmg);
+                return W->CalcVal(parameter, tmg);
         }
 	}
 	if (param_constant_expression == "expression")

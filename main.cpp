@@ -32,10 +32,10 @@ int main()
 //  cout<<S.block("myblock2")->GetVal("flow")<<endl;
 
     Link L;
-    L.SetType("Reservoir_2");
+    L.SetType("Reservoir_link");
     L.SetName("myLink");
     S.AddLink(L,"myblock1","myblock2");
-    cout<<"flow = " << S.link("myLink")->GetVal("flow")<<endl;
+    cout<<"flow = " << S.link("myLink")->CalcVal("flow")<<endl;
 	S.dt() = 0.01;
     S.Solve("Storage");
     S.GetOutputs().writetofile("text.txt");

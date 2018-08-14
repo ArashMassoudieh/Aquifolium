@@ -15,12 +15,13 @@ struct solversettings
     double dt;
     double C_N_weight; //Crank-Nicholson Weight
     double NRtolerance = 1e-6; //Newton Raphson Tolerance
-    double NR_coeff_reduction_factor; //The coefficient to reduce the Newton-Raphson coefficient
+    double NR_coeff_reduction_factor = 0.8; //The coefficient to reduce the Newton-Raphson coefficient
     double NR_timestep_reduction_factor = 0.75;
     double NR_timestep_reduction_factor_fail = 0.3;
     double minimum_timestep = 1e-7;
     int NR_niteration_lower=20;
     int NR_niteration_upper=40;
+    int NR_niteration_max=100;
     bool makeresultsuniform = false;
 
 };
@@ -64,7 +65,8 @@ class System: public Object
         void CopyQuansToMembers();
         double &dt() {return SolverSettings.dt;};
         bool OneStepSolve(const string &s);
-		bool renew(const string &variable);
+		bool Renew(const string &variable);
+		bool Update(const string &variable);
 		bool Solve(const string &variable);
 		bool SetProp(const string &s, const double &val);
 		CBTCSet& GetOutputs() {return Outputs.AllOutPuts;};
@@ -76,7 +78,7 @@ class System: public Object
         string last_error;
         MetaModel metamodel;
         CVector_arma GetResiduals(const string &variable, CVector_arma &X);
-        CVector_arma GetStateVariables(const string &variable, const Expression::timing &tmg = Expression::timing::past);
+        CVector_arma CalcStateVariables(const string &variable, const Expression::timing &tmg = Expression::timing::past);
         solversettings SolverSettings;
         simulationparameters SimulationParameters;
         bool OneStepSolve();
@@ -87,6 +89,7 @@ class System: public Object
         solvertemporaryvars SolverTempVars;
         outputs Outputs;
         void InitiateOutputs();
+        void PopulateOutputs();
 };
 
 #endif // SYSTEM_H

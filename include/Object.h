@@ -16,6 +16,7 @@ class Object
         virtual ~Object();
         Object(const Object& other);
         Object& operator=(const Object& other);
+        double CalcVal(const string& s, const Expression::timing &tmg=Expression::timing::past);
         double GetVal(const string& s, const Expression::timing &tmg=Expression::timing::past);
         bool AddQnantity(const string &name,const Quan &Q);
         bool SetQuantities(MetaModel &m, const string& typ);
@@ -35,7 +36,8 @@ class Object
         string GetType() {return type;};
         int s_Block_No() {return s_Block_no; };
         int e_Block_No() {return e_Block_no; };
-		bool renew(const string &variable);
+		bool Renew(const string &variable);
+		bool Update(const string &variable);
 		QuanSet* GetVars() {return &var;};
     protected:
 
