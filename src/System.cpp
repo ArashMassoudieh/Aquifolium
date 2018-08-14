@@ -170,6 +170,7 @@ bool System::Solve(const string &variable)
     PopulateOutputs();
     SolverSettings.dt = SimulationParameters.dt0;
     SolverSettings.t = SimulationParameters.tstart;
+
     while (SolverSettings.t<SimulationParameters.tend+SolverSettings.dt)
     {
         #ifdef Debug_mode
@@ -199,6 +200,8 @@ bool System::Solve(const string &variable)
         }
 
     }
+
+
     return true;
 }
 
@@ -252,7 +255,8 @@ bool System::OneStepSolve(const string &variable)
 	#ifdef Debug_mode
 //  cout << "Calculating Residuals" <<endl;
     #endif // Debug_mode
-    CVector_arma X = CalcStateVariables(variable, Expression::timing::past);
+    CVector_arma X = GetStateVariables(variable, Expression::timing::past);
+    CVector_arma X_past = X;
 //  cout<<"X: " << X.toString()<<endl;
     CVector_arma F = GetResiduals(variable, X);
 //  cout<<"F: " << F.toString()<<endl;
@@ -260,29 +264,51 @@ bool System::OneStepSolve(const string &variable)
     double err;
     double err_p = err = err_ini;
     SolverTempVars.numiterations = 0;
-    while (err/err_ini>SolverSettings.NRtolerance)
+    bool switchvartonegpos = true;
+    int attempts = 0;
+    while (attempts<2 && switchvartonegpos)
     {
-        SolverTempVars.numiterations++;
-        if (SolverTempVars.updatejacobian)
+        while (err/err_ini>SolverSettings.NRtolerance)
         {
-            SolverTempVars.Inverse_Jacobian = Invert(Jacobian(variable,X));
-            SolverTempVars.updatejacobian = false;
-            SolverTempVars.NR_coefficient = 1;
+            SolverTempVars.numiterations++;
+            if (SolverTempVars.updatejacobian)
+            {
+                SolverTempVars.Inverse_Jacobian = Invert(Jacobian(variable,X));
+                SolverTempVars.updatejacobian = false;
+                SolverTempVars.NR_coefficient = 1;
+            }
+            X = X - SolverTempVars.NR_coefficient*SolverTempVars.Inverse_Jacobian*F;
+            F = GetResiduals(variable, X);
+            err_p = err;
+            err = F.norm2();
+            #ifdef Debug_mode
+            cout << err << endl;
+            #endif // Debug_mode
+            if (err>err_p)
+                SolverTempVars.NR_coefficient*=SolverSettings.NR_coeff_reduction_factor;
+            //else
+            //    SolverTempVars.NR_coefficient/=SolverSettings.NR_coeff_reduction_factor;
+            if (SolverTempVars.numiterations>SolverSettings.NR_niteration_max)
+                return false;
         }
-        X = X - SolverTempVars.NR_coefficient*SolverTempVars.Inverse_Jacobian*F;
-        F = GetResiduals(variable, X);
-        err_p = err;
-        err = F.norm2();
-        #ifdef Debug_mode
-        cout << err << endl;
-        #endif // Debug_mode
-        if (err>err_p)
-            SolverTempVars.NR_coefficient*=SolverSettings.NR_coeff_reduction_factor;
-        //else
-        //    SolverTempVars.NR_coefficient/=SolverSettings.NR_coeff_reduction_factor;
-        if (SolverTempVars.numiterations>SolverSettings.NR_niteration_max)
-            return false;
+        switchvartonegpos = false;
+        for (unsigned int i=0; i<blocks.size(); i++)
+        {
+            if (X[i]<-1e-13 && !blocks[i].GetLimitedOutflow())
+            {
+                blocks[i].SetLimitedOutflow(true);
+                switchvartonegpos = true;
+                SolverTempVars.updatejacobian = true;
+            }
+            else if (X[i]>1 && blocks[i].GetLimitedOutflow())
+            {
+                blocks[i].SetLimitedOutflow(false);
+                switchvartonegpos = true;
+                SolverTempVars.updatejacobian = true;
+            }
+        }
     }
+
 	#ifdef Debug_mode
 //	CMatrix_arma M = Jacobian("Storage",X);
 //	M.writetofile("M.txt");
@@ -323,6 +349,14 @@ CVector_arma System::CalcStateVariables(const string &variable, const Expression
     return X;
 }
 
+CVector_arma System::GetStateVariables(const string &variable, const Expression::timing &tmg)
+{
+    CVector_arma X(blocks.size());
+    for (unsigned int i=0; i<blocks.size(); i++)
+        X[i] = blocks[i].GetVal(variable,tmg);
+    return X;
+}
+
 void System::SetStateVariables(const string &variable, CVector_arma &X, const Expression::timing &tmg)
 {
     for (unsigned int i=0; i<blocks.size(); i++)
@@ -340,15 +374,33 @@ CVector_arma System::GetResiduals(const string &variable, CVector_arma &X)
     CVector_arma F(blocks.size());
     SetStateVariables(variable,X,Expression::timing::present);
     CalculateFlows(Variable(variable)->GetCorrespondingFlowVar(),Expression::timing::present);
+
     for (unsigned int i=0; i<blocks.size(); i++)
     {
-        F[i] = (X[i]-blocks[i].GetVal(variable,Expression::timing::past))/dt();
+        if (blocks[i].GetLimitedOutflow())
+        {
+            blocks[i].SetOutflowLimitFactor(X[i]);
+            blocks[i].SetVal(variable,0);
+            F[i] = (0-blocks[i].GetVal(variable,Expression::timing::past))/dt();
+        }
+        else
+            F[i] = (X[i]-blocks[i].GetVal(variable,Expression::timing::past))/dt();
+    }
+
+
+    for (unsigned int i=0; i<links.size(); i++)
+    {
+        if (blocks[links[i].s_Block_No()].GetLimitedOutflow() && links[i].GetVal(blocks[links[i].s_Block_No()].Variable(variable)->GetCorrespondingFlowVar(),Expression::timing::present)>0)
+            links[i].SetOutflowLimitFactor(blocks[links[i].s_Block_No()].GetOutflowLimitFactor());
+        if (blocks[links[i].e_Block_No()].GetLimitedOutflow() && links[i].GetVal(blocks[links[i].e_Block_No()].Variable(variable)->GetCorrespondingFlowVar(),Expression::timing::present)<0)
+            links[i].SetOutflowLimitFactor(blocks[links[i].e_Block_No()].GetOutflowLimitFactor());
+
     }
 
     for (unsigned int i=0; i<links.size(); i++)
     {
-        F[links[i].s_Block_No()] += links[i].GetVal(blocks[links[i].s_Block_No()].Variable(variable)->GetCorrespondingFlowVar(),Expression::timing::present);
-        F[links[i].e_Block_No()] -= links[i].GetVal(blocks[links[i].s_Block_No()].Variable(variable)->GetCorrespondingFlowVar(),Expression::timing::present);
+        F[links[i].s_Block_No()] += links[i].GetVal(blocks[links[i].s_Block_No()].Variable(variable)->GetCorrespondingFlowVar(),Expression::timing::present)*links[i].GetOutflowLimitFactor();
+        F[links[i].e_Block_No()] -= links[i].GetVal(blocks[links[i].s_Block_No()].Variable(variable)->GetCorrespondingFlowVar(),Expression::timing::present)*links[i].GetOutflowLimitFactor();
     }
     return F;
 }

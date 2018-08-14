@@ -79,6 +79,7 @@ class System: public Object
         MetaModel metamodel;
         CVector_arma GetResiduals(const string &variable, CVector_arma &X);
         CVector_arma CalcStateVariables(const string &variable, const Expression::timing &tmg = Expression::timing::past);
+        CVector_arma GetStateVariables(const string &variable, const Expression::timing &tmg = Expression::timing::past);
         solversettings SolverSettings;
         simulationparameters SimulationParameters;
         bool OneStepSolve();

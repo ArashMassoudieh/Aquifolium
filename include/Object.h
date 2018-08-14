@@ -39,6 +39,10 @@ class Object
 		bool Renew(const string &variable);
 		bool Update(const string &variable);
 		QuanSet* GetVars() {return &var;};
+		void SetOutflowLimitFactor(const double &val) {outflowlimitfactor = val;};
+		double GetOutflowLimitFactor() {return outflowlimitfactor;};
+		void SetLimitedOutflow(bool x) {limitoutflow = x;};
+		bool GetLimitedOutflow() {return limitoutflow;};
     protected:
 
     private:
@@ -53,6 +57,8 @@ class Object
         Object *e_Block;
         int s_Block_no, e_Block_no;
         string type;
+        double outflowlimitfactor = 1;
+        bool limitoutflow = false;
 
 };
 

@@ -14,7 +14,7 @@ int main()
     //Expression E("2*X+X^2+Y/X");
     Block B1;
     B1.SetType("Reservoir");
-    B1.SetName("myblock1");
+    B1.SetName("Reservoir1");
     S.AddBlock(B1);
 
     S.block("myblock1")->SetVal("Storage",10);
@@ -23,7 +23,7 @@ int main()
 
     Block B2;
     B2.SetType("Reservoir");
-    B2.SetName("myblock2");
+    B2.SetName("Reservoir2");
     S.AddBlock(B2);
 
     S.block("myblock2")->SetVal("Storage",5);
