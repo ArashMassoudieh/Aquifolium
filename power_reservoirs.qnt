@@ -17,24 +17,24 @@
 		"flow": {
 			"type": "expression",		
 			"expression": "reservoir_coeff.s*Storage.s^reservoir_power.s",
-			"includeinoutput": "true"
+			"includeinoutput": "true",
+			"applylimit": "true"
 		}
 	},
-"Reservoir_2": {
+"User": {
 		"Storage": {
 			"type": "balance",		
 			"massbalance": "true",
 			"flow": "flow",
 			"includeinoutput": "true"
 		},
+	}
+}
+"User_flow": {
 		"flow": {
-			"type": "expression",		
-			"expression": "reservoir_coeff.s*Storage.s^1.5",
-			"includeinoutput": "true"
-		},
-		"reservoir_coeff": {
-			"type": "value"
+			"type": "timeseries",		
+			"includeinoutput": "true",
+			"applylimit": "true"
 		}
 	}
-
 }
