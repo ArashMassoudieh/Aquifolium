@@ -27,9 +27,8 @@
 			"massbalance": "true",
 			"flow": "flow",
 			"includeinoutput": "true"
-		},
-	}
-}
+		}
+	},
 "User_flow": {
 		"flow": {
 			"type": "timeseries",		
@@ -38,3 +37,5 @@
 		}
 	}
 }
+
+

@@ -17,7 +17,7 @@ Object::Object(const Object& other)
     setting = other.setting;
     name = other.GetName();
     parent = other.GetParent();
-	s_Block_no = other.s_Block_no; 
+	s_Block_no = other.s_Block_no;
 	e_Block_no = other.e_Block_no;
 }
 
@@ -51,14 +51,17 @@ double Object::CalcVal(const string& s,const Expression::timing &tmg)
 
 }
 
-double Object::GetVal(const string& s,const Expression::timing &tmg)
+double Object::GetVal(const string& s,const Expression::timing &tmg, bool limit)
 {
     if (var.Count(s)==1)
     {
         #ifdef Debug_mode
 //      cout<<"Object: "<<name<<" Variable: "<<s<< " Value: " << var[s].GetVal(tmg) <<endl;
         #endif // Debug_mode
-        return var[s].GetVal(tmg);
+        if (!limit)
+            return var[s].GetVal(tmg);
+        else
+            return var[s].GetVal(tmg)*outflowlimitfactor;
     }
     else
     {

@@ -207,7 +207,7 @@ bool System::Solve(const string &variable)
 
 bool System::SetProp(const string &s, const double &val)
 {
-	return true; 
+	return true;
 }
 
 void System::InitiateOutputs()
@@ -243,7 +243,9 @@ void System::PopulateOutputs()
     {
         for (map<string, Quan>::iterator it = links[i].GetVars()->begin(); it != links[i].GetVars()->end(); it++)
             if (it->second.IncludeInOutput())
-                Outputs.AllOutPuts[links[i].GetName() + "_" + it->first].append(SolverSettings.t,links[i].GetVal(it->first,Expression::timing::present));
+            {
+                Outputs.AllOutPuts[links[i].GetName() + "_" + it->first].append(SolverSettings.t,links[i].GetVal(it->first,Expression::timing::present,true));
+            }
     }
 
 }

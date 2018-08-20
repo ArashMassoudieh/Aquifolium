@@ -17,7 +17,7 @@ class Object
         Object(const Object& other);
         Object& operator=(const Object& other);
         double CalcVal(const string& s, const Expression::timing &tmg=Expression::timing::past);
-        double GetVal(const string& s, const Expression::timing &tmg=Expression::timing::past);
+        double GetVal(const string& s, const Expression::timing &tmg=Expression::timing::past, bool limit=false);
         bool AddQnantity(const string &name,const Quan &Q);
         bool SetQuantities(MetaModel &m, const string& typ);
         bool SetVal(const string& s, double value, const Expression::timing &tmg = Expression::timing::both);

@@ -64,6 +64,7 @@ class System: public Object
         bool GetQuanTemplate(string filename);
         void CopyQuansToMembers();
         double &dt() {return SolverSettings.dt;};
+        double &tend() {return SimulationParameters.tend;};
         bool OneStepSolve(const string &s);
 		bool Renew(const string &variable);
 		bool Update(const string &variable);

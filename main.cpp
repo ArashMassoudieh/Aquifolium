@@ -36,8 +36,8 @@ int main()
     L.SetName("myLink");
     S.AddLink(L,"Reservoir1","Reservoir2");
     //cout<<"flow = " << S.link("myLink")->CalcVal("flow")<<endl;
-	
-	
+
+
 	Block User1;
 	User1.SetName("User1");
 	User1.SetType("User");
@@ -51,13 +51,14 @@ int main()
 		cout << "Flow file was set successfully!" << endl;
 	else
 		cout << "Demand.txt was not found!"<<endl;
-	
+
 	S.dt() = 0.01;
-	S.SetVariableParents(); 
+	S.tend() = 10;
+	S.SetVariableParents();
 	S.Solve("Storage");
     S.GetOutputs().writetofile("text.txt");
 
-	
+
 
 
 
