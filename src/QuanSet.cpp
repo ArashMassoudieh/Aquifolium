@@ -13,12 +13,18 @@ QuanSet::~QuanSet()
 QuanSet::QuanSet(const QuanSet& other)
 {
     quans = other.quans;
+    iconfilename = other.iconfilename;
+    description = other.description;
+    BlockLink = other.BlockLink;
 }
 
 QuanSet& QuanSet::operator=(const QuanSet& rhs)
 {
     if (this == &rhs) return *this; // handle self assignment
     quans = rhs.quans;
+    iconfilename = rhs.iconfilename;
+    description = rhs.description;
+    BlockLink = rhs.BlockLink;
     return *this;
 }
 

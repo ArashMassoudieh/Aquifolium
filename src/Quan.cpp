@@ -24,7 +24,8 @@ Quan::Quan(const Quan& other)
     type = other.type;
 	corresponding_flow_quan = other.corresponding_flow_quan;
 	includeinoutput = other.includeinoutput;
-	//parent = other.parent; 
+	description = other.description;
+	//parent = other.parent;
 }
 
 Quan& Quan::operator=(const Quan& rhs)
@@ -39,6 +40,7 @@ Quan& Quan::operator=(const Quan& rhs)
     type = rhs.type;
 	corresponding_flow_quan = rhs.corresponding_flow_quan;
 	includeinoutput = rhs.includeinoutput;
+	description = rhs.description;
 	//parent = rhs.parent;
     return *this;
 }
@@ -152,5 +154,5 @@ bool Quan::SetTimeSeries(string filename)
 		return false;
 	}
 	else
-		return true; 
+		return true;
 }

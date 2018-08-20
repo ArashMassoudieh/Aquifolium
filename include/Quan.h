@@ -36,6 +36,7 @@ class Quan
         string GetName() {return _var_name;};
         bool IncludeInOutput() {return includeinoutput;};
 		bool SetTimeSeries(string filename);
+		string &Description() {return description;};
     protected:
 
     private:
@@ -50,6 +51,7 @@ class Quan
         string corresponding_flow_quan;
         Object *parent;
         bool includeinoutput = false;
+        string description;
 
 };
 

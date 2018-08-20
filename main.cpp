@@ -52,6 +52,8 @@ int main()
 	else
 		cout << "Demand.txt was not found!"<<endl;
 
+	vector<string> blocks = S.GetAllBlockTypes();
+	vector<string> links = S.GetAllLinkTypes();
 	S.dt() = 0.01;
 	S.tend() = 10;
 	S.SetVariableParents();

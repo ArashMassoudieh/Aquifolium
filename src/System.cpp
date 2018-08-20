@@ -111,37 +111,54 @@ bool System::GetQuanTemplate(string filename)
         QuanSet quanset;
         for (Json::ValueIterator it=object_types->begin(); it!=object_types->end(); ++it)
         {
-            Quan Q;
-            if ((*it)["type"].asString()=="balance")
+            if (it.key()=="icon")
+                quanset.IconFileName() = (*it)["filename"].asString();
+            if (it.key()=="type")
             {
-                Q.SetType(Quan::_type::balance);
-                Q.SetCorrespondingFlowVar((*it)["flow"].asString());
-            }
-            if ((*it)["type"].asString()=="constant")
-                Q.SetType(Quan::_type::constant);
-            if ((*it)["type"].asString()=="expression")
-            {
-                Q.SetType(Quan::_type::expression);
-                Q.SetExpression((*it)["expression"].asString());
-            }
-            if ((*it)["type"].asString()=="global")
-                Q.SetType(Quan::_type::global_quan);
-            if ((*it)["type"].asString()=="timeseries")
-                Q.SetType(Quan::_type::timeseries);
-            if ((*it)["type"].asString()=="value")
-                Q.SetType(Quan::_type::value);
-            if (it->isMember("includeinoutput"))
-            {
-                if ((*it)["includeinoutput"].asString()=="true")
-                    Q.SetIncludeInOutput(true);
-                else
-                    Q.SetIncludeInOutput(false);
+                if ((*object_types)[it.key().asString()]=="block")
+                    quanset.BlockLink = blocklink::block;
+                if ((*object_types)[it.key().asString()]=="link")
+                    quanset.BlockLink = blocklink::link;
             }
             else
-                Q.SetIncludeInOutput(false);
-            //cout<<it.key().asString()<<endl;
-            quanset.Append(it.key().asString(),Q);
-			AddQnantity(it.key().asString(), Q);
+            {
+                Quan Q;
+                if ((*it)["type"].asString()=="balance")
+                {
+                    Q.SetType(Quan::_type::balance);
+                    Q.SetCorrespondingFlowVar((*it)["flow"].asString());
+                }
+                if ((*it)["type"].asString()=="constant")
+                    Q.SetType(Quan::_type::constant);
+                if ((*it)["type"].asString()=="expression")
+                {
+                    Q.SetType(Quan::_type::expression);
+                    Q.SetExpression((*it)["expression"].asString());
+                }
+                if ((*it)["type"].asString()=="global")
+                    Q.SetType(Quan::_type::global_quan);
+                if ((*it)["type"].asString()=="timeseries")
+                    Q.SetType(Quan::_type::timeseries);
+                if ((*it)["type"].asString()=="value")
+                    Q.SetType(Quan::_type::value);
+                if (it->isMember("includeinoutput"))
+                {
+                    if ((*it)["includeinoutput"].asString()=="true")
+                        Q.SetIncludeInOutput(true);
+                    else
+                        Q.SetIncludeInOutput(false);
+                }
+                else
+                    Q.SetIncludeInOutput(false);
+                if (it->isMember("description"))
+                {
+                    Q.Description() = (*it)["description"].asString();
+                }
+
+                //cout<<it.key().asString()<<endl;
+                quanset.Append(it.key().asString(),Q);
+                AddQnantity(it.key().asString(), Q);
+            }
         }
         metamodel.Append(object_types.key().asString(),quanset);
     }
@@ -470,5 +487,32 @@ void System::SetVariableParents()
 		blocks[i].SetVariableParents();
 
 	}
+}
+
+vector<string> System::GetAllBlockTypes()
+{
+    vector<string> out;
+    for (map<string, QuanSet>::iterator it = metamodel.GetMetaModel()->begin(); it != metamodel.GetMetaModel()->end(); it++)
+        if (it->second.BlockLink == blocklink::block)
+        {
+            cout<<it->first<<endl;
+            out.push_back(it->first);
+        }
+
+    return out;
+
+}
+
+vector<string> System::GetAllLinkTypes()
+{
+    vector<string> out;
+    for (map<string, QuanSet>::iterator it = metamodel.GetMetaModel()->begin(); it != metamodel.GetMetaModel()->end(); it++)
+        if (it->second.BlockLink == blocklink::link)
+        {
+            cout<<it->first<<endl;
+            out.push_back(it->first);
+        }
+
+    return out;
 }
 
