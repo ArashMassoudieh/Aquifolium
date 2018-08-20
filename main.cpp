@@ -35,10 +35,31 @@ int main()
     L.SetType("Reservoir_link");
     L.SetName("myLink");
     S.AddLink(L,"Reservoir1","Reservoir2");
-    cout<<"flow = " << S.link("myLink")->CalcVal("flow")<<endl;
+    //cout<<"flow = " << S.link("myLink")->CalcVal("flow")<<endl;
+	
+	
+	Block User1;
+	User1.SetName("User1");
+	User1.SetType("User");
+	S.AddBlock(User1);
+
+	Link User_link;
+	User_link.SetName("User_link");
+	User_link.SetType("User_flow");
+	S.AddLink(User_link, "Reservoir2", "User1");
+	if (S.link("User_link")->Variable("flow")->SetTimeSeries("Demand.txt"))
+		cout << "Flow file was set successfully!" << endl;
+	else
+		cout << "Demand.txt was not found!"<<endl;
+	
 	S.dt() = 0.01;
-    S.Solve("Storage");
+	S.SetVariableParents(); 
+	S.Solve("Storage");
     S.GetOutputs().writetofile("text.txt");
+
+	
+
+
 
     //Quan X, Y;
     //X.SetType(Quan::_type::value);

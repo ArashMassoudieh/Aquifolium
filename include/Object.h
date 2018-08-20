@@ -36,6 +36,8 @@ class Object
         string GetType() {return type;};
         int s_Block_No() {return s_Block_no; };
         int e_Block_No() {return e_Block_no; };
+		void Set_s_Block(Object *O) { s_Block = O; };
+		void Set_e_Block(Object *O) { e_Block = O; };
 		bool Renew(const string &variable);
 		bool Update(const string &variable);
 		QuanSet* GetVars() {return &var;};
@@ -43,6 +45,7 @@ class Object
 		double GetOutflowLimitFactor() {return outflowlimitfactor;};
 		void SetLimitedOutflow(bool x) {limitoutflow = x;};
 		bool GetLimitedOutflow() {return limitoutflow;};
+		void SetVariableParents();
     protected:
 
     private:

@@ -17,6 +17,8 @@ Object::Object(const Object& other)
     setting = other.setting;
     name = other.GetName();
     parent = other.GetParent();
+	s_Block_no = other.s_Block_no; 
+	e_Block_no = other.e_Block_no;
 }
 
 Object& Object::operator=(const Object& rhs)
@@ -26,6 +28,8 @@ Object& Object::operator=(const Object& rhs)
     name = rhs.GetName();
     parent = rhs.GetParent();
     var = rhs.var;
+	s_Block_no = rhs.s_Block_no;
+	e_Block_no = rhs.e_Block_no;
     return *this;
 }
 
@@ -34,7 +38,7 @@ double Object::CalcVal(const string& s,const Expression::timing &tmg)
     if (var.Count(s)==1)
     {
         #ifdef Debug_mode
-//      cout<<"Object: "<<name<<" Variable: "<<s<< " Value: " << var[s].GetVal(tmg) <<endl;
+        cout<<"Object: "<<name<<" Variable: "<<s<< " Value: " << var[s].CalcVal(tmg) <<endl;
         #endif // Debug_mode
         return var[s].CalcVal(tmg);
     }
@@ -172,7 +176,7 @@ void Object::SetConnectedBlock(Expression::loc l, const string &blockname)
 
 void Object::AppendError(const string &s)
 {
-    errors.push_back(s);
+	errors.push_back(s);
     last_error = s;
 }
 
@@ -196,7 +200,10 @@ Quan* Object::Variable(const string &s)
 {
     if (var.Count(s)==0)
     {
-        AppendError("Variable '" + s + "' does not exist!");
+#ifdef Debug_mode
+		cout << "In '" + name + "': " + "Variable '" + s + "' does not exist!" << endl;
+#endif
+		AppendError("Variable '" + s + "' does not exist!");
         return nullptr;
     }
     else
@@ -207,7 +214,7 @@ bool Object::Renew(const string & variable)
 {
 	if (!Variable(variable))
 	{
-		AppendError("Variable " + variable + " does not exist!");
+		AppendError("Variable '" + variable + "' does not exist!");
 		return false;
 	}
 	else
@@ -227,4 +234,10 @@ bool Object::Update(const string & variable)
 		Variable(variable)->Update();
 	return true;
 
+}
+
+void Object::SetVariableParents()
+{
+	for (map<string, Quan>::const_iterator s = var.begin(); s != var.end(); ++s)
+		var[s->first].SetParent(this);
 }
