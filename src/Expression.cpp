@@ -267,7 +267,13 @@ int lookup(const vector<vector<int> > &s, const vector<int> &s1)
 
 double Expression::calc(Object *W, const timing &tmg)
 {
-    term_vals.clear();
+	if (!W)
+	{
+		cout << "Pointer is empty!" << endl;
+		return 0; 
+	}
+
+	term_vals.clear();
     terms_calculated.clear();
     sources.clear();
 

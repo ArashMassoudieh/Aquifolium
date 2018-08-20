@@ -70,6 +70,7 @@ class System: public Object
 		bool Solve(const string &variable);
 		bool SetProp(const string &s, const double &val);
 		CBTCSet& GetOutputs() {return Outputs.AllOutPuts;};
+		void SetVariableParents();
     protected:
 
     private:

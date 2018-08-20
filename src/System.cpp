@@ -40,11 +40,11 @@ bool System::AddLink(Link &lnk, const string &source, const string &destination)
 {
     links.push_back(lnk);
     link(lnk.GetName())->SetParent(this);
-    link(lnk.GetName())->SetQuantities(metamodel, lnk.GetType());
     link(lnk.GetName())->SetConnectedBlock(Expression::loc::source, source);
     link(lnk.GetName())->SetConnectedBlock(Expression::loc::destination, destination);
     block(source)->AppendLink(link(lnk.GetName()),Expression::loc::source);
     block(destination)->AppendLink(link(lnk.GetName()),Expression::loc::destination);
+	link(lnk.GetName())->SetQuantities(metamodel, lnk.GetType());
 	return true;
 }
 
@@ -207,7 +207,7 @@ bool System::Solve(const string &variable)
 
 bool System::SetProp(const string &s, const double &val)
 {
-
+	return true; 
 }
 
 void System::InitiateOutputs()
@@ -454,4 +454,19 @@ CVector_arma System::Jacobian(const string &variable, CVector_arma &V, CVector_a
 
 }
 
+void System::SetVariableParents()
+{
+	for (unsigned int i = 0; i < links.size(); i++)
+	{
+		links[i].SetVariableParents();
+		links[i].Set_s_Block(&blocks[links[i].s_Block_No()]);
+		links[i].Set_e_Block(&blocks[links[i].e_Block_No()]);
+	}
+
+	for (unsigned int i = 0; i < blocks.size(); i++)
+	{
+		blocks[i].SetVariableParents();
+
+	}
+}
 

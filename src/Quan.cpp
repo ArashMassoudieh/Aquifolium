@@ -24,6 +24,7 @@ Quan::Quan(const Quan& other)
     type = other.type;
 	corresponding_flow_quan = other.corresponding_flow_quan;
 	includeinoutput = other.includeinoutput;
+	//parent = other.parent; 
 }
 
 Quan& Quan::operator=(const Quan& rhs)
@@ -38,6 +39,7 @@ Quan& Quan::operator=(const Quan& rhs)
     type = rhs.type;
 	corresponding_flow_quan = rhs.corresponding_flow_quan;
 	includeinoutput = rhs.includeinoutput;
+	//parent = rhs.parent;
     return *this;
 }
 
@@ -141,3 +143,14 @@ void Quan::Update()
 	_val = _val_star;
 }
 
+bool Quan::SetTimeSeries(string filename)
+{
+	_timeseries.readfile(filename);
+	if (_timeseries.file_not_found)
+	{
+		cout << filename + " was not found!"<<endl;
+		return false;
+	}
+	else
+		return true; 
+}

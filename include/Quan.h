@@ -35,6 +35,7 @@ class Quan
         void SetIncludeInOutput(bool x) {includeinoutput = x;};
         string GetName() {return _var_name;};
         bool IncludeInOutput() {return includeinoutput;};
+		bool SetTimeSeries(string filename);
     protected:
 
     private:
