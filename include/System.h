@@ -54,7 +54,7 @@ class System: public Object
         virtual ~System();
         System(const System& other);
         System& operator=(const System& other);
-        double &GetTime() {return SolverSettings.t;};
+        double &GetTime() {return SolverSettings.t;}
         bool AddBlock(Block &blk);
         bool AddLink(Link &lnk, const string &source, const string &destination);
         Block *block(const string &s);
@@ -63,17 +63,19 @@ class System: public Object
         int linkid(const string &s);
         bool GetQuanTemplate(string filename);
         void CopyQuansToMembers();
-        double &dt() {return SolverSettings.dt;};
-        double &tend() {return SimulationParameters.tend;};
+        double &dt() {return SolverSettings.dt;}
+        double &tend() {return SimulationParameters.tend;}
         bool OneStepSolve(const string &s);
 		bool Renew(const string &variable);
 		bool Update(const string &variable);
 		bool Solve(const string &variable);
 		bool SetProp(const string &s, const double &val);
-		CBTCSet& GetOutputs() {return Outputs.AllOutPuts;};
+        CBTCSet& GetOutputs() {return Outputs.AllOutPuts;}
         vector<string> GetAllBlockTypes();
         vector<string> GetAllLinkTypes();
         void SetVariableParents();
+        MetaModel &GetMetaModel() {return  metamodel;}
+        QuanSet* GetModel(const string &type) {return metamodel[type];}
     protected:
 
     private:
