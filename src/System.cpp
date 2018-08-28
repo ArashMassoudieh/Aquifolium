@@ -229,19 +229,19 @@ bool System::SetProp(const string &s, const double &val)
 
 void System::InitiateOutputs()
 {
-    Outputs.AllOutPuts.clear();
+    Outputs.AllOutputs.clear();
     for (unsigned int i=0; i<blocks.size(); i++)
     {
         for (map<string, Quan>::iterator it = blocks[i].GetVars()->begin(); it != blocks[i].GetVars()->end(); it++)
             if (it->second.IncludeInOutput())
-                Outputs.AllOutPuts.append(CBTC(), blocks[i].GetName() + "_" + it->first);
+                Outputs.AllOutputs.append(CBTC(), blocks[i].GetName() + "_" + it->first);
     }
 
     for (unsigned int i=0; i<links.size(); i++)
     {
         for (map<string, Quan>::iterator it = links[i].GetVars()->begin(); it != links[i].GetVars()->end(); it++)
             if (it->second.IncludeInOutput())
-                Outputs.AllOutPuts.append(CBTC(), links[i].GetName() + "_" + it->first);
+                Outputs.AllOutputs.append(CBTC(), links[i].GetName() + "_" + it->first);
     }
 
 }
@@ -253,7 +253,7 @@ void System::PopulateOutputs()
     {
         for (map<string, Quan>::iterator it = blocks[i].GetVars()->begin(); it != blocks[i].GetVars()->end(); it++)
             if (it->second.IncludeInOutput())
-                Outputs.AllOutPuts[blocks[i].GetName() + "_" + it->first].append(SolverSettings.t,blocks[i].GetVal(it->first,Expression::timing::present));
+                Outputs.AllOutputs[blocks[i].GetName() + "_" + it->first].append(SolverSettings.t,blocks[i].GetVal(it->first,Expression::timing::present));
     }
 
     for (unsigned int i=0; i<links.size(); i++)
@@ -261,7 +261,7 @@ void System::PopulateOutputs()
         for (map<string, Quan>::iterator it = links[i].GetVars()->begin(); it != links[i].GetVars()->end(); it++)
             if (it->second.IncludeInOutput())
             {
-                Outputs.AllOutPuts[links[i].GetName() + "_" + it->first].append(SolverSettings.t,links[i].GetVal(it->first,Expression::timing::present,true));
+                Outputs.AllOutputs[links[i].GetName() + "_" + it->first].append(SolverSettings.t,links[i].GetVal(it->first,Expression::timing::present,true));
             }
     }
 
@@ -516,3 +516,10 @@ vector<string> System::GetAllLinkTypes()
     return out;
 }
 
+void System::clear()
+{
+    blocks.clear();
+    links.clear();
+    Outputs.AllOutputs.clear();
+    Outputs.ObservedOutputs.clear();
+}

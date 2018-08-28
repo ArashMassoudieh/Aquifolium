@@ -28,7 +28,7 @@ struct solversettings
 
 struct outputs
 {
-    CBTCSet AllOutPuts;
+    CBTCSet AllOutputs;
     CBTCSet ObservedOutputs;
 };
 
@@ -65,17 +65,19 @@ class System: public Object
         void CopyQuansToMembers();
         double &dt() {return SolverSettings.dt;}
         double &tend() {return SimulationParameters.tend;}
+        double &tstart() {return SimulationParameters.tstart;}
         bool OneStepSolve(const string &s);
 		bool Renew(const string &variable);
 		bool Update(const string &variable);
 		bool Solve(const string &variable);
 		bool SetProp(const string &s, const double &val);
-        CBTCSet& GetOutputs() {return Outputs.AllOutPuts;}
+        CBTCSet& GetOutputs() {return Outputs.AllOutputs;}
         vector<string> GetAllBlockTypes();
         vector<string> GetAllLinkTypes();
         void SetVariableParents();
         MetaModel &GetMetaModel() {return  metamodel;}
         QuanSet* GetModel(const string &type) {return metamodel[type];}
+        void clear();
     protected:
 
     private:
