@@ -78,6 +78,7 @@ class System: public Object
         MetaModel &GetMetaModel() {return  metamodel;}
         QuanSet* GetModel(const string &type) {return metamodel[type];}
         void clear();
+        int lookup_observation(const string &s) {return 0;}
     protected:
 
     private:
