@@ -61,7 +61,7 @@ class System: public Object
         Link *link(const string &s);
         int blockid(const string &s);
         int linkid(const string &s);
-        bool GetQuanTemplate(string filename);
+        bool GetQuanTemplate(const string &filename);
         void CopyQuansToMembers();
         double &dt() {return SolverSettings.dt;}
         double &tend() {return SimulationParameters.tend;}
@@ -100,6 +100,7 @@ class System: public Object
         outputs Outputs;
         void InitiateOutputs();
         void PopulateOutputs();
+        void TransferQuantitiesFromMetaModel();
 };
 
 #endif // SYSTEM_H

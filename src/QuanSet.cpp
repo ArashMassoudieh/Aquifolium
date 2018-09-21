@@ -41,6 +41,19 @@ bool QuanSet::Append(const string &s, const Quan &q)
     }
 }
 
+void QuanSet::Append(QuanSet &qset)
+{
+
+    for (map<string, Quan>::iterator it = qset.begin(); it!=qset.end(); it++)
+    {
+    #ifdef Debug_mode
+    cout<<it->second.GetName()<<"  " << quans[it->first].GetName() << "  " << it->first << endl;
+    #endif // Debug_mode
+        Append(it->second.GetName(),quans[it->first]);
+    }
+
+}
+
 Quan& QuanSet::operator[] (const string &s)
 {
     if (quans.count(s)==0)

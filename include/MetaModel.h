@@ -19,6 +19,8 @@ class MetaModel
         std::map<string,QuanSet>::iterator end() {return metamodel.end();}
         std::map<string,QuanSet>::iterator begin() {return metamodel.begin();}
         unsigned int size() {return metamodel.size();}
+        bool GetFromJsonFile(const string &filename);
+        void Clear();
     protected:
 
     private:
