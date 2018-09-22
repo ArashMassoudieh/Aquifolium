@@ -37,6 +37,7 @@ class Expression
         vector<string> opts;
         int lookup_operators(const string &s);
         enum loc {self, source, destination};
+        string ToString();
     protected:
 
     private:
@@ -98,4 +99,5 @@ double Pos(double x);
 string numbertostring(double x);
 string tail(std::string const& source, size_t const length);
 string numbertostring(int x);
+string tabs(int i);
 

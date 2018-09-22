@@ -87,6 +87,7 @@ bool MetaModel::GetFromJsonFile(const string &filename)
             else
             {
                 Quan Q;
+                Q.SetName(it.key().asString());
                 if ((*it)["type"].asString()=="balance")
                 {
                     Q.SetType(Quan::_type::balance);

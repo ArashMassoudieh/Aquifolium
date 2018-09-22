@@ -120,6 +120,43 @@ bool Quan::SetVal(const double &v, const Expression::timing &tmg)
 	return true;
 }
 
+Expression* Quan::GetExpression()
+{
+    return &_expression;
+}
+
+string Quan::ToString(int _tabs)
+{
+    string out = tabs(_tabs) + _var_name + ":\n";
+    out += tabs(_tabs) + "{\n";
+    if (type==_type::constant)
+        out += tabs(_tabs+1) + "type: constant\n";
+    if (type==_type::balance)
+        out += tabs(_tabs+1) + "type: balance\n";
+    if (type==_type::expression)
+        out += tabs(_tabs+1) + "type: expression\n";
+    if (type==_type::constant)
+        out += tabs(_tabs+1) + "type: constant\n";
+    if (type==_type::global_quan)
+        out += tabs(_tabs+1) + "type: global_quantity\n";
+    if (type==_type::timeseries)
+        out += tabs(_tabs+1) + "type: time_series\n";
+    if (type==_type::value)
+        out += tabs(_tabs+1) + "type: value\n";
+
+    if (type==_type::expression)
+        out += tabs(_tabs+1) + "expression: " + _expression.ToString() + "\n";
+
+    out += tabs(_tabs+1) + "val: ";
+    out +=  _val;
+    out += string("\n");
+    out += tabs(_tabs+1) + "val*:";
+    out += _val_star;
+    out += string("\n");
+    out += tabs(_tabs) + "}";
+    return out;
+}
+
 void Quan::SetCorrespondingFlowVar(const string &s)
 {
     corresponding_flow_quan = s;

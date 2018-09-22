@@ -23,20 +23,23 @@ class Quan
         string last_error;
         void SetType(const _type &t) {type = t;};
         _type GetType() {return type;}
+        Expression* GetExpression();
         bool SetExpression(const string &E);
         bool SetVal(const double &v, const Expression::timing &tmg=Expression::timing::past);
         void SetCorrespondingFlowVar(const string &s);
-        string GetCorrespondingFlowVar() {return corresponding_flow_quan;};
+        string GetCorrespondingFlowVar() {return corresponding_flow_quan;}
         void SetMassBalance(bool on);
         void SetParent(Object *);
         Quan *Corresponding_flow_variable;
 		void Renew();
 		void Update();
-        void SetIncludeInOutput(bool x) {includeinoutput = x;};
-        string GetName() {return _var_name;};
-        bool IncludeInOutput() {return includeinoutput;};
+        void SetIncludeInOutput(bool x) {includeinoutput = x;}
+        string GetName() {return _var_name;}
+        bool IncludeInOutput() {return includeinoutput;}
 		bool SetTimeSeries(string filename);
-		string &Description() {return description;};
+		string &Description() {return description;}
+		string ToString(int _tabs=1);
+		void SetName(const string &name) {_var_name=name;}
     protected:
 
     private:

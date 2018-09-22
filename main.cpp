@@ -37,7 +37,8 @@ int main()
     S.AddLink(L,"Reservoir1","Reservoir2");
     //cout<<"flow = " << S.link("myLink")->CalcVal("flow")<<endl;
 
-
+    cout<<S.link("myLink")->Variable("flow")->GetExpression()->ToString()<<endl;
+    cout<<S.link("myLink")->Variable("flow")->ToString()<<endl;
 	Block User1;
 	User1.SetName("User1");
 	User1.SetType("User");

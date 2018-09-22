@@ -270,7 +270,7 @@ double Expression::calc(Object *W, const timing &tmg)
 	if (!W)
 	{
 		cout << "Pointer is empty!" << endl;
-		return 0; 
+		return 0;
 	}
 
 	term_vals.clear();
@@ -901,6 +901,42 @@ string tail(std::string const& source, size_t const length) {
 	if (length >= source.size()) { return source; }
 	return source.substr(source.size() - length);
 } // tail
+
+string Expression::ToString()
+{
+    string out;
+    if (param_constant_expression=="parameter")
+    {
+        out += parameter;
+        if (location == loc::source)
+            out+=".s";
+        if (location == loc::destination)
+            out+=".e";
+        return out;
+    }
+    if (param_constant_expression=="constant")
+    {
+        out += constant;
+        return out;
+    }
+    if (function!="") out += function;
+    out += "(";
+    for (int i=0; i<terms.size();i++)
+    {
+        out += terms[i].ToString();
+        if (i<terms.size()-1) out += operators[i];
+    }
+    out += ")";
+    return out;
+}
+
+string tabs(int i)
+{
+    string out;
+    for (int j=0; j<i; j++)
+        out += "\t";
+    return out;
+}
 
 
 
