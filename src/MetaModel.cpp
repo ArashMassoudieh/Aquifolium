@@ -73,6 +73,7 @@ bool MetaModel::GetFromJsonFile(const string &filename)
     for (Json::ValueIterator object_types=root.begin(); object_types!=root.end(); ++object_types)
     {
         QuanSet quanset;
+        quanset.Name() = object_types.key().asString();
         for (Json::ValueIterator it=object_types->begin(); it!=object_types->end(); ++it)
         {
             if (it.key()=="icon")
@@ -135,4 +136,14 @@ void MetaModel::Clear()
     metamodel.clear();
     errors.clear();
     last_error = "";
+}
+
+string MetaModel::ToString(int _tabs)
+{
+    string out = tabs(_tabs) + "root:\n";
+    out += tabs(_tabs) + "{\n";
+    for (map<string, QuanSet>::iterator it = metamodel.begin(); it!=metamodel.end(); it++)
+        out += metamodel[it->first].ToString(_tabs+1) + "\n";
+    out += "}\n";
+    return out;
 }

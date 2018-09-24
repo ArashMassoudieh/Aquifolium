@@ -40,7 +40,10 @@ class Object
 		void Set_e_Block(Object *O) { e_Block = O; };
 		bool Renew(const string &variable);
 		bool Update(const string &variable);
-		QuanSet* GetVars() {return &var;};
+		QuanSet* GetVars()
+            {
+                return &var;
+            }
 		void SetOutflowLimitFactor(const double &val) {outflowlimitfactor = val;};
 		double GetOutflowLimitFactor() {return outflowlimitfactor;};
 		void SetLimitedOutflow(bool x) {limitoutflow = x;};

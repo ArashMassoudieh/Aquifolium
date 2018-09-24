@@ -21,6 +21,7 @@ class MetaModel
         unsigned int size() {return metamodel.size();}
         bool GetFromJsonFile(const string &filename);
         void Clear();
+        string ToString(int _tabs=0);
     protected:
 
     private:

@@ -16,11 +16,13 @@ QuanSet::QuanSet(const QuanSet& other)
     iconfilename = other.iconfilename;
     description = other.description;
     BlockLink = other.BlockLink;
+    name = other.name;
 }
 
 QuanSet& QuanSet::operator=(const QuanSet& rhs)
 {
     if (this == &rhs) return *this; // handle self assignment
+    name = rhs.name;
     quans = rhs.quans;
     iconfilename = rhs.iconfilename;
     description = rhs.description;
@@ -62,4 +64,30 @@ Quan& QuanSet::operator[] (const string &s)
     }
     else
         return quans[s];
+}
+
+string QuanSet::ToString(int _tabs)
+{
+    string out = tabs(_tabs) + name + ":\n";
+    out += tabs(_tabs) + "{\n";
+    if (BlockLink == blocklink::block)
+        out += tabs(_tabs+1) + "type: block\n";
+    else if (BlockLink == blocklink::link)
+        out += tabs(_tabs+1) + "type: link\n";
+
+    if (iconfilename!="")
+    {
+        out += tabs(_tabs+1) + "icon: {\n";
+        out += tabs(_tabs+2) + "filename: " + iconfilename + "\n";
+        out += tabs(_tabs+1) + "}\n";
+    }
+
+
+    for (map<string,Quan>::iterator it=quans.begin(); it!=quans.end(); it++)
+    {
+        out += quans[it->first].ToString(_tabs+1) + "\n";
+    }
+
+    out += tabs(_tabs) + "}\n";
+    return out;
 }

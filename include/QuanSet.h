@@ -23,10 +23,13 @@ class QuanSet
         unsigned int size() {return quans.size();}
         string &Description() {return description;}
         string &IconFileName() {return iconfilename;}
+        string &Name() {return name;}
+        string ToString(int tabs=0);
         blocklink BlockLink;
     protected:
 
     private:
+        string name;
         map<string, Quan> quans;
         string last_error;
         string description;

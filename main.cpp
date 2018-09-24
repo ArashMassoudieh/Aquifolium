@@ -39,6 +39,8 @@ int main()
 
     cout<<S.link("myLink")->Variable("flow")->GetExpression()->ToString()<<endl;
     cout<<S.link("myLink")->Variable("flow")->ToString()<<endl;
+    cout<<S.link("myLink")->GetVars()->ToString()<<endl;
+    cout<<S.GetMetaModel()->ToString()<<endl;
 	Block User1;
 	User1.SetName("User1");
 	User1.SetType("User");
@@ -61,19 +63,5 @@ int main()
 	S.Solve("Storage");
     S.GetOutputs().writetofile("text.txt");
 
-
-
-
-
-    //Quan X, Y;
-    //X.SetType(Quan::_type::value);
-    //X.SetVal(2);
-
-    //Y.SetType(Quan::_type::value);
-    //Y.SetVal(3);
-    //B.AddQnantity("Y",Y);
-    //cout<<B.GetVal("X")<<endl;
-    //cout<<B.GetVal("Y")<<endl;
-    //cout<<E.calc(&B)<<endl;
     return 0;
 }
