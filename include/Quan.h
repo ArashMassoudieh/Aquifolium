@@ -21,7 +21,7 @@ class Quan
         double CalcVal(const Expression::timing &tmg=Expression::timing::past);
         double GetVal(const Expression::timing &tmg=Expression::timing::past);
         string last_error;
-        void SetType(const _type &t) {type = t;};
+        void SetType(const _type &t) {type = t;}
         _type GetType() {return type;}
         Expression* GetExpression();
         bool SetExpression(const string &E);
@@ -38,6 +38,20 @@ class Quan
         bool IncludeInOutput() {return includeinoutput;}
 		bool SetTimeSeries(string filename);
 		string &Description() {return description;}
+        string &Unit() {return unit;}
+        string &DefaultUnit() {return default_unit;}
+        string &Defaults() {return defaults;}
+        string &Delegate() {return delegate;}
+        string &Category() {return category;}
+        string &Input() {return input;}
+        string &Default() {return default_val;}
+        bool &ExperimentDependent() {return experiment_dependent;}
+        string &DescriptionCode() {return description_code;}
+        string &Abbreviation() {return abbreviation;}
+        string &WarningError() {return warning_error;}
+        string &WarningMessage() {return warning_message;}
+        string &Criteria () {return criteria;}
+        string &InputType() {return input_type;}
 		string ToString(int _tabs=1);
 		void SetName(const string &name) {_var_name=name;}
     protected:
@@ -55,6 +69,20 @@ class Quan
         Object *parent;
         bool includeinoutput = false;
         string description;
+        string unit;
+        string default_unit;
+        string default_val;
+        string input_type;
+        string defaults;
+        string delegate;
+        string category;
+        string input;
+        bool experiment_dependent = false;
+        string description_code;
+        string abbreviation;
+        string criteria;
+        string warning_error;
+        string warning_message;
 
 };
 

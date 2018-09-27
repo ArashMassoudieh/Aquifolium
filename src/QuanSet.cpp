@@ -66,6 +66,16 @@ Quan& QuanSet::operator[] (const string &s)
         return quans[s];
 }
 
+Quan& QuanSet::GetVar(const string &s)
+{
+    if (quans.count(s)==0)
+    {
+        last_error = "Variable " + s + " does not exist!";
+    }
+    else
+        return quans[s];
+}
+
 string QuanSet::ToString(int _tabs)
 {
     string out = tabs(_tabs) + name + ":\n";
@@ -91,3 +101,4 @@ string QuanSet::ToString(int _tabs)
     out += tabs(_tabs) + "}\n";
     return out;
 }
+

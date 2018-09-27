@@ -47,6 +47,18 @@ QuanSet* MetaModel::operator[] (const string &typ)
         return &(metamodel[typ]);
 }
 
+QuanSet* MetaModel::GetItem(const string &typ)
+{
+    if (metamodel.count(typ)==0)
+    {
+        last_error = "Type " + typ + " was not found!";
+        return nullptr;
+    }
+    else
+        return &(metamodel[typ]);
+}
+
+
 bool MetaModel::GetFromJsonFile(const string &filename)
 {
     Clear();
@@ -120,6 +132,48 @@ bool MetaModel::GetFromJsonFile(const string &filename)
                 {
                     Q.Description() = (*it)["description"].asString();
                 }
+
+                if (it->isMember("unit"))
+                    Q.Unit() = (*it)["unit"].asString();
+
+                if (it->isMember("default_unit"))
+                    Q.DefaultUnit() = (*it)["default_unit"].asString();
+
+                if (it->isMember("default"))
+                    Q.Default() = (*it)["default"].asString();
+
+                if (it->isMember("defaults"))
+                    Q.Defaults() = (*it)["defaults"].asString();
+
+                if (it->isMember("category"))
+                    Q.Category() = (*it)["category"].asString();
+
+                if (it->isMember("input"))
+                    Q.Input() = (*it)["input"].asString();
+
+                if (it->isMember("experiment_dependent"))
+                {   if ((*it)["experiment_dependent"].asString()=="Yes")
+                        Q.ExperimentDependent() = true;
+                    else
+                        Q.ExperimentDependent() = false;
+
+                }
+
+                if (it->isMember("description_code"))
+                    Q.DescriptionCode() = (*it)["description_code"].asString();
+
+                if (it->isMember("criteria"))
+                    Q.Criteria() = (*it)["criteria"].asString();
+
+                if (it->isMember("warningerror"))
+                    Q.WarningError() = (*it)["warningerror"].asString();
+
+                if (it->isMember("warningmessage"))
+                    Q.WarningMessage() = (*it)["warningmessage"].asString();
+
+                if (it->isMember("inputtype"))
+                    Q.InputType() = (*it)["inputtype"].asString();
+
 
                 //cout<<it.key().asString()<<endl;
                 quanset.Append(it.key().asString(),Q);

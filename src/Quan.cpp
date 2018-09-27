@@ -25,6 +25,20 @@ Quan::Quan(const Quan& other)
 	corresponding_flow_quan = other.corresponding_flow_quan;
 	includeinoutput = other.includeinoutput;
 	description = other.description;
+    unit = other.unit;
+    default_unit = other.default_unit;
+    default_val = other.default_val;
+    input_type = other.input_type;
+    defaults = other.defaults;
+    delegate = other.delegate;
+    category = other.category;
+    input = other.input;
+    experiment_dependent = other.experiment_dependent;
+    description_code = other.description_code;
+    abbreviation = other.abbreviation;
+    criteria = other.criteria;
+    warning_error = other.warning_error;
+    warning_message = other.warning_message;
 	//parent = other.parent;
 }
 
@@ -41,6 +55,20 @@ Quan& Quan::operator=(const Quan& rhs)
 	corresponding_flow_quan = rhs.corresponding_flow_quan;
 	includeinoutput = rhs.includeinoutput;
 	description = rhs.description;
+    unit = rhs.unit;
+    default_unit = rhs.default_unit;
+    default_val = rhs.default_val;
+    input_type = rhs.input_type;
+    defaults = rhs.defaults;
+    delegate = rhs.delegate;
+    category = rhs.category;
+    input = rhs.input;
+    experiment_dependent = rhs.experiment_dependent;
+    description_code = rhs.description_code;
+    abbreviation = rhs.abbreviation;
+    criteria = rhs.criteria;
+    warning_error = rhs.warning_error;
+    warning_message = rhs.warning_message;
 	//parent = rhs.parent;
     return *this;
 }
@@ -148,10 +176,10 @@ string Quan::ToString(int _tabs)
         out += tabs(_tabs+1) + "expression: " + _expression.ToString() + "\n";
 
     out += tabs(_tabs+1) + "val: ";
-    out +=  _val;
+    out +=  numbertostring(_val);
     out += string("\n");
     out += tabs(_tabs+1) + "val*:";
-    out += _val_star;
+    out += numbertostring(_val_star);
     out += string("\n");
     out += tabs(_tabs) + "}";
     return out;
