@@ -174,6 +174,12 @@ bool MetaModel::GetFromJsonFile(const string &filename)
                 if (it->isMember("inputtype"))
                     Q.InputType() = (*it)["inputtype"].asString();
 
+                if (it->isMember("ask_user"))
+                {    if (tolower((*it)["ask_user"].asString())=="true")
+                        Q.AskFromUser() = true;
+                }
+                else
+                   Q.AskFromUser() = false;
 
                 //cout<<it.key().asString()<<endl;
                 quanset.Append(it.key().asString(),Q);

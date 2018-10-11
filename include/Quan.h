@@ -53,6 +53,7 @@ class Quan
         string &Criteria () {return criteria;}
         string &InputType() {return input_type;}
 		string ToString(int _tabs=1);
+        bool &AskFromUser() {return ask_from_user;}
 		void SetName(const string &name) {_var_name=name;}
     protected:
 
@@ -83,7 +84,7 @@ class Quan
         string criteria;
         string warning_error;
         string warning_message;
-
+        bool ask_from_user=false;
 };
 
 #endif // QUAN_H

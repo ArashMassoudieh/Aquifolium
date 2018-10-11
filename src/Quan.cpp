@@ -39,6 +39,7 @@ Quan::Quan(const Quan& other)
     criteria = other.criteria;
     warning_error = other.warning_error;
     warning_message = other.warning_message;
+    ask_from_user = other.ask_from_user;
 	//parent = other.parent;
 }
 
@@ -69,7 +70,8 @@ Quan& Quan::operator=(const Quan& rhs)
     criteria = rhs.criteria;
     warning_error = rhs.warning_error;
     warning_message = rhs.warning_message;
-	//parent = rhs.parent;
+    ask_from_user = rhs.ask_from_user;
+    //parent = rhs.parent;
     return *this;
 }
 
