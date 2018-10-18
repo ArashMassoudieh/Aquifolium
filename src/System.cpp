@@ -8,6 +8,14 @@ System::System():Object::Object()
     //ctor
 }
 
+#ifdef QT_version
+System::System(GraphWidget* diagramviewer,runtimeWindow *_rtw):Object::Object()
+{
+    diagramview = diagramviewer;
+    rtw = _rtw;
+}
+#endif
+
 System::~System()
 {
     //dtor
@@ -50,7 +58,7 @@ bool System::AddLink(Link &lnk, const string &source, const string &destination)
 
 Block *System::block(const string &s)
 {
-    for (int i=0; i<blocks.size(); i++)
+    for (unsigned int i=0; i<blocks.size(); i++)
         if (blocks[i].GetName() == s) return &blocks[i];
 
     AppendError("Block " + s + " was not found");
@@ -59,8 +67,8 @@ Block *System::block(const string &s)
 
 int System::blockid(const string &s)
 {
-    for (int i=0; i<blocks.size(); i++)
-        if (blocks[i].GetName() == s) return i;
+    for (unsigned int i=0; i<blocks.size(); i++)
+        if (blocks[i].GetName() == s) return int(i);
 
     AppendError("Block " + s + " was not found");
     return -1;
@@ -68,8 +76,8 @@ int System::blockid(const string &s)
 
 int System::linkid(const string &s)
 {
-    for (int i=0; i<links.size(); i++)
-        if (links[i].GetName() == s) return i;
+    for (unsigned int i=0; i<links.size(); i++)
+        if (links[i].GetName() == s) return int(i);
 
     AppendError("Link " + s + " was not found");
     return -1;
@@ -77,7 +85,7 @@ int System::linkid(const string &s)
 
 Link *System::link(const string &s)
 {
-    for (int i=0; i<links.size(); i++)
+    for (unsigned int i=0; i<links.size(); i++)
         if (links[i].GetName() == s) return &links[i];
 
     AppendError("Link " + s + " was not found");
@@ -88,6 +96,7 @@ bool System::GetQuanTemplate(const string &filename)
 {
     metamodel.GetFromJsonFile(filename);
     TransferQuantitiesFromMetaModel();
+    return true;
 }
 
 void System::CopyQuansToMembers()
