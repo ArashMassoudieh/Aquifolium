@@ -85,6 +85,7 @@ class System: public Object
         QuanSet* GetModel(const string &type) {return metamodel[type];}
         void clear();
         int lookup_observation(const string &s) {return 0;}
+        int EpochCount() {return epoch_count;}
 #ifdef QT_version
    bool stop_triggered = false;
 #endif
@@ -111,6 +112,7 @@ class System: public Object
         void InitiateOutputs();
         void PopulateOutputs();
         void TransferQuantitiesFromMetaModel();
+        int epoch_count;
 #ifdef QT_version
         GraphWidget *diagramview;
         runtimeWindow *rtw;
