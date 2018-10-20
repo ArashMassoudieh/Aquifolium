@@ -60,6 +60,7 @@ class System: public Object
         virtual ~System();
         System(const System& other);
         System& operator=(const System& other);
+        void GetModelConfiguration(runtimeWindow* rtw);
         double &GetTime() {return SolverSettings.t;}
         bool AddBlock(Block &blk);
         bool AddLink(Link &lnk, const string &source, const string &destination);
