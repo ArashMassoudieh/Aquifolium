@@ -7,6 +7,7 @@
 #include "node.h"
 #include "edge.h"
 #include "GWidget.h"
+#include "QDebug"
 #endif
 
 System::System():Object::Object()
@@ -492,7 +493,7 @@ void System::GetModelConfiguration(runtimeWindow* rtw)
             if (!n->val(code).isEmpty() && n->val(code) != ".") B.SetVal(code.toStdString(), n->val(code).toFloat());
             if (mP.Delegate == "Browser" && !n->val(code).isEmpty() && n->val(code) != ".")
                 B.Variable(code.toStdString())->SetTimeSeries(fullFilename(n->val(code), diagramview->modelPathname()).toStdString()+n->val(code).toQString().toStdString());
-
+            qDebug()<<QString::fromStdString(B.GetName())<<"  "<<QString::fromStdString(B.GetType())<<"    "<<B.GetVal(code.toStdString());
         }
 
         AddBlock(B);
