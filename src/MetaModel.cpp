@@ -142,8 +142,8 @@ bool MetaModel::GetFromJsonFile(const string &filename)
                 if (it->isMember("default"))
                     Q.Default() = (*it)["default"].asString();
 
-                if (it->isMember("defaults"))
-                    Q.Defaults() = (*it)["defaults"].asString();
+                if (it->isMember("delegate"))
+                    Q.Delegate() = (*it)["delegate"].asString();
 
                 if (it->isMember("category"))
                     Q.Category() = (*it)["category"].asString();

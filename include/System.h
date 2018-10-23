@@ -1,5 +1,4 @@
-#ifndef SYSTEM_H
-#define SYSTEM_H
+#pragma once
 
 #include "Block.h"
 #include "Link.h"
@@ -9,6 +8,10 @@
 #include "MetaModel.h"
 #include "BTCSet.h"
 
+#ifdef QT_version
+    #include "runtimeWindow.h"
+    class GWidget;
+#endif
 struct solversettings
 {
     double t;
@@ -51,6 +54,10 @@ class System: public Object
 {
     public:
         System();
+#ifdef QT_version
+        System(GraphWidget* DiagramViewer,runtimeWindow *rtw);
+        void GetModelConfiguration(runtimeWindow* rtw);
+#endif
         virtual ~System();
         System(const System& other);
         System& operator=(const System& other);
@@ -79,6 +86,11 @@ class System: public Object
         QuanSet* GetModel(const string &type) {return metamodel[type];}
         void clear();
         int lookup_observation(const string &s) {return 0;}
+        int EpochCount() {return epoch_count;}
+#ifdef QT_version
+   bool stop_triggered = false;
+#endif
+
     protected:
 
     private:
@@ -101,6 +113,11 @@ class System: public Object
         void InitiateOutputs();
         void PopulateOutputs();
         void TransferQuantitiesFromMetaModel();
+        int epoch_count;
+#ifdef QT_version
+        GraphWidget *diagramview;
+        runtimeWindow *rtw;
+#endif
 };
 
-#endif // SYSTEM_H
+
