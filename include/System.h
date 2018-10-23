@@ -56,6 +56,7 @@ class System: public Object
         System();
 #ifdef QT_version
         System(GraphWidget* DiagramViewer,runtimeWindow *rtw);
+        bool GetModelConfiguration(GraphWidget* DiagramViewer = nullptr);
 #endif
         virtual ~System();
         System(const System& other);
