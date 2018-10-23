@@ -23,7 +23,7 @@ class Object
         bool SetVal(const string& s, double value, const Expression::timing &tmg = Expression::timing::both);
         bool SetVal(const string& s, const string & value, const Expression::timing &tmg = Expression::timing::both);
         double GetProperty(const string&);
-        System *GetParent() const {return parent;};
+        System *GetParent() const {return parent;}
         string GetName() const;
         bool SetName(const string &_name);
         Object* GetConnectedBlock(Expression::loc l);
@@ -32,22 +32,22 @@ class Object
         void SetParent(System *s);
         Quan* CorrespondingFlowVariable(const string &s);
         Quan* Variable(const string &s);
-        void SetType(const string &typ) {type = typ;};
-        string GetType() {return type;};
-        int s_Block_No() {return s_Block_no; };
-        int e_Block_No() {return e_Block_no; };
-		void Set_s_Block(Object *O) { s_Block = O; };
-		void Set_e_Block(Object *O) { e_Block = O; };
+        void SetType(const string &typ) {type = typ;}
+        string GetType() {return type;}
+        int s_Block_No() {return s_Block_no; }
+        int e_Block_No() {return e_Block_no; }
+        void Set_s_Block(Object *O) { s_Block = O; }
+        void Set_e_Block(Object *O) { e_Block = O; }
 		bool Renew(const string &variable);
 		bool Update(const string &variable);
 		QuanSet* GetVars()
             {
                 return &var;
             }
-		void SetOutflowLimitFactor(const double &val) {outflowlimitfactor = val;};
-		double GetOutflowLimitFactor() {return outflowlimitfactor;};
-		void SetLimitedOutflow(bool x) {limitoutflow = x;};
-		bool GetLimitedOutflow() {return limitoutflow;};
+        void SetOutflowLimitFactor(const double &val) {outflowlimitfactor = val;}
+        double GetOutflowLimitFactor() {return outflowlimitfactor;}
+        void SetLimitedOutflow(bool x) {limitoutflow = x;}
+        bool GetLimitedOutflow() {return limitoutflow;}
 		void SetVariableParents();
     protected:
 
