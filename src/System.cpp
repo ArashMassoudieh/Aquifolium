@@ -20,6 +20,7 @@ System::System(GraphWidget* diagramviewer,runtimeWindow *_rtw):Object::Object()
 {
     diagramview = diagramviewer;
     rtw = _rtw;
+    GetModelConfiguration(rtw);
 
 }
 #endif
@@ -484,16 +485,17 @@ void System::GetModelConfiguration(runtimeWindow* rtw)
     {
         Node* n = nodes[diagramview->nodeNames().indexOf(nodenames_sorted[i])];
         Block B;
-
+        B.SetName(n->Name().toStdString());
         QStringList codes = n->codes();
 
         foreach (mProp mP , n->getmList(n->objectType).GetList())
         {
             QString code = mP.VariableCode;
-            if (!n->val(code).isEmpty() && n->val(code) != ".") B.SetVal(code.toStdString(), n->val(code).toFloat());
+            if (!n->val(code).isEmpty() && n->val(code) != ".")
+                B.SetVal(code.toStdString(), n->val(code).toFloat());
             if (mP.Delegate == "Browser" && !n->val(code).isEmpty() && n->val(code) != ".")
                 B.Variable(code.toStdString())->SetTimeSeries(fullFilename(n->val(code), diagramview->modelPathname()).toStdString()+n->val(code).toQString().toStdString());
-            qDebug()<<QString::fromStdString(B.GetName())<<"  "<<QString::fromStdString(B.GetType())<<"    "<<B.GetVal(code.toStdString());
+            qDebug()<<code<<"  "<<QString::fromStdString(B.GetName())<<"  "<<QString::fromStdString(B.GetType())<<"    "<<B.GetVal(code.toStdString());
         }
 
         AddBlock(B);
