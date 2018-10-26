@@ -20,7 +20,7 @@ System::System(GraphWidget* diagramviewer,runtimeWindow *_rtw):Object::Object()
 {
     diagramview = diagramviewer;
     rtw = _rtw;
-    GetModelConfiguration(rtw);
+    GetModelConfiguration();
 
 }
 #endif
@@ -421,7 +421,7 @@ void System::SetVariableParents()
 	for (unsigned int i = 0; i < links.size(); i++)
 	{
 		links[i].SetVariableParents();
-		links[i].Set_s_Block(&blocks[links[i].s_Block_No()]);
+        links[i].Set_s_Block(&blocks[int(links[i].s_Block_No())]);
 		links[i].Set_e_Block(&blocks[links[i].e_Block_No()]);
 	}
 
@@ -475,7 +475,7 @@ void System::TransferQuantitiesFromMetaModel()
 }
 
 #ifdef QT_version
-void System::GetModelConfiguration(runtimeWindow* rtw)
+void System::GetModelConfiguration()
 {
     QList <Node*> nodes = diagramview->Nodes();
     QStringList nodenames_sorted = diagramview->nodeNames();
@@ -486,19 +486,21 @@ void System::GetModelConfiguration(runtimeWindow* rtw)
         Node* n = nodes[diagramview->nodeNames().indexOf(nodenames_sorted[i])];
         Block B;
         B.SetName(n->Name().toStdString());
+        B.SetType(n->GetObjectType().toStdString());
+        AddBlock(B);
         QStringList codes = n->codes();
 
         foreach (mProp mP , n->getmList(n->objectType).GetList())
         {
             QString code = mP.VariableCode;
             if (!n->val(code).isEmpty() && n->val(code) != ".")
-                B.SetVal(code.toStdString(), n->val(code).toFloat());
+                block(n->Name().toStdString())->SetVal(code.toStdString(), n->val(code).toFloat());
             if (mP.Delegate == "Browser" && !n->val(code).isEmpty() && n->val(code) != ".")
-                B.Variable(code.toStdString())->SetTimeSeries(fullFilename(n->val(code), diagramview->modelPathname()).toStdString()+n->val(code).toQString().toStdString());
-            qDebug()<<code<<"  "<<QString::fromStdString(B.GetName())<<"  "<<QString::fromStdString(B.GetType())<<"    "<<B.GetVal(code.toStdString());
+                block(n->Name().toStdString())->Variable(code.toStdString())->SetTimeSeries(fullFilename(n->val(code), diagramview->modelPathname()).toStdString()+n->val(code).toQString().toStdString());
+            qDebug()<<code<<"  "<<QString::fromStdString(block(n->Name().toStdString())->GetName())<<"  "<<QString::fromStdString(block(n->Name().toStdString())->GetType())<<"    "<<block(n->Name().toStdString())->GetVal(code.toStdString());
         }
 
-        AddBlock(B);
+
 
 /*      foreach (QString code , n->codes()) //Parameters
         {
@@ -537,12 +539,13 @@ void System::GetModelConfiguration(runtimeWindow* rtw)
     {
         Edge *e = edges[diagramview->edgeNames().indexOf(edgenames_sorted[i])];
         Link L;
-
+        L.SetName(e->Name().toStdString());
+        AddLink(L,e->sourceNode()->Name().toStdString(),e->destNode()->Name().toStdString());
         foreach (mProp mP ,e->getmList(e->objectType).GetList())
         {   QString code = mP.VariableCode;
-            if (!e->val(code).isEmpty() && e->val(code) != ".") L.SetVal(code.toStdString(), e->val(code).toFloat());
+            if (!e->val(code).isEmpty() && e->val(code) != ".") link(e->Name().toStdString())->SetVal(code.toStdString(), e->val(code).toFloat());
             if (mP.Delegate == "Browser" && !e->val(code).isEmpty() && e->val(code) != ".")
-                L.Variable(code.toStdString())->SetTimeSeries(fullFilename(e->val(code), diagramview->modelPathname()).toStdString()+e->val(code).toQString().toStdString());
+                link(e->Name().toStdString())->Variable(code.toStdString())->SetTimeSeries(fullFilename(e->val(code), diagramview->modelPathname()).toStdString()+e->val(code).toQString().toStdString());
 
         }
 
@@ -578,7 +581,7 @@ void System::GetModelConfiguration(runtimeWindow* rtw)
         }
 */
 
-        AddLink(L,e->sourceNode()->Name().toStdString(),e->destNode()->Name().toStdString());
+
     }
 }
 #endif
