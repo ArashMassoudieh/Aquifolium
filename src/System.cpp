@@ -23,6 +23,15 @@ System::System(GraphWidget* diagramviewer,runtimeWindow *_rtw):Object::Object()
     GetModelConfiguration();
 
 }
+System::System(GraphWidget* diagramviewer,runtimeWindow *_rtw, const string &modelfilename):Object::Object()
+{
+    diagramview = diagramviewer;
+    rtw = _rtw;
+    GetQuanTemplate(modelfilename);
+    GetModelConfiguration();
+
+}
+
 #endif
 
 System::~System()
@@ -540,12 +549,14 @@ void System::GetModelConfiguration()
         Edge *e = edges[diagramview->edgeNames().indexOf(edgenames_sorted[i])];
         Link L;
         L.SetName(e->Name().toStdString());
+        L.SetType(e->GetObjectType().toStdString());
         AddLink(L,e->sourceNode()->Name().toStdString(),e->destNode()->Name().toStdString());
+
         foreach (mProp mP ,e->getmList(e->objectType).GetList())
         {   QString code = mP.VariableCode;
             if (!e->val(code).isEmpty() && e->val(code) != ".") link(e->Name().toStdString())->SetVal(code.toStdString(), e->val(code).toFloat());
             if (mP.Delegate == "Browser" && !e->val(code).isEmpty() && e->val(code) != ".")
-                link(e->Name().toStdString())->Variable(code.toStdString())->SetTimeSeries(fullFilename(e->val(code), diagramview->modelPathname()).toStdString()+e->val(code).toQString().toStdString());
+                link(e->Name().toStdString())->Variable(code.toStdString())->SetTimeSeries(fullFilename(e->val(code), diagramview->modelPathname()).toStdString());
 
         }
 
