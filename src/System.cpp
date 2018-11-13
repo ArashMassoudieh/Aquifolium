@@ -8,6 +8,7 @@
 #include "edge.h"
 #include "GWidget.h"
 #include "QDebug"
+#include "logwindow.h"
 #endif
 
 System::System():Object::Object()
@@ -135,6 +136,10 @@ bool System::OneStepSolve()
 
 bool System::Solve(const string &variable)
 {
+    if (LogWindow())
+    {
+        LogWindow()->append("Simulation started!");
+    }
     InitiateOutputs();
     PopulateOutputs();
     SolverSettings.dt = SimulationParameters.dt0;
@@ -145,6 +150,10 @@ bool System::Solve(const string &variable)
         #ifdef Debug_mode
         cout << "t = " << SolverSettings.t << ", dt = " << SolverSettings.dt << ", SolverTempVars.numiterations =" << SolverTempVars.numiterations << endl;
         #endif // Debug_mode
+        if (rtw)
+        {
+            updateProgress(false);
+        }
         bool success = OneStepSolve(variable);
         if (!success)
         {
@@ -170,9 +179,54 @@ bool System::Solve(const string &variable)
 
     }
 
-
+    updateProgress(true);
+    if (LogWindow())
+    {
+        LogWindow()->append("Simulation finished!");
+    }
     return true;
 }
+
+#ifdef QT_version
+void System::updateProgress(bool finished)
+{
+    // t, dtt (graph), epoch_count
+    if (rtw != nullptr)
+    {
+        QMap<QString, QVariant> vars;
+        vars["mode"] = "forward";
+        if (finished)
+        {
+            vars["progress"] = 100;
+            vars["finished"] = true;
+        }
+        else
+        {
+            int progress;
+            progress = 100.0*(SolverSettings.t - SimulationParameters.tstart) / (SimulationParameters.tend - SimulationParameters.tstart);
+            vars["t"] = SolverSettings.t;
+            vars["progress"] = progress;
+            vars["dtt"] = SolverSettings.dt;
+            vars["epoch count"] = SolverTempVars.epoch_count;
+            QString reason = QString::fromStdString(SolverTempVars.fail_reason);
+            ////qDebug() << reason;
+            if (!reason.toLower().contains("none"))
+                vars["label"] = reason;
+            ////qDebug()<< t<<dtt;
+
+            if (rtw->sln_dtl_active)
+                if (!reason.toLower().contains("none"))
+                    rtw->slndetails_append(QString::number(SolverTempVars.epoch_count) + ":" + reason + ", time step size: " + QString::number(SolverSettings.dt));
+        }
+        rtw->update(vars);
+        if (finished)
+        {
+            //QMessageBox::StandardButton reply;
+            //QMessageBox::question(runtimewindow, "Simulation Ended", "Simulation Finished!", QMessageBox::Ok);
+        }
+    }
+}
+#endif
 
 bool System::SetProp(const string &s, const double &val)
 {

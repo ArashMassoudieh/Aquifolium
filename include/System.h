@@ -11,6 +11,7 @@
 #ifdef QT_version
     #include "runtimeWindow.h"
     class GWidget;
+    class logWindow;
 #endif
 struct solversettings
 {
@@ -41,6 +42,9 @@ struct solvertemporaryvars
     double NR_coefficient = 1;
     bool updatejacobian = true;
     int numiterations;
+    int epoch_count=0;
+    string fail_reason;
+
 };
 
 struct simulationparameters
@@ -87,9 +91,11 @@ class System: public Object
         QuanSet* GetModel(const string &type) {return metamodel[type];}
         void clear();
         int lookup_observation(const string &s) {return 0;}
-        int EpochCount() {return epoch_count;}
+        int EpochCount() {return SolverTempVars.epoch_count;}
 #ifdef QT_version
-   bool stop_triggered = false;
+        logWindow *LogWindow() {return logwindow;}
+        void SetLogWindow(logWindow *lgwnd) {logwindow=lgwnd;}
+        bool stop_triggered = false;
 #endif
 
     protected:
@@ -114,10 +120,12 @@ class System: public Object
         void InitiateOutputs();
         void PopulateOutputs();
         void TransferQuantitiesFromMetaModel();
-        int epoch_count;
+
 #ifdef QT_version
         GraphWidget *diagramview;
         runtimeWindow *rtw;
+        void updateProgress(bool finished);
+        logWindow *logwindow = nullptr;
 #endif
 };
 
