@@ -15,8 +15,6 @@
 #endif
 struct solversettings
 {
-    double t;
-    double dt;
     double C_N_weight; //Crank-Nicholson Weight
     double NRtolerance = 1e-6; //Newton Raphson Tolerance
     double NR_coeff_reduction_factor = 0.8; //The coefficient to reduce the Newton-Raphson coefficient
@@ -44,6 +42,9 @@ struct solvertemporaryvars
     int numiterations;
     int epoch_count=0;
     string fail_reason;
+    double t;
+    double dt;
+
 
 };
 
@@ -66,7 +67,7 @@ class System: public Object
         virtual ~System();
         System(const System& other);
         System& operator=(const System& other);
-        double &GetTime() {return SolverSettings.t;}
+        double &GetTime() {return SolverTempVars.t;}
         bool AddBlock(Block &blk);
         bool AddLink(Link &lnk, const string &source, const string &destination);
         Block *block(const string &s);
@@ -75,7 +76,7 @@ class System: public Object
         int linkid(const string &s);
         bool GetQuanTemplate(const string &filename);
         void CopyQuansToMembers();
-        double &dt() {return SolverSettings.dt;}
+        double &dt() {return SolverTempVars.dt;}
         double &tend() {return SimulationParameters.tend;}
         double &tstart() {return SimulationParameters.tstart;}
         bool OneStepSolve(const string &s);

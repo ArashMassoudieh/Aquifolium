@@ -142,10 +142,11 @@ bool System::Solve(const string &variable)
     }
     InitiateOutputs();
     PopulateOutputs();
-    SolverSettings.dt = SimulationParameters.dt0;
-    SolverSettings.t = SimulationParameters.tstart;
 
-    while (SolverSettings.t<SimulationParameters.tend+SolverSettings.dt)
+    SolverTempVars.dt = SimulationParameters.dt0;
+    SolverTempVars.t = SimulationParameters.tstart;
+
+    while (SolverTempVars.t<SimulationParameters.tend+SolverTempVars.dt)
     {
         #ifdef Debug_mode
         cout << "t = " << SolverSettings.t << ", dt = " << SolverSettings.dt << ", SolverTempVars.numiterations =" << SolverTempVars.numiterations << endl;
@@ -160,19 +161,19 @@ bool System::Solve(const string &variable)
             #ifdef Debug_mode
             cout<<"failed!"<<endl;
             #endif // Debug_mode
-            SolverSettings.dt *= SolverSettings.NR_timestep_reduction_factor_fail;
+            SolverTempVars.dt *= SolverSettings.NR_timestep_reduction_factor_fail;
             SolverTempVars.updatejacobian = true;
         }
         else
         {
-            SolverSettings.t += SolverSettings.dt;
+            SolverTempVars.t += SolverTempVars.dt;
             if (SolverTempVars.numiterations>SolverSettings.NR_niteration_upper)
             {
-                SolverSettings.dt = max(SolverSettings.dt*SolverSettings.NR_timestep_reduction_factor,SolverSettings.minimum_timestep);
+                SolverTempVars.dt = max(SolverTempVars.dt*SolverSettings.NR_timestep_reduction_factor,SolverSettings.minimum_timestep);
                 SolverTempVars.updatejacobian = true;
             }
             if (SolverTempVars.numiterations<SolverSettings.NR_niteration_lower)
-                SolverSettings.dt /= SolverSettings.NR_timestep_reduction_factor;
+                SolverTempVars.dt /= SolverSettings.NR_timestep_reduction_factor;
             PopulateOutputs();
             Update(variable);
         }
@@ -203,10 +204,10 @@ void System::updateProgress(bool finished)
         else
         {
             int progress;
-            progress = 100.0*(SolverSettings.t - SimulationParameters.tstart) / (SimulationParameters.tend - SimulationParameters.tstart);
-            vars["t"] = SolverSettings.t;
+            progress = 100.0*(SolverTempVars.t - SimulationParameters.tstart) / (SimulationParameters.tend - SimulationParameters.tstart);
+            vars["t"] = SolverTempVars.t;
             vars["progress"] = progress;
-            vars["dtt"] = SolverSettings.dt;
+            vars["dtt"] = SolverTempVars.dt;
             vars["epoch count"] = SolverTempVars.epoch_count;
             QString reason = QString::fromStdString(SolverTempVars.fail_reason);
             ////qDebug() << reason;
@@ -216,7 +217,7 @@ void System::updateProgress(bool finished)
 
             if (rtw->sln_dtl_active)
                 if (!reason.toLower().contains("none"))
-                    rtw->slndetails_append(QString::number(SolverTempVars.epoch_count) + ":" + reason + ", time step size: " + QString::number(SolverSettings.dt));
+                    rtw->slndetails_append(QString::number(SolverTempVars.epoch_count) + ":" + reason + ", time step size: " + QString::number(SolverTempVars.dt));
         }
         rtw->update(vars);
         if (finished)
@@ -230,7 +231,35 @@ void System::updateProgress(bool finished)
 
 bool System::SetProp(const string &s, const double &val)
 {
-	return true;
+    if (s=="cn_weight")
+    {   SolverSettings.C_N_weight = val; return true;}
+    if (s=="nr_tolerance")
+    {   SolverSettings.NRtolerance = val; return true;}
+    if (s=="nr_coeff_reduction_factor")
+    {   SolverSettings.NR_coeff_reduction_factor = val; return true;}
+    if (s=="nr_timestep_reduction_factor")
+    {   SolverSettings.NR_timestep_reduction_factor = val; return true;}
+    if (s=="nr_timestep_reduction_factor_fail")
+    {   SolverSettings.NR_timestep_reduction_factor_fail = val; return true;}
+    if (s=="minimum_timestep")
+    {   SolverSettings.minimum_timestep = val; return true;}
+    if (s=="nr_niteration_lower")
+    {   SolverSettings.NR_niteration_lower=int(val); return true;}
+    if (s=="nr_niteration_upper")
+    {   SolverSettings.NR_niteration_upper=int(val); return true;}
+    if (s=="nr_niteration_max")
+    {   SolverSettings.NR_niteration_max=int(val); return true;}
+    if (s=="make_results_uniform")
+    {   SolverSettings.makeresultsuniform = bool(val); return true;}
+
+    if (s=="tstart")
+    {   SimulationParameters.tstart = val; return true;}
+    if (s=="tend")
+    {   SimulationParameters.tend = val; return true;}
+    if (s=="tend")
+    {   SimulationParameters.dt0 = val; return true;}
+
+    return false;
 }
 
 void System::InitiateOutputs()
@@ -259,7 +288,7 @@ void System::PopulateOutputs()
     {
         for (map<string, Quan>::iterator it = blocks[i].GetVars()->begin(); it != blocks[i].GetVars()->end(); it++)
             if (it->second.IncludeInOutput())
-                Outputs.AllOutputs[blocks[i].GetName() + "_" + it->first].append(SolverSettings.t,blocks[i].GetVal(it->first,Expression::timing::present));
+                Outputs.AllOutputs[blocks[i].GetName() + "_" + it->first].append(SolverTempVars.t,blocks[i].GetVal(it->first,Expression::timing::present));
     }
 
     for (unsigned int i=0; i<links.size(); i++)
@@ -267,7 +296,7 @@ void System::PopulateOutputs()
         for (map<string, Quan>::iterator it = links[i].GetVars()->begin(); it != links[i].GetVars()->end(); it++)
             if (it->second.IncludeInOutput())
             {
-                Outputs.AllOutputs[links[i].GetName() + "_" + it->first].append(SolverSettings.t,links[i].GetVal(it->first,Expression::timing::present,true));
+                Outputs.AllOutputs[links[i].GetName() + "_" + it->first].append(SolverTempVars.t,links[i].GetVal(it->first,Expression::timing::present,true));
             }
     }
 
