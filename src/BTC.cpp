@@ -1423,3 +1423,28 @@ CTimeSeries CTimeSeries::unCompact(QDataStream &data)
 	return b;
 }
 #endif // QT_version
+
+
+CTimeSeries::CTimeSeries(double a, double b, const vector<double> &x)
+{
+    int n = x.size();
+    vector<double> y(n);
+    for (int i = 0; i < n; i++)
+        y[i] = a + b*x[i];
+    *this = CTimeSeries(x,y);
+}
+CTimeSeries::CTimeSeries(double a, double b, const CTimeSeries &btc)
+{
+    CTimeSeries(a, b, btc.t);
+}
+
+CTimeSeries::CTimeSeries(const vector<double> &t, const vector<double> &C)
+{
+    if (t.size() != C.size()) return;
+    n = t.size();
+    structured = true;
+    this->t = t;
+    this->C = C;
+    if (n > 2) for (int i = 2; i < n; i++)
+        if ((t[i] - t[i - 1]) != (t[i - 1] - t[i - 2]))structured = false;
+}
