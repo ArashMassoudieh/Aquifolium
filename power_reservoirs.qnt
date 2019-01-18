@@ -8,6 +8,7 @@
 			"type": "balance",		
 			"massbalance": "true",
 			"flow": "flow",
+			"inflow": "inflow",
 			"includeinoutput": "true",
 			"description": "Initial Storage",
 			"ask_user": "true"
@@ -22,6 +23,13 @@
 			"type": "value",
 			"default": "10",
 			"description": "Reservoir rating curve coefficient",
+			"ask_user": "true"
+		},
+		"inflow": {
+			"type": "timeseries",		
+			"includeinoutput": "true",
+			"applylimit": "true",
+			"description": "Flow rate time series",
 			"ask_user": "true"
 		}
 	},

@@ -136,10 +136,14 @@ bool System::OneStepSolve()
 
 bool System::Solve(const string &variable)
 {
+    #ifdef QT_version
     if (LogWindow())
     {
         LogWindow()->append("Simulation started!");
     }
+    #else
+        cout << "Simulation started!";
+    #endif
     InitiateOutputs();
     PopulateOutputs();
 
@@ -149,12 +153,14 @@ bool System::Solve(const string &variable)
     while (SolverTempVars.t<SimulationParameters.tend+SolverTempVars.dt)
     {
         #ifdef Debug_mode
-        cout << "t = " << SolverSettings.t << ", dt = " << SolverSettings.dt << ", SolverTempVars.numiterations =" << SolverTempVars.numiterations << endl;
+        cout << "t = " << SolverTempVars.t << ", dt = " << SolverTempVars.dt << ", SolverTempVars.numiterations =" << SolverTempVars.numiterations << endl;
         #endif // Debug_mode
+        #ifdef QT_version
         if (rtw)
         {
             updateProgress(false);
         }
+        #endif
         bool success = OneStepSolve(variable);
         if (!success)
         {
@@ -180,11 +186,15 @@ bool System::Solve(const string &variable)
 
     }
 
+    #ifdef QT_version
     updateProgress(true);
     if (LogWindow())
     {
         LogWindow()->append("Simulation finished!");
     }
+    #else
+    cout << "Simulation finished!";
+    #endif
     return true;
 }
 

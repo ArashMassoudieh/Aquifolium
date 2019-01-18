@@ -192,6 +192,13 @@ void Quan::SetCorrespondingFlowVar(const string &s)
     corresponding_flow_quan = s;
 }
 
+void Quan::SetCorrespondingInflowVar(const string &s)
+{
+    corresponding_inflow_quan = s;
+}
+
+
+
 void Quan::SetMassBalance(bool on)
 {
     perform_mass_balance = on;

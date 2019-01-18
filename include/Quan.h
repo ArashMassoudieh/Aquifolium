@@ -28,6 +28,8 @@ class Quan
         bool SetVal(const double &v, const Expression::timing &tmg=Expression::timing::past);
         void SetCorrespondingFlowVar(const string &s);
         string GetCorrespondingFlowVar() {return corresponding_flow_quan;}
+        void SetCorrespondingInflowVar(const string &s);
+        string GetCorrespondingInflowVar() {return corresponding_inflow_quan;}
         void SetMassBalance(bool on);
         void SetParent(Object *);
         Quan *Corresponding_flow_variable;
@@ -67,6 +69,7 @@ class Quan
         _type type;
         bool perform_mass_balance = false;
         string corresponding_flow_quan;
+        string corresponding_inflow_quan;
         Object *parent;
         bool includeinoutput = false;
         string description;

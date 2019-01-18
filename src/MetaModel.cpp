@@ -105,6 +105,7 @@ bool MetaModel::GetFromJsonFile(const string &filename)
                 {
                     Q.SetType(Quan::_type::balance);
                     Q.SetCorrespondingFlowVar((*it)["flow"].asString());
+                    Q.SetCorrespondingInflowVar((*it)["inflow"].asString());
                 }
                 if ((*it)["type"].asString()=="constant")
                     Q.SetType(Quan::_type::constant);
