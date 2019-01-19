@@ -178,6 +178,8 @@ CTimeSeries CTimeSeries::Log(double m)
 
 double CTimeSeries::interpol(const double &x)
 {
+	if (n==0)
+        return 0;
 	if (n>1)
 	{
 

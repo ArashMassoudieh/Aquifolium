@@ -23,6 +23,7 @@ Quan::Quan(const Quan& other)
     _parameters = other._parameters;
     type = other.type;
 	corresponding_flow_quan = other.corresponding_flow_quan;
+	corresponding_inflow_quan = other.corresponding_inflow_quan;
 	includeinoutput = other.includeinoutput;
 	description = other.description;
     unit = other.unit;
@@ -54,6 +55,7 @@ Quan& Quan::operator=(const Quan& rhs)
     _parameters = rhs._parameters;
     type = rhs.type;
 	corresponding_flow_quan = rhs.corresponding_flow_quan;
+	corresponding_inflow_quan = rhs.corresponding_inflow_quan;
 	includeinoutput = rhs.includeinoutput;
 	description = rhs.description;
     unit = rhs.unit;
@@ -82,7 +84,12 @@ double Quan::CalcVal(Object *block, const Expression::timing &tmg)
     if (type == _type::expression)
         return _expression.calc(block,tmg);
     if (type == _type::timeseries)
-        return _timeseries.interpol(block->GetParent()->GetTime());
+    {
+        if (_timeseries.n>0)
+            return _timeseries.interpol(block->GetParent()->GetTime());
+        else
+            return 0;
+    }
     if (type == _type::value)
         return _val;
     last_error = "Quantity cannot be evaluated";
@@ -110,7 +117,12 @@ double Quan::CalcVal(const Expression::timing &tmg)
     if (type == _type::expression)
         return _expression.calc(parent,tmg);
     if (type == _type::timeseries)
-        return _timeseries.interpol(parent->GetParent()->GetTime());
+    {
+        if (_timeseries.n>0)
+            return _timeseries.interpol(parent->GetParent()->GetTime());
+        else
+            return 0;
+    }
     if (type == _type::value)
     {
         if (tmg==Expression::timing::past)

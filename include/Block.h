@@ -20,7 +20,7 @@ class Block: public Object
         Block& operator=(const Block& rhs);
         virtual ~Block();
         void AppendLink(Link* l, const Expression::loc &loc);
-
+        double GetInflowValue(const string &variable,const Expression::timing &t);
 
     protected:
 

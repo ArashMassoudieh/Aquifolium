@@ -32,6 +32,11 @@ void Block::AppendLink(Link* l, const Expression::loc &loc)
         links_to.push_back(l);
 }
 
+double Block::GetInflowValue(const string &variable, const Expression::timing &tmg)
+{
+    return CalcVal(Variable(variable)->GetCorrespondingInflowVar(),tmg);
+}
+
 /*bool Block::AddProperty(const string &s, double val)
 {
     if (properties.count(s)>0)

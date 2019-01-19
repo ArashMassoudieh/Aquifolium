@@ -445,10 +445,10 @@ CVector_arma System::GetResiduals(const string &variable, CVector_arma &X)
         {
             blocks[i].SetOutflowLimitFactor(X[i]);
             blocks[i].SetVal(variable,0);
-            F[i] = (0-blocks[i].GetVal(variable,Expression::timing::past))/dt();
+            F[i] = (0-blocks[i].GetVal(variable,Expression::timing::past))/dt() - blocks[i].GetInflowValue(variable,Expression::timing::present);
         }
         else
-            F[i] = (X[i]-blocks[i].GetVal(variable,Expression::timing::past))/dt();
+            F[i] = (X[i]-blocks[i].GetVal(variable,Expression::timing::past))/dt() - blocks[i].GetInflowValue(variable,Expression::timing::present);
     }
 
 
