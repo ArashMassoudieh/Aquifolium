@@ -43,9 +43,9 @@
 			<Add directory="/home/arash/Projects/jsoncpp/include" />
 		</Compiler>
 		<Linker>
-			<Add library="../../../../usr/lib/libarmadillo.so" />
-			<Add library="../../../../usr/lib/libarpack.so" />
-			<Add library="../../../../usr/lib/libblas.so" />
+			<Add option="-larmadillo" />
+			<Add option="-llapack" />
+			<Add option="-lblas" />
 		</Linker>
 		<Unit filename="../jsoncpp/src/lib_json/json_reader.cpp" />
 		<Unit filename="../jsoncpp/src/lib_json/json_value.cpp" />

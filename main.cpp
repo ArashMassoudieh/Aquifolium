@@ -20,6 +20,10 @@ int main()
     S.block("Reservoir1")->SetVal("Storage",10);
     S.block("Reservoir1")->SetVal("reservoir_power",2);
     S.block("Reservoir1")->SetVal("reservoir_coeff",30);
+    if (S.block("Reservoir1")->Variable("inflow")->SetTimeSeries("Inflow.txt"))
+   		cout << "Inflow file was set successfully!" << endl;
+	else
+		cout << "Inflow.txt was not found!"<<endl;
 
     Block B2;
     B2.SetType("Reservoir");
@@ -50,6 +54,9 @@ int main()
 	User_link.SetName("User_link");
 	User_link.SetType("User_flow");
 	S.AddLink(User_link, "Reservoir2", "User1");
+
+
+
 	if (S.link("User_link")->Variable("flow")->SetTimeSeries("Demand.txt"))
 		cout << "Flow file was set successfully!" << endl;
 	else
