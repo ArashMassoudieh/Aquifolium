@@ -598,7 +598,9 @@ void System::GetModelConfiguration()
             if (!n->val(code).isEmpty() && n->val(code) != ".")
                 block(n->Name().toStdString())->SetVal(code.toStdString(), n->val(code).toFloat());
             if (mP.Delegate == "Browser" && !n->val(code).isEmpty() && n->val(code) != ".")
-                block(n->Name().toStdString())->Variable(code.toStdString())->SetTimeSeries(fullFilename(n->val(code), diagramview->modelPathname()).toStdString()+n->val(code).toQString().toStdString());
+            {   block(n->Name().toStdString())->Variable(code.toStdString())->SetTimeSeries(fullFilename(n->val(code), diagramview->modelPathname()).toStdString());
+                qDebug() << n->val(code).toQString() << "   path:" << diagramview->modelPathname();
+            }
             qDebug()<<code<<"  "<<QString::fromStdString(block(n->Name().toStdString())->GetName())<<"  "<<QString::fromStdString(block(n->Name().toStdString())->GetType())<<"    "<<block(n->Name().toStdString())->GetVal(code.toStdString());
         }
 
