@@ -80,9 +80,9 @@ bool Condition::calc(Object *W, const Expression::timing &tmg)
 
 }
 
-string Condition::ToString()
+string Condition::ToString(int _tabs)
 {
-    string s;
+    string s = tabs(_tabs+1);
     if (oprtr == _oprtr::lessthan)
         s = lhs.ToString() + "<" + rhs.ToString();
     if (oprtr == _oprtr::greaterthan)

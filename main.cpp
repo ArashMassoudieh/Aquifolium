@@ -10,7 +10,7 @@ using namespace std;
 int main()
 {
     System S;
-    S.GetQuanTemplate("power_reservoirs.qnt");
+    S.GetQuanTemplate("power_reservoirs_rules.qnt");
     //Expression E("2*X+X^2+Y/X");
     Block B1;
     B1.SetType("Reservoir");

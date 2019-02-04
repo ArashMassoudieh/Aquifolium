@@ -20,7 +20,7 @@ class Condition
         void SetLHS(const string &expr);
         bool calc(Object *W, const Expression::timing &tmg);
         string GetLastError() {return last_error;}
-        string ToString();
+        string ToString(int _tabs = 0);
     protected:
 
     private:

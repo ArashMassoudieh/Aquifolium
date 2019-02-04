@@ -114,6 +114,16 @@ bool MetaModel::GetFromJsonFile(const string &filename)
                     Q.SetType(Quan::_type::expression);
                     Q.SetExpression((*it)["expression"].asString());
                 }
+                if ((*it)["type"].asString()=="rule")
+                {
+                    Q.SetType(Quan::_type::rule);
+                    for (Json::ValueIterator itrule=(*it)["rule"].begin(); itrule!=(*it)["rule"].end(); ++itrule)
+                    {
+                        _condplusresult Rle;
+                        Q.GetRule()->Append(itrule.key().asString(),itrule->asString());
+                    }
+                }
+
                 if ((*it)["type"].asString()=="global")
                     Q.SetType(Quan::_type::global_quan);
                 if ((*it)["type"].asString()=="timeseries")

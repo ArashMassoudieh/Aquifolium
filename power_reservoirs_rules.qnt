@@ -86,8 +86,7 @@
 			"default": "100",
 			"description": "Maximum storage",
 			"ask_user": "true"
-		},
-			
+		}
 	},
 "User": {
 		"type": "block",
@@ -117,5 +116,3 @@
 		}
 	}
 }
-
-

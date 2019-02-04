@@ -17,6 +17,7 @@ Quan::Quan(const Quan& other)
 {
     _expression = other._expression;
     _timeseries = other._timeseries;
+    _rule = other._rule;
     _var_name = other._var_name;
     _val = other._val;
     _val_star = other._val_star;
@@ -49,6 +50,7 @@ Quan& Quan::operator=(const Quan& rhs)
     if (this == &rhs) return *this; // handle self assignment
     _expression = rhs._expression;
     _timeseries = rhs._timeseries;
+    _rule = rhs._rule;
     _var_name = rhs._var_name;
     _val = rhs._val;
     _val_star = rhs._val_star;
@@ -83,6 +85,8 @@ double Quan::CalcVal(Object *block, const Expression::timing &tmg)
         return _val;
     if (type == _type::expression)
         return _expression.calc(block,tmg);
+    if (type == _type::rule)
+        return _rule.calc(block,tmg);
     if (type == _type::timeseries)
     {
         if (_timeseries.n>0)
@@ -147,6 +151,12 @@ bool Quan::SetExpression(const string &E)
 	return true;
 }
 
+bool Quan::SetRule(const string &R)
+{
+    _expression = R;
+	return true;
+}
+
 
 bool Quan::SetVal(const double &v, const Expression::timing &tmg)
 {
@@ -166,6 +176,12 @@ Expression* Quan::GetExpression()
 {
     return &_expression;
 }
+
+Rule* Quan::GetRule()
+{
+    return &_rule;
+}
+
 
 string Quan::ToString(int _tabs)
 {
@@ -188,6 +204,9 @@ string Quan::ToString(int _tabs)
 
     if (type==_type::expression)
         out += tabs(_tabs+1) + "expression: " + _expression.ToString() + "\n";
+
+    if (type==_type::rule)
+        out += tabs(_tabs+1) + "rule: " + _rule.ToString() + "\n";
 
     out += tabs(_tabs+1) + "val: ";
     out +=  numbertostring(_val);

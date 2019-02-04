@@ -2,12 +2,14 @@
 #define QUAN_H
 
 #include "Expression.h"
+#include "Rule.h"
 #include "BTC.h"
 
 class Block;
 class Link;
 class System;
 class Object;
+
 
 class Quan
 {
@@ -16,7 +18,7 @@ class Quan
         virtual ~Quan();
         Quan(const Quan& other);
         Quan& operator=(const Quan& other);
-        enum class _type {constant, value, balance, expression, timeseries, global_quan};
+        enum class _type {constant, value, balance, expression, timeseries, global_quan, rule};
         double CalcVal(Object *, const Expression::timing &tmg=Expression::timing::past);
         double CalcVal(const Expression::timing &tmg=Expression::timing::past);
         double GetVal(const Expression::timing &tmg=Expression::timing::past);
@@ -24,7 +26,9 @@ class Quan
         void SetType(const _type &t) {type = t;}
         _type GetType() {return type;}
         Expression* GetExpression();
+        Rule* GetRule();
         bool SetExpression(const string &E);
+        bool SetRule(const string &R);
         bool SetVal(const double &v, const Expression::timing &tmg=Expression::timing::past);
         void SetCorrespondingFlowVar(const string &s);
         string GetCorrespondingFlowVar() {return corresponding_flow_quan;}
@@ -61,6 +65,7 @@ class Quan
 
     private:
         Expression _expression;
+        Rule _rule;
         CTimeSeries _timeseries;
         string _var_name;
         double _val;

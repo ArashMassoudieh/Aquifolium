@@ -42,7 +42,12 @@ double Rule::calc(Object *W, const Expression::timing &tmg)
 
 }
 
-string Rule::ToString()
+string Rule::ToString(int _tabs)
 {
-
+    string out = tabs(_tabs) + "rule:\n";
+    out += tabs(_tabs) + "{\n";
+    for (unsigned int i=0; i<rules.size(); i++)
+        out += rules[i].condition.ToString(_tabs+1) + ":" + rules[i].result.ToString()+ "\n";
+    out += "}\n";
+    return out;
 }
