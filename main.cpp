@@ -3,7 +3,7 @@
 #include "string"
 #include "System.h"
 #include <iostream>
-
+#include "Condition.h"
 
 using namespace std;
 
@@ -20,6 +20,9 @@ int main()
     S.block("Reservoir1")->SetVal("Storage",10);
     S.block("Reservoir1")->SetVal("reservoir_power",2);
     S.block("Reservoir1")->SetVal("reservoir_coeff",30);
+    Condition cond("reservoir_power<reservoir_coeff");
+    bool out = cond.calc(S.block("Reservoir1"),Expression::timing::present);
+    cout<<out<<endl;
     if (S.block("Reservoir1")->Variable("inflow")->SetTimeSeries("Inflow.txt"))
    		cout << "Inflow file was set successfully!" << endl;
 	else

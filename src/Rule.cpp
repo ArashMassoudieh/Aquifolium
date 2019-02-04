@@ -1,0 +1,48 @@
+#include "Rule.h"
+
+Rule::Rule()
+{
+    //ctor
+}
+
+Rule::~Rule()
+{
+    //dtor
+}
+
+Rule::Rule(const Rule &S)
+{
+    rules = S.rules;
+}
+
+Rule& Rule::operator=(const Rule& S)
+{
+    rules = S.rules;
+    return *this;
+}
+
+void Rule::Append(const string &condition, const string &result)
+{
+    _condplusresult x;
+    x.condition = Condition(condition);
+    x.result = Expression(result);
+    rules.push_back(x);
+}
+
+void Rule::Append(const Condition &condition, const Expression &result)
+{
+    _condplusresult x;
+    x.condition = condition;
+    x.result = result;
+    rules.push_back(x);
+}
+
+double Rule::calc(Object *W, const Expression::timing &tmg)
+{
+
+}
+
+string Rule::ToString()
+{
+
+}
