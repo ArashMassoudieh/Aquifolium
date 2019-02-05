@@ -96,8 +96,8 @@ CGA<T>::CGA(string filename, const T &model)
             maxval.push_back(Model.parameters[i].high);
         }
         apply_to_all.push_back(false);
-        loged.push_back(Sys.parameters[i].log);
-        paramname.push_back(Sys.Parameters()[i].Name());
+        loged.push_back(Model.Parameters()[i].log);
+        paramname.push_back(Model.Parameters()[i].Name());
 
 	}
 
@@ -187,8 +187,6 @@ CGA<T> CGA<T>::operator=(CGA<T> &C)
 	params = C.params;
 	loged = C.loged;
 	fitdist = C.fitdist;
-	N = C.N;
-
 	MaxFitness = C.MaxFitness;
 	paramname = C.paramname;
 
@@ -196,7 +194,8 @@ CGA<T> CGA<T>::operator=(CGA<T> &C)
 
 }
 
-CGA::~CGA()
+template<class T>
+CGA<T>::~CGA()
 {
 
 }
@@ -213,7 +212,7 @@ void CGA<T>::initialize()
 	{
 		getinifromoutput(filenames.pathname+filenames.initialpopfilemame);
 		for (int i=0; i<initial_pop.size(); i++)
-			for (int j=0; j<max(int(initial_pop[i].size()),totnParam); j++)
+			for (int j=0; j<max(int(initial_pop[i].size()),GA_params.nParam); j++)
 				if (loged[j]==1)
 					Ind[i].x[j] = log10(initial_pop[i][j]);
 				else
@@ -222,7 +221,7 @@ void CGA<T>::initialize()
 }
 
 template<class T>
-void CGA::Setminmax(int a, double minrange, double maxrange, int prec)
+void CGA<T>::Setminmax(int a, double minrange, double maxrange, int prec)
 {
 	for (int i=0; i<GA_params.maxpop; i++)
 	{
@@ -240,19 +239,19 @@ void CGA<T>::assignfitnesses()
 
 	vector<vector<double>> inp;
 
-	inp.resize(maxpop);
+	inp.resize(GA_params.maxpop);
 
 
-	for (int k=0; k<maxpop; k++)
-		inp[k].resize(totnParam);
+	for (int k=0; k<GA_params.maxpop; k++)
+		inp[k].resize(GA_params.nParam);
 
-	vector<double> time_(maxpop);
-	vector<int> epochs(maxpop);
+	vector<double> time_(GA_params.maxpop);
+	vector<int> epochs(GA_params.maxpop);
 	clock_t t0,t1;
 
-	for (int k = 0; k < maxpop; k++)
+	for (int k = 0; k < GA_params.maxpop; k++)
 	{
-		for (int i = 0; i < totnParam; i++)
+		for (int i = 0; i < GA_params.nParam; i++)
 		{
 			if (loged[get_act_paramno(i)] != 1)
 			{
@@ -267,8 +266,7 @@ void CGA<T>::assignfitnesses()
 		int jj = 0;
 		Ind[k].actual_fitness = 0;
 
-		Sys1[k] = Sys;
-		Sys1[k].ID = numbertostring(k);
+		Models[k] = Model;
 
 		int l = 0;
 #ifdef GIFMOD
