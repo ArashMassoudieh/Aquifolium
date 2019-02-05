@@ -68,6 +68,7 @@ bool Condition::calc(Object *W, const Expression::timing &tmg)
             if (!(exr[i].calc(W, tmg)<exr[i+1].calc(W,tmg))) out = false;
         }
     }
+    return out;
 }
 
 string Condition::ToString(int _tabs)
