@@ -55,9 +55,9 @@
 			"type": "rule",		
 			"rule": 
 			{	
-				"Storage.s<x_min":"Q_min",
-				"Storage.s<x_max":"Q_min+(Q_max-Q_min)/(x_max-x_min)",
-				"Storage.s>x_max":"Q_max"
+				"Storage.s<S_min":"Q_min",
+				"Storage.s<S_max":"Q_min+((Storage.s-S_min)/(S_max-S_min))*(Q_max-Q_min)",
+				"Storage.s>S_max":"Q_max"
 			},
 			"includeinoutput": "true",
 			"applylimit": "true",
@@ -75,13 +75,13 @@
 			"description": "Maximum flow",
 			"ask_user": "true"
 		},
-		"x_min" : {
+		"S_min" : {
 			"type": "value",
 			"default": "10",
 			"description": "Minimum storage",
 			"ask_user": "true"
 		},
-		"x_max" : {
+		"S_max" : {
 			"type": "value",
 			"default": "100",
 			"description": "Maximum storage",

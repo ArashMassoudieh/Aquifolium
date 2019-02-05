@@ -17,12 +17,13 @@ int main()
     B1.SetName("Reservoir1");
     S.AddBlock(B1);
 
-    S.block("Reservoir1")->SetVal("Storage",10);
+    S.block("Reservoir1")->SetVal("Storage",15);
     S.block("Reservoir1")->SetVal("reservoir_power",2);
     S.block("Reservoir1")->SetVal("reservoir_coeff",30);
     Condition cond("reservoir_power<reservoir_coeff");
     bool out = cond.calc(S.block("Reservoir1"),Expression::timing::present);
     cout<<out<<endl;
+
     if (S.block("Reservoir1")->Variable("inflow")->SetTimeSeries("Inflow.txt"))
    		cout << "Inflow file was set successfully!" << endl;
 	else
@@ -39,15 +40,20 @@ int main()
 //  cout<<S.block("myblock2")->GetVal("flow")<<endl;
 
     Link L;
-    L.SetType("Reservoir_link");
+    L.SetType("Reservoir_link_rule");
     L.SetName("myLink");
     S.AddLink(L,"Reservoir1","Reservoir2");
     //cout<<"flow = " << S.link("myLink")->CalcVal("flow")<<endl;
-
-    cout<<S.link("myLink")->Variable("flow")->GetExpression()->ToString()<<endl;
+    S.link("myLink")->SetVal("Q_max",50);
+    S.link("myLink")->SetVal("Q_min",10);
+    S.link("myLink")->SetVal("S_min",10);
+    S.link("myLink")->SetVal("S_max",100);
+    cout<<S.link("myLink")->Variable("flow")->GetRule()->ToString()<<endl;
     cout<<S.link("myLink")->Variable("flow")->ToString()<<endl;
     cout<<S.link("myLink")->GetVars()->ToString()<<endl;
     cout<<S.GetMetaModel()->ToString()<<endl;
+	cout<<S.link("myLink")->CalcVal("flow",Expression::timing::present)<<endl;
+	cout<<S.Variable("Storage")->GetCorrespondingFlowVar()<<endl;
 	Block User1;
 	User1.SetName("User1");
 	User1.SetType("User");
@@ -57,8 +63,6 @@ int main()
 	User_link.SetName("User_link");
 	User_link.SetType("User_flow");
 	S.AddLink(User_link, "Reservoir2", "User1");
-
-
 
 	if (S.link("User_link")->Variable("flow")->SetTimeSeries("Demand.txt"))
 		cout << "Flow file was set successfully!" << endl;

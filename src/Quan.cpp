@@ -120,6 +120,9 @@ double Quan::CalcVal(const Expression::timing &tmg)
     }
     if (type == _type::expression)
         return _expression.calc(parent,tmg);
+    if (type == _type::rule)
+        return _rule.calc(parent,tmg);
+
     if (type == _type::timeseries)
     {
         if (_timeseries.n>0)
@@ -206,7 +209,7 @@ string Quan::ToString(int _tabs)
         out += tabs(_tabs+1) + "expression: " + _expression.ToString() + "\n";
 
     if (type==_type::rule)
-        out += tabs(_tabs+1) + "rule: " + _rule.ToString() + "\n";
+        out += tabs(_tabs+1) + "rule: " + _rule.ToString(_tabs) + "\n";
 
     out += tabs(_tabs+1) + "val: ";
     out +=  numbertostring(_val);

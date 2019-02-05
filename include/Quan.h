@@ -31,7 +31,10 @@ class Quan
         bool SetRule(const string &R);
         bool SetVal(const double &v, const Expression::timing &tmg=Expression::timing::past);
         void SetCorrespondingFlowVar(const string &s);
-        string GetCorrespondingFlowVar() {return corresponding_flow_quan;}
+        string GetCorrespondingFlowVar()
+        {
+            return corresponding_flow_quan;
+        }
         void SetCorrespondingInflowVar(const string &s);
         string GetCorrespondingInflowVar() {return corresponding_inflow_quan;}
         void SetMassBalance(bool on);

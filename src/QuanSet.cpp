@@ -34,7 +34,7 @@ bool QuanSet::Append(const string &s, const Quan &q)
 {
     if (quans.count(s)>0)
     {
-        last_error = "Quantity " + s + " Already exists!";
+        last_error = "In " + Name() + ": Quantity " + s + " Already exists!";
         return false;
     }
     else
@@ -49,9 +49,9 @@ void QuanSet::Append(QuanSet &qset)
     for (map<string, Quan>::iterator it = qset.begin(); it!=qset.end(); it++)
     {
     #ifdef Debug_mode
-    cout<<it->second.GetName()<<"  " << quans[it->first].GetName() << "  " << it->first << endl;
+    cout<<it->second.GetName()<<"  " << qset[it->first].GetName() << "  " << it->first << endl;
     #endif // Debug_mode
-        Append(it->second.GetName(),quans[it->first]);
+        Append(it->second.GetName(),qset[it->first]);
     }
 
 }
