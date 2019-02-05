@@ -56,7 +56,7 @@
 			"rule": 
 			{	
 				"Storage.s<S_min":"Q_min",
-				"Storage.s<S_max":"Q_min+((Storage.s-S_min)/(S_max-S_min))*(Q_max-Q_min)",
+				"S_min<Storage.s<S_max":"Q_min+((Storage.s-S_min)/(S_max-S_min))*(Q_max-Q_min)",
 				"Storage.s>S_max":"Q_max"
 			},
 			"includeinoutput": "true",

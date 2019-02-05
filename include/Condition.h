@@ -14,19 +14,14 @@ class Condition
         Condition(const Condition &S);
         Condition& operator=(const Condition&);
         virtual ~Condition();
-        void SetRHS(const Expression &expr);
-        void SetLHS(const Expression &expr);
-        void SetRHS(const string &expr);
-        void SetLHS(const string &expr);
         bool calc(Object *W, const Expression::timing &tmg);
         string GetLastError() {return last_error;}
         string ToString(int _tabs = 0);
     protected:
 
     private:
-        Expression lhs;
-        Expression rhs;
-        _oprtr oprtr;
+        vector<Expression> exr;
+        vector<_oprtr> oprtr;
         string last_error;
 };
 

@@ -12,16 +12,14 @@ Condition::~Condition()
 
 Condition::Condition(const Condition &S)
 {
-    lhs = S.lhs;
-    rhs = S.rhs;
+    exr = S.exr;
     oprtr = S.oprtr;
     last_error = S.last_error;
 }
 
 Condition& Condition::operator=(const Condition& S)
 {
-    lhs = S.lhs;
-    rhs = S.rhs;
+    exr = S.exr;
     oprtr = S.oprtr;
     last_error = S.last_error;
 
@@ -32,18 +30,22 @@ Condition::Condition(const string &str)
 {
     if (split(str,'<').size()>1)
     {
-        oprtr = _oprtr::lessthan;
-        vector<string> lrs = split(str,'<');
-        lhs = Expression(lrs[0]);
-        rhs = Expression(lrs[1]);
+        for (unsigned int i=0; i<split(str,'<').size(); i++)
+        {
+            exr.push_back(Expression(split(str,'<')[i]));
+        }
+        for (unsigned int i=0; i<split(str,'<').size()-1; i++)
+            oprtr.push_back(_oprtr::lessthan);
         return;
     }
-    if (split(str,'>').size()>1)
+    else if (split(str,'>').size()>1)
     {
-        oprtr = _oprtr::greaterthan;
-        vector<string> lrs = split(str,'>');
-        lhs = Expression(lrs[0]);
-        rhs = Expression(lrs[1]);
+        for (unsigned int i=0; i<split(str,'>').size(); i++)
+        {
+            exr.push_back(Expression(split(str,'>')[i]));
+        }
+        for (unsigned int i=0; i<split(str,'>').size()-1; i++)
+            oprtr.push_back(_oprtr::greaterthan);
         return;
     }
     else
@@ -51,41 +53,32 @@ Condition::Condition(const string &str)
     return;
 
 }
-void Condition::SetRHS(const Expression &expr)
-{
-    rhs = expr;
-}
-void Condition::SetLHS(const Expression &expr)
-{
-    lhs = expr;
-}
-void Condition::SetRHS(const string &expr)
-{
-    rhs = Expression(expr);
-}
-void Condition::SetLHS(const string &expr)
-{
-    lhs = Expression(expr);
-}
+
 bool Condition::calc(Object *W, const Expression::timing &tmg)
 {
-    if (oprtr == _oprtr::greaterthan)
+    bool out = true;
+    for (unsigned int i=0; i<oprtr.size(); i++)
     {
-        if (lhs.calc(W, tmg)>rhs.calc(W,tmg)) return true; else return false;
+        if (oprtr[i] == _oprtr::greaterthan)
+        {
+            if (!(exr[i].calc(W, tmg)>exr[i+1].calc(W,tmg))) out = false;
+        }
+        if (oprtr[i] == _oprtr::lessthan)
+        {
+            if (!(exr[i].calc(W, tmg)<exr[i+1].calc(W,tmg))) out = false;
+        }
     }
-    if (oprtr == _oprtr::lessthan)
-    {
-        if (lhs.calc(W, tmg)<rhs.calc(W,tmg)) return true; else return false;
-    }
-
 }
 
 string Condition::ToString(int _tabs)
 {
     string s = tabs(_tabs+1);
-    if (oprtr == _oprtr::lessthan)
-        s = lhs.ToString() + "<" + rhs.ToString();
-    if (oprtr == _oprtr::greaterthan)
-        s = rhs.ToString() + ">" + rhs.ToString();
+    for (unsigned int i=0; i<oprtr.size(); i++)
+    {
+        s += exr[i].ToString();
+        if (oprtr[i]==_oprtr::lessthan) s+= "<";
+        if (oprtr[i]==_oprtr::greaterthan) s+= ">";
+    }
+    s += exr[exr.size()-1].ToString();
     return s;
 }
