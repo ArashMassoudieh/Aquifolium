@@ -285,11 +285,12 @@ void CGA<T>::assignfitnesses()
 
 omp_set_num_threads(numberOfThreads);
 #pragma omp parallel for //private(ts,l)
-		for (int k=0; k<maxpop; k++)
+		for (int k=0; k<GA_params.maxpop; k++)
 		{
 			//int ts,l;
 
 			FILE *FileOut;
+FileOut = fopen((filenames.pathname+"detail_GA.txt").c_str(),"a");
 #ifdef GIFMOD
 			FileOut = fopen((Sys.FI.outputpathname+"detail_GA.txt").c_str(),"a");
 #endif
@@ -322,45 +323,39 @@ omp_set_num_threads(numberOfThreads);
 #endif
 			}
 			time_[k] = ((float)(clock() - t0))/CLOCKS_PER_SEC;
-#ifdef GIFMOD
-			FileOut = fopen((Sys.FI.pathname+"detail_GA.txt").c_str(),"a");
-#endif
-#ifdef GWA
-			FileOut = fopen((Sys.Medium[0].pathname+"detail_GA.txt").c_str(),"a");
-#endif
 			fprintf(FileOut, "%i, fitness=%le, time=%e, epochs=%i\n", k, Ind[k].actual_fitness, time_[k], epochs[k]);
 			fclose(FileOut);
 
 		}
 
-	Sys_out = Sys1[maxfitness()];
+	Model_out = Models[maxfitness()];
 
 
 	inp.clear();
-	assignfitness_rank(N);
+	assignfitness_rank(GA_params.N);
 
 }
 
-
-void CGA::crossover()
+template<class T>
+void CGA<T>::crossover()
 {
 
-	for (int i=0; i<maxpop; i++)
+	for (int i=0; i<GA_params.maxpop; i++)
 		Ind_old[i] = Ind[i];
 	int a = maxfitness();
 	Ind[0] = Ind_old[a];
 	Ind[1] = Ind_old[a];
-	for (int i=2; i<maxpop; i+=2)
+	for (int i=2; i<GA_params.maxpop; i+=2)
 	{
         ////qDebug()<<"i = "<< i;
 		int j1 = fitdist.GetRand();
 		int j2 = fitdist.GetRand();
 		double x = GetRndUniF(0,1);
-		if (x<pcross)
-			if (cross_over_type == 1)
-				cross(Ind_old[j1], Ind_old[j2], Ind[i], Ind[min(i+1,maxpop-1)]);   //1 Breaking point
+		if (x<GA_params.pcross)
+			if (GA_params.cross_over_type == 1)
+				cross(Ind_old[j1], Ind_old[j2], Ind[i], Ind[min(i+1,GA_params.maxpop-1)]);   //1 Breaking point
 			else
-				cross2p(Ind_old[j1], Ind_old[j2], Ind[i], Ind[min(i + 1, maxpop - 1)]);  //2 Breaking point
+				cross2p(Ind_old[j1], Ind_old[j2], Ind[i], Ind[min(i + 1, GA_params.maxpop - 1)]);  //2 Breaking point
 		else
 		{
 			Ind[i] = Ind_old[j1];
@@ -370,21 +365,21 @@ void CGA::crossover()
 	}
 
 }
-
-void CGA::crossoverRC()
+template<class T>
+void CGA<T>::crossoverRC()
 {
 
-	for (int i=0; i<maxpop; i++)
+	for (int i=0; i<GA_params.maxpop; i++)
 		Ind_old[i] = Ind[i];
 	int a = maxfitness();
 	Ind[0] = Ind_old[a];
 	Ind[1] = Ind_old[a];
-	for (int i=2; i<maxpop; i+=2)
+	for (int i=2; i<GA_params.maxpop; i+=2)
 	{
 		int j1 = fitdist.GetRand();
 		int j2 = fitdist.GetRand();
 		double x = GetRndUnif(0,1);
-		if (x<pcross)
+		if (x<GA_params.pcross)
 			cross_RC_L(Ind_old[j1], Ind_old[j2], Ind[i], Ind[i+1]);
 		else
 		{
@@ -393,69 +388,53 @@ void CGA::crossoverRC()
 		}
 	}
 }
-
-double CGA::avgfitness()
+template<class T>
+double CGA<T>::avgfitness()
 {
 	double sum=0;
-	for (int i=0; i<maxpop; i++)
+	for (int i=0; i<GA_params.maxpop; i++)
 		sum += Ind[i].fitness;
-	return sum/maxpop;
+	return sum/GA_params.maxpop;
 }
 
-
-void CGA::write_to_detailed_GA(string s)
+template<class T>
+void CGA<T>::write_to_detailed_GA(string s)
 {
 	FILE *FileOut;
-#ifdef GIFMOD
-	FileOut = fopen((Sys.FI.pathname + "detail_GA.txt").c_str(), "a");
-#endif
-#ifdef GWA
-	FileOut = fopen((Sys.Medium[0].pathname + "detail_GA.txt").c_str(), "a");
-#endif
+
+    FileOut = fopen((filenames.pathname + "detail_GA.txt").c_str(), "a");
     fprintf(FileOut, "%s\n", s.c_str());
 	fclose(FileOut);
 
 }
 
-int CGA::optimize()
+template<class T>
+int CGA<T>::optimize()
 {
-#ifdef GIFMOD
-	string RunFileName = Sys.FI.outputpathname + outputfilename;
-#endif
-#ifdef GWA
-	string RunFileName = Sys.Medium[0].pathname + outputfilename;
-#endif
+    string RunFileName = filenames.pathname + filenames.outputfilename;
 
 	FILE *FileOut;
 	FILE *FileOut1;
 
 	FileOut = fopen(RunFileName.c_str(),"w");
 	fclose(FileOut);
-#ifdef GIFMOD
-	FileOut1 = fopen((Sys.FI.outputpathname + "detail_GA.txt").c_str(), "w");
-#endif
-#ifdef GWA
-	FileOut1 = fopen((Sys.Medium[0].pathname + "detail_GA.txt").c_str(), "w");
-#endif
+    FileOut1 = fopen((filenames.pathname + "detail_GA.txt").c_str(), "w");
 	fclose(FileOut1);
 
-	double shakescaleini = shakescale;
+	double shakescaleini = GA_params.shakescale;
 
 	vector<double> X(Ind[0].nParams);
 
-	Sys1.resize(maxpop);
+	Models.resize(GA_params.maxpop);
 
 	initialize();
-	double ininumenhancements = numenhancements;
-	numenhancements = 0;
+	double ininumenhancements = GA_params.numenhancements;
+	GA_params.numenhancements = 0;
 
-	CMatrix Fitness(nGen, 3);
+	CMatrix Fitness(GA_params.nGen, 3);
 
-	for (int i=0; i<nGen; i++)
+	for (int i=0; i<GA_params.nGen; i++)
 	{
-
-		//Form1.label1->Text=gcnew System::String(("Generation: "+numbertostring(i)).c_str());
-		//Form1.Update();
 
 		write_to_detailed_GA("Assigning fitnesses ...");
 		assignfitnesses();
@@ -470,7 +449,7 @@ int CGA::optimize()
 		fprintf(FileOut, "%s, %s, %s", "likelihood", "Fitness", "Rank");
 		fprintf(FileOut, "\n");
 
-		for (int j1=0; j1<maxpop; j1++)
+		for (int j1=0; j1<GA_params.maxpop; j1++)
 		{
 			write_to_detailed_GA("Generation: " + numbertostring(i));
 			fprintf(FileOut, "%i, ", j1);
@@ -493,39 +472,36 @@ int CGA::optimize()
 
 		if (i>10)
 		{
-			if ((Fitness[i][0] == Fitness[i - 3][0]) && shakescale>pow(10.0, -Ind[0].precision[0]))
-				shakescale *= shakescalered;
+			if ((Fitness[i][0] == Fitness[i - 3][0]) && GA_params.shakescale>pow(10.0, -Ind[0].precision[0]))
+				GA_params.shakescale *= GA_params.shakescalered;
 
 
-			if ((Fitness[i][0]>Fitness[i - 1][0]) && (shakescale<shakescaleini))
-				shakescale /= shakescalered;
-			numenhancements = 0;
+			if ((Fitness[i][0]>Fitness[i - 1][0]) && (GA_params.shakescale<shakescaleini))
+				GA_params.shakescale /= GA_params.shakescalered;
+			GA_params.numenhancements = 0;
 		}
 
 		if (i>50)
 		{
 			if ((Fitness[i][0] == Fitness[i - 20][0]))
 			{
-				numenhancements *= 1.05;
-				if (numenhancements == 0) numenhancements = ininumenhancements;
+				GA_params.numenhancements *= 1.05;
+				if (GA_params.numenhancements == 0) GA_params.numenhancements = ininumenhancements;
 			}
 
 			if ((Fitness[i][0] == Fitness[i - 50][0]))
-				numenhancements = ininumenhancements * 10;
+				GA_params.numenhancements = ininumenhancements * 10;
 		}
 
-		Fitness[i][1] = shakescale;
-		Fitness[i][2] = pmute;
+		Fitness[i][1] = GA_params.shakescale;
+		Fitness[i][2] = GA_params.pmute;
 
 		if (i>20)
 		{
-			if (shakescale == Fitness[i - 20][1])
-				shakescale = shakescaleini;
+			if (GA_params.shakescale == Fitness[i - 20][1])
+				GA_params.shakescale = shakescaleini;
 		}
 
-
-		//Form1.label1->Text=L"Cross-over and Mutation ";
-		//Form1.Refresh();
 
 		j = maxfitness();
 		MaxFitness = Ind[j].actual_fitness;
@@ -537,7 +513,7 @@ int CGA::optimize()
 
 		write_to_detailed_GA("Cross-over ...");
 
-		if (RCGA == true)
+		if (GA_params.RCGA == true)
 			crossoverRC();
 		else
 			crossover();
@@ -546,7 +522,7 @@ int CGA::optimize()
 
 		write_to_detailed_GA("Mutation ...");
 
-		mutate(pmute);
+		mutate(GA_params.pmute);
 		write_to_detailed_GA("Mutation done!");
 		write_to_detailed_GA("Shake...!");
 		shake();
@@ -554,8 +530,6 @@ int CGA::optimize()
 
 
 	}
-	//Form1.label1->Text=L"finalizing GA ";
-	//Form1.Refresh();
 	assignfitnesses();
 	FileOut = fopen(RunFileName.c_str(), "a");
 	fprintf(FileOut, "Final Enhancements\n");
@@ -564,7 +538,7 @@ int CGA::optimize()
 
 
 	MaxFitness = Ind[j].actual_fitness;
-	final_params.resize(totnParam);
+	final_params.resize(GA_params.nParam);
 
 
 	for (int k = 0; k<Ind[0].nParams; k++)
@@ -578,65 +552,56 @@ int CGA::optimize()
 
 	assignfitnesses(final_params);
 
-	Sys1.clear();
+	Models.clear();
 
 	return maxfitness();
 }
-double CGA::assignfitnesses(vector<double> inp)
+
+template<class T>
+double CGA<T>::assignfitnesses(vector<double> inp)
 {
 
 	double likelihood = 0;
-#ifdef GIFMOD
-	CMediumSet Sys1;
+    T Models;
+	Models = Model;
 
-#endif
-#ifdef GWA
-	CGWASet Sys1;
-#endif
-
-	Sys1 = Sys;
-	Sys1.ID = "final";
 	int l = 0;
-	for (int i = 0; i < nParam; i++)
-#ifdef GIFMOD
-		Sys1.set_param(i, inp[i]);
-	Sys1.finalize_set_param();
-	likelihood -= Sys1.calc_log_likelihood();
-#endif
-#ifdef GWA
-	Sys1().set_param(i, inp[i]);
-	Sys1().finalize_set_param();
-	likelihood -= Sys1().calc_log_likelihood();
-#endif
+	for (int i = 0; i < GA_params.nParam; i++)
+        Models.SetParam(i, inp[i]);
 
-	Sys_out = Sys1;
+	Models.FinalizeSetParams();
+
+	likelihood -= Models.EvaluateObjectiveFunction();
+
+	Model_out = Models;
 
 	return likelihood;
 
 }
-#ifdef GIFMOD
-vector<CMediumSet>& CGA::assignfitnesses_p(vector<double> inp)
+/*
+template<class T>
+vector<T>& CGA<T>::assignfitnesses_p(vector<double> inp) //Generates an instance of the model with the provided parameters
 {
 	double likelihood = 0;
-	vector<CMediumSet> Sys1(1);
+	vector<T> Models(1);
 	for (int ts = 0; ts<1; ts++)
 	{
-		Sys1[ts] = Sys;
+		Models[ts] = Model;
 
 		int l = 0;
-		for (int i = 0; i<nParam; i++)
-			Sys1[ts].set_param(params[i], inp[getparamno(i, ts)]);
-		Sys1[ts].finalize_set_param();
-		likelihood -= Sys1[ts].calc_log_likelihood();
+		for (int i = 0; i<GA_params.nParam; i++)
+			Models[ts].SetParam(params[i], inp[getparamno(i, ts)]);
+		Models[ts].FinalizeSetParams();
+		likelihood -= Models[ts].EvaluateObjectiveFunction();
 	}
-	Sys1;
-	return Sys1;
+	return Models;
 }
-#endif
-int CGA::get_act_paramno(int i)
+
+template<class T>
+int CGA<T>::get_act_paramno(int i)
 {
 	int l = -1;
-	for (int j = 0; j<nParam; j++)
+	for (int j = 0; j<GA_params.nParam; j++)
 	{
 		if (apply_to_all[j]) l++; else l += 1;
 		if (l >= i)
@@ -646,23 +611,24 @@ int CGA::get_act_paramno(int i)
 		}
 	}
 }
-
-double CGA::getfromoutput(string filename)
+*/
+template<class T>
+double CGA<T>::getfromoutput(string filename)
 {
 	ifstream file(filename);
 	vector<string> s;
-	final_params.resize(totnParam);
+	final_params.resize(GA_params.nParam);
 	while (file.eof() == false)
 	{
 		s = getline(file);
 		if (s.size()>0)
 		{
 			if (s[0] == "Final Enhancements")
-				for (int i = 0; i<totnParam; i++)
+				for (int i = 0; i<GA_params.nParam; i++)
 				{
 					s = getline(file);
 					if (s.size() == 0)
-						Sys.writetolog("The number of parameters in GA output file does not match the number of unknown parameters");
+						write_to_detailed_GA("The number of parameters in GA output file does not match the number of unknown parameters");
 					else
 						final_params[i] = atof(s[1].c_str());
 				}
@@ -673,492 +639,8 @@ double CGA::getfromoutput(string filename)
 }
 
 
-#ifdef GWA
-CGA::CGA(string filename, CGWASet &Syst)
-
-{
-	int ii;
-	char buffer[33];
-	Sys = Syst;
-	ifstream file(filename);
-	nParam = 0;
-	totnParam = 0;
-	vector<string> s;
-	pcross = 1;
-	N = 1;
-	fixedstd = true;
-	purt_fac = 0.1;
-	noinipurt = false;
-	sensbasedpurt = false;
-	justreadmcmc = false;
-	nrealizations = 60;
-	writeinterval = 1;
-	dp_sens = 0.001;
-	//purt_fac = 0.5;
-	sens_out = false;
-	RCGA = false;
-	purtscale = 0.75;
-	global_sensitivity = false;
-	continue_mcmc = false;
-	calculate_percentile = true;
-	mcmc_realization = true;
-	calculate_correlation = true;
-	pathname = Syst().pathname;
-	readfromgafile = false;
-	calc_distributions = false;
-	noise_realization_writeout = false;
-	obs_realization_writeout = false;
-	const_realization_writeout = false;
-	influent_realization = false;
-	no_bins = 10;
-	mcmc_run = false;
-
-	while (file.eof() == false)
-	{
-		s = getline(file);
-		if (s.size()>0)
-		{
-			if (s[0] == "maxpop") maxpop = atoi(s[1].c_str());
-			if (s[0] == "ngen") nGen = atoi(s[1].c_str());
-			if (s[0] == "pcross") pcross = atof(s[1].c_str());
-			if (s[0] == "pmute") pmute = atof(s[1].c_str());
-			if (s[0] == "shakescale") shakescale = atof(s[1].c_str());
-			if (s[0] == "shakescalered") shakescalered = atof(s[1].c_str());
-			if (s[0] == "outputfile") outputfilename = s[1];
-			if (s[0] == "burnout") burnout = atoi(s[1].c_str());
-			if (s[0] == "nchains") nchains = atoi(s[1].c_str());
-			if (s[0] == "mcmcoutputfile") mcmcoutputfile = s[1];
-			if (s[0] == "nmcmcsamples") nMCMCsamples = atoi(s[1].c_str());
-			if (s[0] == "acceptance_rate") acceptance_rate = atof(s[1].c_str());
-			if (s[0] == "purtscale") purtscale = atof(s[1].c_str());
-			if (s[0] == "purtfac") purt_fac = atof(s[1].c_str());
-			if (s[0] == "purt_fac") purt_fac = atof(s[1].c_str());
-			if (s[0] == "writeinterval") writeinterval = atoi(s[1].c_str());
-			if (s[0] == "noinipurt") noinipurt = atoi(s[1].c_str());
-			if (s[0] == "getfromfilename") getfromfilename = s[1].c_str();
-			if (s[0] == "sensbasedpurt") sensbasedpurt = atoi(s[1].c_str());
-			if (s[0] == "justreadmcmc") justreadmcmc = atoi(s[1].c_str());
-			if (s[0] == "nrealizations") nrealizations = atoi(s[1].c_str());
-			if (s[0] == "calculate_sensitivity") sens_out = atoi(s[1].c_str());
-			if (s[0] == "dp_sensitivity") dp_sens = atof(s[1].c_str());
-			if (s[0] == "global_sensitivity") global_sensitivity = atoi(s[1].c_str());
-			if (s[0] == "continuemcmc") continue_mcmc = atoi(s[1].c_str());
-			if (s[0] == "calculate_percentile") calculate_percentile = atoi(s[1].c_str());
-			if (s[0] == "calculate_correlation") calculate_correlation = atoi(s[1].c_str());
-			if (s[0] == "mcmc_realization") mcmc_realization = atoi(s[1].c_str());
-			if (s[0] == "noise_realization_writeout") noise_realization_writeout = atoi(s[1].c_str());
-			if (s[0] == "obs_realization_writeout") obs_realization_writeout = atoi(s[1].c_str());
-			if (s[0] == "const_realization_writeout") const_realization_writeout = atoi(s[1].c_str());
-			if (s[0] == "influent_realization") influent_realization = atoi(s[1].c_str());
-			if (s[0] == "forward_montecarlo_filename") forward_inflow_ARIMA_params = pathname + s[1];
-			if (s[0] == "initial_population") initialpopfilemame = s[1];
-			if (s[0] == "readfromgafile") readfromgafile = atoi(s[1].c_str());
-			if (s[0] == "calc_distributions") calc_distributions = atoi(s[1].c_str());
-			if (s[0] == "no_bins") no_bins = atoi(s[1].c_str());
-			if (s[0] == "mcmc_run") mcmc_run = atoi(s[1].c_str());
-			if (s[0] == "calc_output_percentiles")
-				for (int i = 0; i<s.size() - 1; i++)
-					calc_output_percentiles.push_back(atof(s[i + 1].c_str()));
-		}
-	}
-
-	burnout = burnout / writeinterval;
-	for (int i = 0; i<Sys.parameters.size(); i++)
-		if (Sys.parameters[i].fixed == false)
-		{
-			if (Sys.parameters[i].applytoall == true)
-			{
-				totnParam++;
-				nParam++;
-				params.push_back(i);
-				if (Sys.parameters[i].log)
-				{
-					minval.push_back(log10(Sys.parameters[i].low));
-					maxval.push_back(log10(Sys.parameters[i].high));
-				}
-				else
-				{
-					minval.push_back(Sys.parameters[i].low);
-					maxval.push_back(Sys.parameters[i].high);
-				}
-				paramname.push_back(Sys.parameters[i].name);
-				apply_to_all.push_back(true);
-				loged.push_back(Sys.parameters[i].log);
-				to_ts.push_back(-1);
-			}
-			else
-			{
-				totnParam += 1;
-				nParam++;
-				params.push_back(i);
-				if (Sys.parameters[i].log)
-				{
-					minval.push_back(log10(Sys.parameters[i].low));
-					maxval.push_back(log10(Sys.parameters[i].high));
-
-				}
-				else
-				{
-					minval.push_back(Sys.parameters[i].low);
-					maxval.push_back(Sys.parameters[i].high);
-				}
-				apply_to_all.push_back(false);
-				loged.push_back(Sys.parameters[i].log);
-				for (int j = 0; j<1; j++)
-				{
-					to_ts.push_back(j);
-					paramname.push_back(Sys.parameters[i].name + "_" + string(_itoa(j, buffer, 10)));
-				}
-			}
-		}
-
-
-	Ind.resize(maxpop);
-	Ind_old.resize(maxpop);
-
-	fitdist = CDistribution(maxpop);
-	cross_over_type = 1;
-
-	for (int i = 0; i<maxpop; i++)
-	{
-		Ind[i] = CIndividual(totnParam);
-		Ind_old[i] = CIndividual(totnParam);
-
-	}
-
-	for (int i = 0; i<totnParam; i++)
-		Setminmax(i, minval[get_act_paramno(i)], maxval[get_act_paramno(i)], 4);
-
-	MaxFitness = 0;
-
-
-
-
-}
-#endif
-/*
-void CGA::assignfitnesses()
-{
-	sumfitness = 0;
-
-	vector<vector<double>> inp;
-
-	inp.resize(maxpop);
-
-
-	for (int k = 0; k<maxpop; k++)
-		inp[k].resize(totnParam);
-
-	vector<double> time_(maxpop);
-	vector<int> epochs(maxpop);
-	clock_t t0, t1;
-
-	for (int k = 0; k<maxpop; k++)
-	{
-		for (int i = 0; i<totnParam; i++)
-		{
-			if (loged[get_act_paramno(i)] != 1)
-			{
-				inp[k][i] = Ind[k].x[i];    //Ind
-			}
-			else
-			{
-				inp[k][i] = pow(10, Ind[k].x[i]);
-			}
-		}
-
-		int jj = 0;
-		Ind[k].actual_fitness = 0;
-
-		for (int ts = 0; ts<1; ts++)
-			{
-
-#ifdef GIFMOD
-			Sys1[k][ts] = Sys;
-#endif
-#ifdef GWA
-			Sys1[k] = Sys;
-#endif
-			for (int i = 0; i<nParam; i++)
-#ifdef GIFMOD
-				Sys1[k][ts].setparams(i, inp[k][getparamno(i, 0)]);
-#endif
-#ifdef GWA
-				Sys1[k].Medium[0].setparams(i, inp[k][getparamno(i, 0)]);
-#endif
-
-			int l = 0;
-		}
-	}
-
-omp_set_num_threads(numberOfThreads);
-#pragma omp parallel for //private(ts,l)
-	for (int k = 0; k<maxpop; k++)
-	{
-		//int ts,l;
-
-		FILE *FileOut;
-#ifdef GIFMOD
-		FileOut = fopen((Sys.pathname() + "detail_GA.txt").c_str(), "a");
-#endif
-#ifdef GWA
-		FileOut = fopen((Sys.Medium[0].pathname + "detail_GA.txt").c_str(), "a");
-#endif
-
-		std::fprintf(FileOut, "%i, ", k);
-		for (int l = 0; l<Ind[0].nParams; l++)
-			if (loged[get_act_paramno(l)] == 1)
-				std::fprintf(FileOut, "%le, ", pow(10, Ind[k].x[l]));
-			else
-				std::fprintf(FileOut, "%le, ", Ind[k].x[l]);
-
-		//fprintf(FileOut, "%le, %le, %i, %e, %i, %i", Ind[k].actual_fitness, Ind[k].fitness, Ind[k].rank, time_[k], threads_num[k],num_threads[k]);
-		//fprintf(FileOut, "%le, %le, %i, %e", Ind[k].actual_fitness, Ind[k].fitness, Ind[k].rank, time_[k]);
-		std::fprintf(FileOut, "\n");
-		std::fclose(FileOut);
-
-		clock_t t0 = clock();
-		for (int ts = 0; ts<1; ts++)
-		{
-#ifdef GIFMOD
-			Ind[k].actual_fitness -= Sys1[k][ts].calc_log_likelihood();
-			epochs[k] += Sys1[k][ts].epoch_count;
-#endif
-#ifdef GWA
-			Ind[k].actual_fitness -= Sys1[k].Medium[0].calc_log_likelihood();
-			epochs[k] += Sys1[k].Medium[0].epoch_count;
-#endif
-		}
-		time_[k] = ((float)(clock() - t0)) / CLOCKS_PER_SEC;
-		FileOut = fopen((Sys.pathname() + "detail_GA.txt").c_str(), "a");
-		std::fprintf(FileOut, "%i, fitness=%le, time=%e, epochs=%i\n", k, Ind[k].actual_fitness, time_[k], epochs[k]);
-		std::fclose(FileOut);
-
-	}
-
-	Sys_out = Sys1[maxfitness()];
-
-
-	inp.clear();
-	assignfitness_rank(N);
-
-}
-
-int CGA::optimize()
-{
-	string RunFileName = Sys.pathname() + outputfilename;
-
-
-	FILE *FileOut;
-	FILE *FileOut1;
-
-	FileOut = fopen(RunFileName.c_str(), "w");
-	std::fclose(FileOut);
-	FileOut1 = fopen((Sys.pathname() + "detail_GA.txt").c_str(), "w");
-	std::fclose(FileOut1);
-
-
-	double shakescaleini = shakescale;
-
-
-	vector<double> X(Ind[0].nParams);
-
-
-	Sys1.resize(maxpop);
-//	for (int i = 0; i<maxpop; i++) Sys1[i].resize(1); ASK ARASH
-#ifdef GIFMOD
-	for (int i = 0; i<maxpop; i++) Sys1[i].resize(1);
-#endif
-#ifdef GWA
-	for (int i = 0; i<maxpop; i++) Sys1.resize(1);
-#endif
-
-	initialize();
-	double ininumenhancements = numenhancements;
-	numenhancements = 0;
-
-
-	CMatrix Fitness(nGen, 3);
-
-
-	for (int i = 0; i<nGen; i++)
-	{
-		//Form1.label1->Text=gcnew System::String(("Generation: "+numbertostring(i)).c_str());
-		//Form1.Update();
-		assignfitnesses();
-		FileOut = fopen(RunFileName.c_str(), "a");
-		printf("Generation: %i\n", i);
-		std::fprintf(FileOut, "Generation: %i\n", i);
-		std::fprintf(FileOut, "ID, ");
-
-
-		for (int k = 0; k<Ind[0].nParams; k++)
-			std::fprintf(FileOut, "%s, ", paramname[k].c_str());
-		std::fprintf(FileOut, "%s, %s, %s", "likelihood", "Fitness", "Rank");
-		std::fprintf(FileOut, "\n");
-
-
-
-
-		for (int j1 = 0; j1<maxpop; j1++)
-		{
-			std::fprintf(FileOut, "%i, ", j1);
-
-
-
-			for (int k = 0; k<Ind[0].nParams; k++)
-				if (loged[get_act_paramno(k)] == 1)
-					std::fprintf(FileOut, "%le, ", pow(10, Ind[j1].x[k]));
-				else
-					std::fprintf(FileOut, "%le, ", Ind[j1].x[k]);
-
-
-			std::fprintf(FileOut, "%le, %le, %i", Ind[j1].actual_fitness, Ind[j1].fitness, Ind[j1].rank);
-			std::fprintf(FileOut, "\n");
-
-
-		}
-		std::fclose(FileOut);
-
-
-		int j = maxfitness();
-
-
-		Fitness[i][0] = Ind[j].actual_fitness;
-
-		if (i>10)
-		{
-			if ((Fitness[i][0] == Fitness[i - 3][0]) && shakescale>pow(10.0, -Ind[0].precision[0]))
-				shakescale *= shakescalered;
-
-
-			if ((Fitness[i][0]>Fitness[i - 1][0]) && (shakescale<shakescaleini))
-				shakescale /= shakescalered;
-			numenhancements = 0;
-		}
-
-		if (i>50)
-		{
-			if ((Fitness[i][0] == Fitness[i - 20][0]))
-			{
-				numenhancements *= 1.05;
-				if (numenhancements == 0) numenhancements = ininumenhancements;
-			}
-
-			if ((Fitness[i][0] == Fitness[i - 50][0]))
-				numenhancements = ininumenhancements * 10;
-		}
-
-		Fitness[i][1] = shakescale;
-		Fitness[i][2] = pmute;
-
-		if (i>20)
-		{
-			if (shakescale == Fitness[i - 20][1])
-				shakescale = shakescaleini;
-		}
-
-
-		//Form1.label1->Text=L"Cross-over and Mutation ";
-		//Form1.Refresh();
-
-		j = maxfitness();
-		MaxFitness = Ind[j].actual_fitness;
-
-		Fitness[i][0] = Ind[j].actual_fitness;
-
-
-		fillfitdist();
-		if (RCGA == true)
-			crossoverRC();
-		else
-			crossover();
-
-
-		mutate(pmute);
-		shake();
-	}
-	//Form1.label1->Text=L"finalizing GA ";
-	//Form1.Refresh();
-	assignfitnesses();
-	FileOut = fopen(RunFileName.c_str(), "a");
-	std::fprintf(FileOut, "Final Enhancements\n");
-
-	double l_MaxFitness = 1;
-	int j = maxfitness();
-
-
-	MaxFitness = Ind[j].actual_fitness;
-	final_params.resize(totnParam);
-
-
-	for (int k = 0; k<Ind[0].nParams; k++)
-	{
-		if (loged[get_act_paramno(k)] == 1) final_params[k] = pow(10, Ind[j].x[k]); else final_params[k] = Ind[j].x[k];
-		std::fprintf(FileOut, "%s, ", paramname[k].c_str());
-		std::fprintf(FileOut, "%le, ", final_params[k]);
-		std::fprintf(FileOut, "%le, %le\n", Ind[j].actual_fitness, Ind[j].fitness);
-
-
-
-	}
-	std::fclose(FileOut);
-
-
-
-	assignfitnesses(final_params);
-
-	Sys1.clear();
-
-
-
-	return maxfitness();
-}
-*/
-/*
-#ifdef GWA
-double CGA::assignfitnesses(vector<double> inp)
-{
-
-	double likelihood = 0;
-	CGWASet Sys1;
-
-	Sys1 = Sys;
-
-		int l = 0;
-		for (int i = 0; i<nParam; i++)
-			Sys1().set_param(i, inp[i]);
-		Sys1().finalize_set_param();
-		likelihood -= Sys1().calc_log_likelihood();
-
-
-	Sys_out = Sys1;
-
-	return likelihood;
-
-}
-
-vector<CGWASet>& CGA::assignfitnesses_p(vector<double> inp)
-{
-	double likelihood = 0;
-	CGWASet Sys1;
-
-	Sys1 = Sys;
-
-	int l = 0;
-	for (int i = 0; i < nParam; i++)
-		Sys1().set_param(i, inp[i]);
-	Sys1().finalize_set_param();
-	likelihood -= Sys1().calc_log_likelihood();
-
-	vector<CGWASet> r(1);
-	r[0] = Sys1;
-
-	return r;
-}
-#endif
-*/
-int CGA::getparamno(int i, int ts)
+template<class T>
+int CGA<T>::getparamno(int i, int ts)
 {
 	int l = 0;
 	for (int j = 0; j<i; j++)
@@ -1170,11 +652,11 @@ int CGA::getparamno(int i, int ts)
 		return l + ts;
 
 }
-
-int CGA::get_time_series(int i)
+template<class T>
+int CGA<T>::get_time_series(int i)
 {
 	int l = 0;
-	for (int j = 0; j<nParam; j++)
+	for (int j = 0; j<GA_params.nParam; j++)
 	{
 		if (apply_to_all[j]) l += 1; else l += 1;
 		if (l >= i)
@@ -1186,27 +668,28 @@ int CGA::get_time_series(int i)
 }
 
 
-
-void CGA::shake()
+template<class T>
+void CGA<T>::shake()
 {
-	for (int i=1; i<maxpop; i++)
-		Ind[i].shake(shakescale);
+	for (int i=1; i<GA_params.maxpop; i++)
+		Ind[i].shake(GA_params.shakescale);
 
 }
 
-void CGA::mutate(double mu)
+template<class T>
+void CGA<T>::mutate(double mu)
 {
-	for (int i=2; i<maxpop; i++)
+	for (int i=2; i<GA_params.maxpop; i++)
 		Ind[i].mutate(mu);
 
 }
 
-
-int CGA::maxfitness()
+template<class T>
+int CGA<T>::maxfitness()
 {
 	double max_fitness = 1E+308 ;
 	int i_max = 0;
-	for (int i=0; i<maxpop; i++)
+	for (int i=0; i<GA_params.maxpop; i++)
 		if (max_fitness>Ind[i].actual_fitness)
 		{
 			max_fitness = Ind[i].actual_fitness;
@@ -1216,52 +699,56 @@ int CGA::maxfitness()
 
 }
 
-double CGA::variancefitness()
+template<class T>
+double CGA<T>::variancefitness()
 {
 	double sum = 0;
 	double a = avgfitness();
-	for (int i=0; i<maxpop; i++)
+	for (int i=0; i<GA_params.maxpop; i++)
 		sum += (a - Ind[i].fitness)*(a - Ind[i].fitness);
 	return sum;
 
 }
 
-double CGA::stdfitness()
+template<class T>
+double CGA<T>::stdfitness()
 {
 	double sum = 0;
 	double a = avg_inv_actual_fitness();
-	for (int i=0; i<maxpop; i++)
+	for (int i=0; i<GA_params.maxpop; i++)
 		sum += (a - 1/Ind[i].actual_fitness)*(a - 1/Ind[i].actual_fitness);
-	return sqrt(sum)/maxpop/a;
+	return sqrt(sum)/GA_params.maxpop/a;
 
 }
 
-double CGA::avg_actual_fitness()
+template<class T>
+double CGA<T>::avg_actual_fitness()
 {
 	double sum=0;
-	for (int i=0; i<maxpop; i++)
+	for (int i=0; i<GA_params.maxpop; i++)
 		sum += Ind[i].actual_fitness;
-	return sum/maxpop;
+	return sum/GA_params.maxpop;
 
 }
 
-double CGA::avg_inv_actual_fitness()
+template<class T>
+double CGA<T>::avg_inv_actual_fitness()
 {
 	double sum=0;
-	for (int i=0; i<maxpop; i++)
+	for (int i=0; i<GA_params.maxpop; i++)
 		sum += 1/Ind[i].actual_fitness;
-	return sum/maxpop;
+	return sum/GA_params.maxpop;
 
 }
 
 
-
-void CGA::assignrank()
+template<class T>
+void CGA<T>::assignrank()
 {
-	for (int i=0; i<maxpop; i++)
+	for (int i=0; i<GA_params.maxpop; i++)
 	{
 		int r = 1;
-		for (int j=0; j<maxpop; j++)
+		for (int j=0; j<GA_params.maxpop; j++)
 		{
 			if (Ind[i].actual_fitness > Ind[j].actual_fitness) r++;
 		}
@@ -1270,186 +757,70 @@ void CGA::assignrank()
 
 }
 
-void CGA::assignfitness_rank(double N)
+template<class T>
+void CGA<T>::assignfitness_rank(double N)
 {
 	assignrank();
-	for (int i=0; i<maxpop; i++)
+	for (int i=0; i<GA_params.maxpop; i++)
 	{
-		Ind[i].fitness = pow(1.0/static_cast<double>(Ind[i].rank),N);
+		Ind[i].fitness = pow(1.0/static_cast<double>(Ind[i].rank),GA_params.N);
 	}
 }
 
 
-
-void CGA::fillfitdist()
+template<class T>
+void CGA<T>::fillfitdist()
 {
        double sum=0;
-       for (int i=0; i<maxpop; i++)
+       for (int i=0; i<GA_params.maxpop; i++)
        {
               sum+=Ind[i].fitness;
        }
 
        fitdist.s[0] = 0;
        fitdist.e[0] = Ind[0].fitness/sum;
-       for (int i=1; i<maxpop-1; i++)
+       for (int i=1; i<GA_params.maxpop-1; i++)
        {
               fitdist.e[i] = fitdist.e[i-1] + Ind[i].fitness/sum;
               fitdist.s[i] = fitdist.e[i-1];
        }
-       fitdist.s[maxpop-1] = fitdist.e[maxpop-2];
-       fitdist.e[maxpop-1] = 1;
+       fitdist.s[GA_params.maxpop-1] = fitdist.e[GA_params.maxpop-2];
+       fitdist.e[GA_params.maxpop-1] = 1;
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-double CGA::evaluateforward()
+template<class T>
+double CGA<T>::evaluateforward()
 {
 	vector<double> v(1);
 	v[0] = 1;
 	CVector out(1);
-	int x_nParam = nParam;
+	int x_nParam = GA_params.nParam;
 	vector<int> x_params = params;
-	nParam = 1;
+	GA_params.nParam = 1;
 	params.resize(1);
 	params[0] = 100;
 	out[0] = assignfitnesses(v);
-#ifdef GIFMOD
-	out.writetofile(Sys.FI.outputpathname + "likelihood.txt");
-#endif
-#ifdef GWA
-	out.writetofile(Sys.pathname() + "likelihood.txt");
-#endif
+
+	out.writetofile(filenames.pathname + "likelihood.txt");
 	params = x_params;
-	nParam = x_nParam;
+	GA_params.nParam = x_nParam;
 	return out[0];
 }
 
-double CGA::evaluateforward_mixed(vector<double> v)
-{
-	CVector out(1);
-	int x_nParam = nParam;
-	vector<int> x_params = params;
-	nParam = 2;
-	params.resize(2);
-	params[0] = 100;
-	params[1] = 101;
-	out[0] = assignfitnesses(v);
-#ifdef GIFMOD
-	out.writetofile(Sys.FI.outputpathname + "likelihood.txt");
-#endif
-#ifdef GWA
-	out.writetofile(Sys.pathname() + "likelihood.txt");
-#endif
-	params = x_params;
-	nParam = x_nParam;
-	return out[0];
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-void CGA::getinifromoutput(string filename)
+template<class T>
+void CGA<T>::getinifromoutput(string filename)
 {
 	ifstream file(filename);
 	vector<string> s;
 	initial_pop.resize(1);
-	initial_pop[0].resize(totnParam);
+	initial_pop[0].resize(GA_params.nParam);
 	while (file.eof() == false)
 	{
 		s = getline(file);
 		if (s.size()>0)
 		{	if (s[0] == "Final Enhancements")
-			for (int i=0; i<totnParam; i++)
+			for (int i=0; i<GA_params.nParam; i++)
 			{
 				s = getline(file);
 				if (loged[get_act_paramno(i)]==1)
@@ -1463,7 +834,8 @@ void CGA::getinifromoutput(string filename)
 
 }
 
-void CGA::getinitialpop(string filename)
+template<class T>
+void CGA<T>::getinitialpop(string filename)
 {
 	ifstream file(filename);
 	vector<string> s;

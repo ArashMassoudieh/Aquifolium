@@ -4,11 +4,13 @@
 #include "System.h"
 #include <iostream>
 #include "Condition.h"
+#include "GA.h"
 
 using namespace std;
 
 int main()
 {
+    CGA<System> GA();
     System S;
     S.GetQuanTemplate("power_reservoirs_rules.qnt");
     //Expression E("2*X+X^2+Y/X");

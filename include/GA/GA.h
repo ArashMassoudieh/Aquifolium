@@ -109,8 +109,6 @@ public:
 	T Model_out;
 	T Model;
 
-
-
 	CGA();
 	CGA(int n);
 	virtual ~CGA();
