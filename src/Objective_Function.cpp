@@ -41,3 +41,17 @@ double Objective_Function::GetValue(const Expression::timing &tmg)
     lasterror = "Location " + location + "was not found in the system!";
     return 0;
 }
+
+void Objective_Function::append_value(double t, double val)
+{
+    stored_time_series.append(t,val);
+    return;
+}
+
+void Objective_Function::append_value(double t)
+{
+    stored_time_series.append(t,GetValue(Expression::timing::present));
+    return;
+}
+
+
