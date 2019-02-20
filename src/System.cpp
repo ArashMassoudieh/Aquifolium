@@ -44,6 +44,7 @@ System::System(const System& other):Object::Object(other)
 {
     blocks = other.blocks;
     links = other.links;
+    objective_function_set = other.objective_function_set;
 }
 
 System& System::operator=(const System& rhs)
@@ -52,6 +53,7 @@ System& System::operator=(const System& rhs)
     Object::operator=(rhs);
     blocks = rhs.blocks;
     links = rhs.links;
+    objective_function_set = rhs.objective_function_set;
     return *this;
 }
 
@@ -691,3 +693,18 @@ void System::GetModelConfiguration()
     }
 }
 #endif
+
+void System::AppenObjectiveFunction(const string &name, const Objective_Function &obj, double weight)
+{
+    objective_function_set.Append(name,obj, weight);
+    return;
+}
+void System::UpdateObjectiveFunctions(double t)
+{
+    objective_function_set.Update(t);
+    return;
+}
+double System::GetObjectiveFunctionValue()
+{
+    return objective_function_set.Calculate();
+}

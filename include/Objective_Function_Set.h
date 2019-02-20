@@ -20,6 +20,7 @@ class Objective_Function_Set
         void Append(const string &name, const Objective_Function &o_func, double weight = 1);
         obj_funct_weight* operator[](string name);
         double Calculate();
+        void Update(double t);
         string LastError() {return lasterror;}
     protected:
 

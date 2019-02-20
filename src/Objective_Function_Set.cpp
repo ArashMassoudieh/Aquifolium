@@ -45,7 +45,15 @@ double Objective_Function_Set::Calculate()
 {
     double out = 0;
     for (map<string, obj_funct_weight>::iterator it = objectivefunctions.begin(); it != objectivefunctions.end(); it++)
-        out += it->second->obj_funct.GetValue(Expression::timing::present)*it->weight;
+        out += it->second.obj_funct.GetValue(Expression::timing::present)*it->second.weight;
 
     return out;
+}
+
+void Objective_Function_Set::Update(double t)
+{
+    double out = 0;
+    for (map<string, obj_funct_weight>::iterator it = objectivefunctions.begin(); it != objectivefunctions.end(); it++)
+        it->second.obj_funct.append_value(t);
+    return;
 }

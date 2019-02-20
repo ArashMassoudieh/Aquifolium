@@ -268,17 +268,9 @@ void CGA<T>::assignfitnesses()
 
 		Models[k] = Model;
 
-		int l = 0;
-#ifdef GIFMOD
-		for (int i = 0; i < nParam; i++)
-			Sys1[k].set_param(params[i], inp[k][i]);
-		Sys1[k].finalize_set_param();
-#endif
-#ifdef GWA
-		for (int i = 0; i < nParam; i++)
-			Sys1[k].Medium[0].set_param(params[i], inp[k][i]);
-		Sys1[k].Medium[0].finalize_set_param();
-#endif
+		for (int i = 0; i < GA_params.nParam; i++)
+			Models[k].SetParams(params[i], inp[k][i]);
+
 
 	}
 
@@ -287,16 +279,9 @@ omp_set_num_threads(numberOfThreads);
 #pragma omp parallel for //private(ts,l)
 		for (int k=0; k<GA_params.maxpop; k++)
 		{
-			//int ts,l;
-
 			FILE *FileOut;
-FileOut = fopen((filenames.pathname+"detail_GA.txt").c_str(),"a");
-#ifdef GIFMOD
-			FileOut = fopen((Sys.FI.outputpathname+"detail_GA.txt").c_str(),"a");
-#endif
-#ifdef GWA
-			FileOut = fopen((Sys.Medium[0].pathname + "detail_GA.txt").c_str(), "a");
-#endif
+            FileOut = fopen((filenames.pathname+"detail_GA.txt").c_str(),"a");
+
 
 			fprintf(FileOut, "%i, ", k);
 			for (int l=0; l<Ind[0].nParams; l++)
@@ -311,17 +296,9 @@ FileOut = fopen((filenames.pathname+"detail_GA.txt").c_str(),"a");
 			fclose(FileOut);
 
 			clock_t t0 = clock();
-			for (int ts=0; ts<1; ts++)
-			{
-#ifdef GIFMOD
-				Ind[k].actual_fitness -= Sys1[k].calc_log_likelihood();
-				epochs[k] += Sys1[k].epoch_count();
-#endif
-#ifdef GWA
-				Ind[k].actual_fitness -= Sys1[k].Medium[0].calc_log_likelihood();
-				epochs[k] += Sys1[k].epoch_count();
-#endif
-			}
+
+			Ind[k].actual_fitness -= Models[k].GetObjectiveFunctionValue();
+			epochs[k] += Models[k].EpochCount();
 			time_[k] = ((float)(clock() - t0))/CLOCKS_PER_SEC;
 			fprintf(FileOut, "%i, fitness=%le, time=%e, epochs=%i\n", k, Ind[k].actual_fitness, time_[k], epochs[k]);
 			fclose(FileOut);

@@ -7,6 +7,7 @@
 #include "Matrix_arma.h"
 #include "MetaModel.h"
 #include "BTCSet.h"
+#include "Objective_Function_Set.h"
 
 #ifdef QT_version
     #include "runtimeWindow.h"
@@ -93,6 +94,9 @@ class System: public Object
         void clear();
         int lookup_observation(const string &s) {return 0;}
         int EpochCount() {return SolverTempVars.epoch_count;}
+        void AppenObjectiveFunction(const string &name, const Objective_Function&, double weight=1);
+        void UpdateObjectiveFunctions(double t);
+        double GetObjectiveFunctionValue();
 #ifdef QT_version
         logWindow *LogWindow() {return logwindow;}
         void SetLogWindow(logWindow *lgwnd) {logwindow=lgwnd;}
@@ -121,6 +125,7 @@ class System: public Object
         void InitiateOutputs();
         void PopulateOutputs();
         void TransferQuantitiesFromMetaModel();
+        Objective_Function_Set objective_function_set;
 
 #ifdef QT_version
         GraphWidget *diagramview;
