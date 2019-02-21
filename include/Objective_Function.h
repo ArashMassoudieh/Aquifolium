@@ -23,7 +23,7 @@ class Objective_Function
         void SetLastError(const string &lerror) {lasterror = lerror;}
         CTimeSeries *GetTimeSeries() {return &stored_time_series;}
         void SetLocation(const string &loc) {location = loc;}
-        void SetExpression(const Expression &exp)
+        void SetExpression(const Expression &exp) {expression = exp;}
     protected:
 
     private:

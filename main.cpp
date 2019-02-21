@@ -75,10 +75,12 @@ int main()
 	vector<string> blocks = S.GetAllBlockTypes();
 	vector<string> links = S.GetAllLinkTypes();
 
+    S.AppendObjectiveFunction("Flow_myLink","myLink",Expression("flow"));
     S.dt() = 0.01;
 	S.tend() = 10;
 	S.SetVariableParents();
 	S.Solve("Storage");
+    S.GetObjectiveFunctionTimeSeries("Flow_myLink")->writefile("Obj.txt");
     S.GetOutputs().writetofile("text.txt");
 
     return 0;

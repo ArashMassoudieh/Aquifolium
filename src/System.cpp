@@ -184,6 +184,7 @@ bool System::Solve(const string &variable)
                 SolverTempVars.dt /= SolverSettings.NR_timestep_reduction_factor;
             PopulateOutputs();
             Update(variable);
+            UpdateObjectiveFunctions(SolverTempVars.t);
         }
 
     }
@@ -694,21 +695,21 @@ void System::GetModelConfiguration()
 }
 #endif
 
-void System::AppenObjectiveFunction(const string &name, const Objective_Function &obj, double weight)
+void System::AppendObjectiveFunction(const string &name, const Objective_Function &obj, double weight)
 {
     objective_function_set.Append(name,obj, weight);
     return;
 }
 
-bool System::AppenObjectiveFunction(const string &name, const string &location, const &Expression expr, double weight)
+bool System::AppendObjectiveFunction(const string &name, const string &location, const Expression &expr, double weight)
 {
-    ObjectiveFunction obj(this,expr,loc);
-    if (Block(location)!=nullptr || Link(location)!=nullptr)
+    Objective_Function obj(this,expr,location);
+    if (block(location)!=nullptr || link(location)!=nullptr)
     {
         objective_function_set.Append(name,obj, weight);
         return true;
     }
-    last_error = "Location " + name + "Was not found";
+    last_error = "Location " + name + "was not found";
     return false;
 }
 
