@@ -3,6 +3,7 @@
 
 #include "Objective_Function.h"
 #include <map>
+#include "BTCSet.h"
 
 struct obj_funct_weight
 {
@@ -22,6 +23,7 @@ class Objective_Function_Set
         double Calculate();
         void Update(double t);
         string LastError() {return lasterror;}
+        CTimeSeriesSet GetTimeSeriesSet();
     protected:
 
     private:

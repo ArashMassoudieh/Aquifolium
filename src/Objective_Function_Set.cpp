@@ -57,3 +57,11 @@ void Objective_Function_Set::Update(double t)
         it->second.obj_funct.append_value(t);
     return;
 }
+
+CTimeSeriesSet Objective_Function_Set::GetTimeSeriesSet()
+{
+    CTimeSeriesSet out;
+    for (map<string, obj_funct_weight>::iterator it = objectivefunctions.begin(); it != objectivefunctions.end(); it++)
+        out.append(*it->second.obj_funct.GetTimeSeries(),it->first);
+    return out;
+}

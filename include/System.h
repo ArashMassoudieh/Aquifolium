@@ -94,9 +94,13 @@ class System: public Object
         void clear();
         int lookup_observation(const string &s) {return 0;}
         int EpochCount() {return SolverTempVars.epoch_count;}
+ //Objective Functions
         void AppenObjectiveFunction(const string &name, const Objective_Function&, double weight=1);
+        bool System::AppenObjectiveFunction(const string &name, const string &location, const &Expression exp, double weight=1);
         void UpdateObjectiveFunctions(double t);
         double GetObjectiveFunctionValue();
+        Objective_Function *ObjectiveFunction(const string &name) {return &objective_function_set[name]->obj_funct;} // returns a pointer to an objective function
+        CTimeSeries *GetObjectiveFunctionTimeSeries(const string &name) {return objective_function_set[name]->obj_funct.GetTimeSeries();}
 #ifdef QT_version
         logWindow *LogWindow() {return logwindow;}
         void SetLogWindow(logWindow *lgwnd) {logwindow=lgwnd;}

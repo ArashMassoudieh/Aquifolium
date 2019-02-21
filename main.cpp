@@ -5,6 +5,7 @@
 #include <iostream>
 #include "Condition.h"
 #include "GA.h"
+#include "Objective_Function_Set.h"
 
 using namespace std;
 
@@ -73,7 +74,8 @@ int main()
 
 	vector<string> blocks = S.GetAllBlockTypes();
 	vector<string> links = S.GetAllLinkTypes();
-	S.dt() = 0.01;
+
+    S.dt() = 0.01;
 	S.tend() = 10;
 	S.SetVariableParents();
 	S.Solve("Storage");

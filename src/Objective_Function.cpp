@@ -11,6 +11,13 @@ Objective_Function::Objective_Function(System *_system)
     system = _system;
 }
 
+Objective_Function::Objective_Function(System *_system, const Expression &expr, const string &loc)
+{
+    system = _system;
+    expression = expr;
+    location = loc;
+}
+
 Objective_Function::~Objective_Function()
 {
     //dtor

@@ -13,6 +13,7 @@ class Objective_Function
         Objective_Function(System *_system) ;
         virtual ~Objective_Function();
         Objective_Function(const Objective_Function& other);
+        Objective_Function(System *_system, const Expression &expr, const string &loc);
         Objective_Function& operator=(const Objective_Function& other);
         double GetValue(const Expression::timing &tmg = Expression::timing::present); //return the integral of the time series of the calculated values
         void append_value(double t, double val); //append a value to the stored time-series;
@@ -20,7 +21,9 @@ class Objective_Function
         void SetSystem(System *_system) {system = _system;}
         string GetLastError() {return lasterror;}
         void SetLastError(const string &lerror) {lasterror = lerror;}
-
+        CTimeSeries *GetTimeSeries() {return &stored_time_series;}
+        void SetLocation(const string &loc) {location = loc;}
+        void SetExpression(const Expression &exp)
     protected:
 
     private:
