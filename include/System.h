@@ -8,7 +8,7 @@
 #include "MetaModel.h"
 #include "BTCSet.h"
 #include "Objective_Function_Set.h"
-
+#include "Parameter_Set.h"
 #ifdef QT_version
     #include "runtimeWindow.h"
     class GWidget;
@@ -73,6 +73,7 @@ class System: public Object
         bool AddLink(Link &lnk, const string &source, const string &destination);
         Block *block(const string &s);
         Link *link(const string &s);
+        Object *object(const string &s);
         int blockid(const string &s);
         int linkid(const string &s);
         bool GetQuanTemplate(const string &filename);
@@ -100,6 +101,9 @@ class System: public Object
         void UpdateObjectiveFunctions(double t);
         double GetObjectiveFunctionValue();
         Objective_Function *ObjectiveFunction(const string &name) {return &objective_function_set[name]->obj_funct;} // returns a pointer to an objective function
+        Parameter *GetParameter(const string &name) {return parameter_set[name];}
+        Parameter_Set &Parameters() {return parameter_set;}
+        bool SetAsParameter(const string &location, const string &quantity, const string &parametername);
         CTimeSeries *GetObjectiveFunctionTimeSeries(const string &name) {return objective_function_set[name]->obj_funct.GetTimeSeries();}
 #ifdef QT_version
         logWindow *LogWindow() {return logwindow;}
@@ -130,7 +134,7 @@ class System: public Object
         void PopulateOutputs();
         void TransferQuantitiesFromMetaModel();
         Objective_Function_Set objective_function_set;
-
+        Parameter_Set parameter_set;
 #ifdef QT_version
         GraphWidget *diagramview;
         runtimeWindow *rtw;

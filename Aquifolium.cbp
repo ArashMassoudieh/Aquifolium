@@ -15,6 +15,7 @@
 				<Compiler>
 					<Add option="-g" />
 					<Add option="-DDebug_mode" />
+					<Add directory="Aquifolium/include" />
 				</Compiler>
 			</Target>
 			<Target title="Release">
@@ -24,6 +25,8 @@
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-O2" />
+					<Add directory="include" />
+					<Add directory="Aquifolium/include" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -55,17 +58,14 @@
 		<Unit filename="include/Condition.h" />
 		<Unit filename="include/DistributionNUnif.h" />
 		<Unit filename="include/Expression.h" />
-		<Unit filename="include/GA/Binary.h" />
-		<Unit filename="include/GA/Distribution.h" />
-		<Unit filename="include/GA/DistributionNUnif.h" />
-		<Unit filename="include/GA/GA.h" />
-		<Unit filename="include/GA/Individual.h" />
 		<Unit filename="include/Link.h" />
 		<Unit filename="include/Matrix.h" />
 		<Unit filename="include/Matrix_arma.h" />
 		<Unit filename="include/MetaModel.h" />
 		<Unit filename="include/NormalDist.h" />
 		<Unit filename="include/Object.h" />
+		<Unit filename="include/Objective_Function.h" />
+		<Unit filename="include/Objective_Function_Set.h" />
 		<Unit filename="include/Quan.h" />
 		<Unit filename="include/QuanSet.h" />
 		<Unit filename="include/QuickSort.h" />
@@ -78,10 +78,10 @@
 		<Unit filename="src/BTCSet.cpp" />
 		<Unit filename="src/Block.cpp" />
 		<Unit filename="src/Condition.cpp" />
+		<Unit filename="src/DistributionNUnif.cpp" />
 		<Unit filename="src/Expression.cpp" />
 		<Unit filename="src/GA/Binary.cpp" />
 		<Unit filename="src/GA/Distribution.cpp" />
-		<Unit filename="src/GA/DistributionNUnif.cpp" />
 		<Unit filename="src/GA/GA.cpp" />
 		<Unit filename="src/GA/Individual.cpp" />
 		<Unit filename="src/Link.cpp" />
@@ -90,6 +90,8 @@
 		<Unit filename="src/MetaModel.cpp" />
 		<Unit filename="src/NormalDist.cpp" />
 		<Unit filename="src/Object.cpp" />
+		<Unit filename="src/Objective_Function.cpp" />
+		<Unit filename="src/Objective_Function_Set.cpp" />
 		<Unit filename="src/Quan.cpp" />
 		<Unit filename="src/QuanSet.cpp" />
 		<Unit filename="src/QuickSort.cpp" />

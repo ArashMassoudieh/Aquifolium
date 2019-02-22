@@ -113,6 +113,18 @@ Link *System::link(const string &s)
     return nullptr;
 }
 
+Object *System::object(const string &s)
+{
+    for (unsigned int i=0; i<links.size(); i++)
+        if (links[i].GetName() == s) return &links[i];
+
+    for (unsigned int i=0; i<blocks.size(); i++)
+        if (blocks[i].GetName() == s) return &blocks[i];
+
+    AppendError("Link or block " + s + " was not found");
+    return nullptr;
+}
+
 bool System::GetQuanTemplate(const string &filename)
 {
     metamodel.GetFromJsonFile(filename);
@@ -722,4 +734,45 @@ void System::UpdateObjectiveFunctions(double t)
 double System::GetObjectiveFunctionValue()
 {
     return objective_function_set.Calculate();
+}
+
+bool System::SetAsParameter(const string &location, const string &quantity, const string &parametername)
+{
+    if (link(location)==nullptr && block(location)==nullptr)
+    {
+        last_error = "Location " + location + " does not exist!";
+        return false;
+    }
+    if (GetParameter(parametername) == nullptr)
+    {
+        last_error = "Parameter " + parametername + "does not exist!";
+        return false;
+    }
+    if (link(location)!=nullptr)
+    {
+        if (!link(location)->HasQuantity(quantity))
+        {
+            last_error = "In link" + location + ": variable " + quantity + " does not exist";
+            return false;
+        }
+        else
+        {
+            GetParameter(parametername)->AppendLocationQuan(location, quantity);
+            return true;
+        }
+    }
+
+    if (link(location)!=nullptr)
+    {
+        if (!block(location)->HasQuantity(quantity))
+        {
+            last_error = "In block" + location + ": variable " + quantity + " does not exist";
+            return false;
+        }
+        else
+        {
+            GetParameter(parametername)->AppendLocationQuan(location, quantity);
+            return true;
+        }
+    }
 }

@@ -13,6 +13,7 @@ Parameter::~Parameter()
 Parameter::Parameter(const Parameter& other)
 {
     _location = other._location;
+    _quan = other._quan;
     prior_range = other.prior_range;
     prior_distribution = other.prior_distribution;
     value = other.value;
@@ -23,6 +24,7 @@ Parameter& Parameter::operator=(const Parameter& rhs)
 {
     if (this == &rhs) return *this; // handle self assignment
     _location = rhs._location;
+    _quan = rhs._quan;
     prior_range = rhs.prior_range;
     prior_distribution = rhs.prior_distribution;
     value = rhs.value;

@@ -213,6 +213,15 @@ Quan* Object::Variable(const string &s)
         return &var[s];
 }
 
+bool Object::HasQuantity(const string &q)
+{
+    if (var.Count(q)==0)
+        return false;
+    else
+        return true;
+
+}
+
 bool Object::Renew(const string & variable)
 {
 	if (!Variable(variable))

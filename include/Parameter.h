@@ -2,9 +2,10 @@
 #define PARAMETER_H
 
 #include <string>
+#include <vector>
 
 using namespace std;
-struct range
+struct Range
 {
     double low = 0;
     double high = 0;
@@ -17,18 +18,20 @@ class Parameter
         virtual ~Parameter();
         Parameter(const Parameter& other);
         Parameter& operator=(const Parameter& other);
-        void SetLocation(const string &loc) {_location = loc;}
-        string GetLocation() {return _location;}
+        void SetLocations(const vector<string> &loc) {_location = loc;}
+        void AppendLocationQuan(const string &loc, const string &quan) {_location.push_back(loc); _quan.push_back(quan);}
+        vector<string> GetLocations() {return _location;}
         void SetRange(double low, double high) {prior_range.low = low; prior_range.high=high;}
-        range GetRange() {return prior_range;}
+        Range GetRange() {return prior_range;}
         void SetValue(const double &val) {value = val;}
         double GetValue() {return value;}
         string LastError() {return last_error;}
     protected:
 
     private:
-        string _location;
-        range prior_range;
+        vector<string> _location;
+        vector<string> _quan;
+        Range prior_range;
         string prior_distribution;
         double value;
         string last_error;
