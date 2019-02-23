@@ -103,7 +103,11 @@ class System: public Object
         Objective_Function *ObjectiveFunction(const string &name) {return &objective_function_set[name]->obj_funct;} // returns a pointer to an objective function
         Parameter *GetParameter(const string &name) {return parameter_set[name];}
         Parameter_Set &Parameters() {return parameter_set;}
+        bool AppendParameter(const string &paramname, const double &lower_limit, const double &upper_limit, const string &prior_distribution = "normal");
+        bool AppendParameter(const string &paramname, const Parameter& param);
         bool SetAsParameter(const string &location, const string &quantity, const string &parametername);
+        bool SetParameterValue(const string &paramname, const double &val);
+        bool ApplyParameters();
         CTimeSeries *GetObjectiveFunctionTimeSeries(const string &name) {return objective_function_set[name]->obj_funct.GetTimeSeries();}
 #ifdef QT_version
         logWindow *LogWindow() {return logwindow;}

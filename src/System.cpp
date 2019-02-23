@@ -776,3 +776,54 @@ bool System::SetAsParameter(const string &location, const string &quantity, cons
         }
     }
 }
+
+bool System::AppendParameter(const string &paramname, const double &lower_limit, const double &upper_limit, const string &prior_distribution)
+{
+    if (Parameters().Contains(paramname))
+    {
+        AppendError("Parameter " + paramname + " already exists!");
+        return false;
+    }
+    else
+    {
+        Parameter param;
+        param.SetRange(lower_limit, upper_limit);
+        param.SetPriorDistribution(prior_distribution);
+        Parameters().Append(paramname,param);
+        return true;
+    }
+}
+
+bool System::AppendParameter(const string &paramname, const Parameter& param)
+{
+    if (Parameters().Contains(paramname))
+    {
+        AppendError("Parameter " + paramname + " already exists!");
+        return false;
+    }
+    else
+    {
+        Parameters().Append(paramname,param);
+        return true;
+    }
+}
+
+bool System::SetParameterValue(const string &paramname, const double &val)
+{
+    if (!Parameters().Contains(paramname))
+    {
+        AppendError("Parameter " + paramname + " does not exist!");
+        return false;
+    }
+    else
+    {
+        GetParameter(paramname)->SetValue(val);
+        return true;
+    }
+}
+
+bool System::ApplyParameters()
+{
+
+
+}
