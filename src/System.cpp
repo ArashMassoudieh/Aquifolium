@@ -762,7 +762,7 @@ bool System::SetAsParameter(const string &location, const string &quantity, cons
         }
     }
 
-    if (link(location)!=nullptr)
+    if (block(location)!=nullptr)
     {
         if (!block(location)->HasQuantity(quantity))
         {
@@ -824,6 +824,17 @@ bool System::SetParameterValue(const string &paramname, const double &val)
 
 bool System::ApplyParameters()
 {
-
+    for (map<string, Parameter>::iterator it = Parameters().begin(); it != Parameters().end(); it++)
+        for (int i=0; i<GetParameter(it->first)->GetLocations().size();i++)
+        {
+            if (object(GetParameter(it->first)->GetLocations()[i])!=nullptr)
+                object(GetParameter(it->first)->GetLocations()[i])->SetVal(GetParameter(it->first)->GetQuans()[i],GetParameter(it->first)->GetValue());
+            else
+            {
+                AppendError("Location '" + GetParameter(it->first)->GetLocations()[i] + "' does not exist!");
+                return false;
+            }
+        }
+    return true;
 
 }

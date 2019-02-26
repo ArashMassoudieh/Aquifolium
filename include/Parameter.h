@@ -21,6 +21,7 @@ class Parameter
         void SetLocations(const vector<string> &loc) {_location = loc;}
         void AppendLocationQuan(const string &loc, const string &quan) {_location.push_back(loc); _quan.push_back(quan);}
         vector<string> GetLocations() {return _location;}
+        vector<string> GetQuans() {return _quan;}
         void SetRange(double low, double high) {prior_range.low = low; prior_range.high=high;}
         Range GetRange() {return prior_range;}
         void SetPriorDistribution(const string &prior) {prior_distribution = prior; }

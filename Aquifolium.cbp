@@ -66,6 +66,8 @@
 		<Unit filename="include/Object.h" />
 		<Unit filename="include/Objective_Function.h" />
 		<Unit filename="include/Objective_Function_Set.h" />
+		<Unit filename="include/Parameter.h" />
+		<Unit filename="include/Parameter_Set.h" />
 		<Unit filename="include/Quan.h" />
 		<Unit filename="include/QuanSet.h" />
 		<Unit filename="include/QuickSort.h" />
@@ -92,6 +94,8 @@
 		<Unit filename="src/Object.cpp" />
 		<Unit filename="src/Objective_Function.cpp" />
 		<Unit filename="src/Objective_Function_Set.cpp" />
+		<Unit filename="src/Parameter.cpp" />
+		<Unit filename="src/Parameter_Set.cpp" />
 		<Unit filename="src/Quan.cpp" />
 		<Unit filename="src/QuanSet.cpp" />
 		<Unit filename="src/QuickSort.cpp" />
