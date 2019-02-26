@@ -11,7 +11,8 @@ using namespace std;
 
 int main()
 {
-    CGA<System> GA();
+
+    CGA<System> TempObj;
     System S;
     S.GetQuanTemplate("power_reservoirs_rules.qnt");
     //Expression E("2*X+X^2+Y/X");
@@ -91,6 +92,7 @@ int main()
 	S.Solve("Storage");
     S.GetObjectiveFunctionTimeSeries("Flow_myLink")->writefile("Obj.txt");
     S.GetOutputs().writetofile("text.txt");
+    CGA <System> GA("GA_info.txt",S);
 
     return 0;
 }

@@ -15,11 +15,14 @@ class Parameter_Set
         Parameter_Set& operator=(const Parameter_Set& other);
         void Append(const string &name, const Parameter &param);
         Parameter* operator[](string name);
+        Parameter* operator[](int i);
         string LastError() {return lasterror;}
         bool Contains(const string &name) {if (parameters.count(name)==0) return false; else return true;}
         map<string, Parameter>::iterator begin() {return parameters.begin();}
         map<string, Parameter>::iterator end() {return parameters.end();}
         bool ApplyParameters(System *system);
+        unsigned int size() {return parameters.size();}
+        string getKeyAtIndex (int index);
     protected:
 
     private:

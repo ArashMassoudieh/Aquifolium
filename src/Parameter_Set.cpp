@@ -31,12 +31,29 @@ void Parameter_Set::Append(const string &name, const Parameter &param)
 }
 Parameter* Parameter_Set::operator[](string name)
 {
-     if (parameters.count(name)==1)
+    if (parameters.count(name)==1)
         return &parameters[name];
     else
     {
         lasterror = "Parameter " + name + " does not exist!";
         return nullptr;
+    }
+}
+
+Parameter* Parameter_Set::operator[](int i)
+{
+    return &parameters[getKeyAtIndex (i)];
+}
+
+string Parameter_Set::getKeyAtIndex (int index){
+    map<string, Parameter>::const_iterator end = parameters.end();
+
+    int counter = 0;
+    for (map<string, Parameter>::const_iterator it = parameters.begin(); it != end; ++it) {
+        counter++;
+
+        if (counter == index)
+            return it->first;
     }
 }
 

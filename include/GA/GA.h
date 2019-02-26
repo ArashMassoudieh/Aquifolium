@@ -164,4 +164,7 @@ private:
 
 };
 
+#include "../src/GA/GA.cpp"
+
+
 

@@ -25,6 +25,7 @@ class Parameter
         void SetRange(double low, double high) {prior_range.low = low; prior_range.high=high;}
         Range GetRange() {return prior_range;}
         void SetPriorDistribution(const string &prior) {prior_distribution = prior; }
+        string GetPriorDistribution() {return prior_distribution; }
         void SetValue(const double &val) {value = val;}
         double GetValue() {return value;}
         string LastError() {return last_error;}

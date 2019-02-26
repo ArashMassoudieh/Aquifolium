@@ -85,7 +85,7 @@ CGA<T>::CGA(string filename, const T &model)
 	{
         GA_params.nParam++;
         params.push_back(i);
-        if (Model.parameters[i].log)
+        if (Model.Parameters()[i]->GetPriorDistribution() == "lognormal")
         {	minval.push_back(log10(Model.parameters[i].low));
             maxval.push_back(log10(Model.parameters[i].high));
 

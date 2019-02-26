@@ -24,6 +24,7 @@ class Objective_Function_Set
         void Update(double t);
         string LastError() {return lasterror;}
         CTimeSeriesSet GetTimeSeriesSet();
+
     protected:
 
     private:
