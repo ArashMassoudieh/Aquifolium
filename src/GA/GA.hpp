@@ -19,6 +19,7 @@ CGA<T>::CGA()
 	GA_params.pcross = 1;
 	GA_params.cross_over_type = 1;
 	MaxFitness = 0;
+	numberOfThreads = 8;
 }
 
 template<class T>
@@ -32,6 +33,7 @@ CGA<T>::CGA(int n)
 	GA_params.pcross = 1;
 	GA_params.cross_over_type = 1;
 	MaxFitness = 0;
+	numberOfThreads;
 }
 
 template<class T>
@@ -51,6 +53,7 @@ CGA<T>::CGA(int n, int nParam)
 	fitdist = CDistribution(GA_params.maxpop);
 	GA_params.cross_over_type = 1;
 	MaxFitness = 0;
+	numberOfThreads = 8;
 }
 
 template<class T>
@@ -63,7 +66,7 @@ CGA<T>::CGA(string filename, const T &model)
 	GA_params.N = 1;
 	GA_params.fixedstd = true;
 	GA_params.RCGA = false;
-
+    numberOfThreads = 8;
 	vector<string> s;
 	while (file.eof() == false)
 	{
@@ -258,7 +261,7 @@ void CGA<T>::assignfitnesses()
 	{
 		for (int i = 0; i < GA_params.nParam; i++)
 		{
-			if (loged[get_act_paramno(i)] != 1)
+			if (loged[i] != 1)
 			{
 				inp[k][i] = Ind[k].x[i];    //Ind
 			}
@@ -272,9 +275,9 @@ void CGA<T>::assignfitnesses()
 		Ind[k].actual_fitness = 0;
 
 		Models[k] = Model;
-
+        Models[k].SetSilent(true);
 		for (int i = 0; i < GA_params.nParam; i++)
-			Models[k].SetParams(params[i], inp[k][i]);
+			Models[k].SetParameterValue(i, inp[k][i]);
 
 
 	}
@@ -285,28 +288,32 @@ omp_set_num_threads(numberOfThreads);
 		for (int k=0; k<GA_params.maxpop; k++)
 		{
 			FILE *FileOut;
-            FileOut = fopen((filenames.pathname+"detail_GA.txt").c_str(),"a");
+#pragma omp atomic
+            {
+                FileOut = fopen((filenames.pathname+"detail_GA.txt").c_str(),"a");
+                fprintf(FileOut, "%i, ", k);
+                for (int l=0; l<Ind[0].nParams; l++)
+                    if (loged[l]==1)
+                        fprintf(FileOut, "%le, ", pow(10,Ind[k].x[l]));
+                    else
+                        fprintf(FileOut, "%le, ", Ind[k].x[l]);
 
-
-			fprintf(FileOut, "%i, ", k);
-			for (int l=0; l<Ind[0].nParams; l++)
-				if (loged[get_act_paramno(l)]==1)
-					fprintf(FileOut, "%le, ", pow(10,Ind[k].x[l]));
-				else
-					fprintf(FileOut, "%le, ", Ind[k].x[l]);
-
-			//fprintf(FileOut, "%le, %le, %i, %e, %i, %i", Ind[k].actual_fitness, Ind[k].fitness, Ind[k].rank, time_[k], threads_num[k],num_threads[k]);
-			//fprintf(FileOut, "%le, %le, %i, %e", Ind[k].actual_fitness, Ind[k].fitness, Ind[k].rank, time_[k]);
-			fprintf(FileOut, "\n");
-			fclose(FileOut);
-
+                //fprintf(FileOut, "%le, %le, %i, %e, %i, %i", Ind[k].actual_fitness, Ind[k].fitness, Ind[k].rank, time_[k], threads_num[k],num_threads[k]);
+                //fprintf(FileOut, "%le, %le, %i, %e", Ind[k].actual_fitness, Ind[k].fitness, Ind[k].rank, time_[k]);
+                fprintf(FileOut, "\n");
+                fclose(FileOut);
+            }
 			clock_t t0 = clock();
-
+            Models[k].Solve("Storage");
 			Ind[k].actual_fitness -= Models[k].GetObjectiveFunctionValue();
 			epochs[k] += Models[k].EpochCount();
 			time_[k] = ((float)(clock() - t0))/CLOCKS_PER_SEC;
-			fprintf(FileOut, "%i, fitness=%le, time=%e, epochs=%i\n", k, Ind[k].actual_fitness, time_[k], epochs[k]);
-			fclose(FileOut);
+#pragma omp atomic
+            {
+                FileOut = fopen((filenames.pathname+"detail_GA.txt").c_str(),"a");
+                fprintf(FileOut, "%i, fitness=%le, time=%e, epochs=%i\n", k, Ind[k].actual_fitness, time_[k], epochs[k]);
+                fclose(FileOut);
+            }
 
 		}
 
@@ -437,7 +444,7 @@ int CGA<T>::optimize()
 			fprintf(FileOut, "%i, ", j1);
 
 			for (int k=0; k<Ind[0].nParams; k++)
-				if (loged[get_act_paramno(k)] == 1)
+				if (loged[k] == 1)
 					fprintf(FileOut, "%le, ", pow(10, Ind[j1].x[k]));
 				else
 					fprintf(FileOut, "%le, ", Ind[j1].x[k]);
@@ -525,7 +532,7 @@ int CGA<T>::optimize()
 
 	for (int k = 0; k<Ind[0].nParams; k++)
 	{
-		if (loged[get_act_paramno(k)] == 1) final_params[k] = pow(10, Ind[j].x[k]); else final_params[k] = Ind[j].x[k];
+		if (loged[k] == 1) final_params[k] = pow(10, Ind[j].x[k]); else final_params[k] = Ind[j].x[k];
 		fprintf(FileOut, "%s, ", paramname[k].c_str());
 		fprintf(FileOut, "%le, ", final_params[k]);
 		fprintf(FileOut, "%le, %le\n", Ind[j].actual_fitness, Ind[j].fitness);
@@ -549,11 +556,11 @@ double CGA<T>::assignfitnesses(vector<double> inp)
 
 	int l = 0;
 	for (int i = 0; i < GA_params.nParam; i++)
-        Models.SetParam(i, inp[i]);
+        Models.SetParameterValue(i, inp[i]);
 
-	Models.FinalizeSetParams();
+	Models.ApplyParameters();
 
-	likelihood -= Models.EvaluateObjectiveFunction();
+	likelihood -= Models.GetObjectiveFunctionValue();
 
 	Model_out = Models;
 
@@ -805,7 +812,7 @@ void CGA<T>::getinifromoutput(string filename)
 			for (int i=0; i<GA_params.nParam; i++)
 			{
 				s = getline(file);
-				if (loged[get_act_paramno(i)]==1)
+				if (loged[i]==1)
 					initial_pop[0][i] = atof(s[1].c_str());
 				else
 					initial_pop[0][i] = atof(s[1].c_str());

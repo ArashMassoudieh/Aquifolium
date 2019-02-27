@@ -50,7 +50,9 @@ class Object
         void SetLimitedOutflow(bool x) {limitoutflow = x;}
         bool GetLimitedOutflow() {return limitoutflow;}
 		void SetVariableParents();
-
+        void ShowMessage(const string &msg);
+        System* Parent() {if (parent!=nullptr) return parent; else return nullptr;}
+        void SetAllParents();
     protected:
 
     private:

@@ -50,10 +50,9 @@ string Parameter_Set::getKeyAtIndex (int index){
 
     int counter = 0;
     for (map<string, Parameter>::const_iterator it = parameters.begin(); it != end; ++it) {
-        counter++;
-
         if (counter == index)
             return it->first;
+        counter++;
     }
 }
 

@@ -21,7 +21,10 @@ class Parameter_Set
         map<string, Parameter>::iterator begin() {return parameters.begin();}
         map<string, Parameter>::iterator end() {return parameters.end();}
         bool ApplyParameters(System *system);
-        unsigned int size() {return parameters.size();}
+        unsigned int size()
+        {
+            return parameters.size();
+        }
         string getKeyAtIndex (int index);
     protected:
 

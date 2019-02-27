@@ -45,6 +45,9 @@ System::System(const System& other):Object::Object(other)
     blocks = other.blocks;
     links = other.links;
     objective_function_set = other.objective_function_set;
+    parameter_set = other.parameter_set;
+    silent = other.silent;
+    SetAllParents();
 }
 
 System& System::operator=(const System& rhs)
@@ -53,7 +56,10 @@ System& System::operator=(const System& rhs)
     Object::operator=(rhs);
     blocks = rhs.blocks;
     links = rhs.links;
+    silent = rhs.silent;
     objective_function_set = rhs.objective_function_set;
+    parameter_set = rhs.parameter_set;
+    SetAllParents();
     return *this;
 }
 
@@ -156,7 +162,7 @@ bool System::Solve(const string &variable)
         LogWindow()->append("Simulation started!");
     }
     #else
-        cout << "Simulation started!";
+        ShowMessage("Simulation started!");
     #endif
     InitiateOutputs();
     PopulateOutputs();
@@ -167,7 +173,7 @@ bool System::Solve(const string &variable)
     while (SolverTempVars.t<SimulationParameters.tend+SolverTempVars.dt)
     {
         #ifdef Debug_mode
-        cout << "t = " << SolverTempVars.t << ", dt = " << SolverTempVars.dt << ", SolverTempVars.numiterations =" << SolverTempVars.numiterations << endl;
+        ShowMessage(string("t = ") + numbertostring(SolverTempVars.t) + ", dt = " + numbertostring(SolverTempVars.dt) + ", SolverTempVars.numiterations =" + numbertostring(SolverTempVars.numiterations));
         #endif // Debug_mode
         #ifdef QT_version
         if (rtw)
@@ -179,7 +185,7 @@ bool System::Solve(const string &variable)
         if (!success)
         {
             #ifdef Debug_mode
-            cout<<"failed!"<<endl;
+            ShowMessage("failed!");
             #endif // Debug_mode
             SolverTempVars.dt *= SolverSettings.NR_timestep_reduction_factor_fail;
             SolverTempVars.updatejacobian = true;
@@ -208,7 +214,7 @@ bool System::Solve(const string &variable)
         LogWindow()->append("Simulation finished!");
     }
     #else
-    cout << "Simulation finished!";
+    ShowMessage("Simulation finished!");
     #endif
     return true;
 }
@@ -331,14 +337,11 @@ void System::PopulateOutputs()
 bool System::OneStepSolve(const string &variable)
 {
 	Renew(variable);
-	#ifdef Debug_mode
-//  cout << "Calculating Residuals" <<endl;
-    #endif // Debug_mode
+
     CVector_arma X = GetStateVariables(variable, Expression::timing::past);
     CVector_arma X_past = X;
-//  cout<<"X: " << X.toString()<<endl;
     CVector_arma F = GetResiduals(variable, X);
-//  cout<<"F: " << F.toString()<<endl;
+
     double err_ini = F.norm2();
     double err;
     double err_p = err = err_ini;
@@ -361,7 +364,7 @@ bool System::OneStepSolve(const string &variable)
             err_p = err;
             err = F.norm2();
             #ifdef Debug_mode
-            cout << err << endl;
+            ShowMessage(numbertostring(err));
             #endif // Debug_mode
             if (err>err_p)
                 SolverTempVars.NR_coefficient*=SolverSettings.NR_coeff_reduction_factor;
@@ -441,9 +444,6 @@ void System::SetStateVariables(const string &variable, CVector_arma &X, const Ex
     for (unsigned int i=0; i<blocks.size(); i++)
     {
         blocks[i].SetVal(variable,X[i],tmg);
-        #ifdef Debug_mode
-//      cout<<"Variable :"<< variable << "in " + blocks[i].GetName() << " was set to " + numbertostring(blocks[i].GetVal(variable,tmg)) << endl;
-        #endif // Debug_mode
     }
 }
 
@@ -515,9 +515,6 @@ CVector_arma System::Jacobian(const string &variable, CVector_arma &V, CVector_a
   epsilon = -1e-6;
   CVector_arma V1(V);
   V1[i] += epsilon;
-  #ifdef Debug_mode
-//cout<<i<<":"<<V1.toString()<<endl;
-  #endif // Debug_mode
   CVector_arma F1;
   F1 = GetResiduals(variable,V1);
   CVector_arma grad = (F1 - F0) / epsilon;
@@ -555,7 +552,7 @@ vector<string> System::GetAllBlockTypes()
     for (map<string, QuanSet>::iterator it = metamodel.GetMetaModel()->begin(); it != metamodel.GetMetaModel()->end(); it++)
         if (it->second.BlockLink == blocklink::block)
         {
-            cout<<it->first<<endl;
+            ShowMessage(it->first);
             out.push_back(it->first);
         }
 
@@ -569,7 +566,7 @@ vector<string> System::GetAllLinkTypes()
     for (map<string, QuanSet>::iterator it = metamodel.GetMetaModel()->begin(); it != metamodel.GetMetaModel()->end(); it++)
         if (it->second.BlockLink == blocklink::link)
         {
-            cout<<it->first<<endl;
+            ShowMessage(it->first);
             out.push_back(it->first);
         }
 
@@ -822,6 +819,11 @@ bool System::SetParameterValue(const string &paramname, const double &val)
     }
 }
 
+bool System::SetParameterValue(int i, const double &val)
+{
+    GetParameter(Parameters().getKeyAtIndex(i))->SetValue(val);
+}
+
 bool System::ApplyParameters()
 {
     for (map<string, Parameter>::iterator it = Parameters().begin(); it != Parameters().end(); it++)
@@ -838,3 +840,14 @@ bool System::ApplyParameters()
     return true;
 
 }
+
+void System::SetAllParents()
+{
+    for (unsigned int i=0; i<links.size(); i++)
+        links[i].SetAllParents();
+
+    for (unsigned int i=0; i<blocks.size(); i++)
+        blocks[i].SetAllParents();
+}
+
+

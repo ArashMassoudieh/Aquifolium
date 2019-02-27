@@ -107,8 +107,13 @@ class System: public Object
         bool AppendParameter(const string &paramname, const Parameter& param);
         bool SetAsParameter(const string &location, const string &quantity, const string &parametername);
         bool SetParameterValue(const string &paramname, const double &val);
+        bool SetParameterValue(int i, const double &val);
         bool ApplyParameters();
         CTimeSeries *GetObjectiveFunctionTimeSeries(const string &name) {return objective_function_set[name]->obj_funct.GetTimeSeries();}
+        void SetSilent(bool _s) {silent = _s;}
+        bool IsSilent() {return silent;}
+        void ShowMessage(const string &msg) {if (!silent) cout<<msg<<endl; }
+        void SetAllParents();
 #ifdef QT_version
         logWindow *LogWindow() {return logwindow;}
         void SetLogWindow(logWindow *lgwnd) {logwindow=lgwnd;}
@@ -139,6 +144,7 @@ class System: public Object
         void TransferQuantitiesFromMetaModel();
         Objective_Function_Set objective_function_set;
         Parameter_Set parameter_set;
+        bool silent;
 #ifdef QT_version
         GraphWidget *diagramview;
         runtimeWindow *rtw;

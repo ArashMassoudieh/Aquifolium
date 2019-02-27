@@ -1,4 +1,6 @@
 #include "QuanSet.h"
+#include "Object.h"
+#include "System.h"
 
 QuanSet::QuanSet()
 {
@@ -17,6 +19,7 @@ QuanSet::QuanSet(const QuanSet& other)
     description = other.description;
     BlockLink = other.BlockLink;
     name = other.name;
+
 }
 
 QuanSet& QuanSet::operator=(const QuanSet& rhs)
@@ -49,7 +52,7 @@ void QuanSet::Append(QuanSet &qset)
     for (map<string, Quan>::iterator it = qset.begin(); it!=qset.end(); it++)
     {
     #ifdef Debug_mode
-    cout<<it->second.GetName()<<"  " << qset[it->first].GetName() << "  " << it->first << endl;
+    ShowMessage(it->second.GetName() + "  " + qset[it->first].GetName() + "  " + it->first);
     #endif // Debug_mode
         Append(it->second.GetName(),qset[it->first]);
     }
@@ -102,3 +105,16 @@ string QuanSet::ToString(int _tabs)
     return out;
 }
 
+
+void QuanSet::ShowMessage(const string &msg)
+{
+    if (parent)
+        if (parent->Parent())
+            if (!parent->Parent()->IsSilent()) cout<<msg<<endl;
+}
+
+void QuanSet::SetAllParents()
+{
+    for (map<string,Quan>::iterator it=quans.begin(); it!=quans.end(); it++)
+        quans[it->first].SetParent(parent);
+}

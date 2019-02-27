@@ -120,6 +120,7 @@ public:
     double getfromoutput(string filename);
     void getinifromoutput(string filename);
     void getinitialpop(string filename);
+    int optimize();
 private:
     void Setminmax(int a, double minrange, double maxrange, int prec);
     void fitnessdistini();
@@ -132,7 +133,6 @@ private:
     double stdfitness();
     double avg_actual_fitness();
 	void write_to_detailed_GA(string s);
-    int optimize();
     void setnumpop(int n);
     double avg_inv_actual_fitness();
     int optimize(int nGens, char DefOutPutFileName[]);
@@ -164,7 +164,7 @@ private:
 
 };
 
-#include "../src/GA/GA.cpp"
+#include "../src/GA/GA.hpp"
 
 
 

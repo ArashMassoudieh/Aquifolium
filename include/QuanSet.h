@@ -4,6 +4,8 @@
 #include <map>
 #include <Quan.h>
 
+class Object;
+
 enum class blocklink {block=0, link=1};
 
 class QuanSet
@@ -25,12 +27,16 @@ class QuanSet
         string &Description() {return description;}
         string &IconFileName() {return iconfilename;}
         string &Name() {return name;}
-
+        void ShowMessage(const string &msg);
         string ToString(int tabs=0);
         blocklink BlockLink;
+        void SetParent(Object *p) {parent = p; SetAllParents();}
+        void SetAllParents();
+        Object *Parent() {return parent; }
     protected:
 
     private:
+        Object* parent;
         string name;
         map<string, Quan> quans;
         string last_error;

@@ -38,7 +38,7 @@ double Object::CalcVal(const string& s,const Expression::timing &tmg)
     if (var.Count(s)==1)
     {
         #ifdef Debug_mode
-        cout<<"Object: "<<name<<" Variable: "<<s<< " Value: " << var[s].CalcVal(tmg) <<endl;
+        ShowMessage(string("Object: ") + name + " Variable: " + s + " Value: " + numbertostring(var[s].CalcVal(tmg)));
         #endif // Debug_mode
         return var[s].CalcVal(tmg);
     }
@@ -55,9 +55,6 @@ double Object::GetVal(const string& s,const Expression::timing &tmg, bool limit)
 {
     if (var.Count(s)==1)
     {
-        #ifdef Debug_mode
-//      cout<<"Object: "<<name<<" Variable: "<<s<< " Value: " << var[s].GetVal(tmg) <<endl;
-        #endif // Debug_mode
         if (!limit)
             return var[s].GetVal(tmg);
         else
@@ -75,7 +72,6 @@ double Object::GetVal(const string& s,const Expression::timing &tmg, bool limit)
 
 bool Object::AddQnantity(const string &name,const Quan &Q)
 {
-    //cout<<int(var.find(name)->first)<<"   "<<int(var.end()) << endl;
     if (var.find(name)!=var.end() && !var.size())
     {
         last_error = "Variable " + name + " already exists! ";
@@ -186,6 +182,7 @@ void Object::AppendError(const string &s)
 void Object::SetParent(System *s)
 {
     parent = s;
+    SetAllParents();
 }
 
 Quan* Object::CorrespondingFlowVariable(const string &s)
@@ -204,7 +201,7 @@ Quan* Object::Variable(const string &s)
     if (var.Count(s)==0)
     {
 #ifdef Debug_mode
-		cout << "In '" + name + "': " + "Variable '" + s + "' does not exist!" << endl;
+		ShowMessage("In '" + name + "': " + "Variable '" + s + "' does not exist!");
 #endif
 		AppendError("Variable '" + s + "' does not exist!");
         return nullptr;
@@ -250,6 +247,14 @@ bool Object::Update(const string & variable)
 
 void Object::SetVariableParents()
 {
+	var.SetParent(this);
 	for (map<string, Quan>::const_iterator s = var.begin(); s != var.end(); ++s)
 		var[s->first].SetParent(this);
+}
+
+void Object::ShowMessage(const string &msg) {if (!parent->IsSilent()) cout<<msg<<endl;}
+
+void Object::SetAllParents()
+{
+    var.SetParent(this);
 }

@@ -89,10 +89,12 @@ int main()
     S.dt() = 0.01;
 	S.tend() = 10;
 	S.SetVariableParents();
+	S.SetSilent(true);
 	S.Solve("Storage");
     S.GetObjectiveFunctionTimeSeries("Flow_myLink")->writefile("Obj.txt");
     S.GetOutputs().writetofile("text.txt");
     CGA <System> GA("GA_info.txt",S);
+    GA.optimize();
 
     return 0;
 }
