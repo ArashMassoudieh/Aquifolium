@@ -47,6 +47,8 @@ System::System(const System& other):Object::Object(other)
     objective_function_set = other.objective_function_set;
     parameter_set = other.parameter_set;
     silent = other.silent;
+    SimulationParameters = other.SimulationParameters;
+    SolverSettings = other. SolverSettings;
     SetAllParents();
 }
 
@@ -59,6 +61,8 @@ System& System::operator=(const System& rhs)
     silent = rhs.silent;
     objective_function_set = rhs.objective_function_set;
     parameter_set = rhs.parameter_set;
+    SimulationParameters = rhs.SimulationParameters;
+    SolverSettings = rhs. SolverSettings;
     SetAllParents();
     return *this;
 }
@@ -707,15 +711,18 @@ void System::GetModelConfiguration()
 void System::AppendObjectiveFunction(const string &name, const Objective_Function &obj, double weight)
 {
     objective_function_set.Append(name,obj, weight);
+    objective_function_set[name]->obj_funct.SetSystem(this);
     return;
 }
 
 bool System::AppendObjectiveFunction(const string &name, const string &location, const Expression &expr, double weight)
 {
     Objective_Function obj(this,expr,location);
+    obj.SetSystem(this);
     if (block(location)!=nullptr || link(location)!=nullptr)
     {
         objective_function_set.Append(name,obj, weight);
+        objective_function_set[name]->obj_funct.SetSystem(this);
         return true;
     }
     last_error = "Location " + name + "was not found";
@@ -848,6 +855,9 @@ void System::SetAllParents()
 
     for (unsigned int i=0; i<blocks.size(); i++)
         blocks[i].SetAllParents();
+
+    for (map<string,obj_funct_weight>::iterator it=objective_function_set.begin(); it!=objective_function_set.end(); it++)
+        objective_function_set[it->first]->obj_funct.SetSystem(this);
 }
 
 

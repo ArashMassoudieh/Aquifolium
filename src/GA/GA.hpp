@@ -278,7 +278,7 @@ void CGA<T>::assignfitnesses()
         Models[k].SetSilent(true);
 		for (int i = 0; i < GA_params.nParam; i++)
 			Models[k].SetParameterValue(i, inp[k][i]);
-
+        Models[k].ApplyParameters();
 
 	}
 

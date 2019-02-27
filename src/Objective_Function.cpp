@@ -25,7 +25,6 @@ Objective_Function::~Objective_Function()
 
 Objective_Function::Objective_Function(const Objective_Function& other)
 {
-    system = other.system;
     expression = other.expression;
     location = other.location;
 }
@@ -33,7 +32,6 @@ Objective_Function::Objective_Function(const Objective_Function& other)
 Objective_Function& Objective_Function::operator=(const Objective_Function& rhs)
 {
     if (this == &rhs) return *this; // handle self assignment
-    system = rhs.system;
     expression = rhs.expression;
     location = rhs.location;
     return *this;
@@ -59,6 +57,11 @@ void Objective_Function::append_value(double t)
 {
     stored_time_series.append(t,GetValue(Expression::timing::present));
     return;
+}
+
+double Objective_Function::GetObjective()
+{
+    return stored_time_series.integrate();
 }
 
 

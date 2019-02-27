@@ -15,7 +15,8 @@ class Objective_Function
         Objective_Function(const Objective_Function& other);
         Objective_Function(System *_system, const Expression &expr, const string &loc);
         Objective_Function& operator=(const Objective_Function& other);
-        double GetValue(const Expression::timing &tmg = Expression::timing::present); //return the integral of the time series of the calculated values
+        double GetValue(const Expression::timing &tmg = Expression::timing::present); //return the current value of the objective function
+        double GetObjective();
         void append_value(double t, double val); //append a value to the stored time-series;
         void append_value(double t); //append the evaluated expression value to the stored time-series;
         void SetSystem(System *_system) {system = _system;}

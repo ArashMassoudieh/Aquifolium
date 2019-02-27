@@ -5,6 +5,8 @@
 #include <map>
 #include "BTCSet.h"
 
+class System;
+
 struct obj_funct_weight
 {
     Objective_Function obj_funct;
@@ -24,7 +26,9 @@ class Objective_Function_Set
         void Update(double t);
         string LastError() {return lasterror;}
         CTimeSeriesSet GetTimeSeriesSet();
-
+        map<string, obj_funct_weight>::iterator begin() {return objectivefunctions.begin();}
+        map<string, obj_funct_weight>::iterator end() {return objectivefunctions.end();}
+        void SetSystem(System* s);
     protected:
 
     private:
