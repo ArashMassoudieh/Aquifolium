@@ -6,11 +6,14 @@
 #include "Condition.h"
 #include "GA.h"
 #include "Objective_Function_Set.h"
+#include "Script.h"
 
 using namespace std;
 
 int main()
 {
+    Script scr("script.txt");
+
 
     CGA<System> TempObj;
     System S;
