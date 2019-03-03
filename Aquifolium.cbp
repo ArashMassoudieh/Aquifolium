@@ -55,6 +55,7 @@
 		<Unit filename="include/BTC.h" />
 		<Unit filename="include/BTCSet.h" />
 		<Unit filename="include/Block.h" />
+		<Unit filename="include/Command.h" />
 		<Unit filename="include/Condition.h" />
 		<Unit filename="include/DistributionNUnif.h" />
 		<Unit filename="include/Expression.h" />
@@ -72,6 +73,7 @@
 		<Unit filename="include/QuanSet.h" />
 		<Unit filename="include/QuickSort.h" />
 		<Unit filename="include/Rule.h" />
+		<Unit filename="include/Script.h" />
 		<Unit filename="include/System.h" />
 		<Unit filename="include/Vector.h" />
 		<Unit filename="include/Vector_arma.h" />
@@ -79,12 +81,13 @@
 		<Unit filename="src/BTC.cpp" />
 		<Unit filename="src/BTCSet.cpp" />
 		<Unit filename="src/Block.cpp" />
+		<Unit filename="src/Command.cpp" />
 		<Unit filename="src/Condition.cpp" />
 		<Unit filename="src/DistributionNUnif.cpp" />
 		<Unit filename="src/Expression.cpp" />
 		<Unit filename="src/GA/Binary.cpp" />
 		<Unit filename="src/GA/Distribution.cpp" />
-		<Unit filename="src/GA/GA.cpp" />
+		<Unit filename="src/GA/GA.hpp" />
 		<Unit filename="src/GA/Individual.cpp" />
 		<Unit filename="src/Link.cpp" />
 		<Unit filename="src/Matrix.cpp" />
@@ -100,6 +103,7 @@
 		<Unit filename="src/QuanSet.cpp" />
 		<Unit filename="src/QuickSort.cpp" />
 		<Unit filename="src/Rule.cpp" />
+		<Unit filename="src/Script.cpp" />
 		<Unit filename="src/System.cpp" />
 		<Unit filename="src/Vector.cpp">
 			<Option virtualFolder="Aquifolium/src/" />

@@ -138,7 +138,12 @@ bool Command::Execute(System *_sys)
     {
         if (tolower(arguments[0])=="block")
         {
-
+            if (Validate())
+            {
+                Block B();
+                for (map<string,string>::iterator it=assignments.begin(); it!=assignments.end(); it++)
+                    B.set
+            }
         }
     }
 }
@@ -146,10 +151,24 @@ bool Command::Execute(System *_sys)
 bool Command::Validate(System *sys)
 {
     bool out = true;
-    for (map<string,map<string,vector<string>>>::iterator it = parent->MustBeSpecified()->begin(); it!=parent->MustBeSpecified()->end(); it++)
+    if (parent->MustBeSpecified()->count(keyword)==0)
     {
-        for (map<string,vector<string>>::iterator it1 = it->second.begin(); it1!=it->second.end(); it++)
-            for (int i=0; i<it1->second.size(); i++)
-                cout<<it1->second[i];
+        last_error = "Keyword '" + keyword + "' is not recognized!";
+        return false;
     }
+    if (arguments.size()>0)
+        if (parent->MustBeSpecified()->at(keyword).count(arguments[0])==0)
+        {
+            last_error = "Argument '" + arguments[0] + "' is not recognized for keyword '" + keyword + "'";
+            return false;
+        }
+
+    for (int i=0; i<parent->MustBeSpecified()->at(keyword)[arguments[0]].size(); i++)
+        if (assignments.count(parent->MustBeSpecified()->at(keyword)[arguments[0]][i])==0)
+        {
+            last_error = "'" + parent->MustBeSpecified()->at(keyword)[arguments[0]][i] + "' must be specified when " + keyword + "ing a " + arguments[0] + "'";
+            return false;
+        }
+
+    return true;
 }

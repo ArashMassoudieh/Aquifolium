@@ -5,7 +5,7 @@
 
 Script::Script()
 {
-    //ctor
+   FillMustBeSpecified();
 }
 
 Script::~Script()
@@ -15,6 +15,7 @@ Script::~Script()
 
 Script::Script(const string &filename, System *sys)
 {
+    FillMustBeSpecified();
     if (system!=nullptr)
         system = sys;
     else
@@ -38,6 +39,7 @@ System* Script::CreateSystem()
     {
         commands[i].Execute(system);
     }
+    return system;
 }
 
 void Script::FillMustBeSpecified()

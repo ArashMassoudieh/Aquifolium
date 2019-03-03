@@ -17,44 +17,8 @@ int main()
 
     CGA<System> TempObj;
     System S;
-    S.GetQuanTemplate("power_reservoirs_rules.qnt");
+
     //Expression E("2*X+X^2+Y/X");
-    Block B1;
-    B1.SetType("Reservoir");
-    B1.SetName("Reservoir1");
-    S.AddBlock(B1);
-
-    S.block("Reservoir1")->SetVal("Storage",15);
-    S.block("Reservoir1")->SetVal("reservoir_power",2);
-    S.block("Reservoir1")->SetVal("reservoir_coeff",30);
-    Condition cond("reservoir_power<reservoir_coeff");
-    bool out = cond.calc(S.block("Reservoir1"),Expression::timing::present);
-    cout<<out<<endl;
-
-    if (S.block("Reservoir1")->Variable("inflow")->SetTimeSeries("Inflow.txt"))
-   		cout << "Inflow file was set successfully!" << endl;
-	else
-		cout << "Inflow.txt was not found!"<<endl;
-
-    Block B2;
-    B2.SetType("Reservoir");
-    B2.SetName("Reservoir2");
-    S.AddBlock(B2);
-
-    S.block("Reservoir2")->SetVal("Storage",5);
-    S.block("Reservoir2")->SetVal("reservoir_power",2);
-    S.block("Reservoir2")->SetVal("reservoir_coeff",30);
-//  cout<<S.block("myblock2")->GetVal("flow")<<endl;
-
-    Link L;
-    L.SetType("Reservoir_link_rule");
-    L.SetName("myLink");
-    S.AddLink(L,"Reservoir1","Reservoir2");
-    //cout<<"flow = " << S.link("myLink")->CalcVal("flow")<<endl;
-    S.link("myLink")->SetVal("Q_max",50);
-    S.link("myLink")->SetVal("Q_min",10);
-    S.link("myLink")->SetVal("S_min",10);
-    S.link("myLink")->SetVal("S_max",100);
 
     S.AppendParameter("Q_max_param",20,80);
     S.AppendParameter("Q_min_param",5,15);
