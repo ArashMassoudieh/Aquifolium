@@ -1,6 +1,7 @@
 #include "Command.h"
 #include "Script.h"
 #include <iostream>
+#include "System.h"
 
 using namespace std;
 
@@ -140,9 +141,12 @@ bool Command::Execute(System *_sys)
         {
             if (Validate())
             {
-                Block B();
+                Block B;
+                B.SetName(assignments["name"]);
+                B.SetType(assignments["type"]);
+                sys->AddBlock(B);
                 for (map<string,string>::iterator it=assignments.begin(); it!=assignments.end(); it++)
-                    B.set
+                    B.SetProperty(it->first,it->second);
             }
         }
     }

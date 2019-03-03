@@ -53,6 +53,7 @@ class Object
         void ShowMessage(const string &msg);
         System* Parent() {if (parent!=nullptr) return parent; else return nullptr;}
         void SetAllParents();
+        bool SetProperty(const string &prop, const string &value);
     protected:
 
     private:

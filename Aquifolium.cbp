@@ -48,6 +48,7 @@
 			<Add option="-larmadillo" />
 			<Add option="-llapack" />
 			<Add option="-lblas" />
+			<Add option="-lomp" />
 		</Linker>
 		<Unit filename="../jsoncpp/src/lib_json/json_reader.cpp" />
 		<Unit filename="../jsoncpp/src/lib_json/json_value.cpp" />

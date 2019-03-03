@@ -258,3 +258,8 @@ void Object::SetAllParents()
 {
     var.SetParent(this);
 }
+
+bool Object::SetProperty(const string &prop, const string &value)
+{
+    return true;
+}
