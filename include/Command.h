@@ -4,15 +4,10 @@
 #include <string>
 #include <vector>
 #include "Expression.h"
+#include <map>
 
 using namespace std;
 
-
-struct assignment
-{
-    string variable;
-    string value;
-};
 
 class System;
 class Script;
@@ -26,18 +21,21 @@ class Command
         Command(const Command& other);
         Command& operator=(const Command& other);
         Command(const string &s, Script *parnt = nullptr);
-        bool Validate() {return validated;}
+        bool Syntax() {return validated;}
         System *GetSystem();
         string LastError() {return last_error;}
+        bool Execute(System *sys=nullptr);
+        bool Validate(System *sys=nullptr);
     protected:
 
     private:
         string keyword;
         vector<string> arguments;
-        vector<assignment> assignments;
+        map<string, string> assignments;
         string last_error;
         bool validated = false;
         Script *parent;
+
 };
 
 #endif // COMMAND_H

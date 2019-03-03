@@ -1,5 +1,8 @@
 #include "Command.h"
 #include "Script.h"
+#include <iostream>
+
+using namespace std;
 
 Command::Command(Script *parnt)
 {
@@ -73,9 +76,12 @@ Command::Command(const string &s, Script *parnt)
             }
             if (prop.size() == 2)
             {
-                assignment assn;
-                assn.variable = prop[0];
-                assn.value = prop[1];
+                if (assignments.count(prop[0])==0)
+                    assignments[prop[0]] = prop[1];
+                else
+                {
+                    last_error = "In command '" + s + "': Property '" + prop[0] + "' has been already specified!";
+                }
             }
         }
     }
@@ -110,4 +116,40 @@ System *Command::GetSystem()
     else
         return nullptr;
 
+}
+
+bool Command::Execute(System *_sys)
+{
+    System *sys;
+    if (_sys==nullptr)
+    {
+        if (parent->GetSystem()!=nullptr)
+        {
+            sys = parent->GetSystem();
+        }
+    }
+    else
+        sys = _sys;
+    if (tolower(keyword) == "loadtemplate")
+    {
+
+    }
+    if (tolower(keyword)=="create")
+    {
+        if (tolower(arguments[0])=="block")
+        {
+
+        }
+    }
+}
+
+bool Command::Validate(System *sys)
+{
+    bool out = true;
+    for (map<string,map<string,vector<string>>>::iterator it = parent->MustBeSpecified()->begin(); it!=parent->MustBeSpecified()->end(); it++)
+    {
+        for (map<string,vector<string>>::iterator it1 = it->second.begin(); it1!=it->second.end(); it++)
+            for (int i=0; i<it1->second.size(); i++)
+                cout<<it1->second[i];
+    }
 }
