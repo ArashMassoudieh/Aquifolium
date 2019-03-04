@@ -1,6 +1,6 @@
 loadtemplate; filename = power_reservoirs_rules.qnt
 create block; name = Reservoir1, type = reservoir, Storage = 15, reservoir_power=2, reservoir_coeff=30
 create block; name = Reservoir2, type = reservoir, Storage = 15, reservoir_power=2, reservoir_coeff=30
-create link; name =  myLink, type = Reservoir_link_rule, Q_max=50, Q_min=10, S_min=10, S_max=100
+create link; name =  myLink, from=Reservoir1, to=Reservoir2, type = Reservoir_link_rule, Q_max=50, Q_min=10, S_min=10, S_max=100
 
 

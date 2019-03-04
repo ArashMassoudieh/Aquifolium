@@ -261,5 +261,32 @@ void Object::SetAllParents()
 
 bool Object::SetProperty(const string &prop, const string &value)
 {
-    return true;
+    if (!HasQuantity(prop))
+    {
+        AppendError("Object '" + GetName() + "' has no property called '" + prop + "'");
+        return false;
+    }
+    if (var[prop].GetType() == Quan::_type::value || var[prop].GetType() == Quan::_type::balance || var[prop].GetType() == Quan::_type::constant)
+    {
+        var[prop].SetVal(atof(value));
+        return true;
+    }
+    if (var[prop].GetType() == Quan::_type::expression)
+    {
+        AppendError("In object '" + GetName() + "', property '" + prop + "' is an expression and cannot be set during the run time");
+        return false;
+    }
+    if (var[prop].GetType() == Quan::_type::rule)
+    {
+        AppendError("In object '" + GetName() + "', property '" + prop + "' is a rule and cannot be set during the run time");
+        return false;
+    }
+
+    if (var[prop].GetType() == Quan::_type::timeseries)
+    {
+        var[prop].SetTimeSeries(value);
+        return true;
+    }
+
+
 }

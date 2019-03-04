@@ -19,7 +19,11 @@ class Script
         Command* operator[](int i) {return &commands[i];}
         System *GetSystem() {return system;}
         void FillMustBeSpecified();
-        map<string, map<string, vector<string>>> *MustBeSpecified() {return &mustbespecifiedatcreation;}
+        map<string, map<string, vector<string>>> *MustBeSpecified()
+        {
+            return &mustbespecifiedatcreation;
+        }
+        void Append(const Command &c);
     protected:
 
     private:

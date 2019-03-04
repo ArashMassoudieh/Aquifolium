@@ -27,7 +27,7 @@ Script::Script(const string &filename, System *sys)
         getline(file,s);
         Command command(s);
         if (command.Syntax())
-            commands.push_back(command);
+            Append(command);
         else
             errors.push_back(command.LastError());
     }
@@ -37,7 +37,10 @@ System* Script::CreateSystem()
 {
     for (int i=0; i<commands.size(); i++)
     {
-        commands[i].Execute(system);
+        if (!commands[i].Execute(system))
+        {
+            errors.push_back(commands[i].LastError());
+        }
     }
     return system;
 }
@@ -56,4 +59,10 @@ void Script::FillMustBeSpecified()
     mustbespecifiedatcreation["loadtemplate"] = map<string, vector<string>>();
         mustbespecifiedatcreation["loadtemplate"]["*"] = vector<string>();
             mustbespecifiedatcreation["loadtemplate"]["*"].push_back("filename");
+}
+
+void Script::Append(const Command &c)
+{
+    commands.push_back(c);
+    commands[commands.size()-1].SetParent(this);
 }

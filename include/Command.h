@@ -26,6 +26,7 @@ class Command
         string LastError() {return last_error;}
         bool Execute(System *sys=nullptr);
         bool Validate(System *sys=nullptr);
+        void SetParent (Script *scr);
     protected:
 
     private:

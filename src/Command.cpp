@@ -38,7 +38,9 @@ Command::Command(const string &s, Script *parnt)
             }
         else
         {
-
+            keyword = "loadtemplate";
+            validated = true;
+            return;
         }
     }
 
@@ -60,7 +62,7 @@ Command::Command(const string &s, Script *parnt)
 
     for (int i=1; i<firstlevelbreakup.size(); i++)
     {
-        vector<string> properties = split(firstlevelbreakup[i],';');
+        vector<string> properties = split(firstlevelbreakup[i],',');
         for (int j=0; j<properties.size(); j++)
         {
             vector<string> prop = split(properties[j],'=');
@@ -133,7 +135,12 @@ bool Command::Execute(System *_sys)
         sys = _sys;
     if (tolower(keyword) == "loadtemplate")
     {
-
+        if (sys->GetQuanTemplate(assignments["filename"]))
+            return true;
+        else
+        {
+            last_error = "File '" + assignments["filename"] + "' was not found!";
+        }
     }
     if (tolower(keyword)=="create")
     {
@@ -147,6 +154,19 @@ bool Command::Execute(System *_sys)
                 sys->AddBlock(B);
                 for (map<string,string>::iterator it=assignments.begin(); it!=assignments.end(); it++)
                     B.SetProperty(it->first,it->second);
+            }
+        }
+        if (tolower(arguments[0])=="link")
+        {
+            if (Validate())
+            {
+                Link L;
+                L.SetName(assignments["name"]);
+                L.SetType(assignments["type"]);
+
+                sys->AddLink(L,assignments["from"],assignments["to"]);
+                for (map<string,string>::iterator it=assignments.begin(); it!=assignments.end(); it++)
+                    L.SetProperty(it->first,it->second);
             }
         }
     }
@@ -175,4 +195,9 @@ bool Command::Validate(System *sys)
         }
 
     return true;
+}
+
+void Command::SetParent (Script *scr)
+{
+    parent = scr;
 }
