@@ -40,7 +40,7 @@ Command::Command(const string &s, Script *parnt)
         {
             keyword = "loadtemplate";
             validated = true;
-            return;
+
         }
     }
 
