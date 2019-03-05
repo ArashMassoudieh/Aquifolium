@@ -59,6 +59,7 @@
 		<Unit filename="include/Command.h" />
 		<Unit filename="include/Condition.h" />
 		<Unit filename="include/DistributionNUnif.h" />
+		<Unit filename="include/ErrorHandler.h" />
 		<Unit filename="include/Expression.h" />
 		<Unit filename="include/Link.h" />
 		<Unit filename="include/Matrix.h" />
@@ -85,6 +86,7 @@
 		<Unit filename="src/Command.cpp" />
 		<Unit filename="src/Condition.cpp" />
 		<Unit filename="src/DistributionNUnif.cpp" />
+		<Unit filename="src/ErrorHandler.cpp" />
 		<Unit filename="src/Expression.cpp" />
 		<Unit filename="src/GA/Binary.cpp" />
 		<Unit filename="src/GA/Distribution.cpp" />

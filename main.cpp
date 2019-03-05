@@ -17,8 +17,7 @@ int main()
 
     CGA<System> TempObj;
     System *S = scr.CreateSystem();
-
-    //Expression E("2*X+X^2+Y/X");
+    S->errorhandler.Write("errors.txt");
 
     S->AppendParameter("Q_max_param",20,80);
     S->AppendParameter("Q_min_param",5,15);
@@ -57,6 +56,7 @@ int main()
 	S->tend() = 10;
 	S->SetVariableParents();
 	S->SetSilent(true);
+	S->errorhandler.Write("errors.txt");
 	S->Solve("Storage");
     S->GetObjectiveFunctionTimeSeries("Flow_myLink")->writefile("Obj.txt");
     S->GetOutputs().writetofile("text.txt");

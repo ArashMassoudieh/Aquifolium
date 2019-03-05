@@ -14,6 +14,8 @@
     class GWidget;
     class logWindow;
 #endif
+#include "ErrorHandler.h"
+
 struct solversettings
 {
     double C_N_weight; //Crank-Nicholson Weight
@@ -114,6 +116,7 @@ class System: public Object
         bool IsSilent() {return silent;}
         void ShowMessage(const string &msg) {if (!silent) cout<<msg<<endl; }
         void SetAllParents();
+        ErrorHandler errorhandler;
 #ifdef QT_version
         logWindow *LogWindow() {return logwindow;}
         void SetLogWindow(logWindow *lgwnd) {logwindow=lgwnd;}

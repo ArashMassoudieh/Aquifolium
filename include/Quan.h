@@ -64,6 +64,8 @@ class Quan
 		string ToString(int _tabs=1);
         bool &AskFromUser() {return ask_from_user;}
 		void SetName(const string &name) {_var_name=name;}
+		bool AppendError(const string &objectname, const string &cls, const string &funct, const string &description, const int &code);
+
     protected:
 
     private:

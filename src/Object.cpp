@@ -44,7 +44,8 @@ double Object::CalcVal(const string& s,const Expression::timing &tmg)
     }
     else
     {
-        last_error = "property '" + s + "' does not exist!";
+        if (parent)
+        Parent()->errorhandler.Append(GetName(),"Object","CalcVal","property '" + s + "' does not exist!",1001);
         last_operation_success = false;
         return 0;
     }
@@ -62,7 +63,7 @@ double Object::GetVal(const string& s,const Expression::timing &tmg, bool limit)
     }
     else
     {
-        last_error = "property '" + s + "' does not exist!";
+        Parent()->errorhandler.Append(GetName(),"Object","GetVal","property '" + s + "' does not exist!",1002);
         last_operation_success = false;
         return 0;
     }
@@ -74,7 +75,7 @@ bool Object::AddQnantity(const string &name,const Quan &Q)
 {
     if (var.find(name)!=var.end() && !var.size())
     {
-        last_error = "Variable " + name + " already exists! ";
+        Parent()->errorhandler.Append(GetName(),"Object","AddQnantity","Variable " + name + " already exists! ",1003);
         return false;
     }
     else
@@ -89,6 +90,7 @@ bool Object::SetQuantities(MetaModel &m, const string& typ )
 {
     if (m.Count(typ)==0)
     {
+        Parent()->errorhandler.Append(GetName(),"Object","SetQuantities","Type " + typ + "was not found!",1004);
         last_error = "Type " + typ + "was not found";
 		return false;
 	}
@@ -108,6 +110,7 @@ bool Object::SetVal(const string& s, double value, const Expression::timing &tmg
     }
     else
     {
+        Parent()->errorhandler.Append(GetName(),"Object","SetVal","Variable " + s + " was not found!",1005);
         last_error = "Variable " + s + " was not found!";
         return false;
     }
@@ -122,6 +125,7 @@ bool Object::SetVal(const string& s, const string & value, const Expression::tim
     }
     else
     {
+        Parent()->errorhandler.Append(GetName(),"Object","SetVal","Variable " + s + " was not found!",1006);
         last_error = "Variable " + s + " was not found!";
         return false;
     }
@@ -154,6 +158,7 @@ void Object::SetConnectedBlock(Expression::loc l, const string &blockname)
 {
     if (GetParent()->block(blockname)==nullptr)
     {
+        Parent()->errorhandler.Append(GetName(),"Object","SetConnectedBlock","Block '" +blockname + "' does not exist!",1008);
         last_error = "Block '" +blockname + "' does not exist!";
         GetParent()->AppendError(last_error);
     }
@@ -189,7 +194,7 @@ Quan* Object::CorrespondingFlowVariable(const string &s)
 {
     if (var.Count(Variable(s)->GetCorrespondingFlowVar())==0)
     {
-        AppendError("Variable '" + s +"' does not exist!");
+        Parent()->errorhandler.Append(GetName(),"Object","CorrespondingFlowVariable","Variable '" + s +"' does not exist!",1009);
         return nullptr;
     }
     else
@@ -203,8 +208,8 @@ Quan* Object::Variable(const string &s)
 #ifdef Debug_mode
 		ShowMessage("In '" + name + "': " + "Variable '" + s + "' does not exist!");
 #endif
-		AppendError("Variable '" + s + "' does not exist!");
-        return nullptr;
+		Parent()->errorhandler.Append(GetName(),"Object","Variable","Variable '" + s +"' does not exist!",1010);
+		return nullptr;
     }
     else
         return &var[s];
@@ -223,7 +228,7 @@ bool Object::Renew(const string & variable)
 {
 	if (!Variable(variable))
 	{
-		AppendError("Variable '" + variable + "' does not exist!");
+		Parent()->errorhandler.Append(GetName(),"Object","Renew","Variable '" + variable + "' does not exist!",1011);
 		return false;
 	}
 	else
@@ -236,7 +241,7 @@ bool Object::Update(const string & variable)
 {
 	if (!Variable(variable))
 	{
-		AppendError("Variable " + variable + " does not exist!");
+		Parent()->errorhandler.Append(GetName(),"Object","Update","Variable '" + variable + "' does not exist!",1011);
 		return false;
 	}
 	else
@@ -263,7 +268,7 @@ bool Object::SetProperty(const string &prop, const string &value)
 {
     if (!HasQuantity(prop))
     {
-        AppendError("Object '" + GetName() + "' has no property called '" + prop + "'");
+        Parent()->errorhandler.Append(GetName(),"Object","SetProperty","Object '" + GetName() + "' has no property called '" + prop + "'",1012);
         return false;
     }
     if (var[prop].GetType() == Quan::_type::value || var[prop].GetType() == Quan::_type::balance || var[prop].GetType() == Quan::_type::constant)
@@ -273,12 +278,12 @@ bool Object::SetProperty(const string &prop, const string &value)
     }
     if (var[prop].GetType() == Quan::_type::expression)
     {
-        AppendError("In object '" + GetName() + "', property '" + prop + "' is an expression and cannot be set during the run time");
+        Parent()->errorhandler.Append(GetName(),"Object","SetProperty","In object '" + GetName() + "', property '" + prop + "' is an expression and cannot be set during the run time",1013);
         return false;
     }
     if (var[prop].GetType() == Quan::_type::rule)
     {
-        AppendError("In object '" + GetName() + "', property '" + prop + "' is a rule and cannot be set during the run time");
+        Parent()->errorhandler.Append(GetName(),"Object","SetProperty","In object '" + GetName() + "', property '" + prop + "' is a rule and cannot be set during the run time",1014);
         return false;
     }
 

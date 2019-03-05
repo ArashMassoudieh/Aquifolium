@@ -39,6 +39,7 @@ System* Script::CreateSystem()
     {
         if (!commands[i].Execute(system))
         {
+            system->errorhandler.Append("","Script","CreateSystem",commands[i].LastError(),5001);
             errors.push_back(commands[i].LastError());
         }
     }

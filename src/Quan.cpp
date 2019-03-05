@@ -258,9 +258,19 @@ bool Quan::SetTimeSeries(string filename)
 	_timeseries.readfile(filename);
 	if (_timeseries.file_not_found)
 	{
-		cout << filename + " was not found!"<<endl;
+		AppendError(GetName(),"Quan", "SetTimeSeries", filename + " was not found!", 3001);
 		return false;
 	}
 	else
 		return true;
+}
+
+bool Quan::AppendError(const string &objectname, const string &cls, const string &funct, const string &description, const int &code)
+{
+    if (!parent)
+        return false;
+    if (!parent->Parent())
+        return false;
+    parent->Parent()->errorhandler.Append(objectname, cls, funct, description, code);
+    return true;
 }

@@ -37,7 +37,7 @@ bool QuanSet::Append(const string &s, const Quan &q)
 {
     if (quans.count(s)>0)
     {
-        last_error = "In " + Name() + ": Quantity " + s + " Already exists!";
+        AppendError(Name(),"QuanSet","Append","In " + Name() + ": Quantity " + s + " Already exists!",2001);
         return false;
     }
     else
@@ -73,7 +73,7 @@ Quan& QuanSet::GetVar(const string &s)
 {
     if (quans.count(s)==0)
     {
-        last_error = "Variable " + s + " does not exist!";
+        AppendError(Name(),"QuanSet","GetVar","Variable " + s + " does not exist!",2001);
     }
     else
         return quans[s];
@@ -117,4 +117,15 @@ void QuanSet::SetAllParents()
 {
     for (map<string,Quan>::iterator it=quans.begin(); it!=quans.end(); it++)
         quans[it->first].SetParent(parent);
+}
+
+bool QuanSet::AppendError(const string &objectname, const string &cls, const string &funct, const string &description, const int &code)
+{
+    if (!parent)
+        return false;
+    if (!parent->Parent())
+        return false;
+
+    parent->Parent()->errorhandler.Append(objectname,cls,funct,description,code);
+    return true;
 }

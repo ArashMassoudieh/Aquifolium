@@ -92,7 +92,7 @@ Block *System::block(const string &s)
     for (unsigned int i=0; i<blocks.size(); i++)
         if (blocks[i].GetName() == s) return &blocks[i];
 
-    AppendError("Block " + s + " was not found");
+    errorhandler.Append(GetName(),"System","block","Block '" + s + "' was not found",101);
     return nullptr;
 }
 
@@ -101,7 +101,7 @@ int System::blockid(const string &s)
     for (unsigned int i=0; i<blocks.size(); i++)
         if (blocks[i].GetName() == s) return int(i);
 
-    AppendError("Block " + s + " was not found");
+    errorhandler.Append(GetName(),"System","blockid","Block '" + s + "' was not found",102);
     return -1;
 }
 
@@ -110,7 +110,8 @@ int System::linkid(const string &s)
     for (unsigned int i=0; i<links.size(); i++)
         if (links[i].GetName() == s) return int(i);
 
-    AppendError("Link " + s + " was not found");
+    errorhandler.Append(GetName(),"System","linkid","Link '" + s + "' was not found",103);
+
     return -1;
 }
 
@@ -119,7 +120,8 @@ Link *System::link(const string &s)
     for (unsigned int i=0; i<links.size(); i++)
         if (links[i].GetName() == s) return &links[i];
 
-    AppendError("Link " + s + " was not found");
+    errorhandler.Append(GetName(),"System","link","Link '" + s + "' was not found",104);
+
     return nullptr;
 }
 
@@ -131,7 +133,8 @@ Object *System::object(const string &s)
     for (unsigned int i=0; i<blocks.size(); i++)
         if (blocks[i].GetName() == s) return &blocks[i];
 
-    AppendError("Link or block " + s + " was not found");
+    errorhandler.Append(GetName(),"System","object","Object '" + s + "' was not found",105);
+
     return nullptr;
 }
 
@@ -719,13 +722,14 @@ bool System::AppendObjectiveFunction(const string &name, const string &location,
 {
     Objective_Function obj(this,expr,location);
     obj.SetSystem(this);
-    if (block(location)!=nullptr || link(location)!=nullptr)
+    if (object(location)!=nullptr)
     {
         objective_function_set.Append(name,obj, weight);
         objective_function_set[name]->obj_funct.SetSystem(this);
         return true;
     }
-    last_error = "Location " + name + "was not found";
+
+    errorhandler.Append(name,"System","AppendObjectiveFunction","Location '" + name + "' was not found", 501);
     return false;
 }
 
@@ -744,19 +748,19 @@ bool System::SetAsParameter(const string &location, const string &quantity, cons
 {
     if (link(location)==nullptr && block(location)==nullptr)
     {
-        last_error = "Location " + location + " does not exist!";
+        errorhandler.Append(GetName(),"System","SetAsParameter","Location '" + location + "' does not exist", 601);
         return false;
     }
     if (GetParameter(parametername) == nullptr)
     {
-        last_error = "Parameter " + parametername + "does not exist!";
+        errorhandler.Append(GetName(),"System","SetAsParameter","Parameter " + parametername + "does not exist!", 602);
         return false;
     }
     if (link(location)!=nullptr)
     {
         if (!link(location)->HasQuantity(quantity))
         {
-            last_error = "In link" + location + ": variable " + quantity + " does not exist";
+            errorhandler.Append(GetName(),"System","SetAsParameter","In link" + location + ": variable " + quantity + " does not exist!", 603);
             return false;
         }
         else
@@ -771,6 +775,7 @@ bool System::SetAsParameter(const string &location, const string &quantity, cons
         if (!block(location)->HasQuantity(quantity))
         {
             last_error = "In block" + location + ": variable " + quantity + " does not exist";
+            errorhandler.Append(GetName(),"System","SetAsParameter",last_error, 604);
             return false;
         }
         else
@@ -785,7 +790,7 @@ bool System::AppendParameter(const string &paramname, const double &lower_limit,
 {
     if (Parameters().Contains(paramname))
     {
-        AppendError("Parameter " + paramname + " already exists!");
+        errorhandler.Append(GetName(),"System","AppendParameter","Parameter '" + paramname + "' has already been defined!", 605);
         return false;
     }
     else
@@ -802,7 +807,7 @@ bool System::AppendParameter(const string &paramname, const Parameter& param)
 {
     if (Parameters().Contains(paramname))
     {
-        AppendError("Parameter " + paramname + " already exists!");
+        errorhandler.Append(GetName(),"System","AppendParameter","Parameter " + paramname + " already exists!", 606);
         return false;
     }
     else
@@ -816,7 +821,7 @@ bool System::SetParameterValue(const string &paramname, const double &val)
 {
     if (!Parameters().Contains(paramname))
     {
-        AppendError("Parameter " + paramname + " does not exist!");
+        errorhandler.Append(GetName(),"System","SetParameterValue","Parameter " + paramname + " does not exist!", 608);
         return false;
     }
     else
@@ -840,7 +845,7 @@ bool System::ApplyParameters()
                 object(GetParameter(it->first)->GetLocations()[i])->SetVal(GetParameter(it->first)->GetQuans()[i],GetParameter(it->first)->GetValue());
             else
             {
-                AppendError("Location '" + GetParameter(it->first)->GetLocations()[i] + "' does not exist!");
+                errorhandler.Append(GetName(),"System","ApplyParameters" ,"Location '" + GetParameter(it->first)->GetLocations()[i] + "' does not exist!", 607);
                 return false;
             }
         }

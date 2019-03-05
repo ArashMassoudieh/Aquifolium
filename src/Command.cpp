@@ -153,7 +153,10 @@ bool Command::Execute(System *_sys)
                 B.SetType(assignments["type"]);
                 sys->AddBlock(B);
                 for (map<string,string>::iterator it=assignments.begin(); it!=assignments.end(); it++)
-                    B.SetProperty(it->first,it->second);
+                {
+                    if (it->first!="name" && it->first!="type" && it->first!="to" && it->first!="from")
+                        sys->block(assignments["name"])->SetProperty(it->first,it->second);
+                }
             }
         }
         if (tolower(arguments[0])=="link")
@@ -166,10 +169,15 @@ bool Command::Execute(System *_sys)
 
                 sys->AddLink(L,assignments["from"],assignments["to"]);
                 for (map<string,string>::iterator it=assignments.begin(); it!=assignments.end(); it++)
-                    L.SetProperty(it->first,it->second);
+                {
+                    if (it->first!="name" && it->first!="type" && it->first!="to" && it->first!="from")
+                        sys->link(assignments["name"])->SetProperty(it->first,it->second);
+                }
             }
         }
+        return true;
     }
+
 }
 
 bool Command::Validate(System *sys)
