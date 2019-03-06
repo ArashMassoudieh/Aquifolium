@@ -28,17 +28,17 @@ Command::Command(const string &s, Script *parnt)
         }
     }
     vector<string> maincommad = split(firstlevelbreakup[0],' ');
-    if (tolower(maincommad[0])=="loadtemplate")
+    if (tolower(maincommad[0])=="loadtemplate" || tolower(maincommad[0])=="setasparameter")
     {
         if (maincommad.size()!=1)
             {
-                last_error = "Command 'loadtemplate' does not require an argument!";
+                last_error = "Command " + maincommad[0] + " does not require an argument!";
                 validated = false;
                 return;
             }
         else
         {
-            keyword = "loadtemplate";
+            keyword = maincommad[0];
             validated = true;
 
         }
@@ -135,13 +135,31 @@ bool Command::Execute(System *_sys)
         sys = _sys;
     if (tolower(keyword) == "loadtemplate")
     {
-        if (sys->GetQuanTemplate(assignments["filename"]))
-            return true;
-        else
+        if (Validate())
         {
-            last_error = "File '" + assignments["filename"] + "' was not found!";
+            if (sys->GetQuanTemplate(assignments["filename"]))
+                return true;
+            else
+            {
+                last_error = "File '" + assignments["filename"] + "' was not found!";
+            }
         }
+        else
+            return false;
     }
+
+    if (tolower(keyword) == "setasparameter")
+    {
+        if (Validate())
+        {
+            sys->SetAsParameter(assignments["object"],assignments["quantity"],assignments["parametername"]);
+            return true;
+        }
+        else
+            return false;
+    }
+
+
     if (tolower(keyword)=="create")
     {
         if (tolower(arguments[0])=="block")
@@ -157,7 +175,10 @@ bool Command::Execute(System *_sys)
                     if (it->first!="name" && it->first!="type" && it->first!="to" && it->first!="from")
                         sys->block(assignments["name"])->SetProperty(it->first,it->second);
                 }
+                return true;
             }
+            else
+                return false;
         }
         if (tolower(arguments[0])=="link")
         {
@@ -173,7 +194,31 @@ bool Command::Execute(System *_sys)
                     if (it->first!="name" && it->first!="type" && it->first!="to" && it->first!="from")
                         sys->link(assignments["name"])->SetProperty(it->first,it->second);
                 }
+                return true;
             }
+            else
+                return false;
+        }
+        if (tolower(arguments[0])=="parameter")
+        {
+            if (Validate())
+            {
+                Parameter P;
+
+                sys->AppendParameter(assignments["name"],atof(assignments["low"]),atof(assignments["high"]));
+                for (map<string,string>::iterator it=assignments.begin(); it!=assignments.end(); it++)
+                {
+                    if (it->first!="name" && it->first!="type" && it->first!="to" && it->first!="from")
+                    {
+                        if (!sys->parameter(assignments["name"])->SetProperty(it->first,it->second))
+                            last_error = "Parameter does not have a '" + it->first + "' + property!";
+                    }
+                }
+                return true;
+            }
+            else
+                return false;
+
         }
         return true;
     }
@@ -186,19 +231,30 @@ bool Command::Validate(System *sys)
     if (parent->MustBeSpecified()->count(keyword)==0)
     {
         last_error = "Keyword '" + keyword + "' is not recognized!";
+        if (sys) sys->errorhandler.Append("","Command","Validate",last_error,5001);
         return false;
     }
     if (arguments.size()>0)
         if (parent->MustBeSpecified()->at(keyword).count(arguments[0])==0)
         {
             last_error = "Argument '" + arguments[0] + "' is not recognized for keyword '" + keyword + "'";
+            if (sys) sys->errorhandler.Append("","Command","Validate",last_error,5002);
             return false;
         }
+    if (arguments.size()>0)
+        for (int i=0; i<parent->MustBeSpecified()->at(keyword)[arguments[0]].size(); i++)
+            if (assignments.count(parent->MustBeSpecified()->at(keyword)[arguments[0]][i])==0)
+            {
+                last_error = "'" + parent->MustBeSpecified()->at(keyword)[arguments[0]][i] + "' must be specified when " + keyword + "ing a " + arguments[0] + "'";
+                if (sys) sys->errorhandler.Append("","Command","Validate",last_error,5003);
+                return false;
+            }
 
-    for (int i=0; i<parent->MustBeSpecified()->at(keyword)[arguments[0]].size(); i++)
-        if (assignments.count(parent->MustBeSpecified()->at(keyword)[arguments[0]][i])==0)
+    for (int i=0; i<parent->MustBeSpecified()->at(keyword)["*"].size(); i++)
+        if (assignments.count(parent->MustBeSpecified()->at(keyword)["*"][i])==0)
         {
-            last_error = "'" + parent->MustBeSpecified()->at(keyword)[arguments[0]][i] + "' must be specified when " + keyword + "ing a " + arguments[0] + "'";
+            last_error = "'" + parent->MustBeSpecified()->at(keyword)["*"][i] + "' must be specified when " + keyword + "ing a " + arguments[0] + "'";
+            if (sys) sys->errorhandler.Append("","Command","Validate",last_error,5003);
             return false;
         }
 

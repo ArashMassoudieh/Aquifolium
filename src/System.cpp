@@ -125,6 +125,17 @@ Link *System::link(const string &s)
     return nullptr;
 }
 
+Parameter *System::parameter(const string &s)
+{
+    if (Parameters().count(s) == 0)
+    {
+        errorhandler.Append(GetName(),"System","parameter","parameter '" + s + "' was not found",110);
+        return nullptr;
+    }
+    else
+        return (Parameters()[s]);
+}
+
 Object *System::object(const string &s)
 {
     for (unsigned int i=0; i<links.size(); i++)
@@ -746,7 +757,7 @@ double System::GetObjectiveFunctionValue()
 
 bool System::SetAsParameter(const string &location, const string &quantity, const string &parametername)
 {
-    if (link(location)==nullptr && block(location)==nullptr)
+    if (object(location)==nullptr)
     {
         errorhandler.Append(GetName(),"System","SetAsParameter","Location '" + location + "' does not exist", 601);
         return false;

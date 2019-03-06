@@ -1,1 +1,3 @@
 class, object name, function, description, error code
+System,,object,Object 'myLink1' was not found,105
+System,,SetAsParameter,Location 'myLink1' does not exist,601

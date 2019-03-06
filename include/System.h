@@ -75,6 +75,7 @@ class System: public Object
         bool AddLink(Link &lnk, const string &source, const string &destination);
         Block *block(const string &s);
         Link *link(const string &s);
+        Parameter *parameter(const string &s);
         Object *object(const string &s);
         int blockid(const string &s);
         int linkid(const string &s);

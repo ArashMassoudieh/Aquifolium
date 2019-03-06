@@ -26,6 +26,7 @@ class Parameter_Set
             return parameters.size();
         }
         string getKeyAtIndex (int index);
+        int count(const string &s) {return parameters.count(s);}
     protected:
 
     private:

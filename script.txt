@@ -2,5 +2,12 @@ loadtemplate; filename = power_reservoirs_rules.qnt
 create block; name = Reservoir1, type = Reservoir, Storage = 15, reservoir_power=2, reservoir_coeff=30
 create block; name = Reservoir2, type = Reservoir, Storage = 15, reservoir_power=2, reservoir_coeff=30
 create link; name =  myLink, from=Reservoir1, to=Reservoir2, type = Reservoir_link_rule, Q_max=50, Q_min=10, S_min=10, S_max=100
-
+create parameter; name=Q_max_param, low=20, high=80
+create parameter; name=Q_min_param, low=5, high=15
+create parameter; name=S_min_param, low=5, high=15
+create parameter; name=S_max_param, low=20, high=80
+setasparameter; object=myLink1, parametername=Q_max_param,quantity=Q_max
+setasparameter; object=myLink, parametername=Q_min_param,quantity=Q_min 
+setasparameter; object=myLink, parametername=S_max_param,quantity=S_max 
+setasparameter; object=myLink, parametername=S_min_param,quantity=S_min  
 

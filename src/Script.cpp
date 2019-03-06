@@ -39,7 +39,7 @@ System* Script::CreateSystem()
     {
         if (!commands[i].Execute(system))
         {
-            system->errorhandler.Append("","Script","CreateSystem",commands[i].LastError(),5001);
+            system->errorhandler.Append("","Script","CreateSystem",commands[i].LastError(),6001);
             errors.push_back(commands[i].LastError());
         }
     }
@@ -57,9 +57,20 @@ void Script::FillMustBeSpecified()
             mustbespecifiedatcreation["create"]["link"].push_back("type");
             mustbespecifiedatcreation["create"]["link"].push_back("from");
             mustbespecifiedatcreation["create"]["link"].push_back("to");
+        mustbespecifiedatcreation["create"]["parameter"] = vector<string>();
+            mustbespecifiedatcreation["create"]["parameter"].push_back("name");
+            mustbespecifiedatcreation["create"]["parameter"].push_back("low");
+            mustbespecifiedatcreation["create"]["parameter"].push_back("high");
     mustbespecifiedatcreation["loadtemplate"] = map<string, vector<string>>();
         mustbespecifiedatcreation["loadtemplate"]["*"] = vector<string>();
             mustbespecifiedatcreation["loadtemplate"]["*"].push_back("filename");
+    mustbespecifiedatcreation["setasparameter"] = map<string, vector<string>>();
+        mustbespecifiedatcreation["setasparameter"]["*"] = vector<string>();
+            mustbespecifiedatcreation["setasparameter"]["*"].push_back("object");
+            mustbespecifiedatcreation["setasparameter"]["*"].push_back("quantity");
+            mustbespecifiedatcreation["setasparameter"]["*"].push_back("parametername");
+
+
 }
 
 void Script::Append(const Command &c)

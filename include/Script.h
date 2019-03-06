@@ -4,6 +4,7 @@
 
 #include "Command.h"
 #include <vector>
+#include "ErrorHandler.h"
 
 class System;
 
@@ -31,6 +32,7 @@ class Script
         vector<string> errors;
         System *system;
         map<string, map<string, vector<string>>> mustbespecifiedatcreation;
+        ErrorHandler errorhandler;
 };
 
 #endif // SCRIPT_H

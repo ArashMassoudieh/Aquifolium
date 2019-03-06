@@ -19,14 +19,8 @@ int main()
     System *S = scr.CreateSystem();
     S->errorhandler.Write("errors.txt");
 
-    S->AppendParameter("Q_max_param",20,80);
-    S->AppendParameter("Q_min_param",5,15);
-    S->AppendParameter("S_min_param",5,15);
-    S->AppendParameter("S_max_param",20,80);
-    S->SetAsParameter("myLink","Q_max","Q_max_param");
-    S->SetAsParameter("myLink","Q_min","Q_min_param");
-    S->SetAsParameter("myLink","S_min","S_min_param");
-    S->SetAsParameter("myLink","S_max","S_max_param");
+
+
     cout<<S->link("myLink")->Variable("flow")->GetRule()->ToString()<<endl;
     cout<<S->link("myLink")->Variable("flow")->ToString()<<endl;
     cout<<S->link("myLink")->GetVars()->ToString()<<endl;

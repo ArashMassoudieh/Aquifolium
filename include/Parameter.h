@@ -29,6 +29,14 @@ class Parameter
         void SetValue(const double &val) {value = val;}
         double GetValue() {return value;}
         string LastError() {return last_error;}
+        bool SetProperty(const string &s, const string &val)
+        {
+            if (s=="low") {prior_range.low = atof(val.c_str()); return true;}
+            if (s=="high") {prior_range.high = atof(val.c_str()); return true;}
+            if (s=="value") {value = atof(val.c_str()); return true;}
+            if (s=="prior_distribution") {prior_distribution = val;return true;}
+            return false;
+        }
     protected:
 
     private:
