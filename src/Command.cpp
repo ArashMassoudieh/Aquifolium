@@ -148,6 +148,31 @@ bool Command::Execute(System *_sys)
             return false;
     }
 
+    if (tolower(keyword) == "echo")
+    {
+        if (Validate())
+        {
+            if (assignments.count("quantity")=0)
+            {
+                if (assignments.count("object")==1)
+                {
+                    sys->echo(assignments["object"]);
+                }
+                sys->errorhandler.Append("", "Command", "Execute", "In echo command, object must be indicated",7001);
+            }
+            else
+            {
+                if (assignments.count("object")==1)
+                {
+                    sys->echo(assignments["object"],assignments["quantity"]);
+                }
+                sys->errorhandler.Append("", "Command", "Execute", "In echo command, object must be indicated",7001);
+            }
+        }
+        else
+            return false;
+    }
+
     if (tolower(keyword) == "setasparameter")
     {
         if (Validate())

@@ -876,4 +876,21 @@ void System::SetAllParents()
         objective_function_set[it->first]->obj_funct.SetSystem(this);
 }
 
+bool System::Echo(const string &obj, const string &quant)
+{
+    if (object(obj)==nullptr && parameter(obj)==nullptr)
+    {
+        errorhandler.Append(GetName(),"System","Echo" ,"Object '" + obj + "' does not exits!", 608);
+        return false;
+    }
+    if (quant!="")
+    {
+        if (object(obj)!=nullptr)
+        {
+            cout<<object(obj)->toString()<<endl;
+        }
+    }
+
+}
+
 

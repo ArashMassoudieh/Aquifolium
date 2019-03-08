@@ -118,6 +118,7 @@ class System: public Object
         void ShowMessage(const string &msg) {if (!silent) cout<<msg<<endl; }
         void SetAllParents();
         ErrorHandler errorhandler;
+        bool Echo(const string &object, const string &quantity == "");
 #ifdef QT_version
         logWindow *LogWindow() {return logwindow;}
         void SetLogWindow(logWindow *lgwnd) {logwindow=lgwnd;}

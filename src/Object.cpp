@@ -295,3 +295,10 @@ bool Object::SetProperty(const string &prop, const string &value)
 
 
 }
+
+string Object::toString(int _tabs)
+{
+    string out = tabs(_tabs) + "Name: " + GetName() + "\n";
+    out += tabs(_tabs) + "Type: " + GetType() + "\n";
+    this->var->ToString(_tabs + 1);
+}
