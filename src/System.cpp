@@ -880,7 +880,7 @@ bool System::Echo(const string &obj, const string &quant)
 {
     if (object(obj)==nullptr && parameter(obj)==nullptr)
     {
-        errorhandler.Append(GetName(),"System","Echo" ,"Object '" + obj + "' does not exits!", 608);
+        errorhandler.Append(GetName(),"System","Echo" ,"Object or parameter '" + obj + "' does not exits!", 608);
         return false;
     }
     if (quant!="")
@@ -888,6 +888,31 @@ bool System::Echo(const string &obj, const string &quant)
         if (object(obj)!=nullptr)
         {
             cout<<object(obj)->toString()<<endl;
+        }
+        else if (parameters(obj)!=nullptr)
+        {
+
+        }
+        else
+        {
+            errorhandler.Append(GetName(),"System","Echo" ,"Object or parameter '" + obj + "' does not exits!", 608);
+            return false;
+        }
+    }
+    else
+    {
+        if (object(obj)!=nullptr)
+        {
+            cout<<object(obj)->toString()<<endl;
+        }
+        else if (parameters(obj)!=nullptr)
+        {
+
+        }
+        else
+        {
+            errorhandler.Append(GetName(),"System","Echo" ,"Object or parameter '" + obj + "' does not exits!", 608);
+            return false;
         }
     }
 
