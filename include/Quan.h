@@ -100,4 +100,7 @@ class Quan
         bool ask_from_user=false;
 };
 
+string tostring(const Quan::_type &typ);
+
+
 #endif // QUAN_H

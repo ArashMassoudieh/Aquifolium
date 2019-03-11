@@ -19,15 +19,7 @@ int main()
     System *S = scr.CreateSystem();
     S->errorhandler.Write("errors.txt");
 
-
-
-    cout<<S->link("myLink")->Variable("flow")->GetRule()->ToString()<<endl;
-    cout<<S->link("myLink")->Variable("flow")->ToString()<<endl;
-    cout<<S->link("myLink")->GetVars()->ToString()<<endl;
-    cout<<S->GetMetaModel()->ToString()<<endl;
-	cout<<S->link("myLink")->CalcVal("flow",Expression::timing::present)<<endl;
-	cout<<S->Variable("Storage")->GetCorrespondingFlowVar()<<endl;
-	Block User1;
+    Block User1;
 	User1.SetName("User1");
 	User1.SetType("User");
 	S->AddBlock(User1);

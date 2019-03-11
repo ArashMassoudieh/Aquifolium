@@ -6,8 +6,14 @@ create parameter; name=Q_max_param, low=20, high=80
 create parameter; name=Q_min_param, low=5, high=15
 create parameter; name=S_min_param, low=5, high=15
 create parameter; name=S_max_param, low=20, high=80
+setvalue; object=Q_max_param, quantity=value, value=40
+echo; object=Q_max_param, quantity=value; 
 setasparameter; object=myLink1, parametername=Q_max_param,quantity=Q_max
 setasparameter; object=myLink, parametername=Q_min_param,quantity=Q_min 
 setasparameter; object=myLink, parametername=S_max_param,quantity=S_max 
-setasparameter; object=myLink, parametername=S_min_param,quantity=S_min  
+setasparameter; object=myLink, parametername=S_min_param,quantity=S_min 
+//echo; object=myLink, quantity=flow, feature=rule
+//echo; object=myLink, quantity=flow
+echo; object=Q_max_param
+//echo; object=myLink
 

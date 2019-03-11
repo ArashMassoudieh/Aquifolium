@@ -160,6 +160,18 @@ bool Quan::SetRule(const string &R)
 	return true;
 }
 
+string tostring(const Quan::_type &typ)
+{
+    if (typ==Quan::_type::balance) return "Balance";
+    if (typ==Quan::_type::constant) return "Constant";
+    if (typ==Quan::_type::expression) return "Expression";
+    if (typ==Quan::_type::global_quan) return "Global";
+    if (typ==Quan::_type::rule) return "Rule";
+    if (typ==Quan::_type::timeseries) return "TimeSeries";
+    if (typ==Quan::_type::value) return "Value";
+    return "";
+}
+
 
 bool Quan::SetVal(const double &v, const Expression::timing &tmg)
 {

@@ -172,7 +172,7 @@ bool System::OneStepSolve()
 	return true;
 }
 
-bool System::Solve(const string &variable)
+bool System::Solve(const string &variable, bool applyparameters)
 {
     #ifdef QT_version
     if (LogWindow())
@@ -182,6 +182,7 @@ bool System::Solve(const string &variable)
     #else
         ShowMessage("Simulation started!");
     #endif
+    if (applyparameters) ApplyParameters();
     InitiateOutputs();
     PopulateOutputs();
 
@@ -876,20 +877,63 @@ void System::SetAllParents()
         objective_function_set[it->first]->obj_funct.SetSystem(this);
 }
 
-bool System::Echo(const string &obj, const string &quant)
+bool System::Echo(const string &obj, const string &quant, const string &feature)
 {
     if (object(obj)==nullptr && parameter(obj)==nullptr)
     {
         errorhandler.Append(GetName(),"System","Echo" ,"Object '" + obj + "' does not exits!", 608);
         return false;
     }
-    if (quant!="")
+    if (quant=="")
     {
         if (object(obj)!=nullptr)
         {
             cout<<object(obj)->toString()<<endl;
         }
+        else if (parameter(obj)!=nullptr)
+        {
+            cout<<parameter(obj)->toString()<<endl;
+        }
     }
+    else
+    {
+        if (object(obj)!=nullptr)
+        {
+            if (!object(obj)->HasQuantity(quant))
+            {
+                errorhandler.Append(GetName(),"System","Echo","Object '" + obj + "' has no property/quantity '" + quant + "'",613);
+                return false;
+            }
+            if (feature == "")
+                cout<<object(obj)->Variable(quant)->ToString()<<endl;
+            else if (tolower(feature) == "value")
+                cout<<object(obj)->Variable(quant)->GetVal();
+            else if (tolower(feature) == "rule")
+                cout<<object(obj)->Variable(quant)->GetRule()->ToString();
+            else if (tolower(feature) == "type")
+                cout<<tostring(object(obj)->Variable(quant)->GetType());
+            else
+            {
+                errorhandler.Append(GetName(),"System","Echo","Feature '" + feature + "' does not exist!",612);
+                return false;
+            }
+            return true;
+        }
+        else if (parameter(obj)!=nullptr)
+        {
+            if (!parameter(obj)->HasQuantity(quant))
+            {
+                errorhandler.Append(GetName(),"System","Echo","Parameter '" + obj + "' has no property/quantity '" + quant + "'",618);
+                return false;
+            }
+            else
+            {
+                cout<<parameter(obj)->Variable(quant)<<endl;
+                return true;
+            }
+        }
+    }
+
 
 }
 

@@ -27,26 +27,26 @@ Command::Command(const string &s, Script *parnt)
             return;
         }
     }
-    vector<string> maincommad = split(firstlevelbreakup[0],' ');
-    if (tolower(maincommad[0])=="loadtemplate" || tolower(maincommad[0])=="setasparameter")
+    vector<string> maincommand = split(firstlevelbreakup[0],' ');
+    if (tolower(maincommand[0])=="loadtemplate" || tolower(maincommand[0])=="setasparameter" || tolower(maincommand[0])=="echo" || tolower(maincommand[0])=="setvalue")
     {
-        if (maincommad.size()!=1)
+        if (maincommand.size()!=1)
             {
-                last_error = "Command " + maincommad[0] + " does not require an argument!";
+                last_error = "Command " + maincommand[0] + " does not require an argument!";
                 validated = false;
                 return;
             }
         else
         {
-            keyword = maincommad[0];
+            keyword = maincommand[0];
             validated = true;
 
         }
     }
 
-    if (tolower(maincommad[0])=="create")
+    if (tolower(maincommand[0])=="create")
     {
-        if (maincommad.size()!=2)
+        if (maincommand.size()!=2)
         {
             last_error = "Command 'create' requires one argument! ";
             validated = false;
@@ -54,8 +54,8 @@ Command::Command(const string &s, Script *parnt)
         }
         else
         {
-            keyword = tolower(maincommad[0]);
-            arguments.push_back(maincommad[1]);
+            keyword = tolower(maincommand[0]);
+            arguments.push_back(maincommand[1]);
             validated = true;
         }
     }
@@ -150,27 +150,95 @@ bool Command::Execute(System *_sys)
 
     if (tolower(keyword) == "echo")
     {
+        if (assignments.count("feature")==1 && assignments.count("quantity")==0)
+        {
+            sys->errorhandler.Append("", "Command", "Execute","In echo command 'quantity' must be specified when feature property is needed.", 7008);
+        }
         if (Validate())
         {
-            if (assignments.count("quantity")=0)
+            if (assignments.count("quantity")==0)
             {
                 if (assignments.count("object")==1)
                 {
-                    sys->echo(assignments["object"]);
+                    return sys->Echo(assignments["object"]);
                 }
-                sys->errorhandler.Append("", "Command", "Execute", "In echo command, object must be indicated",7001);
+                else
+                {
+                    sys->errorhandler.Append("", "Command", "Execute", "In echo command, object must be indicated",7001);
+                    return false;
+                }
             }
             else
             {
                 if (assignments.count("object")==1)
                 {
-                    sys->echo(assignments["object"],assignments["quantity"]);
+                    if (assignments.count("feature")==1)
+                    {
+                        return sys->Echo(assignments["object"],assignments["quantity"],assignments["feature"]);
+
+                    }
+                    else
+                    {
+                        return sys->Echo(assignments["object"],assignments["quantity"]);
+                    }
                 }
-                sys->errorhandler.Append("", "Command", "Execute", "In echo command, object must be indicated",7001);
+                else
+                {
+                    sys->errorhandler.Append("", "Command", "Execute", "In echo command, object must be indicated",7001);
+                    return false;
+                }
             }
         }
         else
             return false;
+    }
+
+    if (tolower(keyword)=="setvalue")
+    {
+        if (assignments.count("object")==0)
+        {
+            sys->errorhandler.Append("", "Command", "Execute", "In the 'setvalue' command, 'object' must be indicated",7010);
+            return false;
+        }
+        if (assignments.count("quantity")==0)
+        {
+            sys->errorhandler.Append("", "Command", "Execute", "In the 'setvalue' command, 'quantity' must be indicated",7011);
+            return false;
+        }
+        if (assignments.count("value")==0)
+        {
+            sys->errorhandler.Append("", "Command", "Execute", "In the 'setvalue' command, 'value' must be indicated",7012);
+            return false;
+        }
+        if (sys->object(assignments["object"])==nullptr && sys->parameter(assignments["object"])==nullptr)
+        {
+            sys->errorhandler.Append("","Command", "Execute", "Object or parameter '" + assignments["object"] + "' was not found.", 7013);
+            return false;
+        }
+        if (sys->object(assignments["object"])!=nullptr)
+        {
+            if (!sys->object(assignments["object"])->HasQuantity(assignments["quantity"]))
+            {
+                sys->errorhandler.Append("","Command","Execute","Object '" + assignments["object"] + "' has no quantity '" + assignments["quantity"] + "'", 7014);
+                return false;
+            }
+            else
+            {
+                return sys->object(assignments["object"])->Variable(assignments["quantity"])->SetVal(atof(assignments["value"]));
+            }
+        }
+        else if (sys->parameter(assignments["object"])!=nullptr)
+        {
+            if (!sys->parameter(assignments["object"])->HasQuantity(assignments["quantity"]))
+            {
+                sys->errorhandler.Append("","Command","Execute","Parameter '" + assignments["object"] + "' has no quantity '" + assignments["quantity"] + "'", 7014);
+                return false;
+            }
+            else
+            {
+                return sys->parameter(assignments["object"])->SetProperty(assignments["quantity"],assignments["value"]);
+            }
+        }
     }
 
     if (tolower(keyword) == "setasparameter")

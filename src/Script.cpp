@@ -70,9 +70,15 @@ void Script::FillMustBeSpecified()
             mustbespecifiedatcreation["setasparameter"]["*"].push_back("quantity");
             mustbespecifiedatcreation["setasparameter"]["*"].push_back("parametername");
     mustbespecifiedatcreation["echo"] = map<string, vector<string>>();
-        mustbespecifiedatcreation["setasparameter"]["*"] = vector<string>();
-            mustbespecifiedatcreation["setasparameter"]["*"].push_back("object");
-            mustbespecifiedatcreation["setasparameter"]["*"].push_back("quantity");
+        mustbespecifiedatcreation["echo"]["*"] = vector<string>();
+            mustbespecifiedatcreation["echo"]["*"].push_back("object");
+    mustbespecifiedatcreation["setvalue"] = map<string, vector<string>>();
+        mustbespecifiedatcreation["setvalue"]["*"] = vector<string>();
+            mustbespecifiedatcreation["setvalue"]["*"].push_back("object");
+            mustbespecifiedatcreation["setvalue"]["*"].push_back("quantity");
+            mustbespecifiedatcreation["setvalue"]["*"].push_back("value");
+
+
 
 }
 

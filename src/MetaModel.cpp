@@ -120,7 +120,6 @@ bool MetaModel::GetFromJsonFile(const string &filename)
                     for (Json::ValueIterator itrule=(*it)["rule"].begin(); itrule!=(*it)["rule"].end(); ++itrule)
                     {
                         _condplusresult Rle;
-                        cout<<itrule.key().asString()<<"           "<<itrule->asString()<<endl;
                         Q.GetRule()->Append(itrule.key().asString(),itrule->asString());
                     }
                 }

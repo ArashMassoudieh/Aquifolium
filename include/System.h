@@ -87,7 +87,7 @@ class System: public Object
         bool OneStepSolve(const string &s);
 		bool Renew(const string &variable);
 		bool Update(const string &variable);
-		bool Solve(const string &variable);
+		bool Solve(const string &variable, bool ApplyParams = false);
 		bool SetProp(const string &s, const double &val);
         CBTCSet& GetOutputs() {return Outputs.AllOutputs;}
         vector<string> GetAllBlockTypes();
@@ -118,7 +118,7 @@ class System: public Object
         void ShowMessage(const string &msg) {if (!silent) cout<<msg<<endl; }
         void SetAllParents();
         ErrorHandler errorhandler;
-        bool Echo(const string &object, const string &quantity == "");
+        bool Echo(const string &object, const string &quantity = "", const string &feature="");
 #ifdef QT_version
         logWindow *LogWindow() {return logwindow;}
         void SetLogWindow(logWindow *lgwnd) {logwindow=lgwnd;}

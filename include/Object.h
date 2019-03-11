@@ -54,7 +54,7 @@ class Object
         System* Parent() {if (parent!=nullptr) return parent; else return nullptr;}
         void SetAllParents();
         bool SetProperty(const string &prop, const string &value);
-        string toString(int _tabs);
+        string toString(int _tabs=0);
     protected:
 
     private:

@@ -38,7 +38,7 @@ double Object::CalcVal(const string& s,const Expression::timing &tmg)
     if (var.Count(s)==1)
     {
         #ifdef Debug_mode
-        ShowMessage(string("Object: ") + name + " Variable: " + s + " Value: " + numbertostring(var[s].CalcVal(tmg)));
+        //ShowMessage(string("Object: ") + name + " Variable: " + s + " Value: " + numbertostring(var[s].CalcVal(tmg)));
         #endif // Debug_mode
         return var[s].CalcVal(tmg);
     }
@@ -300,5 +300,6 @@ string Object::toString(int _tabs)
 {
     string out = tabs(_tabs) + "Name: " + GetName() + "\n";
     out += tabs(_tabs) + "Type: " + GetType() + "\n";
-    this->var->ToString(_tabs + 1);
+    out += this->var.ToString(_tabs + 1);
+    return out;
 }
