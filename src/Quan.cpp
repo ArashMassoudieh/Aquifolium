@@ -277,6 +277,23 @@ bool Quan::SetTimeSeries(string filename)
 		return true;
 }
 
+bool Quan::SetProperty(const string &val)
+{
+    if (type == _type::balance || type== _type::constant || type==_type::global_quan || type==_type::value)
+        return SetVal(atof(val));
+    if (type == _type::timeseries)
+        return SetTimeSeries(val);
+    else
+    {
+        if (type == _type::expression || type== _type::rule)
+        {
+            AppendError(GetName(),"Quan","SetProperty","Expression or rule cannot be set during runtime", 3011);
+            return false;
+        }
+    }
+    return true;
+}
+
 bool Quan::AppendError(const string &objectname, const string &cls, const string &funct, const string &description, const int &code)
 {
     if (!parent)

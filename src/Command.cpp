@@ -224,7 +224,7 @@ bool Command::Execute(System *_sys)
             }
             else
             {
-                return sys->object(assignments["object"])->Variable(assignments["quantity"])->SetVal(atof(assignments["value"]));
+                return sys->object(assignments["object"])->Variable(assignments["quantity"])->SetProperty(assignments["value"]);
             }
         }
         else if (sys->parameter(assignments["object"])!=nullptr)
