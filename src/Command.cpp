@@ -28,7 +28,7 @@ Command::Command(const string &s, Script *parnt)
         }
     }
     vector<string> maincommand = split(firstlevelbreakup[0],' ');
-    if (tolower(maincommand[0])=="loadtemplate" || tolower(maincommand[0])=="setasparameter" || tolower(maincommand[0])=="echo" || tolower(maincommand[0])=="setvalue")
+    if (tolower(maincommand[0])=="loadtemplate" || tolower(maincommand[0])=="setasparameter" || tolower(maincommand[0])=="setvalue")
     {
         if (maincommand.size()!=1)
             {
@@ -42,6 +42,12 @@ Command::Command(const string &s, Script *parnt)
             validated = true;
 
         }
+    }
+
+    if (tolower(maincommand[0])=="echo")
+    {
+        keyword = maincommand[0];
+        validated = true;
     }
 
     if (tolower(maincommand[0])=="create")
@@ -150,6 +156,19 @@ bool Command::Execute(System *_sys)
 
     if (tolower(keyword) == "echo")
     {
+
+        if (arguments.size())
+        {
+            if (arguments[0]=="-")
+            {
+                cout<<"-----------------------------------------------------------------------------"<<endl;
+                return true;
+            }
+            for (int i=0; i<arguments.size(); i++)
+                cout<<arguments[i]<<" ";
+            cout<<endl;
+            return true;
+        }
         if (assignments.count("feature")==1 && assignments.count("quantity")==0)
         {
             sys->errorhandler.Append("", "Command", "Execute","In echo command 'quantity' must be specified when feature property is needed.", 7008);

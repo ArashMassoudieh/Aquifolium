@@ -24,8 +24,8 @@ class ErrorHandler
         ErrorHandler(const ErrorHandler& other);
         ErrorHandler& operator=(const ErrorHandler& other);
         void Write(const string &filename);
-        void Append(const _error &err) {errors.push_back(err);}
-        void Append(const string &objectname, const string &cls, const string &funct, const string &description, const int &code)
+        bool Append(const _error &err) {errors.push_back(err); return false;}
+        bool Append(const string &objectname, const string &cls, const string &funct, const string &description, const int &code)
         {
             _error err;
             err.description = description;
@@ -34,6 +34,7 @@ class ErrorHandler
             err.objectname = objectname;
             err.code = code;
             errors.push_back(err);
+            return false;
         }
     protected:
 

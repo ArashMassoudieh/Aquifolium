@@ -14,6 +14,7 @@ setasparameter; object=myLink, parametername=S_max_param,quantity=S_max
 setasparameter; object=myLink, parametername=S_min_param,quantity=S_min 
 //echo; object=myLink, quantity=flow, feature=rule
 //echo; object=myLink, quantity=flow
+echo echoing parameter
 echo; object=Q_max_param
 //echo; object=myLink
 
