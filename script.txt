@@ -7,14 +7,24 @@ create parameter; name=Q_min_param, low=5, high=15
 create parameter; name=S_min_param, low=5, high=15
 create parameter; name=S_max_param, low=20, high=80
 setvalue; object=Q_max_param, quantity=value, value=40
+setvalue; object=Q_min_param, quantity=value, value=20
+setvalue; object=S_min_param, quantity=value, value=10
+setvalue; object=S_max_param, quantity=value, value=50
 echo; object=Q_max_param, quantity=value; 
-setasparameter; object=myLink1, parametername=Q_max_param,quantity=Q_max
+setasparameter; object=myLink, parametername=Q_max_param,quantity=Q_max
 setasparameter; object=myLink, parametername=Q_min_param,quantity=Q_min 
 setasparameter; object=myLink, parametername=S_max_param,quantity=S_max 
 setasparameter; object=myLink, parametername=S_min_param,quantity=S_min 
 //echo; object=myLink, quantity=flow, feature=rule
 //echo; object=myLink, quantity=flow
-echo echoing parameter
 echo; object=Q_max_param
 //echo; object=myLink
+create block; name=User1, type=User, Storage=0
+create link; name=User_link, type=User_flow; from=Reservoir2, to=User1
+setvalue; object=User_link, quantity=flow, value=Demand.txt
+setvalue; object=system, quantity=tend, value=10
+setvalue; object=system, quantity=dt, value=0.01
+setvalue; object=system, quantity=silent, value=1
+solve, variable=Storage
+
 

@@ -25,6 +25,7 @@ class Objective_Function
         CTimeSeries *GetTimeSeries() {return &stored_time_series;}
         void SetLocation(const string &loc) {location = loc;}
         void SetExpression(const Expression &exp) {expression = exp;}
+        bool SetProperty(const string &prop, const string &val);
     protected:
 
     private:

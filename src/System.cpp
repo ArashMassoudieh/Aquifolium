@@ -144,7 +144,7 @@ Object *System::object(const string &s)
     for (unsigned int i=0; i<blocks.size(); i++)
         if (blocks[i].GetName() == s) return &blocks[i];
 
-    errorhandler.Append(GetName(),"System","object","Object '" + s + "' was not found",105);
+    //errorhandler.Append(GetName(),"System","object","Object '" + s + "' was not found",105);
 
     return nullptr;
 }
@@ -309,8 +309,48 @@ bool System::SetProp(const string &s, const double &val)
     if (s=="tend")
     {   SimulationParameters.dt0 = val; return true;}
 
+    errorhandler.Append("","System","SetProp","Property '" + s + "' was not found!", 621);
     return false;
 }
+
+bool System::SetProperty(const string &s, const string &val)
+{
+    if (s=="cn_weight")
+    {   SolverSettings.C_N_weight = atof(val); return true;}
+    if (s=="nr_tolerance")
+    {   SolverSettings.NRtolerance = atof(val); return true;}
+    if (s=="nr_coeff_reduction_factor")
+    {   SolverSettings.NR_coeff_reduction_factor = atof(val); return true;}
+    if (s=="nr_timestep_reduction_factor")
+    {   SolverSettings.NR_timestep_reduction_factor = atof(val); return true;}
+    if (s=="nr_timestep_reduction_factor_fail")
+    {   SolverSettings.NR_timestep_reduction_factor_fail = atof(val); return true;}
+    if (s=="minimum_timestep")
+    {   SolverSettings.minimum_timestep = atof(val); return true;}
+    if (s=="nr_niteration_lower")
+    {   SolverSettings.NR_niteration_lower=atoi(val); return true;}
+    if (s=="nr_niteration_upper")
+    {   SolverSettings.NR_niteration_upper=atoi(val); return true;}
+    if (s=="nr_niteration_max")
+    {   SolverSettings.NR_niteration_max=atoi(val); return true;}
+    if (s=="make_results_uniform")
+    {   SolverSettings.makeresultsuniform = atoi(val); return true;}
+
+    if (s=="tstart")
+    {   SimulationParameters.tstart = atof(val); return true;}
+    if (s=="tend")
+    {   SimulationParameters.tend = atof(val); return true;}
+    if (s=="dt")
+    {   SimulationParameters.dt0 = atof(val); return true;}
+    if (s=="silent")
+    {
+        SetSilent(atoi(val)); return true;
+    }
+
+    errorhandler.Append("","System","SetProperty","Property '" + s + "' was not found!", 622);
+    return false;
+}
+
 
 void System::InitiateOutputs()
 {
@@ -889,10 +929,12 @@ bool System::Echo(const string &obj, const string &quant, const string &feature)
         if (object(obj)!=nullptr)
         {
             cout<<object(obj)->toString()<<endl;
+            return true;
         }
         else if (parameter(obj)!=nullptr)
         {
             cout<<parameter(obj)->toString()<<endl;
+            return true;
         }
     }
     else

@@ -206,7 +206,6 @@ void MetaModel::Clear()
 {
     metamodel.clear();
     errors.clear();
-    last_error = "";
 }
 
 string MetaModel::ToString(int _tabs)

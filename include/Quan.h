@@ -80,7 +80,7 @@ class Quan
         bool perform_mass_balance = false;
         string corresponding_flow_quan;
         string corresponding_inflow_quan;
-        Object *parent;
+        Object *parent = nullptr;
         bool includeinoutput = false;
         string description;
         string unit;

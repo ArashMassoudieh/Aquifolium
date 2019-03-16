@@ -89,6 +89,7 @@ class System: public Object
 		bool Update(const string &variable);
 		bool Solve(const string &variable, bool ApplyParams = false);
 		bool SetProp(const string &s, const double &val);
+		bool SetProperty(const string &s, const string &val);
         CBTCSet& GetOutputs() {return Outputs.AllOutputs;}
         vector<string> GetAllBlockTypes();
         vector<string> GetAllLinkTypes();

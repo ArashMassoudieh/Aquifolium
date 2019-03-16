@@ -37,7 +37,7 @@ class QuanSet
     protected:
 
     private:
-        Object* parent;
+        Object* parent = nullptr;
         string name;
         map<string, Quan> quans;
         string last_error;

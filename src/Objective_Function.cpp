@@ -37,6 +37,21 @@ Objective_Function& Objective_Function::operator=(const Objective_Function& rhs)
     return *this;
 }
 
+bool Objective_Function::SetProperty(const string &prop, const string &val)
+{
+    if (tolower(prop)=="expression")
+    {
+        expression = Expression("val");
+        return true;
+    }
+    if (tolower(prop)=="location")
+    {
+        location = val;
+        return true;
+    }
+    return false;
+}
+
 double Objective_Function::GetValue(const Expression::timing &tmg)
 {
     if (system->block(location) != nullptr)

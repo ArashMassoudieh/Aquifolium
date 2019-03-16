@@ -28,7 +28,7 @@ Command::Command(const string &s, Script *parnt)
         }
     }
     vector<string> maincommand = split(firstlevelbreakup[0],' ');
-    if (tolower(maincommand[0])=="loadtemplate" || tolower(maincommand[0])=="setasparameter" || tolower(maincommand[0])=="setvalue")
+    if (tolower(maincommand[0])=="loadtemplate" || tolower(maincommand[0])=="setasparameter" || tolower(maincommand[0])=="setvalue" || tolower(maincommand[0])=="solve")
     {
         if (maincommand.size()!=1)
             {
@@ -172,6 +172,7 @@ bool Command::Execute(System *_sys)
         if (assignments.count("feature")==1 && assignments.count("quantity")==0)
         {
             sys->errorhandler.Append("", "Command", "Execute","In echo command 'quantity' must be specified when feature property is needed.", 7008);
+            return false;
         }
         if (Validate())
         {
@@ -194,7 +195,6 @@ bool Command::Execute(System *_sys)
                     if (assignments.count("feature")==1)
                     {
                         return sys->Echo(assignments["object"],assignments["quantity"],assignments["feature"]);
-
                     }
                     else
                     {
@@ -210,6 +210,17 @@ bool Command::Execute(System *_sys)
         }
         else
             return false;
+    }
+
+    if (tolower(keyword)=="solve")
+    {
+        if (Validate())
+        {
+            sys->SetAllParents();
+            sys->Solve(assignments["variable"]);
+            return true;
+        }
+        else return false;
     }
 
     if (tolower(keyword)=="setvalue")
@@ -228,6 +239,10 @@ bool Command::Execute(System *_sys)
         {
             sys->errorhandler.Append("", "Command", "Execute", "In the 'setvalue' command, 'value' must be indicated",7012);
             return false;
+        }
+        if (tolower(assignments["object"])=="system")
+        {
+            return sys->SetProperty(assignments["quantity"],assignments["value"]);
         }
         if (sys->object(assignments["object"])==nullptr && sys->parameter(assignments["object"])==nullptr)
         {
@@ -327,6 +342,33 @@ bool Command::Execute(System *_sys)
                     }
                 }
                 return true;
+            }
+            else
+                return false;
+
+        }
+        if (tolower(arguments[0])=="objectivefunction")
+        {
+            if (Validate())
+            {
+                bool succeed = true;
+                if (assignments.count("weight")==0)
+                    succeed = sys->AppendObjectiveFunction(assignments["name"],assignments["object"],Expression(assignments["expression"]));
+                else
+                    succeed = sys->AppendObjectiveFunction(assignments["name"],assignments["object"],Expression(assignments["expression"]),atof(assignments["weight"]));
+                for (map<string,string>::iterator it=assignments.begin(); it!=assignments.end(); it++)
+                {
+                    if (it->first!="name" && it->first!="type" && it->first!="to" && it->first!="from")
+                    {
+                        if (!sys->ObjectiveFunction(assignments["name"])->SetProperty(it->first,it->second))
+                        {
+                            sys->errorhandler.Append("","Command","Execute","Objective function does not have a '" + it->first + "' + property!",7021);
+                            last_error = "Parameter does not have a '" + it->first + "' + property!";
+                            succeed = false;
+                        }
+                    }
+                }
+                return succeed;
             }
             else
                 return false;
