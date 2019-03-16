@@ -25,6 +25,6 @@ setvalue; object=User_link, quantity=flow, value=Demand.txt
 setvalue; object=system, quantity=tend, value=10
 setvalue; object=system, quantity=dt, value=0.01
 setvalue; object=system, quantity=silent, value=1
-solve, variable=Storage
+solve; variable=Storage
 
 

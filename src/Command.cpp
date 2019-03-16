@@ -217,7 +217,8 @@ bool Command::Execute(System *_sys)
         if (Validate())
         {
             sys->SetAllParents();
-            sys->Solve(assignments["variable"]);
+            cout<<"Solving for '" + assignments["variable"] + "'...."<<endl;
+            sys->Solve(assignments["variable"],true);
             return true;
         }
         else return false;

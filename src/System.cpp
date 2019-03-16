@@ -907,6 +907,7 @@ bool System::ApplyParameters()
 
 void System::SetAllParents()
 {
+    SetVariableParents();
     for (unsigned int i=0; i<links.size(); i++)
         links[i].SetAllParents();
 

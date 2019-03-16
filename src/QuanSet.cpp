@@ -4,7 +4,7 @@
 
 QuanSet::QuanSet()
 {
-    //ctor
+    parent = nullptr;
 }
 
 QuanSet::~QuanSet()
