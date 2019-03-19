@@ -376,6 +376,7 @@ bool Command::Execute(System *_sys)
 
         }
         return true;
+        sys->SetAllParents();
     }
 
 }

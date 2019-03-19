@@ -19,6 +19,8 @@ Object::Object(const Object& other)
     parent = other.GetParent();
 	s_Block_no = other.s_Block_no;
 	e_Block_no = other.e_Block_no;
+	type = other.type;
+	SetAllParents();
 }
 
 Object& Object::operator=(const Object& rhs)
@@ -30,6 +32,8 @@ Object& Object::operator=(const Object& rhs)
     var = rhs.var;
 	s_Block_no = rhs.s_Block_no;
 	e_Block_no = rhs.e_Block_no;
+	type = rhs.type;
+    SetAllParents();
     return *this;
 }
 
@@ -208,7 +212,7 @@ Quan* Object::Variable(const string &s)
 #ifdef Debug_mode
 		ShowMessage("In '" + name + "': " + "Variable '" + s + "' does not exist!");
 #endif
-		Parent()->errorhandler.Append(GetName(),"Object","Variable","Variable '" + s +"' does not exist!",1010);
+		//Parent()->errorhandler.Append(GetName(),"Object","Variable","Variable '" + s +"' does not exist!",1010);
 		return nullptr;
     }
     else

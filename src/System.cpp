@@ -72,6 +72,7 @@ bool System::AddBlock(Block &blk)
     blocks.push_back(blk);
     block(blk.GetName())->SetParent(this);
     block(blk.GetName())->SetQuantities(metamodel, blk.GetType());
+    block(blk.GetName())->SetParent(this);
 	return true;
 }
 
@@ -84,6 +85,7 @@ bool System::AddLink(Link &lnk, const string &source, const string &destination)
     block(source)->AppendLink(link(lnk.GetName()),Expression::loc::source);
     block(destination)->AppendLink(link(lnk.GetName()),Expression::loc::destination);
 	link(lnk.GetName())->SetQuantities(metamodel, lnk.GetType());
+	link(lnk.GetName())->SetParent(this);
 	return true;
 }
 
@@ -463,8 +465,8 @@ bool System::Renew(const string & variable)
 	for (unsigned int i = 0; i < blocks.size(); i++)
 		out &= blocks[i].Renew(variable);
 
-	for (unsigned int i = 0; i < links.size(); i++)
-		out &= links[i].Renew(variable);
+//	for (unsigned int i = 0; i < links.size(); i++)
+//  	out &= links[i].Renew(variable);
 
 	return out;
 }
@@ -475,8 +477,8 @@ bool System::Update(const string & variable)
 	for (unsigned int i = 0; i < blocks.size(); i++)
 		out &= blocks[i].Update(variable);
 
-	for (unsigned int i = 0; i < links.size(); i++)
-		out &= links[i].Update(variable);
+//	for (unsigned int i = 0; i < links.size(); i++)
+//		out &= links[i].Update(variable);
 
 	return out;
 }
