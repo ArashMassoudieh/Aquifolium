@@ -2,6 +2,7 @@
 #include "Script.h"
 #include <iostream>
 #include "System.h"
+#include "GA.h"
 
 using namespace std;
 
@@ -220,6 +221,22 @@ bool Command::Execute(System *_sys)
             cout<<"Solving for '" + assignments["variable"] + "'...."<<endl;
             sys->Solve(assignments["variable"],true);
             return true;
+        }
+        else return false;
+    }
+
+    if (tolower(keyword)=="initializeoptimizer")
+    {
+        if (Validate())
+        {
+            cout<<"Initializing optimizer...."<<endl;
+            parent->SetGA(new CGA<System>());
+            bool success = true;
+            for (map<string,string>::iterator it=assignments.begin(); it!=assignments.end(); it++)
+                {
+                    success = parent->GetGA()->SetProperty(it->first,it->second);
+                }
+            return success;
         }
         else return false;
     }
