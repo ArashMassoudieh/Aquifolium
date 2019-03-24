@@ -282,7 +282,12 @@ bool Quan::SetProperty(const string &val)
     if (type == _type::balance || type== _type::constant || type==_type::global_quan || type==_type::value)
         return SetVal(atof(val));
     if (type == _type::timeseries)
-        return SetTimeSeries(val);
+    {
+        if (parent->Parent()->InputPath() != "")
+            return SetTimeSeries(parent->Parent()->InputPath() + val);
+        else
+            return SetTimeSeries(val);
+    }
     else
     {
         if (type == _type::expression || type== _type::rule)

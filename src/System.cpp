@@ -348,6 +348,14 @@ bool System::SetProperty(const string &s, const string &val)
     {
         SetSilent(atoi(val)); return true;
     }
+    if (s=="inputpath")
+    {
+        paths.inputpath = val; return true;
+    }
+    if (s=="outputpath")
+    {
+        paths.outputpath = val; return true;
+    }
 
     errorhandler.Append("","System","SetProperty","Property '" + s + "' was not found!", 622);
     return false;

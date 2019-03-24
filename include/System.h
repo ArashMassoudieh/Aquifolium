@@ -58,6 +58,12 @@ struct simulationparameters
     double dt0 = 0.01; // initial time-step size
 };
 
+struct _directories
+{
+    string inputpath;
+    string outputpath;
+};
+
 class System: public Object
 {
     public:
@@ -120,6 +126,8 @@ class System: public Object
         void SetAllParents();
         ErrorHandler errorhandler;
         bool Echo(const string &object, const string &quantity = "", const string &feature="");
+        string InputPath() {return paths.inputpath;}
+        string OutputPath() {return paths.outputpath;}
 #ifdef QT_version
         logWindow *LogWindow() {return logwindow;}
         void SetLogWindow(logWindow *lgwnd) {logwindow=lgwnd;}
@@ -151,6 +159,8 @@ class System: public Object
         Objective_Function_Set objective_function_set;
         Parameter_Set parameter_set;
         bool silent;
+        _directories paths;
+
 #ifdef QT_version
         GraphWidget *diagramview;
         runtimeWindow *rtw;

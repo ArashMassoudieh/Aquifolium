@@ -16,8 +16,9 @@ int main()
 
     CGA<System> TempObj;
     System *S = scr.CreateSystem();
-    S->errorhandler.Write("errors.txt");
-    S->GetOutputs().writetofile("output.txt");
+    S->errorhandler.Write(S->OutputPath() + "errors.txt");
+    S->GetOutputs().writetofile(S->OutputPath() +"output.txt");
+	cout<<S->GetObjectiveFunctionValue()<<endl;
 	//CGA <System> GA("GA_info.txt",*S);
     //GA.optimize();
 
