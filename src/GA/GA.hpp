@@ -33,6 +33,7 @@ CGA<T>::CGA(string filename, const T &model)
 	GA_params.fixedstd = true;
 	GA_params.RCGA = false;
     numberOfThreads = 8;
+	filenames.pathname = Model.OutputPath();
 	vector<string> s;
 	while (file.eof() == false)
 	{
@@ -105,7 +106,8 @@ CGA<T>::CGA(T *model)
 	GA_params.fixedstd = true;
 	GA_params.RCGA = false;
     numberOfThreads = 8;
-
+    filenames.pathname = Model.OutputPath();
+    GA_params.maxpop = max(1,GA_params.maxpop);
 	for (int i=0; i<Model.Parameters().size(); i++)
 	{
         GA_params.nParam++;
@@ -131,13 +133,13 @@ CGA<T>::CGA(T *model)
 	}
 
 
-	Ind.resize(GA_params.nParam);
-	Ind_old.resize(GA_params.nParam);
+	Ind.resize(GA_params.maxpop);
+	Ind_old.resize(GA_params.maxpop);
 
 	fitdist = CDistribution(GA_params.nParam);
 	GA_params.cross_over_type = 1;
 
-	for (int i=0; i<GA_params.nParam; i++)
+	for (int i=0; i<GA_params.maxpop; i++)
 	{
 		Ind[i] = CIndividual(GA_params.nParam);
 		Ind_old[i] = CIndividual(GA_params.nParam);
@@ -404,7 +406,7 @@ void CGA<T>::crossoverRC()
 template<class T>
 bool CGA<T>::SetProperty(const string &varname, const string &value)
 {
-    if (tolower(varname) == "maxpop") {GA_params.maxpop = atoi(value); return true;}
+    if (tolower(varname) == "maxpop") {GA_params.maxpop = atoi(value); setnumpop(GA_params.maxpop); return true;}
     if (tolower(varname) == "ngen") {GA_params.nGen = atoi(value); return true;}
 	if (tolower(varname) == "pcross") {GA_params.pcross = atof(value); return true;}
 	if (tolower(varname) == "pmute") {GA_params.pmute = atof(value); return true;}

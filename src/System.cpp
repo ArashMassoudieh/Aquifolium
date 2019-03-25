@@ -49,6 +49,8 @@ System::System(const System& other):Object::Object(other)
     silent = other.silent;
     SimulationParameters = other.SimulationParameters;
     SolverSettings = other. SolverSettings;
+    solvevariableorder = other.solvevariableorder;
+    paths = other.paths;
     SetAllParents();
 }
 
@@ -63,6 +65,8 @@ System& System::operator=(const System& rhs)
     parameter_set = rhs.parameter_set;
     SimulationParameters = rhs.SimulationParameters;
     SolverSettings = rhs. SolverSettings;
+    solvevariableorder = rhs.solvevariableorder;
+    paths = rhs.paths;
     SetAllParents();
     return *this;
 }
