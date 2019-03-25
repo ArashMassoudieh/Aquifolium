@@ -29,6 +29,13 @@ setvalue; object=system, quantity=tend, value=10
 setvalue; object=system, quantity=dt, value=0.01
 setvalue; object=system, quantity=silent, value=1
 create objectivefunction; name=flow, object=myLink, type = integrate, expression=flow
-solve; variable=Storage
-
+solve; 
+setvalue; object=optimizer, quantity = maxpop, value=60
+setvalue; object=optimizer, quantity = ngen, value=100
+setvalue; object=optimizer, quantity = pcross, value=1
+setvalue; object=optimizer, quantity = pmute, value=0.08
+setvalue; object=optimizer, quantity = shakescale, value=0.05
+setvalue; object=optimizer, quantity = shakescalered, value=0.75
+setvalue; object=optimizer, quantity = outputfile, value=GA_out.txt
+optimize;
 

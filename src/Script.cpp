@@ -85,7 +85,9 @@ void Script::FillMustBeSpecified()
             mustbespecifiedatcreation["setvalue"]["*"].push_back("value");
     mustbespecifiedatcreation["solve"] = map<string, vector<string>>();
         mustbespecifiedatcreation["solve"]["*"] = vector<string>();
-            mustbespecifiedatcreation["solve"]["*"].push_back("variable");
+    mustbespecifiedatcreation["optimize"] = map<string, vector<string>>();
+        mustbespecifiedatcreation["optimize"]["*"] = vector<string>();
+
 
 
 

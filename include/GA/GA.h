@@ -110,17 +110,18 @@ public:
 	T Model;
 
 	CGA();
-	CGA(int n);
 	virtual ~CGA();
-	CGA(int n, int nParams);
 	CGA(const CGA &C);
     CGA operator=(CGA &C);
     CGA(string filename, const T&);
+    CGA(T*);
     void initialize();
     double getfromoutput(string filename);
     void getinifromoutput(string filename);
     void getinitialpop(string filename);
     int optimize();
+    bool SetProperty(const string &varname, const string &value);
+    string last_error;
 private:
     void Setminmax(int a, double minrange, double maxrange, int prec);
     void fitnessdistini();

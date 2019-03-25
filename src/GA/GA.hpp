@@ -23,40 +23,6 @@ CGA<T>::CGA()
 }
 
 template<class T>
-CGA<T>::CGA(int n)
-{
-	GA_params.maxpop = n;
-	Ind.resize(GA_params.maxpop);
-	Ind_old.resize(GA_params.maxpop);
-	fitdist = CDistribution(GA_params.maxpop);
-	GA_params.N = 1;
-	GA_params.pcross = 1;
-	GA_params.cross_over_type = 1;
-	MaxFitness = 0;
-	numberOfThreads;
-}
-
-template<class T>
-CGA<T>::CGA(int n, int nParam)
-{
-	GA_params.maxpop = n;
-	GA_params.N = 1;
-	GA_params.pcross = 1;
-	Ind.resize(GA_params.maxpop);
-	Ind_old.resize(GA_params.maxpop);
-	for (int i=0; i<n; i++)
-	{
-		Ind[i] = CIndividual(GA_params.nParam);
-		Ind_old[i] = CIndividual(GA_params.nParam);
-
-	}
-	fitdist = CDistribution(GA_params.maxpop);
-	GA_params.cross_over_type = 1;
-	MaxFitness = 0;
-	numberOfThreads = 8;
-}
-
-template<class T>
 CGA<T>::CGA(string filename, const T &model)
 {
 	Model = model;
@@ -81,6 +47,7 @@ CGA<T>::CGA(string filename, const T &model)
 			if (s[0] == "outputfile") filenames.outputfilename = s[1];
 			if (s[0] == "getfromfilename") filenames.getfromfilename = s[1].c_str();
 			if (s[0] == "initial_population") filenames.initialpopfilemame = s[1];
+			if (s[0] == "numthreads") numberOfThreads = atoi(s[1].c_str());
 		}
 	}
 
@@ -127,6 +94,61 @@ CGA<T>::CGA(string filename, const T &model)
 
 	MaxFitness = 0;
 }
+
+template<class T>
+CGA<T>::CGA(T *model)
+{
+	Model = *model;
+	GA_params.nParam = 0;
+	GA_params.pcross = 1;
+	GA_params.N = 1;
+	GA_params.fixedstd = true;
+	GA_params.RCGA = false;
+    numberOfThreads = 8;
+
+	for (int i=0; i<Model.Parameters().size(); i++)
+	{
+        GA_params.nParam++;
+        params.push_back(i);
+        if (Model.Parameters()[i]->GetPriorDistribution() == "lognormal")
+        {	minval.push_back(log10(Model.Parameters()[i]->GetRange().low));
+            maxval.push_back(log10(Model.Parameters()[i]->GetRange().high));
+
+        }
+        else
+        {
+            minval.push_back(Model.Parameters()[i]->GetRange().low);
+            maxval.push_back(Model.Parameters()[i]->GetRange().high);
+        }
+        apply_to_all.push_back(false);
+        if (Model.Parameters()[i]->GetPriorDistribution() == "lognormal")
+            loged.push_back(1);
+        else
+            loged.push_back(0);
+
+        paramname.push_back(Model.Parameters().getKeyAtIndex(i));
+
+	}
+
+
+	Ind.resize(GA_params.nParam);
+	Ind_old.resize(GA_params.nParam);
+
+	fitdist = CDistribution(GA_params.nParam);
+	GA_params.cross_over_type = 1;
+
+	for (int i=0; i<GA_params.nParam; i++)
+	{
+		Ind[i] = CIndividual(GA_params.nParam);
+		Ind_old[i] = CIndividual(GA_params.nParam);
+	}
+
+	for (int i = 0; i<GA_params.nParam; i++)
+		Setminmax(i, minval[i], maxval[i],4);
+
+	MaxFitness = 0;
+}
+
 
 template<class T>
 void CGA<T>::setnparams(int n_params)
@@ -304,7 +326,7 @@ omp_set_num_threads(numberOfThreads);
                 fclose(FileOut);
             }
 			clock_t t0 = clock();
-            Models[k].Solve("Storage");
+            Models[k].Solve();
 			Ind[k].actual_fitness -= Models[k].GetObjectiveFunctionValue();
 			epochs[k] += Models[k].EpochCount();
 			time_[k] = ((float)(clock() - t0))/CLOCKS_PER_SEC;
@@ -354,6 +376,7 @@ void CGA<T>::crossover()
 	}
 
 }
+
 template<class T>
 void CGA<T>::crossoverRC()
 {
@@ -377,6 +400,25 @@ void CGA<T>::crossoverRC()
 		}
 	}
 }
+
+template<class T>
+bool CGA<T>::SetProperty(const string &varname, const string &value)
+{
+    if (tolower(varname) == "maxpop") {GA_params.maxpop = atoi(value); return true;}
+    if (tolower(varname) == "ngen") {GA_params.nGen = atoi(value); return true;}
+	if (tolower(varname) == "pcross") {GA_params.pcross = atof(value); return true;}
+	if (tolower(varname) == "pmute") {GA_params.pmute = atof(value); return true;}
+	if (tolower(varname) == "shakescale") {GA_params.shakescale = atof(value); return true;}
+	if (tolower(varname) == "shakescalered") {GA_params.shakescalered = atof(value); return true;}
+	if (tolower(varname) == "outputfile") {filenames.outputfilename = value; return true;}
+	if (tolower(varname) == "getfromfilename") {filenames.getfromfilename = value.c_str(); return true;}
+	if (tolower(varname) == "initial_population") {filenames.initialpopfilemame = value; return true;}
+	if (tolower(varname) == "numthreads") {numberOfThreads = atoi(value.c_str()); return true;}
+    last_error = "Property '" + varname + "' was not found!";
+    return false;
+}
+
+
 template<class T>
 double CGA<T>::avgfitness()
 {

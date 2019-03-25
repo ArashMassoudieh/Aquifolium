@@ -61,6 +61,11 @@
 		<Unit filename="include/DistributionNUnif.h" />
 		<Unit filename="include/ErrorHandler.h" />
 		<Unit filename="include/Expression.h" />
+		<Unit filename="include/GA/Binary.h" />
+		<Unit filename="include/GA/Distribution.h" />
+		<Unit filename="include/GA/DistributionNUnif.h" />
+		<Unit filename="include/GA/GA.h" />
+		<Unit filename="include/GA/Individual.h" />
 		<Unit filename="include/Link.h" />
 		<Unit filename="include/Matrix.h" />
 		<Unit filename="include/Matrix_arma.h" />

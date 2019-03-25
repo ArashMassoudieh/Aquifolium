@@ -94,6 +94,7 @@ class System: public Object
 		bool Renew(const string &variable);
 		bool Update(const string &variable);
 		bool Solve(const string &variable, bool ApplyParams = false);
+		bool Solve(bool ApplyParams = false);
 		bool SetProp(const string &s, const double &val);
 		bool SetProperty(const string &s, const string &val);
         CBTCSet& GetOutputs() {return Outputs.AllOutputs;}
@@ -137,6 +138,7 @@ class System: public Object
     protected:
 
     private:
+        vector<string> solvevariableorder;
         vector<Block> blocks;
         vector<Link> links;
         string last_error;

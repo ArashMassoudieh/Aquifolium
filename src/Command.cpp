@@ -29,7 +29,7 @@ Command::Command(const string &s, Script *parnt)
         }
     }
     vector<string> maincommand = split(firstlevelbreakup[0],' ');
-    if (tolower(maincommand[0])=="loadtemplate" || tolower(maincommand[0])=="setasparameter" || tolower(maincommand[0])=="setvalue" || tolower(maincommand[0])=="solve")
+    if (tolower(maincommand[0])=="loadtemplate" || tolower(maincommand[0])=="setasparameter" || tolower(maincommand[0])=="setvalue" || tolower(maincommand[0])=="solve" || tolower(maincommand[0])=="optimize")
     {
         if (maincommand.size()!=1)
             {
@@ -218,24 +218,52 @@ bool Command::Execute(System *_sys)
         if (Validate())
         {
             sys->SetAllParents();
-            cout<<"Solving for '" + assignments["variable"] + "'...."<<endl;
-            sys->Solve(assignments["variable"],true);
+            if (assignments.count("variable")!=0)
+            {
+                cout<<"Solving for '" + assignments["variable"] + "'...."<<endl;
+                sys->Solve(assignments["variable"],true);
+                return true;
+            }
+            else
+            {
+                cout<<"Solving for all variables"<<endl;
+                sys->Solve(true);
+                return true;
+            }
+
+        }
+        else return false;
+    }
+
+
+    if (tolower(keyword)=="optimize")
+    {
+        if (Validate())
+        {
+            sys->SetAllParents();
+            parent->GetGA()->optimize();
             return true;
         }
         else return false;
     }
+
 
     if (tolower(keyword)=="initializeoptimizer")
     {
         if (Validate())
         {
             cout<<"Initializing optimizer...."<<endl;
-            parent->SetGA(new CGA<System>());
+            parent->SetGA(new CGA<System>(sys));
             bool success = true;
             for (map<string,string>::iterator it=assignments.begin(); it!=assignments.end(); it++)
                 {
-                    success = parent->GetGA()->SetProperty(it->first,it->second);
+                    if (!parent->GetGA()->SetProperty(it->first,it->second))
+                    {
+                        sys->errorhandler.Append("", "Command", "Execute", parent->GetGA()->last_error,7021);
+                        success = false;
+                    };
                 }
+
             return success;
         }
         else return false;
@@ -262,6 +290,17 @@ bool Command::Execute(System *_sys)
         {
             return sys->SetProperty(assignments["quantity"],assignments["value"]);
         }
+
+        if (tolower(assignments["object"])=="optimizer")
+        {
+            if (parent->GetGA()==nullptr)
+            {
+                cout<<"Initializing optimizer...."<<endl;
+                parent->SetGA(new CGA<System>(sys));
+            }
+            parent->GetGA()->SetProperty(assignments["quantity"],assignments["value"]);
+        }
+
         if (sys->object(assignments["object"])==nullptr && sys->parameter(assignments["object"])==nullptr)
         {
             sys->errorhandler.Append("","Command", "Execute", "Object or parameter '" + assignments["object"] + "' was not found.", 7013);
@@ -376,7 +415,7 @@ bool Command::Execute(System *_sys)
                     succeed = sys->AppendObjectiveFunction(assignments["name"],assignments["object"],Expression(assignments["expression"]),atof(assignments["weight"]));
                 for (map<string,string>::iterator it=assignments.begin(); it!=assignments.end(); it++)
                 {
-                    if (it->first!="name" && it->first!="type" && it->first!="to" && it->first!="from")
+                    if (it->first!="name" && it->first!="object" && it->first!="expression" && it->first!="weight")
                     {
                         if (!sys->ObjectiveFunction(assignments["name"])->SetProperty(it->first,it->second))
                         {
@@ -426,7 +465,7 @@ bool Command::Validate(System *sys)
     for (int i=0; i<parent->MustBeSpecified()->at(keyword)["*"].size(); i++)
         if (assignments.count(parent->MustBeSpecified()->at(keyword)["*"][i])==0)
         {
-            last_error = "'" + parent->MustBeSpecified()->at(keyword)["*"][i] + "' must be specified when " + keyword + "ing a " + arguments[0] + "'";
+            last_error = "'" + parent->MustBeSpecified()->at(keyword)["*"][i] + "' must be specified when " + keyword + "ing";
             if (sys) sys->errorhandler.Append("","Command","Validate",last_error,5003);
             return false;
         }

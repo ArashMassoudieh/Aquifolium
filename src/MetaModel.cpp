@@ -84,6 +84,14 @@ bool MetaModel::GetFromJsonFile(const string &filename)
 
     for (Json::ValueIterator object_types=root.begin(); object_types!=root.end(); ++object_types)
     {
+        if (object_types.key().asString()=="solutionorder")
+        {
+            for (Json::Value::ArrayIndex i = 0; i != root["solutionorder"].size(); i++)
+            {
+                solvevariableorder.push_back(root["solutionorder"][i].asString());
+            }
+            break;
+        }
         QuanSet quanset;
         quanset.Name() = object_types.key().asString();
         for (Json::ValueIterator it=object_types->begin(); it!=object_types->end(); ++it)

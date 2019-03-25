@@ -94,7 +94,7 @@ Block *System::block(const string &s)
     for (unsigned int i=0; i<blocks.size(); i++)
         if (blocks[i].GetName() == s) return &blocks[i];
 
-    errorhandler.Append(GetName(),"System","block","Block '" + s + "' was not found",101);
+    //errorhandler.Append(GetName(),"System","block","Block '" + s + "' was not found",101);
     return nullptr;
 }
 
@@ -122,7 +122,7 @@ Link *System::link(const string &s)
     for (unsigned int i=0; i<links.size(); i++)
         if (links[i].GetName() == s) return &links[i];
 
-    errorhandler.Append(GetName(),"System","link","Link '" + s + "' was not found",104);
+    //errorhandler.Append(GetName(),"System","link","Link '" + s + "' was not found",104);
 
     return nullptr;
 }
@@ -652,6 +652,7 @@ void System::clear()
 
 void System::TransferQuantitiesFromMetaModel()
 {
+    solvevariableorder = metamodel.solvevariableorder;
     vector<string> out;
     for (map<string, QuanSet>::iterator it = metamodel.GetMetaModel()->begin(); it != metamodel.GetMetaModel()->end(); it++)
         GetVars()->Append(it->second);
@@ -990,4 +991,12 @@ bool System::Echo(const string &obj, const string &quant, const string &feature)
 
 }
 
+bool System::Solve(bool ApplyParams)
+{
+    bool success = true;
+    for (unsigned int i=0; i<solvevariableorder.size(); i++)
+        success&=Solve(solvevariableorder[i],ApplyParams);
+
+    return success;
+}
 

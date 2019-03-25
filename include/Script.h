@@ -36,7 +36,7 @@ class Script
         System *system;
         map<string, map<string, vector<string>>> mustbespecifiedatcreation;
         ErrorHandler errorhandler;
-        CGA<System> *GA;
+        CGA<System> *GA = nullptr;
 };
 
 #endif // SCRIPT_H
