@@ -35,6 +35,7 @@ Script::Script(const string &filename, System *sys)
 
 System* Script::CreateSystem()
 {
+    system = new System();
     for (int i=0; i<commands.size(); i++)
     {
         if (!commands[i].Execute(system))
@@ -43,6 +44,7 @@ System* Script::CreateSystem()
             errors.push_back(commands[i].LastError());
         }
     }
+    system->SetVariableParents();
     return system;
 }
 
@@ -61,6 +63,10 @@ void Script::FillMustBeSpecified()
             mustbespecifiedatcreation["create"]["parameter"].push_back("name");
             mustbespecifiedatcreation["create"]["parameter"].push_back("low");
             mustbespecifiedatcreation["create"]["parameter"].push_back("high");
+        mustbespecifiedatcreation["create"]["objectivefunction"] = vector<string>();
+            mustbespecifiedatcreation["create"]["objectivefunction"].push_back("name");
+            mustbespecifiedatcreation["create"]["objectivefunction"].push_back("object");
+            mustbespecifiedatcreation["create"]["objectivefunction"].push_back("expression");
     mustbespecifiedatcreation["loadtemplate"] = map<string, vector<string>>();
         mustbespecifiedatcreation["loadtemplate"]["*"] = vector<string>();
             mustbespecifiedatcreation["loadtemplate"]["*"].push_back("filename");
@@ -70,9 +76,20 @@ void Script::FillMustBeSpecified()
             mustbespecifiedatcreation["setasparameter"]["*"].push_back("quantity");
             mustbespecifiedatcreation["setasparameter"]["*"].push_back("parametername");
     mustbespecifiedatcreation["echo"] = map<string, vector<string>>();
-        mustbespecifiedatcreation["setasparameter"]["*"] = vector<string>();
-            mustbespecifiedatcreation["setasparameter"]["*"].push_back("object");
-            mustbespecifiedatcreation["setasparameter"]["*"].push_back("quantity");
+        mustbespecifiedatcreation["echo"]["*"] = vector<string>();
+            mustbespecifiedatcreation["echo"]["*"].push_back("object");
+    mustbespecifiedatcreation["setvalue"] = map<string, vector<string>>();
+        mustbespecifiedatcreation["setvalue"]["*"] = vector<string>();
+            mustbespecifiedatcreation["setvalue"]["*"].push_back("object");
+            mustbespecifiedatcreation["setvalue"]["*"].push_back("quantity");
+            mustbespecifiedatcreation["setvalue"]["*"].push_back("value");
+    mustbespecifiedatcreation["solve"] = map<string, vector<string>>();
+        mustbespecifiedatcreation["solve"]["*"] = vector<string>();
+    mustbespecifiedatcreation["optimize"] = map<string, vector<string>>();
+        mustbespecifiedatcreation["optimize"]["*"] = vector<string>();
+
+
+
 
 }
 

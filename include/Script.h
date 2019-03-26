@@ -5,6 +5,7 @@
 #include "Command.h"
 #include <vector>
 #include "ErrorHandler.h"
+#include "GA.h"
 
 class System;
 
@@ -25,6 +26,8 @@ class Script
             return &mustbespecifiedatcreation;
         }
         void Append(const Command &c);
+        void SetGA(CGA<System> *G) {GA = G;}
+        CGA<System> *GetGA() {return GA;}
     protected:
 
     private:
@@ -33,6 +36,7 @@ class Script
         System *system;
         map<string, map<string, vector<string>>> mustbespecifiedatcreation;
         ErrorHandler errorhandler;
+        CGA<System> *GA = nullptr;
 };
 
 #endif // SCRIPT_H

@@ -65,7 +65,7 @@ class Quan
         bool &AskFromUser() {return ask_from_user;}
 		void SetName(const string &name) {_var_name=name;}
 		bool AppendError(const string &objectname, const string &cls, const string &funct, const string &description, const int &code);
-
+        bool SetProperty(const string &val);
     protected:
 
     private:
@@ -80,7 +80,7 @@ class Quan
         bool perform_mass_balance = false;
         string corresponding_flow_quan;
         string corresponding_inflow_quan;
-        Object *parent;
+        Object *parent = nullptr;
         bool includeinoutput = false;
         string description;
         string unit;
@@ -99,5 +99,8 @@ class Quan
         string warning_message;
         bool ask_from_user=false;
 };
+
+string tostring(const Quan::_type &typ);
+
 
 #endif // QUAN_H

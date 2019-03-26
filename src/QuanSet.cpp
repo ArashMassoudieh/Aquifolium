@@ -4,7 +4,7 @@
 
 QuanSet::QuanSet()
 {
-    //ctor
+    parent = nullptr;
 }
 
 QuanSet::~QuanSet()
@@ -19,6 +19,7 @@ QuanSet::QuanSet(const QuanSet& other)
     description = other.description;
     BlockLink = other.BlockLink;
     name = other.name;
+    parent = nullptr;
 
 }
 
@@ -30,6 +31,7 @@ QuanSet& QuanSet::operator=(const QuanSet& rhs)
     iconfilename = rhs.iconfilename;
     description = rhs.description;
     BlockLink = rhs.BlockLink;
+    parent = nullptr;
     return *this;
 }
 

@@ -49,6 +49,8 @@ System::System(const System& other):Object::Object(other)
     silent = other.silent;
     SimulationParameters = other.SimulationParameters;
     SolverSettings = other. SolverSettings;
+    solvevariableorder = other.solvevariableorder;
+    paths = other.paths;
     SetAllParents();
 }
 
@@ -63,6 +65,8 @@ System& System::operator=(const System& rhs)
     parameter_set = rhs.parameter_set;
     SimulationParameters = rhs.SimulationParameters;
     SolverSettings = rhs. SolverSettings;
+    solvevariableorder = rhs.solvevariableorder;
+    paths = rhs.paths;
     SetAllParents();
     return *this;
 }
@@ -72,6 +76,7 @@ bool System::AddBlock(Block &blk)
     blocks.push_back(blk);
     block(blk.GetName())->SetParent(this);
     block(blk.GetName())->SetQuantities(metamodel, blk.GetType());
+    block(blk.GetName())->SetParent(this);
 	return true;
 }
 
@@ -84,6 +89,7 @@ bool System::AddLink(Link &lnk, const string &source, const string &destination)
     block(source)->AppendLink(link(lnk.GetName()),Expression::loc::source);
     block(destination)->AppendLink(link(lnk.GetName()),Expression::loc::destination);
 	link(lnk.GetName())->SetQuantities(metamodel, lnk.GetType());
+	link(lnk.GetName())->SetParent(this);
 	return true;
 }
 
@@ -92,7 +98,7 @@ Block *System::block(const string &s)
     for (unsigned int i=0; i<blocks.size(); i++)
         if (blocks[i].GetName() == s) return &blocks[i];
 
-    errorhandler.Append(GetName(),"System","block","Block '" + s + "' was not found",101);
+    //errorhandler.Append(GetName(),"System","block","Block '" + s + "' was not found",101);
     return nullptr;
 }
 
@@ -120,7 +126,7 @@ Link *System::link(const string &s)
     for (unsigned int i=0; i<links.size(); i++)
         if (links[i].GetName() == s) return &links[i];
 
-    errorhandler.Append(GetName(),"System","link","Link '" + s + "' was not found",104);
+    //errorhandler.Append(GetName(),"System","link","Link '" + s + "' was not found",104);
 
     return nullptr;
 }
@@ -144,7 +150,7 @@ Object *System::object(const string &s)
     for (unsigned int i=0; i<blocks.size(); i++)
         if (blocks[i].GetName() == s) return &blocks[i];
 
-    errorhandler.Append(GetName(),"System","object","Object '" + s + "' was not found",105);
+    //errorhandler.Append(GetName(),"System","object","Object '" + s + "' was not found",105);
 
     return nullptr;
 }
@@ -172,7 +178,7 @@ bool System::OneStepSolve()
 	return true;
 }
 
-bool System::Solve(const string &variable)
+bool System::Solve(const string &variable, bool applyparameters)
 {
     #ifdef QT_version
     if (LogWindow())
@@ -182,6 +188,7 @@ bool System::Solve(const string &variable)
     #else
         ShowMessage("Simulation started!");
     #endif
+    if (applyparameters) ApplyParameters();
     InitiateOutputs();
     PopulateOutputs();
 
@@ -308,8 +315,56 @@ bool System::SetProp(const string &s, const double &val)
     if (s=="tend")
     {   SimulationParameters.dt0 = val; return true;}
 
+    errorhandler.Append("","System","SetProp","Property '" + s + "' was not found!", 621);
     return false;
 }
+
+bool System::SetProperty(const string &s, const string &val)
+{
+    if (s=="cn_weight")
+    {   SolverSettings.C_N_weight = atof(val); return true;}
+    if (s=="nr_tolerance")
+    {   SolverSettings.NRtolerance = atof(val); return true;}
+    if (s=="nr_coeff_reduction_factor")
+    {   SolverSettings.NR_coeff_reduction_factor = atof(val); return true;}
+    if (s=="nr_timestep_reduction_factor")
+    {   SolverSettings.NR_timestep_reduction_factor = atof(val); return true;}
+    if (s=="nr_timestep_reduction_factor_fail")
+    {   SolverSettings.NR_timestep_reduction_factor_fail = atof(val); return true;}
+    if (s=="minimum_timestep")
+    {   SolverSettings.minimum_timestep = atof(val); return true;}
+    if (s=="nr_niteration_lower")
+    {   SolverSettings.NR_niteration_lower=atoi(val); return true;}
+    if (s=="nr_niteration_upper")
+    {   SolverSettings.NR_niteration_upper=atoi(val); return true;}
+    if (s=="nr_niteration_max")
+    {   SolverSettings.NR_niteration_max=atoi(val); return true;}
+    if (s=="make_results_uniform")
+    {   SolverSettings.makeresultsuniform = atoi(val); return true;}
+
+    if (s=="tstart")
+    {   SimulationParameters.tstart = atof(val); return true;}
+    if (s=="tend")
+    {   SimulationParameters.tend = atof(val); return true;}
+    if (s=="dt")
+    {   SimulationParameters.dt0 = atof(val); return true;}
+    if (s=="silent")
+    {
+        SetSilent(atoi(val)); return true;
+    }
+    if (s=="inputpath")
+    {
+        paths.inputpath = val; return true;
+    }
+    if (s=="outputpath")
+    {
+        paths.outputpath = val; return true;
+    }
+
+    errorhandler.Append("","System","SetProperty","Property '" + s + "' was not found!", 622);
+    return false;
+}
+
 
 void System::InitiateOutputs()
 {
@@ -422,8 +477,8 @@ bool System::Renew(const string & variable)
 	for (unsigned int i = 0; i < blocks.size(); i++)
 		out &= blocks[i].Renew(variable);
 
-	for (unsigned int i = 0; i < links.size(); i++)
-		out &= links[i].Renew(variable);
+//	for (unsigned int i = 0; i < links.size(); i++)
+//  	out &= links[i].Renew(variable);
 
 	return out;
 }
@@ -434,8 +489,8 @@ bool System::Update(const string & variable)
 	for (unsigned int i = 0; i < blocks.size(); i++)
 		out &= blocks[i].Update(variable);
 
-	for (unsigned int i = 0; i < links.size(); i++)
-		out &= links[i].Update(variable);
+//	for (unsigned int i = 0; i < links.size(); i++)
+//		out &= links[i].Update(variable);
 
 	return out;
 }
@@ -601,6 +656,7 @@ void System::clear()
 
 void System::TransferQuantitiesFromMetaModel()
 {
+    solvevariableorder = metamodel.solvevariableorder;
     vector<string> out;
     for (map<string, QuanSet>::iterator it = metamodel.GetMetaModel()->begin(); it != metamodel.GetMetaModel()->end(); it++)
         GetVars()->Append(it->second);
@@ -866,6 +922,7 @@ bool System::ApplyParameters()
 
 void System::SetAllParents()
 {
+    SetVariableParents();
     for (unsigned int i=0; i<links.size(); i++)
         links[i].SetAllParents();
 
@@ -876,18 +933,24 @@ void System::SetAllParents()
         objective_function_set[it->first]->obj_funct.SetSystem(this);
 }
 
-bool System::Echo(const string &obj, const string &quant)
+bool System::Echo(const string &obj, const string &quant, const string &feature)
 {
     if (object(obj)==nullptr && parameter(obj)==nullptr)
     {
         errorhandler.Append(GetName(),"System","Echo" ,"Object or parameter '" + obj + "' does not exits!", 608);
         return false;
     }
-    if (quant!="")
+    if (quant=="")
     {
         if (object(obj)!=nullptr)
         {
             cout<<object(obj)->toString()<<endl;
+            return true;
+        }
+        else if (parameter(obj)!=nullptr)
+        {
+            cout<<parameter(obj)->toString()<<endl;
+            return true;
         }
         else if (parameters(obj)!=nullptr)
         {
@@ -915,7 +978,54 @@ bool System::Echo(const string &obj, const string &quant)
             return false;
         }
     }
+    else
+    {
+        if (object(obj)!=nullptr)
+        {
+            if (!object(obj)->HasQuantity(quant))
+            {
+                errorhandler.Append(GetName(),"System","Echo","Object '" + obj + "' has no property/quantity '" + quant + "'",613);
+                return false;
+            }
+            if (feature == "")
+                cout<<object(obj)->Variable(quant)->ToString()<<endl;
+            else if (tolower(feature) == "value")
+                cout<<object(obj)->Variable(quant)->GetVal();
+            else if (tolower(feature) == "rule")
+                cout<<object(obj)->Variable(quant)->GetRule()->ToString();
+            else if (tolower(feature) == "type")
+                cout<<tostring(object(obj)->Variable(quant)->GetType());
+            else
+            {
+                errorhandler.Append(GetName(),"System","Echo","Feature '" + feature + "' does not exist!",612);
+                return false;
+            }
+            return true;
+        }
+        else if (parameter(obj)!=nullptr)
+        {
+            if (!parameter(obj)->HasQuantity(quant))
+            {
+                errorhandler.Append(GetName(),"System","Echo","Parameter '" + obj + "' has no property/quantity '" + quant + "'",618);
+                return false;
+            }
+            else
+            {
+                cout<<parameter(obj)->Variable(quant)<<endl;
+                return true;
+            }
+        }
+    }
+
 
 }
 
+bool System::Solve(bool ApplyParams)
+{
+    bool success = true;
+    for (unsigned int i=0; i<solvevariableorder.size(); i++)
+        success&=Solve(solvevariableorder[i],ApplyParams);
+
+    return success;
+}
 

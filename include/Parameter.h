@@ -37,6 +37,13 @@ class Parameter
             if (s=="prior_distribution") {prior_distribution = val;return true;}
             return false;
         }
+        string toString(int _tabs = 0);
+        bool SetName(const string &nm) {name = nm; return true;}
+        string GetName() {return name;}
+        bool HasQuantity(const string &qntty);
+        string Variable(const string &qntty);
+
+
     protected:
 
     private:
@@ -46,6 +53,7 @@ class Parameter
         string prior_distribution;
         double value;
         string last_error;
+        string name;
 };
 
 #endif // PARAMETER_H

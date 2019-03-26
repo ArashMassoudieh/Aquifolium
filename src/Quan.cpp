@@ -160,6 +160,18 @@ bool Quan::SetRule(const string &R)
 	return true;
 }
 
+string tostring(const Quan::_type &typ)
+{
+    if (typ==Quan::_type::balance) return "Balance";
+    if (typ==Quan::_type::constant) return "Constant";
+    if (typ==Quan::_type::expression) return "Expression";
+    if (typ==Quan::_type::global_quan) return "Global";
+    if (typ==Quan::_type::rule) return "Rule";
+    if (typ==Quan::_type::timeseries) return "TimeSeries";
+    if (typ==Quan::_type::value) return "Value";
+    return "";
+}
+
 
 bool Quan::SetVal(const double &v, const Expression::timing &tmg)
 {
@@ -263,6 +275,28 @@ bool Quan::SetTimeSeries(string filename)
 	}
 	else
 		return true;
+}
+
+bool Quan::SetProperty(const string &val)
+{
+    if (type == _type::balance || type== _type::constant || type==_type::global_quan || type==_type::value)
+        return SetVal(atof(val));
+    if (type == _type::timeseries)
+    {
+        if (parent->Parent()->InputPath() != "")
+            return SetTimeSeries(parent->Parent()->InputPath() + val);
+        else
+            return SetTimeSeries(val);
+    }
+    else
+    {
+        if (type == _type::expression || type== _type::rule)
+        {
+            AppendError(GetName(),"Quan","SetProperty","Expression or rule cannot be set during runtime", 3011);
+            return false;
+        }
+    }
+    return true;
 }
 
 bool Quan::AppendError(const string &objectname, const string &cls, const string &funct, const string &description, const int &code)

@@ -4,6 +4,8 @@
 #include "Expression.h"
 #include "BTC.h"
 
+enum class objfunctype {Integrate, Value};
+
 class System;
 
 class Objective_Function
@@ -25,6 +27,7 @@ class Objective_Function
         CTimeSeries *GetTimeSeries() {return &stored_time_series;}
         void SetLocation(const string &loc) {location = loc;}
         void SetExpression(const Expression &exp) {expression = exp;}
+        bool SetProperty(const string &prop, const string &val);
     protected:
 
     private:
@@ -32,7 +35,9 @@ class Objective_Function
         Expression expression; // Function
         CTimeSeries stored_time_series; // Stored time series values;
         System *system; // pointer to the system the objective function is evaluated at
-        string lasterror; //the last error that occurred
+        string lasterror;
+        objfunctype type = objfunctype::Integrate;
+         //the last error that occurred
 };
 
 #endif // OBJECTIVE_FUNCTION_H

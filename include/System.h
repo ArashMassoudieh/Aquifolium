@@ -58,6 +58,12 @@ struct simulationparameters
     double dt0 = 0.01; // initial time-step size
 };
 
+struct _directories
+{
+    string inputpath;
+    string outputpath;
+};
+
 class System: public Object
 {
     public:
@@ -87,8 +93,10 @@ class System: public Object
         bool OneStepSolve(const string &s);
 		bool Renew(const string &variable);
 		bool Update(const string &variable);
-		bool Solve(const string &variable);
+		bool Solve(const string &variable, bool ApplyParams = false);
+		bool Solve(bool ApplyParams = false);
 		bool SetProp(const string &s, const double &val);
+		bool SetProperty(const string &s, const string &val);
         CBTCSet& GetOutputs() {return Outputs.AllOutputs;}
         vector<string> GetAllBlockTypes();
         vector<string> GetAllLinkTypes();
@@ -118,7 +126,9 @@ class System: public Object
         void ShowMessage(const string &msg) {if (!silent) cout<<msg<<endl; }
         void SetAllParents();
         ErrorHandler errorhandler;
-        bool Echo(const string &object, const string &quantity == "");
+        bool Echo(const string &object, const string &quantity = "", const string &feature="");
+        string InputPath() {return paths.inputpath;}
+        string OutputPath() {return paths.outputpath;}
 #ifdef QT_version
         logWindow *LogWindow() {return logwindow;}
         void SetLogWindow(logWindow *lgwnd) {logwindow=lgwnd;}
@@ -128,6 +138,7 @@ class System: public Object
     protected:
 
     private:
+        vector<string> solvevariableorder;
         vector<Block> blocks;
         vector<Link> links;
         string last_error;
@@ -150,6 +161,8 @@ class System: public Object
         Objective_Function_Set objective_function_set;
         Parameter_Set parameter_set;
         bool silent;
+        _directories paths;
+
 #ifdef QT_version
         GraphWidget *diagramview;
         runtimeWindow *rtw;

@@ -1,4 +1,5 @@
 {
+"solutionorder": ["Storage"],
 "Reservoir": {
 		"type": "block",
 		"icon": {

@@ -35,7 +35,7 @@ class Command
         map<string, string> assignments;
         string last_error;
         bool validated = false;
-        Script *parent;
+        Script *parent = nullptr;
 
 };
 

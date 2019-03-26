@@ -53,7 +53,7 @@ string Rule::ToString(int _tabs)
 {
     string out = tabs(_tabs) + "{\n";
     for (unsigned int i=0; i<rules.size(); i++)
-        out += tabs(_tabs + 2) + rules[i].condition.ToString(_tabs+1) + ":" + rules[i].result.ToString()+ "\n";
-    out += tabs(_tabs+1) + "}\n";
+        out += tabs(_tabs) + rules[i].condition.ToString(_tabs+1) + ":" + rules[i].result.ToString()+ "\n";
+    out += tabs(_tabs) + "}\n";
     return out;
 }

@@ -23,6 +23,7 @@ class MetaModel
         bool GetFromJsonFile(const string &filename);
         void Clear();
         string ToString(int _tabs=0);
+        vector<string> solvevariableorder;
     protected:
 
     private:
