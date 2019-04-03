@@ -130,7 +130,7 @@ System *Command::GetSystem()
 
 bool Command::Execute(System *_sys)
 {
-    System *sys;
+    System *sys = nullptr;
     if (_sys==nullptr)
     {
         if (parent->GetSystem()!=nullptr)

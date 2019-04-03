@@ -901,6 +901,7 @@ bool System::SetParameterValue(const string &paramname, const double &val)
 bool System::SetParameterValue(int i, const double &val)
 {
     GetParameter(Parameters().getKeyAtIndex(i))->SetValue(val);
+	return true; 
 }
 
 bool System::ApplyParameters()
