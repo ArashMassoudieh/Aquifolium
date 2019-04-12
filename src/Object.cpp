@@ -277,7 +277,7 @@ bool Object::SetProperty(const string &prop, const string &value)
     }
     if (var[prop].GetType() == Quan::_type::value || var[prop].GetType() == Quan::_type::balance || var[prop].GetType() == Quan::_type::constant)
     {
-        var[prop].SetVal(atof(value));
+        var[prop].SetVal(atof(value),Expression::timing::both);
         return true;
     }
     if (var[prop].GetType() == Quan::_type::expression)
