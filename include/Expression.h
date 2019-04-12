@@ -29,6 +29,7 @@ class Expression
         double calc(Object * W, const timing &tmg);
         double func(string & f, double val);
         double func(string & f, double val1, double val2);
+        double func(string &f, double cond, double val1, double val2);
         double oprt(string & f, double val1, double val2);
         double oprt(string & f, unsigned int i1, unsigned int i2, Object * W, const timing &tmg);
         vector<string> funcs;
@@ -36,6 +37,7 @@ class Expression
         string text;
         vector<string> opts;
         int lookup_operators(const string &s);
+        int count_operators(const string &s);
         enum loc {self, source, destination};
         string ToString();
     protected:

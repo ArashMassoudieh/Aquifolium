@@ -336,10 +336,12 @@ double Expression::calc(Object *W, const timing &tmg)
 
 		if (function == "")
 			return term_vals[0];
-		else if (lookup_operators(";")!=-1)
+		else if (count_operators(";")==0)
 			return func(function, term_vals[0]);
-		else
+		else if (count_operators(";")==1)
 			return func(function, term_vals[0], term_vals[1]);
+        else if (count_operators(";")==2)
+            return func(function, term_vals[0], term_vals[1], term_vals[2]);
 	}
 
 
@@ -357,6 +359,8 @@ double Expression::func(string &f, double val)
 		return fabs(val);
 	if (f == "_sqr")
 		return sqrt(val);
+    if (f == "_pos")
+        return (val+fabs(val))/2.0;
 	return val;
 }
 
@@ -368,6 +372,20 @@ double Expression::func(string &f, double val1, double val2)
 		return max(val1, val2);
 	return val1;
 }
+
+double Expression::func(string &f, double cond, double val1, double val2)
+{
+	if (f == "_ups")
+	{
+        if (cond>=0)
+            return val1;
+        else
+            return val2;
+	}
+
+	return val1;
+}
+
 
 double Expression::oprt(string &f, double val1, double val2)
 {
@@ -674,6 +692,16 @@ int Expression::lookup_operators(const string &s)
         if (opts[i]==s)
             return i;
     return -1;
+
+}
+
+int Expression::count_operators(const string &s)
+{
+    int count = 0;
+    for (int i=0; i<opts.size(); i++)
+        if (opts[i]==s)
+            count ++;
+    return count;
 
 }
 
