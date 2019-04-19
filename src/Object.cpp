@@ -293,8 +293,7 @@ bool Object::SetProperty(const string &prop, const string &value)
 
     if (var[prop].GetType() == Quan::_type::timeseries)
     {
-        var[prop].SetTimeSeries(value);
-        return true;
+        return var[prop].SetProperty(value);
     }
 
 

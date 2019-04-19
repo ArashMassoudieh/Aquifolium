@@ -12,7 +12,10 @@ using namespace std;
 
 int main()
 {
-    Script scr("script.txt");
+    cout<<"Input file name:";
+    string filename;
+    cin>>filename;
+    Script scr(filename);
 
     CGA<System> TempObj;
     System *S = scr.CreateSystem();
