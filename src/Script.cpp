@@ -87,6 +87,11 @@ void Script::FillMustBeSpecified()
         mustbespecifiedatcreation["solve"]["*"] = vector<string>();
     mustbespecifiedatcreation["optimize"] = map<string, vector<string>>();
         mustbespecifiedatcreation["optimize"]["*"] = vector<string>();
+	mustbespecifiedatcreation["writeoutput"] = map<string, vector<string>>();
+		mustbespecifiedatcreation["write"]["outputs"] = vector<string>();
+		mustbespecifiedatcreation["write"]["errors"] = vector<string>();
+			mustbespecifiedatcreation["write"]["outputs"].push_back("filename");
+			mustbespecifiedatcreation["write"]["errors"].push_back("filename");
 
 
 

@@ -477,8 +477,8 @@ bool System::Renew(const string & variable)
 	for (unsigned int i = 0; i < blocks.size(); i++)
 		out &= blocks[i].Renew(variable);
 
-//	for (unsigned int i = 0; i < links.size(); i++)
-//  	out &= links[i].Renew(variable);
+	for (unsigned int i = 0; i < links.size(); i++)
+  		out &= links[i].Renew(Variable(variable)->GetCorrespondingFlowVar());
 
 	return out;
 }
