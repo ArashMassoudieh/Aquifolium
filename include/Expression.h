@@ -26,12 +26,12 @@ class Expression
         vector<string> _errors;
         vector<string> extract_terms(string s);
         enum class timing {past, present, both};
-        double calc(Object * W, const timing &tmg);
+        double calc(Object * W, const timing &tmg, bool limit = false);
         double func(string & f, double val);
         double func(string & f, double val1, double val2);
         double func(string &f, double cond, double val1, double val2);
         double oprt(string & f, double val1, double val2);
-        double oprt(string & f, unsigned int i1, unsigned int i2, Object * W, const timing &tmg);
+        double oprt(string & f, unsigned int i1, unsigned int i2, Object * W, const timing &tmg, bool limit=false);
         vector<string> funcs;
         string unit;
         string text;

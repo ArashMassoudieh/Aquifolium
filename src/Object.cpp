@@ -44,7 +44,7 @@ double Object::CalcVal(const string& s,const Expression::timing &tmg)
         #ifdef Debug_mode
         //ShowMessage(string("Object: ") + name + " Variable: " + s + " Value: " + numbertostring(var[s].CalcVal(tmg)));
         #endif // Debug_mode
-        return var[s].CalcVal(tmg);
+		return var[s].CalcVal(tmg);
     }
     else
     {
