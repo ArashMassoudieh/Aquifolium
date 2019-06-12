@@ -3,9 +3,7 @@
 #include "string"
 #include "System.h"
 #include <iostream>
-#include "Condition.h"
 #include "GA.h"
-#include "Objective_Function_Set.h"
 #include "Script.h"
 
 using namespace std;
@@ -18,7 +16,7 @@ int main()
     Script scr(filename);
 
     CGA<System> TempObj;
-    System *S = scr.CreateSystem();
+    System *S = scr.CreateSystem(); //this creates the system based on the script
     S->errorhandler.Write(S->OutputPath() + "errors.txt");
     S->GetOutputs().writetofile(S->OutputPath() +"output.txt");
 	cout<<S->GetObjectiveFunctionValue()<<endl;
