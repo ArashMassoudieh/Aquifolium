@@ -1,7 +1,10 @@
 #include "System.h"
 #include <fstream>
-#include <json/json.h>
+#pragma warning(pop)
 #pragma warning(disable : 4996)
+#include <json/json.h>
+
+
 
 #ifdef QT_version
 #include "node.h"
@@ -477,8 +480,8 @@ bool System::Renew(const string & variable)
 	for (unsigned int i = 0; i < blocks.size(); i++)
 		out &= blocks[i].Renew(variable);
 
-//	for (unsigned int i = 0; i < links.size(); i++)
-//  	out &= links[i].Renew(variable);
+	for (unsigned int i = 0; i < links.size(); i++)
+  		out &= links[i].Renew(Variable(variable)->GetCorrespondingFlowVar());
 
 	return out;
 }
@@ -901,6 +904,7 @@ bool System::SetParameterValue(const string &paramname, const double &val)
 bool System::SetParameterValue(int i, const double &val)
 {
     GetParameter(Parameters().getKeyAtIndex(i))->SetValue(val);
+	return true; 
 }
 
 bool System::ApplyParameters()

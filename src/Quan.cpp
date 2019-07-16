@@ -280,7 +280,7 @@ bool Quan::SetTimeSeries(string filename)
 bool Quan::SetProperty(const string &val)
 {
     if (type == _type::balance || type== _type::constant || type==_type::global_quan || type==_type::value)
-        return SetVal(atof(val));
+        return SetVal(atof(val),Expression::timing::both);
     if (type == _type::timeseries)
     {
         if (parent->Parent()->InputPath() != "")

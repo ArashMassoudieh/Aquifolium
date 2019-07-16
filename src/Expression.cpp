@@ -22,6 +22,8 @@ Expression::Expression(void)
 	funcs.push_back("_log");
 	funcs.push_back("_abs");
 	funcs.push_back("_sqr");
+	funcs.push_back("_pos");
+	funcs.push_back("_hsd");
 	opts.push_back("+");
 	opts.push_back("-");
 	opts.push_back("*");
@@ -44,6 +46,8 @@ Expression::Expression(string S)
 	funcs.push_back("_log");
 	funcs.push_back("_abs");
 	funcs.push_back("_sqr");
+	funcs.push_back("_pos");
+	funcs.push_back("_hsd");
 	opts.push_back("+");
 	opts.push_back("-");
 	opts.push_back("*");
@@ -63,6 +67,7 @@ Expression::Expression(string S)
 	if (lookup(funcs,left(S,4))!=-1)
 	{
 		function = right(left(S,4),3);
+		S = right(S, S.size() - 4);
 	}
 	if (left(S,1) == "(")
 	{
@@ -265,7 +270,7 @@ int lookup(const vector<vector<int> > &s, const vector<int> &s1)
 }
 
 
-double Expression::calc(Object *W, const timing &tmg)
+double Expression::calc(Object *W, const timing &tmg, bool limit)
 {
 	if (!W)
 	{
@@ -282,13 +287,13 @@ double Expression::calc(Object *W, const timing &tmg)
 	if (param_constant_expression == "parameter")
 	{
 		if (location == loc::self)
-            return W->CalcVal(parameter, tmg);
+            return W->GetVal(parameter, tmg,limit);
         else
         {
             if (W->GetConnectedBlock(location)!=nullptr)
-                return W->GetConnectedBlock(location)->CalcVal(parameter, tmg);
+                return W->GetConnectedBlock(location)->GetVal(parameter, tmg, limit);
             else
-                return W->CalcVal(parameter, tmg);
+                return W->GetVal(parameter, tmg, limit);
         }
 	}
 	if (param_constant_expression == "expression")
@@ -305,24 +310,24 @@ double Expression::calc(Object *W, const timing &tmg)
 		for (int i = operators.size() - 1; i >= 0; i--)
 		{
 			if (operators[i] == "^")
-				oprt(operators[i], i, i + 1, W, tmg);
+				oprt(operators[i], i, i + 1, W, tmg, limit);
 		}
 		for (int i = operators.size() - 1; i >= 0; i--)
 		{
 			if (operators[i] == "*")
-				oprt(operators[i], i, i + 1, W, tmg);
+				oprt(operators[i], i, i + 1, W, tmg, limit);
 		}
 
 		for (int i = operators.size() - 1; i >= 0; i--)
 		{
 			if (operators[i] == "/")
-				oprt(operators[i], i, i + 1, W, tmg);
+				oprt(operators[i], i, i + 1, W, tmg,limit);
 		}
 
 		for (int i = operators.size() - 1; i >= 0; i--)
 		{
 			if (operators[i] == "+")
-				oprt(operators[i], i, i + 1, W, tmg);
+				oprt(operators[i], i, i + 1, W, tmg,limit);
 
 		}
 
@@ -330,16 +335,18 @@ double Expression::calc(Object *W, const timing &tmg)
 		{
 			if (operators[i] == "-")
 			{
-				oprt(operators[i], i, i + 1, W, tmg);
+				oprt(operators[i], i, i + 1, W, tmg,limit);
 			}
 		}
 
 		if (function == "")
 			return term_vals[0];
-		else if (lookup_operators(";")!=-1)
+		else if (count_operators(";")==0)
 			return func(function, term_vals[0]);
-		else
+		else if (count_operators(";")==1)
 			return func(function, term_vals[0], term_vals[1]);
+        else if (count_operators(";")==2)
+            return func(function, term_vals[0], term_vals[1], term_vals[2]);
 	}
 
 
@@ -349,25 +356,45 @@ double Expression::calc(Object *W, const timing &tmg)
 double Expression::func(string &f, double val)
 {
 
-	if (f == "_exp")
+	if (f == "exp")
 		return exp(val);
-	if (f == "_log")
+	if (f == "log")
 		return log(val);
-	if (f == "_abs")
+	if (f == "abs")
 		return fabs(val);
-	if (f == "_sqr")
+	if (f == "sqr")
 		return sqrt(val);
+    if (f == "pos")
+        return (val+fabs(val))/2.0;
+    if (f == "hsd")
+    {
+        if (val>=0) return 1; else return 0;
+    }
 	return val;
 }
 
 double Expression::func(string &f, double val1, double val2)
 {
-	if (f == "_min")
+	if (f == "min")
 		return min(val1, val2);
-	if (f == "_max")
+	if (f == "max")
 		return max(val1, val2);
 	return val1;
 }
+
+double Expression::func(string &f, double cond, double val1, double val2)
+{
+	if (f == "ups")
+	{
+        if (cond>=0)
+            return val1;
+        else
+            return val2;
+	}
+
+	return val1;
+}
+
 
 double Expression::oprt(string &f, double val1, double val2)
 {
@@ -379,7 +406,7 @@ double Expression::oprt(string &f, double val1, double val2)
 	return 0;
 }
 
-double Expression::oprt(string &f, unsigned int i1, unsigned int i2, Object *W, const Expression::timing &tmg)
+double Expression::oprt(string &f, unsigned int i1, unsigned int i2, Object *W, const Expression::timing &tmg, bool limit)
 {
 
 	#ifdef Debug_mode
@@ -402,13 +429,13 @@ double Expression::oprt(string &f, unsigned int i1, unsigned int i2, Object *W, 
 
 	double val1;
 	double val2;
-	if (terms_calculated[i1]) val1 = term_vals[i1]; else val1 = terms[i1].calc(W, tmg);
+	if (terms_calculated[i1]) val1 = term_vals[i1]; else val1 = terms[i1].calc(W, tmg, limit);
 	if (terms[i1].sign == "/") val1 = 1/val1;
 	if (terms[i1].sign == "-") val1 = -val1;
 	if (sources.size() > i2)
 		if (terms_calculated[i2]) val2 = term_vals[i2]; else
 		{
-			val2 = terms[i2].calc(W, tmg);
+			val2 = terms[i2].calc(W, tmg, limit);
 			if (terms[i2].sign == "/") val2 = 1 / val2;
 			if (terms[i2].sign == "-") val2 = -val2;
 		}
@@ -503,7 +530,7 @@ string left(const string &s, int i)
 }
 string right(const string &s, int i)
 {
-    return s.substr(s.size()-i-1,i);
+    return s.substr(s.size()-i,i);
 }
 
 void remove(string &s,unsigned int i)
@@ -670,10 +697,20 @@ vector<string> split(const string &s, char del)
 
 int Expression::lookup_operators(const string &s)
 {
-    for (int i=0; i<opts.size(); i++)
-        if (opts[i]==s)
+    for (int i=0; i<operators.size(); i++)
+        if (operators[i]==s)
             return i;
     return -1;
+
+}
+
+int Expression::count_operators(const string &s)
+{
+    int count = 0;
+    for (int i=0; i<operators.size(); i++)
+        if (operators[i]==s)
+            count ++;
+    return count;
 
 }
 

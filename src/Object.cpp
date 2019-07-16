@@ -44,7 +44,7 @@ double Object::CalcVal(const string& s,const Expression::timing &tmg)
         #ifdef Debug_mode
         //ShowMessage(string("Object: ") + name + " Variable: " + s + " Value: " + numbertostring(var[s].CalcVal(tmg)));
         #endif // Debug_mode
-        return var[s].CalcVal(tmg);
+		return var[s].CalcVal(tmg);
     }
     else
     {
@@ -277,7 +277,7 @@ bool Object::SetProperty(const string &prop, const string &value)
     }
     if (var[prop].GetType() == Quan::_type::value || var[prop].GetType() == Quan::_type::balance || var[prop].GetType() == Quan::_type::constant)
     {
-        var[prop].SetVal(atof(value));
+        var[prop].SetVal(atof(value),Expression::timing::both);
         return true;
     }
     if (var[prop].GetType() == Quan::_type::expression)
@@ -293,8 +293,7 @@ bool Object::SetProperty(const string &prop, const string &value)
 
     if (var[prop].GetType() == Quan::_type::timeseries)
     {
-        var[prop].SetTimeSeries(value);
-        return true;
+        return var[prop].SetProperty(value);
     }
 
 
