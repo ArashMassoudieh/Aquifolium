@@ -65,7 +65,7 @@ double Objective_Function::GetValue(const Expression::timing &tmg)
     if (system->block(location) != nullptr)
         return expression.calc(system->block(location),tmg);
     if (system->link(location) != nullptr)
-        return expression.calc(system->link(location),tmg);
+        return expression.calc(system->link(location),tmg,true);
     lasterror = "Location " + location + "was not found in the system!";
     return 0;
 }
