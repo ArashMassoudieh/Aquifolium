@@ -28,7 +28,7 @@ setvalue; object=User_link, quantity=flow, value=Demand.txt
 setvalue; object=system, quantity=tend, value=10
 setvalue; object=system, quantity=dt, value=0.01
 setvalue; object=system, quantity=silent, value=1
-create objectivefunction; name=flow, object=myLink, type = integrate, expression=5.0-flow
+create objectivefunction; name=flow, object=myLink, type = integrate, expression=_abs(5.0-flow)
 solve; 
 setvalue; object=optimizer, quantity = maxpop, value=60
 setvalue; object=optimizer, quantity = ngen, value=100
