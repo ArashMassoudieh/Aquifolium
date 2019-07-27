@@ -177,7 +177,7 @@ bool Command::Execute(System *_sys)
 		if (arguments.size()==0)
 		{
 			sys->errorhandler.Append("", "Command", "Execute", "In echo command 'writeoutput' an argument is needed", 7023);
-			return false; 
+			return false;
 		}
 		if (arguments[0] == "outputs")
 		{
@@ -203,7 +203,8 @@ bool Command::Execute(System *_sys)
 				sys->errorhandler.Write(sys->OutputPath() + assignments["filename"]);
 			}
 		}
-	}
+
+    }
 
     if (tolower(keyword) == "echo")
     {
@@ -284,7 +285,6 @@ bool Command::Execute(System *_sys)
         }
         else return false;
     }
-
 
     if (tolower(keyword)=="optimize")
     {

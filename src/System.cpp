@@ -386,6 +386,11 @@ void System::InitiateOutputs()
                 Outputs.AllOutputs.append(CBTC(), links[i].GetName() + "_" + it->first);
     }
 
+    for (map<string, obj_funct_weight>::iterator it=objective_function_set.begin(); it !=objective_function_set.end(); it++)
+    {
+        Outputs.AllOutputs.append(CBTC(), "Obj_" + it->first);
+    }
+
 }
 
 
@@ -405,6 +410,11 @@ void System::PopulateOutputs()
             {
                 Outputs.AllOutputs[links[i].GetName() + "_" + it->first].append(SolverTempVars.t,links[i].GetVal(it->first,Expression::timing::present,true));
             }
+    }
+
+    for (map<string, obj_funct_weight>::iterator it=objective_function_set.begin(); it !=objective_function_set.end(); it++)
+    {
+        Outputs.AllOutputs["Obj_" + it->first].append(SolverTempVars.t,ObjectiveFunction(it->first)->Value());
     }
 
 }
@@ -904,7 +914,7 @@ bool System::SetParameterValue(const string &paramname, const double &val)
 bool System::SetParameterValue(int i, const double &val)
 {
     GetParameter(Parameters().getKeyAtIndex(i))->SetValue(val);
-	return true; 
+	return true;
 }
 
 bool System::ApplyParameters()

@@ -30,6 +30,7 @@ setvalue; object=system, quantity=dt, value=0.01
 setvalue; object=system, quantity=silent, value=1
 create objectivefunction; name=flow, object=myLink, type = integrate, expression=(5.0-flow)^2
 solve; 
+write outputs; filename=outputs.txt
 setvalue; object=optimizer, quantity = maxpop, value=60
 setvalue; object=optimizer, quantity = ngen, value=100
 setvalue; object=optimizer, quantity = pcross, value=1
