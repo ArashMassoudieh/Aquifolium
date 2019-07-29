@@ -67,6 +67,9 @@ void Script::FillMustBeSpecified()
             mustbespecifiedatcreation["create"]["objectivefunction"].push_back("name");
             mustbespecifiedatcreation["create"]["objectivefunction"].push_back("object");
             mustbespecifiedatcreation["create"]["objectivefunction"].push_back("expression");
+        mustbespecifiedatcreation["create"]["source"] = vector<string>();
+            mustbespecifiedatcreation["create"]["source"].push_back("name");
+            mustbespecifiedatcreation["create"]["source"].push_back("type");
     mustbespecifiedatcreation["loadtemplate"] = map<string, vector<string>>();
         mustbespecifiedatcreation["loadtemplate"]["*"] = vector<string>();
             mustbespecifiedatcreation["loadtemplate"]["*"].push_back("filename");
