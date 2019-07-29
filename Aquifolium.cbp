@@ -112,6 +112,7 @@
 		<Unit filename="src/QuickSort.cpp" />
 		<Unit filename="src/Rule.cpp" />
 		<Unit filename="src/Script.cpp" />
+		<Unit filename="src/Source.cpp" />
 		<Unit filename="src/System.cpp" />
 		<Unit filename="src/Vector.cpp">
 			<Option virtualFolder="Aquifolium/src/" />

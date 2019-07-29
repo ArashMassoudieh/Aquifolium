@@ -3,6 +3,7 @@
 #include "Block.h"
 #include "Link.h"
 #include "Object.h"
+#include "Source.h"
 #include "Vector_arma.h"
 #include "Matrix_arma.h"
 #include "MetaModel.h"
@@ -78,9 +79,11 @@ class System: public Object
         System& operator=(const System& other);
         double &GetTime() {return SolverTempVars.t;}
         bool AddBlock(Block &blk);
+        bool AddSource(Source &src);
         bool AddLink(Link &lnk, const string &source, const string &destination);
         Block *block(const string &s);
         Link *link(const string &s);
+        Source *source(const string &s);
         Parameter *parameter(const string &s);
         Object *object(const string &s);
         int blockid(const string &s);
@@ -141,6 +144,7 @@ class System: public Object
         vector<string> solvevariableorder;
         vector<Block> blocks;
         vector<Link> links;
+        vector<Source> sources;
         string last_error;
         MetaModel metamodel;
         CVector_arma GetResiduals(const string &variable, CVector_arma &X);

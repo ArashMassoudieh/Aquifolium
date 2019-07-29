@@ -21,7 +21,7 @@ class Source: public Object
     protected:
         Quan timeseries;
         Quan coefficient;
-        _type type;
+        _type evaluation_method;
     private:
 };
 

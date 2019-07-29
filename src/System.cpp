@@ -83,6 +83,15 @@ bool System::AddBlock(Block &blk)
 	return true;
 }
 
+bool System::AddSource(Source &src)
+{
+    sources.push_back(src);
+    source(src.GetName())->SetParent(this);
+    source(src.GetName())->SetQuantities(metamodel, src.GetType());
+    source(src.GetName())->SetParent(this);
+	return true;
+}
+
 bool System::AddLink(Link &lnk, const string &source, const string &destination)
 {
     links.push_back(lnk);
@@ -134,6 +143,17 @@ Link *System::link(const string &s)
     return nullptr;
 }
 
+Source *System::source(const string &s)
+{
+    for (unsigned int i=0; i<links.size(); i++)
+        if (sources[i].GetName() == s) return &sources[i];
+
+    //errorhandler.Append(GetName(),"System","link","Link '" + s + "' was not found",104);
+
+    return nullptr;
+}
+
+
 Parameter *System::parameter(const string &s)
 {
     if (Parameters().count(s) == 0)
@@ -152,6 +172,9 @@ Object *System::object(const string &s)
 
     for (unsigned int i=0; i<blocks.size(); i++)
         if (blocks[i].GetName() == s) return &blocks[i];
+
+    for (unsigned int i=0; i<sources.size(); i++)
+        if (sources[i].GetName() == s) return &sources[i];
 
     //errorhandler.Append(GetName(),"System","object","Object '" + s + "' was not found",105);
 
@@ -173,6 +196,10 @@ void System::CopyQuansToMembers()
     }
     for (unsigned int i=0; i<links.size(); i++)
         links[i].SetQuantities(metamodel,blocks[i].GetType());
+
+    for (unsigned int i=0; i<sources.size(); i++)
+        sources[i].SetQuantities(metamodel,sources[i].GetType());
+
 
 }
 
