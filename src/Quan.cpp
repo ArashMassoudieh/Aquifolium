@@ -96,6 +96,13 @@ double Quan::CalcVal(Object *block, const Expression::timing &tmg)
     }
     if (type == _type::value)
         return _val;
+    if (type == _type::source)
+    {
+        if (source!=nullptr)
+            return source->GetValue(block);
+        else
+            return 0;
+    }
     last_error = "Quantity cannot be evaluated";
     return 0;
 }
@@ -143,6 +150,13 @@ double Quan::CalcVal(const Expression::timing &tmg)
             return _val;
         else
             return _val_star;
+    }
+    if (type == _type::source)
+    {
+        if (source!=nullptr)
+            return source->GetValue(parent->GetParent());
+        else
+            return 0;
     }
     last_error = "Quantity cannot be evaluated";
     return 0;
@@ -197,6 +211,11 @@ Rule* Quan::GetRule()
     return &_rule;
 }
 
+Source* Quan::GetSource()
+{
+    return source;
+}
+
 
 string Quan::ToString(int _tabs)
 {
@@ -222,6 +241,10 @@ string Quan::ToString(int _tabs)
 
     if (type==_type::rule)
         out += tabs(_tabs+1) + "rule: " + _rule.ToString(_tabs) + "\n";
+
+    if (type==_type::source)
+        out += tabs(_tabs+1) + "source: " + source->GetName() + "\n";
+
 
     out += tabs(_tabs+1) + "val: ";
     out +=  numbertostring(_val);
@@ -265,7 +288,7 @@ void Quan::Update()
 	_val = _val_star;
 }
 
-bool Quan::SetTimeSeries(string filename)
+bool Quan::SetTimeSeries(const string &filename)
 {
 	_timeseries.readfile(filename);
 	if (_timeseries.file_not_found)
@@ -277,6 +300,22 @@ bool Quan::SetTimeSeries(string filename)
 		return true;
 }
 
+bool Quan::SetSource(const string &sourcename)
+{
+	if (parent->GetParent()->source(sourcename))
+	{
+	    source = parent->GetParent()->source(sourcename);
+        return true;
+	}
+	else
+	{
+		AppendError(GetName(),"Quan", "Source", sourcename + " was not found!", 3062);
+		return false;
+	}
+
+}
+
+
 bool Quan::SetProperty(const string &val)
 {
     if (type == _type::balance || type== _type::constant || type==_type::global_quan || type==_type::value)
@@ -287,6 +326,10 @@ bool Quan::SetProperty(const string &val)
             return SetTimeSeries(parent->Parent()->InputPath() + val);
         else
             return SetTimeSeries(val);
+    }
+    else if (type == _type::source)
+    {
+        return SetSource(val);
     }
     else
     {

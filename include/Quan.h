@@ -9,6 +9,7 @@ class Block;
 class Link;
 class System;
 class Object;
+class Source;
 
 
 class Quan
@@ -18,7 +19,7 @@ class Quan
         virtual ~Quan();
         Quan(const Quan& other);
         Quan& operator=(const Quan& other);
-        enum class _type {constant, value, balance, expression, timeseries, global_quan, rule};
+        enum class _type {constant, value, balance, expression, timeseries, global_quan, rule, source};
         double CalcVal(Object *, const Expression::timing &tmg=Expression::timing::past);
         double CalcVal(const Expression::timing &tmg=Expression::timing::past);
         double GetVal(const Expression::timing &tmg=Expression::timing::past);
@@ -27,9 +28,11 @@ class Quan
         _type GetType() {return type;}
         Expression* GetExpression();
         Rule* GetRule();
+        Source* GetSource();
         bool SetExpression(const string &E);
         bool SetRule(const string &R);
         bool SetVal(const double &v, const Expression::timing &tmg=Expression::timing::past);
+        bool SetSource(const string &sourcename);
         void SetCorrespondingFlowVar(const string &s);
         string GetCorrespondingFlowVar()
         {
@@ -45,7 +48,7 @@ class Quan
         void SetIncludeInOutput(bool x) {includeinoutput = x;}
         string GetName() {return _var_name;}
         bool IncludeInOutput() {return includeinoutput;}
-		bool SetTimeSeries(string filename);
+		bool SetTimeSeries(const string &filename);
 		string &Description() {return description;}
         string &Unit() {return unit;}
         string &DefaultUnit() {return default_unit;}
@@ -72,6 +75,7 @@ class Quan
         Expression _expression;
         Rule _rule;
         CTimeSeries _timeseries;
+        Source *source;
         string _var_name;
         double _val;
         double _val_star;
