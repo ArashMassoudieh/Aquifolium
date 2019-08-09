@@ -104,6 +104,8 @@ bool MetaModel::GetFromJsonFile(const string &filename)
                     quanset.BlockLink = blocklink::block;
                 if ((*object_types)[it.key().asString()]=="link")
                     quanset.BlockLink = blocklink::link;
+                if ((*object_types)[it.key().asString()]=="source")
+                    quanset.BlockLink = blocklink::source;
             }
             else
             {

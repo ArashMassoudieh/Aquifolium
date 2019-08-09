@@ -993,26 +993,6 @@ bool System::Echo(const string &obj, const string &quant, const string &feature)
             cout<<parameter(obj)->toString()<<endl;
             return true;
         }
-        else if (parameters(obj)!=nullptr)
-        {
-
-        }
-        else
-        {
-            errorhandler.Append(GetName(),"System","Echo" ,"Object or parameter '" + obj + "' does not exits!", 608);
-            return false;
-        }
-    }
-    else
-    {
-        if (object(obj)!=nullptr)
-        {
-            cout<<object(obj)->toString()<<endl;
-        }
-        else if (parameters(obj)!=nullptr)
-        {
-
-        }
         else
         {
             errorhandler.Append(GetName(),"System","Echo" ,"Object or parameter '" + obj + "' does not exits!", 608);
@@ -1038,7 +1018,7 @@ bool System::Echo(const string &obj, const string &quant, const string &feature)
                 cout<<tostring(object(obj)->Variable(quant)->GetType());
             else
             {
-                errorhandler.Append(GetName(),"System","Echo","Feature '" + feature + "' does not exist!",612);
+                errorhandler.Append(GetName(),"System","Echo","Feature '" + feature + "' is not valid!",612);
                 return false;
             }
             return true;

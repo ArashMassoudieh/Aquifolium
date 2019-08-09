@@ -6,8 +6,6 @@
 
 using namespace std;
 
-enum class _type {timeseries, constant};
-
 class System;
 class Source: public Object
 {
@@ -19,9 +17,7 @@ class Source: public Object
         Source& operator=(const Source& rhs);
         double GetValue(Object *obj);
     protected:
-        Quan timeseries;
-        Quan coefficient;
-        _type evaluation_method;
+
     private:
 };
 

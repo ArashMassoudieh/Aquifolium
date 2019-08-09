@@ -183,6 +183,7 @@ string tostring(const Quan::_type &typ)
     if (typ==Quan::_type::rule) return "Rule";
     if (typ==Quan::_type::timeseries) return "TimeSeries";
     if (typ==Quan::_type::value) return "Value";
+    if (typ==Quan::_type::source) return "Source";
     return "";
 }
 
