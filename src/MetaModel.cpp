@@ -136,6 +136,8 @@ bool MetaModel::GetFromJsonFile(const string &filename)
                     Q.SetType(Quan::_type::global_quan);
                 if ((*it)["type"].asString()=="timeseries")
                     Q.SetType(Quan::_type::timeseries);
+                if ((*it)["type"].asString()=="source")
+                    Q.SetType(Quan::_type::source);
                 if ((*it)["type"].asString()=="value")
                     Q.SetType(Quan::_type::value);
                 if (it->isMember("includeinoutput"))

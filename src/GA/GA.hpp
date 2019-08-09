@@ -146,8 +146,6 @@ CGA<T>::CGA(T *model)
 		Ind_old[i] = CIndividual(GA_params.nParam);
 	}
 
-	for (int i = 0; i<GA_params.nParam; i++)
-		Setminmax(i, minval[i], maxval[i],4);
 
 	MaxFitness = 0;
 }
@@ -164,6 +162,8 @@ void CGA<T>::setnparams(int n_params)
 		Ind_old[i] = CIndividual(n_params);
 
 	}
+
+
 }
 
 template<class T>
@@ -333,7 +333,7 @@ omp_set_num_threads(numberOfThreads);
 			Ind[k].actual_fitness -= Models[k].GetObjectiveFunctionValue();
 			epochs[k] += Models[k].EpochCount();
 			time_[k] = ((float)(clock() - t0))/CLOCKS_PER_SEC;
-#pragma omp critical 
+#pragma omp critical
             {
                 FileOut = fopen((filenames.pathname+"detail_GA.txt").c_str(),"a");
                 fprintf(FileOut, "%i, fitness=%le, time=%e, epochs=%i\n", k, Ind[k].actual_fitness, time_[k], epochs[k]);

@@ -63,9 +63,15 @@ bool Objective_Function::SetProperty(const string &prop, const string &val)
 double Objective_Function::GetValue(const Expression::timing &tmg)
 {
     if (system->block(location) != nullptr)
-        return expression.calc(system->block(location),tmg);
+    {
+        current_value = expression.calc(system->block(location),tmg);
+        return current_value;
+    }
     if (system->link(location) != nullptr)
-        return expression.calc(system->link(location),tmg,true);
+    {
+        current_value = expression.calc(system->link(location),tmg,true);
+        return current_value;
+    }
     lasterror = "Location " + location + "was not found in the system!";
     return 0;
 }

@@ -28,6 +28,7 @@ class Objective_Function
         void SetLocation(const string &loc) {location = loc;}
         void SetExpression(const Expression &exp) {expression = exp;}
         bool SetProperty(const string &prop, const string &val);
+        double Value() {return current_value;}
     protected:
 
     private:
@@ -37,6 +38,7 @@ class Objective_Function
         System *system; // pointer to the system the objective function is evaluated at
         string lasterror;
         objfunctype type = objfunctype::Integrate;
+        double current_value;
          //the last error that occurred
 };
 
