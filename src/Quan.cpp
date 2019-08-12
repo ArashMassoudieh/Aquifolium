@@ -3,9 +3,109 @@
 #include "Link.h"
 #include "System.h"
 
+
 Quan::Quan()
 {
     //ctor
+}
+
+Quan::Quan(Json::ValueIterator &it)
+{
+
+    SetName(it.key().asString());
+    if ((*it)["type"].asString()=="balance")
+    {
+        SetType(Quan::_type::balance);
+        SetCorrespondingFlowVar((*it)["flow"].asString());
+        SetCorrespondingInflowVar((*it)["inflow"].asString());
+    }
+    if ((*it)["type"].asString()=="constant")
+        SetType(Quan::_type::constant);
+    if ((*it)["type"].asString()=="expression")
+    {
+        SetType(Quan::_type::expression);
+        SetExpression((*it)["expression"].asString());
+    }
+    if ((*it)["type"].asString()=="rule")
+    {
+        SetType(Quan::_type::rule);
+        for (Json::ValueIterator itrule=(*it)["rule"].begin(); itrule!=(*it)["rule"].end(); ++itrule)
+        {
+            _condplusresult Rle;
+            GetRule()->Append(itrule.key().asString(),itrule->asString());
+        }
+    }
+
+    if ((*it)["type"].asString()=="global")
+        SetType(Quan::_type::global_quan);
+    if ((*it)["type"].asString()=="timeseries")
+        SetType(Quan::_type::timeseries);
+    if ((*it)["type"].asString()=="source")
+        SetType(Quan::_type::source);
+    if ((*it)["type"].asString()=="value")
+        SetType(Quan::_type::value);
+    if (it->isMember("includeinoutput"))
+    {
+        if ((*it)["includeinoutput"].asString()=="true")
+            SetIncludeInOutput(true);
+        else
+            SetIncludeInOutput(false);
+    }
+    else
+        SetIncludeInOutput(false);
+    if (it->isMember("description"))
+    {
+        Description() = (*it)["description"].asString();
+    }
+
+    if (it->isMember("unit"))
+        Unit() = (*it)["unit"].asString();
+
+    if (it->isMember("default_unit"))
+        DefaultUnit() = (*it)["default_unit"].asString();
+
+    if (it->isMember("default"))
+        Default() = (*it)["default"].asString();
+
+    if (it->isMember("delegate"))
+        Delegate() = (*it)["delegate"].asString();
+
+    if (it->isMember("category"))
+        Category() = (*it)["category"].asString();
+
+    if (it->isMember("input"))
+        Input() = (*it)["input"].asString();
+
+    if (it->isMember("experiment_dependent"))
+    {   if ((*it)["experiment_dependent"].asString()=="Yes")
+            ExperimentDependent() = true;
+        else
+            ExperimentDependent() = false;
+
+    }
+
+    if (it->isMember("description_code"))
+        DescriptionCode() = (*it)["description_code"].asString();
+
+    if (it->isMember("criteria"))
+        Criteria() = (*it)["criteria"].asString();
+
+    if (it->isMember("warningerror"))
+        WarningError() = (*it)["warningerror"].asString();
+
+    if (it->isMember("warningmessage"))
+        WarningMessage() = (*it)["warningmessage"].asString();
+
+    if (it->isMember("inputtype"))
+        InputType() = (*it)["inputtype"].asString();
+
+    if (it->isMember("ask_user"))
+    {    if (tolower((*it)["ask_user"].asString())=="true")
+            AskFromUser() = true;
+    }
+    else
+       AskFromUser() = false;
+
 }
 
 Quan::~Quan()

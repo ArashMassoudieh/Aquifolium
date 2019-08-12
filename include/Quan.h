@@ -4,6 +4,7 @@
 #include "Expression.h"
 #include "Rule.h"
 #include "BTC.h"
+#include <json/json.h>
 
 class Block;
 class Link;
@@ -18,6 +19,7 @@ class Quan
         Quan();
         virtual ~Quan();
         Quan(const Quan& other);
+        Quan(Json::ValueIterator &it);
         Quan& operator=(const Quan& other);
         enum class _type {constant, value, balance, expression, timeseries, global_quan, rule, source};
         double CalcVal(Object *, const Expression::timing &tmg=Expression::timing::past);
