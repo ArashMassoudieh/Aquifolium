@@ -34,7 +34,7 @@ double Source::GetValue(Object *obj)
     double value;
 
     if (Variable("timeseries")!=nullptr)
-        value = Variable("timeseries")->CalcVal(obj, Expression::timing::present);
+        value = Variable("timeseries")->CalcVal(Expression::timing::present);
     else
         value = 1;
 

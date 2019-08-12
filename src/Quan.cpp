@@ -254,7 +254,7 @@ double Quan::CalcVal(const Expression::timing &tmg)
     if (type == _type::source)
     {
         if (source!=nullptr)
-            return source->GetValue(parent->GetParent());
+            return source->GetValue(parent);
         else
             return 0;
     }

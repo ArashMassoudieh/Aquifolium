@@ -657,7 +657,11 @@ void System::SetVariableParents()
 	for (unsigned int i = 0; i < blocks.size(); i++)
 	{
 		blocks[i].SetVariableParents();
+	}
 
+	for (unsigned int i = 0; i < sources.size(); i++)
+	{
+		sources[i].SetVariableParents();
 	}
 }
 

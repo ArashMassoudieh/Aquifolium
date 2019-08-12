@@ -92,28 +92,7 @@ bool MetaModel::GetFromJsonFile(const string &filename)
             }
             break;
         }
-        QuanSet quanset;
-        quanset.Name() = object_types.key().asString();
-        for (Json::ValueIterator it=object_types->begin(); it!=object_types->end(); ++it)
-        {
-            if (it.key()=="icon")
-                quanset.IconFileName() = (*it)["filename"].asString();
-            if (it.key()=="type")
-            {
-                if ((*object_types)[it.key().asString()]=="block")
-                    quanset.BlockLink = blocklink::block;
-                if ((*object_types)[it.key().asString()]=="link")
-                    quanset.BlockLink = blocklink::link;
-                if ((*object_types)[it.key().asString()]=="source")
-                    quanset.BlockLink = blocklink::source;
-            }
-            else
-            {
-                cout<<it.key().asString()<<endl;
-                Quan Q(it);
-                quanset.Append(it.key().asString(),Q);
-            }
-        }
+        QuanSet quanset(object_types);
         Append(object_types.key().asString(),quanset);
     }
 	return true;

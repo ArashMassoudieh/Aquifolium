@@ -12,6 +12,7 @@ class QuanSet
 {
     public:
         QuanSet();
+        QuanSet(Json::ValueIterator &object_type);
         virtual ~QuanSet();
         QuanSet(const QuanSet& other);
         QuanSet& operator=(const QuanSet& other);
