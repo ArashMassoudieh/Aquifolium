@@ -18,7 +18,7 @@
 			"type": "source",
 			"description": "precipitation time series",
 			"ask_user": "true"
-		}
+		},
 		"Area": {
 			"type": "value",
 			"description": "Catchment area",

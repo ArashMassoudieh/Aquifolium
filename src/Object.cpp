@@ -295,6 +295,10 @@ bool Object::SetProperty(const string &prop, const string &value)
     {
         return var[prop].SetProperty(value);
     }
+    if (var[prop].GetType() == Quan::_type::source)
+    {
+        return var[prop].SetProperty(value);
+    }
 
 
 }

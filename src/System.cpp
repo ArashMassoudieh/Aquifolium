@@ -47,6 +47,7 @@ System::System(const System& other):Object::Object(other)
 {
     blocks = other.blocks;
     links = other.links;
+    sources = other.sources;
     objective_function_set = other.objective_function_set;
     parameter_set = other.parameter_set;
     silent = other.silent;
@@ -63,6 +64,7 @@ System& System::operator=(const System& rhs)
     Object::operator=(rhs);
     blocks = rhs.blocks;
     links = rhs.links;
+    sources = rhs.sources;
     silent = rhs.silent;
     objective_function_set = rhs.objective_function_set;
     parameter_set = rhs.parameter_set;
@@ -145,7 +147,7 @@ Link *System::link(const string &s)
 
 Source *System::source(const string &s)
 {
-    for (unsigned int i=0; i<links.size(); i++)
+    for (unsigned int i=0; i<sources.size(); i++)
         if (sources[i].GetName() == s) return &sources[i];
 
     //errorhandler.Append(GetName(),"System","link","Link '" + s + "' was not found",104);
@@ -969,6 +971,9 @@ void System::SetAllParents()
 
     for (unsigned int i=0; i<blocks.size(); i++)
         blocks[i].SetAllParents();
+
+    for (unsigned int i=0; i<sources.size(); i++)
+        sources[i].SetAllParents();
 
     for (map<string,obj_funct_weight>::iterator it=objective_function_set.begin(); it!=objective_function_set.end(); it++)
         objective_function_set[it->first]->obj_funct.SetSystem(this);

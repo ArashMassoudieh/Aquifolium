@@ -477,27 +477,27 @@ bool Command::Execute(System *_sys)
                 }
                 return succeed;
             }
-            if (tolower(arguments[0])=="source")
-            {
-                if (Validate())
-                {
-                    Source B;
-                    B.SetName(assignments["name"]);
-                    B.SetType(assignments["type"]);
-                    sys->AddSource(B);
-                    for (map<string,string>::iterator it=assignments.begin(); it!=assignments.end(); it++)
-                    {
-                        if (it->first!="name" && it->first!="type" && it->first!="to" && it->first!="from")
-                            sys->source(assignments["name"])->SetProperty(it->first,it->second);
-                    }
-                    return true;
-                }
-                else
-                    return false;
-            }
             else
                 return false;
 
+        }
+        if (tolower(arguments[0])=="source")
+        {
+            if (Validate())
+            {
+                Source B;
+                B.SetName(assignments["name"]);
+                B.SetType(assignments["type"]);
+                sys->AddSource(B);
+                for (map<string,string>::iterator it=assignments.begin(); it!=assignments.end(); it++)
+                {
+                    if (it->first!="name" && it->first!="type" && it->first!="to" && it->first!="from")
+                        sys->source(assignments["name"])->SetProperty(it->first,it->second);
+                }
+                return true;
+            }
+            else
+                return false;
         }
 
         return true;
