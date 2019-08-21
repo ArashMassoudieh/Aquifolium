@@ -6,7 +6,7 @@
 
 class Object;
 
-enum class blocklink {block=0, link=1, source=2};
+enum class blocklink {block, link, source};
 
 class QuanSet
 {

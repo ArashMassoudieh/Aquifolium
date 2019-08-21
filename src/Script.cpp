@@ -21,6 +21,11 @@ Script::Script(const string &filename, System *sys)
     else
         system = new System();
     fstream file(filename);
+    if (!file.good())
+    {
+        cout<< "File '" + filename + "' was not found!"<<endl;
+        return;
+    }
     while (!file.eof())
     {
         string s;

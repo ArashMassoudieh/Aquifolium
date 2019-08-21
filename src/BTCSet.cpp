@@ -98,6 +98,11 @@ void CTimeSeriesSet::writetofile(string outputfile, bool writeColumnNameHeaders)
 {
 	FILE *Fil;
 	Fil = fopen(outputfile.c_str() , "w");
+	if (!Fil)
+    {
+        cout<<"File '" + outputfile +"' cannot be opened!"<<endl;
+        return;
+    }
 	if (writeColumnNameHeaders)
 	{
 		fprintf(Fil, "names, ");
