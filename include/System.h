@@ -132,6 +132,7 @@ class System: public Object
         bool Echo(const string &object, const string &quantity = "", const string &feature="");
         string InputPath() {return paths.inputpath;}
         string OutputPath() {return paths.outputpath;}
+        vector<CTimeSeries*> TimeSeries();
 #ifdef QT_version
         logWindow *LogWindow() {return logwindow;}
         void SetLogWindow(logWindow *lgwnd) {logwindow=lgwnd;}
@@ -166,6 +167,7 @@ class System: public Object
         Parameter_Set parameter_set;
         bool silent;
         _directories paths;
+        vector<CTimeSeries*> alltimeseries;
 
 #ifdef QT_version
         GraphWidget *diagramview;

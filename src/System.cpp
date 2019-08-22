@@ -1052,10 +1052,38 @@ bool System::Echo(const string &obj, const string &quant, const string &feature)
 
 bool System::Solve(bool ApplyParams)
 {
+    alltimeseries = TimeSeries();
     bool success = true;
     for (unsigned int i=0; i<solvevariableorder.size(); i++)
         success&=Solve(solvevariableorder[i],ApplyParams);
 
     return success;
+}
+
+vector<CTimeSeries*> System::TimeSeries()
+{
+    vector<CTimeSeries*> out;
+    for (unsigned int i=0; i<links.size(); i++)
+    {
+        for (int j=0; j<links[i].TimeSeries().size(); j++)
+        {
+            links[i].TimeSeries()[j]->Assign_D();
+            out.push_back(links[i].TimeSeries()[j]);
+        }
+    }
+
+    for (unsigned int i=0; i<blocks.size(); i++)
+    {
+        for (int j=0; j<blocks[i].TimeSeries().size(); j++)
+            out.push_back(blocks[i].TimeSeries()[j]);
+    }
+
+    for (unsigned int i=0; i<sources.size(); i++)
+    {
+        for (int j=0; j<sources[i].TimeSeries().size(); j++)
+            out.push_back(sources[i].TimeSeries()[j]);
+    }
+
+    return out;
 }
 

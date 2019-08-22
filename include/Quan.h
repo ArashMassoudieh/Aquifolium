@@ -49,6 +49,7 @@ class Quan
 		void Update();
         void SetIncludeInOutput(bool x) {includeinoutput = x;}
         string GetName() {return _var_name;}
+        CTimeSeries* TimeSeries();
         bool IncludeInOutput() {return includeinoutput;}
 		bool SetTimeSeries(const string &filename);
 		string &Description() {return description;}

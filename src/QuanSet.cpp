@@ -158,3 +158,15 @@ bool QuanSet::AppendError(const string &objectname, const string &cls, const str
     parent->Parent()->errorhandler.Append(objectname,cls,funct,description,code);
     return true;
 }
+
+vector<CTimeSeries*> QuanSet::TimeSeries()
+{
+
+    vector<CTimeSeries*> out;
+    for (map<string,Quan>::iterator it=quans.begin(); it!=quans.end(); it++)
+    {
+        if (quans[it->first].GetType() == Quan::_type::timeseries && quans[it->first].TimeSeries()!=nullptr)
+            out.push_back(quans[it->first].TimeSeries());
+    }
+    return out;
+}

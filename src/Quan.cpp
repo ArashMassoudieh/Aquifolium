@@ -389,6 +389,15 @@ void Quan::Update()
 	_val = _val_star;
 }
 
+
+CTimeSeries* Quan::TimeSeries()
+{
+    if (_timeseries.C.size()!=0)
+        return &_timeseries;
+    else
+        return nullptr;
+}
+
 bool Quan::SetTimeSeries(const string &filename)
 {
 	_timeseries.readfile(filename);

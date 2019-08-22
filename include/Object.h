@@ -42,6 +42,7 @@ class Object
         void Set_e_Block(Object *O) { e_Block = O; }
 		bool Renew(const string &variable);
 		bool Update(const string &variable);
+		vector<CTimeSeries*> TimeSeries() {return var.TimeSeries();}
 		QuanSet* GetVars()
             {
                 return &var;
