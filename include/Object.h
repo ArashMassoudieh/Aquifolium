@@ -26,6 +26,7 @@ class Object
         double GetProperty(const string&);
         System *GetParent() const {return parent;}
         string GetName() const;
+        void SetDefaults();
         bool SetName(const string &_name);
         Object* GetConnectedBlock(Expression::loc l);
         void SetConnectedBlock(Expression::loc l, const string &blockname);

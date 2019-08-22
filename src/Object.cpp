@@ -100,9 +100,16 @@ bool Object::SetQuantities(MetaModel &m, const string& typ )
 	}
     else
         var = *m[typ];
+    SetDefaults();
     for (map<string, Quan>::const_iterator s = var.begin(); s != var.end(); ++s)
         var[s->first].SetParent(this);
 	return true;
+}
+
+void Object::SetDefaults()
+{
+    for (map<string, Quan>::const_iterator s = var.begin(); s != var.end(); ++s)
+        var[s->first].SetVal(atof(var[s->first].Default().c_str()),Expression::timing::both);
 }
 
 bool Object::SetVal(const string& s, double value, const Expression::timing &tmg)

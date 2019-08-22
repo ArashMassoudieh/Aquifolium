@@ -79,8 +79,8 @@ class Quan
         CTimeSeries _timeseries;
         Source *source;
         string _var_name;
-        double _val;
-        double _val_star;
+        double _val=0;
+        double _val_star=0;
         vector<double> _parameters;
         _type type;
         bool perform_mass_balance = false;
@@ -91,7 +91,7 @@ class Quan
         string description;
         string unit;
         string default_unit;
-        string default_val;
+        string default_val="0";
         string input_type;
         string defaults;
         string delegate;
