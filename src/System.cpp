@@ -224,11 +224,13 @@ bool System::Solve(const string &variable, bool applyparameters)
     InitiateOutputs();
     PopulateOutputs();
 
-    SolverTempVars.dt = SimulationParameters.dt0;
+    SolverTempVars.dt_base = SimulationParameters.dt0;
+    SolverTempVars.dt = SolverTempVars.dt_base;
     SolverTempVars.t = SimulationParameters.tstart;
 
     while (SolverTempVars.t<SimulationParameters.tend+SolverTempVars.dt)
     {
+        SolverTempVars.dt = min(SolverTempVars.dt_base,GetMinimumNextTimeStepSize());
         #ifdef Debug_mode
         ShowMessage(string("t = ") + numbertostring(SolverTempVars.t) + ", dt = " + numbertostring(SolverTempVars.dt) + ", SolverTempVars.numiterations =" + numbertostring(SolverTempVars.numiterations));
         #endif // Debug_mode
@@ -238,13 +240,14 @@ bool System::Solve(const string &variable, bool applyparameters)
             updateProgress(false);
         }
         #endif
+
         bool success = OneStepSolve(variable);
         if (!success)
         {
             #ifdef Debug_mode
             ShowMessage("failed!");
             #endif // Debug_mode
-            SolverTempVars.dt *= SolverSettings.NR_timestep_reduction_factor_fail;
+            SolverTempVars.dt_base *= SolverSettings.NR_timestep_reduction_factor_fail;
             SolverTempVars.updatejacobian = true;
         }
         else
@@ -252,11 +255,11 @@ bool System::Solve(const string &variable, bool applyparameters)
             SolverTempVars.t += SolverTempVars.dt;
             if (SolverTempVars.numiterations>SolverSettings.NR_niteration_upper)
             {
-                SolverTempVars.dt = max(SolverTempVars.dt*SolverSettings.NR_timestep_reduction_factor,SolverSettings.minimum_timestep);
+                SolverTempVars.dt_base = max(SolverTempVars.dt*SolverSettings.NR_timestep_reduction_factor,SolverSettings.minimum_timestep);
                 SolverTempVars.updatejacobian = true;
             }
             if (SolverTempVars.numiterations<SolverSettings.NR_niteration_lower)
-                SolverTempVars.dt /= SolverSettings.NR_timestep_reduction_factor;
+                SolverTempVars.dt_base /= SolverSettings.NR_timestep_reduction_factor;
             PopulateOutputs();
             Update(variable);
             UpdateObjectiveFunctions(SolverTempVars.t);
@@ -1067,7 +1070,7 @@ vector<CTimeSeries*> System::TimeSeries()
     {
         for (int j=0; j<links[i].TimeSeries().size(); j++)
         {
-            links[i].TimeSeries()[j]->Assign_D();
+            links[i].TimeSeries()[j]->assign_D();
             out.push_back(links[i].TimeSeries()[j]);
         }
     }
@@ -1087,3 +1090,13 @@ vector<CTimeSeries*> System::TimeSeries()
     return out;
 }
 
+double System::GetMinimumNextTimeStepSize()
+{
+    double x=1e12;
+
+    for (int i=0; i<alltimeseries.size(); i++)
+    {
+        x = min(x,alltimeseries[i]->interpol_D(this->SolverTempVars.t));
+    }
+    return x;
+}

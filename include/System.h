@@ -48,6 +48,7 @@ struct solvertemporaryvars
     string fail_reason;
     double t;
     double dt;
+    double dt_base;
 
 
 };
@@ -133,6 +134,7 @@ class System: public Object
         string InputPath() {return paths.inputpath;}
         string OutputPath() {return paths.outputpath;}
         vector<CTimeSeries*> TimeSeries();
+        double GetMinimumNextTimeStepSize();
 #ifdef QT_version
         logWindow *LogWindow() {return logwindow;}
         void SetLogWindow(logWindow *lgwnd) {logwindow=lgwnd;}
