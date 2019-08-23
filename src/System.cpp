@@ -230,7 +230,7 @@ bool System::Solve(const string &variable, bool applyparameters)
 
     while (SolverTempVars.t<SimulationParameters.tend+SolverTempVars.dt)
     {
-        SolverTempVars.dt = min(SolverTempVars.dt_base,GetMinimumNextTimeStepSize());
+        SolverTempVars.dt = max(min(SolverTempVars.dt_base,GetMinimumNextTimeStepSize()),SimulationParameters.dt0/100);
         #ifdef Debug_mode
         ShowMessage(string("t = ") + numbertostring(SolverTempVars.t) + ", dt = " + numbertostring(SolverTempVars.dt) + ", SolverTempVars.numiterations =" + numbertostring(SolverTempVars.numiterations));
         #endif // Debug_mode
@@ -1078,13 +1078,19 @@ vector<CTimeSeries*> System::TimeSeries()
     for (unsigned int i=0; i<blocks.size(); i++)
     {
         for (int j=0; j<blocks[i].TimeSeries().size(); j++)
+        {
+            blocks[i].TimeSeries()[j]->assign_D();
             out.push_back(blocks[i].TimeSeries()[j]);
+        }
     }
 
     for (unsigned int i=0; i<sources.size(); i++)
     {
         for (int j=0; j<sources[i].TimeSeries().size(); j++)
+        {
+            sources[i].TimeSeries()[j]->assign_D();
             out.push_back(sources[i].TimeSeries()[j]);
+        }
     }
 
     return out;
