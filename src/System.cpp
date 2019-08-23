@@ -230,9 +230,10 @@ bool System::Solve(const string &variable, bool applyparameters)
 
     while (SolverTempVars.t<SimulationParameters.tend+SolverTempVars.dt)
     {
-        SolverTempVars.dt = max(min(SolverTempVars.dt_base,GetMinimumNextTimeStepSize()),SimulationParameters.dt0/100);
+        SolverTempVars.dt = min(SolverTempVars.dt_base,GetMinimumNextTimeStepSize());
+        if (SolverTempVars.dt<SimulationParameters.dt0/100) SolverTempVars.dt=SimulationParameters.dt0/100;
         #ifdef Debug_mode
-        ShowMessage(string("t = ") + numbertostring(SolverTempVars.t) + ", dt = " + numbertostring(SolverTempVars.dt) + ", SolverTempVars.numiterations =" + numbertostring(SolverTempVars.numiterations));
+        ShowMessage(string("t = ") + numbertostring(SolverTempVars.t) + ", dt_base = " + numbertostring(SolverTempVars.dt_base) + ", dt = " + numbertostring(SolverTempVars.dt) + ", SolverTempVars.numiterations =" + numbertostring(SolverTempVars.numiterations));
         #endif // Debug_mode
         #ifdef QT_version
         if (rtw)
@@ -259,7 +260,7 @@ bool System::Solve(const string &variable, bool applyparameters)
                 SolverTempVars.updatejacobian = true;
             }
             if (SolverTempVars.numiterations<SolverSettings.NR_niteration_lower)
-                SolverTempVars.dt_base /= SolverSettings.NR_timestep_reduction_factor;
+                SolverTempVars.dt_base = min(SolverTempVars.dt_base/SolverSettings.NR_timestep_reduction_factor,SimulationParameters.dt0*10);
             PopulateOutputs();
             Update(variable);
             UpdateObjectiveFunctions(SolverTempVars.t);
@@ -468,7 +469,7 @@ bool System::OneStepSolve(const string &variable)
     int attempts = 0;
     while (attempts<2 && switchvartonegpos)
     {
-        while (err/err_ini>SolverSettings.NRtolerance)
+        while (err/err_ini>SolverSettings.NRtolerance && err>1e-12)
         {
             SolverTempVars.numiterations++;
             if (SolverTempVars.updatejacobian)
@@ -482,7 +483,7 @@ bool System::OneStepSolve(const string &variable)
             err_p = err;
             err = F.norm2();
             #ifdef Debug_mode
-            ShowMessage(numbertostring(err));
+            //ShowMessage(numbertostring(err));
             #endif // Debug_mode
             if (err>err_p)
                 SolverTempVars.NR_coefficient*=SolverSettings.NR_coeff_reduction_factor;

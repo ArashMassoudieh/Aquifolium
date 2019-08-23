@@ -1164,7 +1164,11 @@ void CTimeSeries::assign_D()
 		for (int j = i + 1; j<n; j++)
 		{
 			if (C[j] == C[i]) counter += (t[j] - t[j - 1]);
-			if (C[j] != C[i]) break;
+			if (C[j] != C[i])
+            {
+                counter += (t[j] - t[j - 1]);
+                break;
+            }
 		}
 		D.push_back(counter);
 	}

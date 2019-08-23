@@ -10,5 +10,5 @@ create link; name =  myLink, from=Reservoir1, to=Reservoir2, type = Reservoir_li
 setvalue; object=system, quantity=tstart, value=38353
 setvalue; object=system, quantity=tend, value=38718
 setvalue; object=system, quantity=dt, value=0.01
-setvalue; object=system, quantity=silent, value=1
+//setvalue; object=system, quantity=silent, value=1
 solve; 
