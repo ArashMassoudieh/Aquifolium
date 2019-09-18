@@ -272,7 +272,7 @@ bool Command::Execute(System *_sys)
             if (assignments.count("variable")!=0)
             {
                 cout<<"Solving for '" + assignments["variable"] + "'...."<<endl;
-                sys->Solve(assignments["variable"],true);
+//              sys->Solve(assignments["variable"],true);
                 return true;
             }
             else

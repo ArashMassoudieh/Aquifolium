@@ -652,11 +652,11 @@ bool aquiutils::isintegernumber(string S)
 
 double aquiutils::atof(const string &S)
 {
-    return atof(S.c_str());
+    return std::atof(S.c_str());
 }
 double aquiutils::atoi(const string &S)
 {
-    return atoi(S.c_str());
+    return std::atoi(S.c_str());
 }
 
 string aquiutils::trim(const string &s)
@@ -974,8 +974,14 @@ string aquiutils::tabs(int i)
 }
 
 bool aquiutils::And(vector<bool> x) { bool out = true;  for (int i = 0; i < x.size(); i++) out &= x[i]; return out; }
-double aquiutils::max(vector<double> x) { double out = -1e+24;  for (int i = 0; i < x.size(); i++) std::max(out, x[i]); return out; }
-int aquiutils::max(vector<int> x) { int out = -1e+24;  for (int i = 0; i < x.size(); i++) std::max(out, x[i]); return out; }
+double aquiutils::max(vector<double> x) { double out = -1e+24;  for (int i = 0; i < x.size(); i++) out=std::max(out, x[i]); return out; }
+int aquiutils::max(vector<int> x) 
+{	int out = -37000;  
+	for (int i = 0; i < x.size(); i++) 
+		out=std::max(out, x[i]); 
+	return out;
+
+}
 
 
 

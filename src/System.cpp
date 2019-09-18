@@ -45,7 +45,8 @@ System::~System()
 
 System::System(const System& other):Object::Object(other)
 {
-    blocks = other.blocks;
+	SolverTempVars.SetUpdateJacobian(true);
+	blocks = other.blocks;
     links = other.links;
     sources = other.sources;
     objective_function_set = other.objective_function_set;
@@ -62,7 +63,8 @@ System& System::operator=(const System& rhs)
 {
     if (this == &rhs) return *this; // handle self assignment
     Object::operator=(rhs);
-    blocks = rhs.blocks;
+	SolverTempVars.SetUpdateJacobian(true);
+	blocks = rhs.blocks;
     links = rhs.links;
     sources = rhs.sources;
     silent = rhs.silent;
@@ -214,7 +216,7 @@ vector<bool> System::OneStepSolve()
 	return success;
 }
 
-bool System::Solve(const string &variable, bool applyparameters)
+bool System::Solve(bool applyparameters)
 {
     #ifdef QT_version
     if (LogWindow())
@@ -224,7 +226,12 @@ bool System::Solve(const string &variable, bool applyparameters)
     #else
         ShowMessage("Simulation started!");
     #endif
-    if (applyparameters) ApplyParameters();
+    
+	SolverTempVars.SetUpdateJacobian(true);
+	alltimeseries = TimeSeries();
+	bool success = true;
+		
+	if (applyparameters) ApplyParameters();
     InitiateOutputs();
     PopulateOutputs();
 
@@ -246,8 +253,9 @@ bool System::Solve(const string &variable, bool applyparameters)
         }
         #endif
 
-        vector<bool> success = OneStepSolve();
-		if (!aquiutils::And(success))
+        vector<bool> _success = OneStepSolve();
+		success = aquiutils::And(_success);
+		if (!success)
         {
             #ifdef Debug_mode
             ShowMessage("failed!");
@@ -266,7 +274,8 @@ bool System::Solve(const string &variable, bool applyparameters)
             if (SolverTempVars.MaxNumberOfIterations()<SolverSettings.NR_niteration_lower)
                 SolverTempVars.dt_base = min(SolverTempVars.dt_base/SolverSettings.NR_timestep_reduction_factor,SimulationParameters.dt0*10);
             PopulateOutputs();
-            Update(variable);
+            for (int i=0; i<solvevariableorder.size(); i++)
+			Update(solvevariableorder[i]);
             UpdateObjectiveFunctions(SolverTempVars.t);
         }
 
@@ -1058,16 +1067,6 @@ bool System::Echo(const string &obj, const string &quant, const string &feature)
     }
 
 
-}
-
-bool System::Solve(bool ApplyParams)
-{
-    alltimeseries = TimeSeries();
-    bool success = true;
-    for (unsigned int i=0; i<solvevariableorder.size(); i++)
-        success&=Solve(solvevariableorder[i],ApplyParams);
-
-    return success;
 }
 
 vector<CTimeSeries*> System::TimeSeries()
