@@ -298,7 +298,7 @@ bool Object::SetProperty(const string &prop, const string &value)
         return false;
     }
 
-    if (var[prop].GetType() == Quan::_type::timeseries)
+    if (var[prop].GetType() == Quan::_type::timeseries || var[prop].GetType() == Quan::_type::prec_timeseries)
     {
         return var[prop].SetProperty(value);
     }

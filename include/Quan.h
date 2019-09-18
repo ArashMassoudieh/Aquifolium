@@ -21,7 +21,7 @@ class Quan
         Quan(const Quan& other);
         Quan(Json::ValueIterator &it);
         Quan& operator=(const Quan& other);
-        enum class _type {constant, value, balance, expression, timeseries, global_quan, rule, source};
+        enum class _type {constant, value, balance, expression, timeseries, prec_timeseries, global_quan, rule, source};
         double CalcVal(Object *, const Expression::timing &tmg=Expression::timing::past);
         double CalcVal(const Expression::timing &tmg=Expression::timing::past);
         double GetVal(const Expression::timing &tmg=Expression::timing::past);
@@ -51,7 +51,7 @@ class Quan
         string GetName() {return _var_name;}
         CTimeSeries* TimeSeries();
         bool IncludeInOutput() {return includeinoutput;}
-		bool SetTimeSeries(const string &filename);
+		bool SetTimeSeries(const string &filename, bool prec=false);
 		string &Description() {return description;}
         string &Unit() {return unit;}
         string &DefaultUnit() {return default_unit;}

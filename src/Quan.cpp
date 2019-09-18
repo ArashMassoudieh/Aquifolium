@@ -2,6 +2,7 @@
 #include "Block.h"
 #include "Link.h"
 #include "System.h"
+#include "Precipitation.h"
 
 
 Quan::Quan()
@@ -40,6 +41,8 @@ Quan::Quan(Json::ValueIterator &it)
         SetType(Quan::_type::global_quan);
     if ((*it)["type"].asString()=="timeseries")
         SetType(Quan::_type::timeseries);
+	if ((*it)["type"].asString() == "timeseries_prec")
+		SetType(Quan::_type::prec_timeseries);
     if ((*it)["type"].asString()=="source")
         SetType(Quan::_type::source);
     if ((*it)["type"].asString()=="value")
@@ -230,7 +233,7 @@ double Quan::CalcVal(const Expression::timing &tmg)
     if (type == _type::rule)
         return _rule.calc(parent,tmg);
 
-    if (type == _type::timeseries)
+    if (type == _type::timeseries || type == _type::prec_timeseries)
     {
         if (_timeseries.n>0)
             return _timeseries.interpol(parent->GetParent()->GetTime());
@@ -398,16 +401,34 @@ CTimeSeries* Quan::TimeSeries()
         return nullptr;
 }
 
-bool Quan::SetTimeSeries(const string &filename)
+bool Quan::SetTimeSeries(const string &filename, bool prec)
 {
-	_timeseries.readfile(filename);
-	if (_timeseries.file_not_found)
+	if (!prec)
 	{
-		AppendError(GetName(),"Quan", "SetTimeSeries", filename + " was not found!", 3001);
-		return false;
+		_timeseries.readfile(filename);
+		if (_timeseries.file_not_found)
+		{
+			AppendError(GetName(), "Quan", "SetTimeSeries", filename + " was not found!", 3001);
+			return false;
+		}
+		else
+			return true;
 	}
 	else
-		return true;
+	{
+		CPrecipitation Prec;
+		if (!Prec.isFileValid(filename))
+		{
+			AppendError(GetName(), "Quan", "SetTimeSeries", filename + " was not is not a valid precipitation file", 3023);
+			return false;
+		}
+		else
+		{
+			Prec.getfromfile(filename);
+			_timeseries = Prec.getflow(1).BTC[0];
+			return true;
+		}
+	}
 }
 
 bool Quan::SetSource(const string &sourcename)
@@ -437,6 +458,13 @@ bool Quan::SetProperty(const string &val)
         else
             return SetTimeSeries(val);
     }
+	if (type == _type::prec_timeseries)
+	{
+		if (parent->Parent()->InputPath() != "")
+			return SetTimeSeries(parent->Parent()->InputPath() + val,true);
+		else
+			return SetTimeSeries(val,true);
+	}
     else if (type == _type::source)
     {
         return SetSource(val);

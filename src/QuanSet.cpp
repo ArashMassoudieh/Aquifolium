@@ -32,7 +32,7 @@ QuanSet::QuanSet(Json::ValueIterator& object_types)
         }
         else
         {
-            cout<<it.key().asString()<<endl;
+            //cout<<it.key().asString()<<endl;
             Quan Q(it);
             Append(it.key().asString(),Q);
         }
