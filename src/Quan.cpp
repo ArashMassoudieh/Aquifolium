@@ -103,7 +103,7 @@ Quan::Quan(Json::ValueIterator &it)
         InputType() = (*it)["inputtype"].asString();
 
     if (it->isMember("ask_user"))
-    {    if (tolower((*it)["ask_user"].asString())=="true")
+    {    if (aquiutils::tolower((*it)["ask_user"].asString())=="true")
             AskFromUser() = true;
     }
     else
@@ -323,40 +323,40 @@ Source* Quan::GetSource()
 
 string Quan::ToString(int _tabs)
 {
-    string out = tabs(_tabs) + _var_name + ":\n";
-    out += tabs(_tabs) + "{\n";
+    string out = aquiutils::tabs(_tabs) + _var_name + ":\n";
+    out += aquiutils::tabs(_tabs) + "{\n";
     if (type==_type::constant)
-        out += tabs(_tabs+1) + "type: constant\n";
+        out += aquiutils::tabs(_tabs+1) + "type: constant\n";
     if (type==_type::balance)
-        out += tabs(_tabs+1) + "type: balance\n";
+        out += aquiutils::tabs(_tabs+1) + "type: balance\n";
     if (type==_type::expression)
-        out += tabs(_tabs+1) + "type: expression\n";
+        out += aquiutils::tabs(_tabs+1) + "type: expression\n";
     if (type==_type::constant)
-        out += tabs(_tabs+1) + "type: constant\n";
+        out += aquiutils::tabs(_tabs+1) + "type: constant\n";
     if (type==_type::global_quan)
-        out += tabs(_tabs+1) + "type: global_quantity\n";
+        out += aquiutils::tabs(_tabs+1) + "type: global_quantity\n";
     if (type==_type::timeseries)
-        out += tabs(_tabs+1) + "type: time_series\n";
+        out += aquiutils::tabs(_tabs+1) + "type: time_series\n";
     if (type==_type::value)
-        out += tabs(_tabs+1) + "type: value\n";
+        out += aquiutils::tabs(_tabs+1) + "type: value\n";
 
     if (type==_type::expression)
-        out += tabs(_tabs+1) + "expression: " + _expression.ToString() + "\n";
+        out += aquiutils::tabs(_tabs+1) + "expression: " + _expression.ToString() + "\n";
 
     if (type==_type::rule)
-        out += tabs(_tabs+1) + "rule: " + _rule.ToString(_tabs) + "\n";
+        out += aquiutils::tabs(_tabs+1) + "rule: " + _rule.ToString(_tabs) + "\n";
 
     if (type==_type::source)
-        out += tabs(_tabs+1) + "source: " + source->GetName() + "\n";
+        out += aquiutils::tabs(_tabs+1) + "source: " + source->GetName() + "\n";
 
 
-    out += tabs(_tabs+1) + "val: ";
-    out +=  numbertostring(_val);
+    out += aquiutils::tabs(_tabs+1) + "val: ";
+    out += aquiutils::numbertostring(_val);
     out += string("\n");
-    out += tabs(_tabs+1) + "val*:";
-    out += numbertostring(_val_star);
+    out += aquiutils::tabs(_tabs+1) + "val*:";
+    out += aquiutils::numbertostring(_val_star);
     out += string("\n");
-    out += tabs(_tabs) + "}";
+    out += aquiutils::tabs(_tabs) + "}";
     return out;
 }
 
@@ -450,7 +450,7 @@ bool Quan::SetSource(const string &sourcename)
 bool Quan::SetProperty(const string &val)
 {
     if (type == _type::balance || type== _type::constant || type==_type::global_quan || type==_type::value)
-        return SetVal(atof(val),Expression::timing::both);
+        return SetVal(aquiutils::atof(val),Expression::timing::both);
     if (type == _type::timeseries)
     {
         if (parent->Parent()->InputPath() != "")

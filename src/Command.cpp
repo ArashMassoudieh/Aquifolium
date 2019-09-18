@@ -19,7 +19,7 @@ Command::~Command()
 Command::Command(const string &s, Script *parnt)
 {
     parent = parnt;
-    vector<string> firstlevelbreakup = split(s,';');
+    vector<string> firstlevelbreakup = aquiutils::split(s,';');
     {
         if (firstlevelbreakup.size()==0)
         {
@@ -28,8 +28,8 @@ Command::Command(const string &s, Script *parnt)
             return;
         }
     }
-    vector<string> maincommand = split(firstlevelbreakup[0],' ');
-    if (tolower(maincommand[0])=="loadtemplate" || tolower(maincommand[0])=="setasparameter" || tolower(maincommand[0])=="setvalue" || tolower(maincommand[0])=="solve" || tolower(maincommand[0])=="optimize")
+    vector<string> maincommand = aquiutils::split(firstlevelbreakup[0],' ');
+    if (aquiutils::tolower(maincommand[0])=="loadtemplate" || aquiutils::tolower(maincommand[0])=="setasparameter" || aquiutils::tolower(maincommand[0])=="setvalue" || aquiutils::tolower(maincommand[0])=="solve" || aquiutils::tolower(maincommand[0])=="optimize")
     {
         if (maincommand.size()!=1)
             {
@@ -45,13 +45,13 @@ Command::Command(const string &s, Script *parnt)
         }
     }
 
-    if (tolower(maincommand[0])=="echo")
+    if (aquiutils::tolower(maincommand[0])=="echo")
     {
         keyword = maincommand[0];
         validated = true;
     }
 
-    if (tolower(maincommand[0])=="create")
+    if (aquiutils::tolower(maincommand[0])=="create")
     {
         if (maincommand.size()!=2)
         {
@@ -61,13 +61,13 @@ Command::Command(const string &s, Script *parnt)
         }
         else
         {
-            keyword = tolower(maincommand[0]);
+            keyword = aquiutils::tolower(maincommand[0]);
             arguments.push_back(maincommand[1]);
             validated = true;
         }
     }
 
-	if (tolower(maincommand[0]) == "write")
+	if (aquiutils::tolower(maincommand[0]) == "write")
 	{
 		if (maincommand.size() != 2)
 		{
@@ -77,7 +77,7 @@ Command::Command(const string &s, Script *parnt)
 		}
 		else
 		{
-			keyword = tolower(maincommand[0]);
+			keyword = aquiutils::tolower(maincommand[0]);
 			arguments.push_back(maincommand[1]);
 			validated = true;
 		}
@@ -86,10 +86,10 @@ Command::Command(const string &s, Script *parnt)
 
     for (int i=1; i<firstlevelbreakup.size(); i++)
     {
-        vector<string> properties = split(firstlevelbreakup[i],',');
+        vector<string> properties = aquiutils::split(firstlevelbreakup[i],',');
         for (int j=0; j<properties.size(); j++)
         {
-            vector<string> prop = split(properties[j],'=');
+            vector<string> prop = aquiutils::split(properties[j],'=');
             if (prop.size()<2)
             {
                 last_error = "Property '" + prop[0] + "' does not have a right hand side!";
@@ -157,7 +157,7 @@ bool Command::Execute(System *_sys)
     }
     else
         sys = _sys;
-    if (tolower(keyword) == "loadtemplate")
+    if (aquiutils::tolower(keyword) == "loadtemplate")
     {
         if (Validate())
         {
@@ -172,7 +172,7 @@ bool Command::Execute(System *_sys)
             return false;
     }
 
-	if (tolower(keyword) == "write")
+	if (aquiutils::tolower(keyword) == "write")
 	{
 		if (arguments.size()==0)
 		{
@@ -206,7 +206,7 @@ bool Command::Execute(System *_sys)
 
     }
 
-    if (tolower(keyword) == "echo")
+    if (aquiutils::tolower(keyword) == "echo")
     {
 
         if (arguments.size())
@@ -264,7 +264,7 @@ bool Command::Execute(System *_sys)
             return false;
     }
 
-    if (tolower(keyword)=="solve")
+    if (aquiutils::tolower(keyword)=="solve")
     {
         if (Validate())
         {
@@ -286,7 +286,7 @@ bool Command::Execute(System *_sys)
         else return false;
     }
 
-    if (tolower(keyword)=="optimize")
+    if (aquiutils::tolower(keyword)=="optimize")
     {
         if (Validate())
         {
@@ -298,7 +298,7 @@ bool Command::Execute(System *_sys)
     }
 
 
-    if (tolower(keyword)=="initializeoptimizer")
+    if (aquiutils::tolower(keyword)=="initializeoptimizer")
     {
         if (Validate())
         {
@@ -319,7 +319,7 @@ bool Command::Execute(System *_sys)
         else return false;
     }
 
-    if (tolower(keyword)=="setvalue")
+    if (aquiutils::tolower(keyword)=="setvalue")
     {
         if (assignments.count("object")==0)
         {
@@ -336,12 +336,12 @@ bool Command::Execute(System *_sys)
             sys->errorhandler.Append("", "Command", "Execute", "In the 'setvalue' command, 'value' must be indicated",7012);
             return false;
         }
-        if (tolower(assignments["object"])=="system")
+        if (aquiutils::tolower(assignments["object"])=="system")
         {
             return sys->SetProperty(assignments["quantity"],assignments["value"]);
         }
 
-        if (tolower(assignments["object"])=="optimizer")
+        if (aquiutils::tolower(assignments["object"])=="optimizer")
         {
             if (parent->GetGA()==nullptr)
             {
@@ -382,7 +382,7 @@ bool Command::Execute(System *_sys)
         }
     }
 
-    if (tolower(keyword) == "setasparameter")
+    if (aquiutils::tolower(keyword) == "setasparameter")
     {
         if (Validate())
         {
@@ -394,9 +394,9 @@ bool Command::Execute(System *_sys)
     }
 
 
-    if (tolower(keyword)=="create")
+    if (aquiutils::tolower(keyword)=="create")
     {
-        if (tolower(arguments[0])=="block")
+        if (aquiutils::tolower(arguments[0])=="block")
         {
             if (Validate())
             {
@@ -414,7 +414,7 @@ bool Command::Execute(System *_sys)
             else
                 return false;
         }
-        if (tolower(arguments[0])=="link")
+        if (aquiutils::tolower(arguments[0])=="link")
         {
             if (Validate())
             {
@@ -433,13 +433,13 @@ bool Command::Execute(System *_sys)
             else
                 return false;
         }
-        if (tolower(arguments[0])=="parameter")
+        if (aquiutils::tolower(arguments[0])=="parameter")
         {
             if (Validate())
             {
                 Parameter P;
 
-                sys->AppendParameter(assignments["name"],atof(assignments["low"]),atof(assignments["high"]));
+                sys->AppendParameter(assignments["name"], aquiutils::atof(assignments["low"]), aquiutils::atof(assignments["high"]));
                 for (map<string,string>::iterator it=assignments.begin(); it!=assignments.end(); it++)
                 {
                     if (it->first!="name" && it->first!="type" && it->first!="to" && it->first!="from")
@@ -454,7 +454,7 @@ bool Command::Execute(System *_sys)
                 return false;
 
         }
-        if (tolower(arguments[0])=="objectivefunction")
+        if (aquiutils::tolower(arguments[0])=="objectivefunction")
         {
             if (Validate())
             {
@@ -462,7 +462,7 @@ bool Command::Execute(System *_sys)
                 if (assignments.count("weight")==0)
                     succeed = sys->AppendObjectiveFunction(assignments["name"],assignments["object"],Expression(assignments["expression"]));
                 else
-                    succeed = sys->AppendObjectiveFunction(assignments["name"],assignments["object"],Expression(assignments["expression"]),atof(assignments["weight"]));
+                    succeed = sys->AppendObjectiveFunction(assignments["name"],assignments["object"],Expression(assignments["expression"]), aquiutils::atof(assignments["weight"]));
                 for (map<string,string>::iterator it=assignments.begin(); it!=assignments.end(); it++)
                 {
                     if (it->first!="name" && it->first!="object" && it->first!="expression" && it->first!="weight")
@@ -481,7 +481,7 @@ bool Command::Execute(System *_sys)
                 return false;
 
         }
-        if (tolower(arguments[0])=="source")
+        if (aquiutils::tolower(arguments[0])=="source")
         {
             if (Validate())
             {

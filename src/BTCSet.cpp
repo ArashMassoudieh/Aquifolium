@@ -1,7 +1,7 @@
 #include "BTCSet.h"
 #include "string.h"
 #include <fstream>
-#include "StringOP.h"
+#include "Expression.h"
 #include "DistributionNUnif.h"
 #include <iostream>
 #include "Vector.h"
@@ -232,14 +232,14 @@ CTimeSeriesSet::CTimeSeriesSet(string filename, bool varytime)
 	if (varytime == false)
 		while (file.eof() == false)
 		{
-			s = getline(file);
+			s = aquiutils::getline(file);
 			if (s.size())
 			{
-				if (tail(s[0],5) == "names" || tail(s[0], 4) == "name")
+				if (aquiutils::tail(s[0],5) == "names" || aquiutils::tail(s[0], 4) == "name")
 					for (unsigned int i = 1; i < s.size(); i++) names.push_back(s[i]);
-				if (tail(s[0],5) == "units" || tail(s[0], 4) == "unit")
+				if (aquiutils::tail(s[0],5) == "units" || aquiutils::tail(s[0], 4) == "unit")
 					for (unsigned int i = 1; i < s.size(); i++) units.push_back(s[i]);
-				if ((s[0].substr(0, 2) != "//") && (tail(s[0],5) != "names") && (tail(s[0],5) != "units"))
+				if ((s[0].substr(0, 2) != "//") && (aquiutils::tail(s[0],5) != "names") && (aquiutils::tail(s[0],5) != "units"))
 				{
 					if (nvars == 0) { nvars = s.size() - 1; BTC.resize(nvars); }
 					if (int(s.size()) == nvars + 1)
@@ -260,21 +260,21 @@ CTimeSeriesSet::CTimeSeriesSet(string filename, bool varytime)
 	else
 		while (file.eof() == false)
 		{
-			s = getline(file);
+			s = aquiutils::getline(file);
 			if (s.size() > 0)
 			{
-				if (tail(s[0],5) == "names" || tail(s[0], 4) == "name")
-					for (unsigned int i = 1; i < s.size(); i++) if (trim(s[i])!="") names.push_back(s[i]);
-				if (tail(s[0],5) == "units" || tail(s[0], 4) == "unit")
+				if (aquiutils::tail(s[0],5) == "names" || aquiutils::tail(s[0], 4) == "name")
+					for (unsigned int i = 1; i < s.size(); i++) if (aquiutils::trim(s[i])!="") names.push_back(s[i]);
+				if (aquiutils::tail(s[0],5) == "units" || aquiutils::tail(s[0], 4) == "unit")
 					for (unsigned int i = 1; i < s.size(); i++) units.push_back(s[i]);
-				if ((s[0].substr(0, 2) != "//") && (tail(s[0],5) != "names") && (tail(s[0],5) != "units"))
+				if ((s[0].substr(0, 2) != "//") && (aquiutils::tail(s[0],5) != "names") && (aquiutils::tail(s[0],5) != "units"))
 				{
 					if (nvars == 0) { nvars = s.size() / 2; BTC.resize(nvars); }
 
 					for (int i = 0; i < nvars; i++)
 					{
 						if (int(s.size()) >= 2 * (i + 1))
-							if ((trim(s[2 * i]) != "") && (trim(s[2 * i + 1]) != ""))
+							if ((aquiutils::trim(s[2 * i]) != "") && (aquiutils::trim(s[2 * i + 1]) != ""))
 							{
 								BTC[i].t.push_back(atof(s[2 * i].c_str()));
 								BTC[i].C.push_back(atof(s[2 * i + 1].c_str()));
@@ -307,7 +307,7 @@ CTimeSeriesSet::CTimeSeriesSet(string filename, bool varytime)
 	if (nvars > 1)
 		for (int i = 0; i < nvars; i++)
 			if (names[i] == "")
-				names[i] = "Data (" + numbertostring(i) + ")";
+				names[i] = "Data (" + aquiutils::numbertostring(i) + ")";
 }
 
 
@@ -323,7 +323,7 @@ void CTimeSeriesSet::getfromfile(string filename, bool varytime)
 	if (varytime==false)
 		while (file.eof()== false)
 		{
-			s = getline(file);
+			s = aquiutils::getline(file);
 			if (s.size()>0)
 			{
 				if (s[0] == "names")
@@ -350,7 +350,7 @@ void CTimeSeriesSet::getfromfile(string filename, bool varytime)
 	else
 		while (file.eof()== false)
 		{
-			s = getline(file);
+			s = aquiutils::getline(file);
 			if (s.size() > 0)
 			{
 				if (s[0] == "names")
@@ -364,7 +364,7 @@ void CTimeSeriesSet::getfromfile(string filename, bool varytime)
 					int n_line = s.size() / 2;
 					for (int i = 0; i < n_line; i++)
 					{
-						if ((trim(s[2 * i]) != "") && (trim(s[2 * i + 1]) != ""))
+						if ((aquiutils::trim(s[2 * i]) != "") && (aquiutils::trim(s[2 * i + 1]) != ""))
 						{
 							BTC[i].t.push_back(atof(s[2 * i].c_str()));
 							BTC[i].C.push_back(atof(s[2 * i + 1].c_str()));
@@ -933,14 +933,14 @@ int CTimeSeriesSet::lookup(string S)
 {
 	int out = -1;
 	for (unsigned int i = 0; i < names.size(); i++)
-		if (tolower(S) == tolower(names[i]))
+		if (aquiutils::tolower(S) == aquiutils::tolower(names[i]))
 		{
 			out = i;
 			return out;
 		}
 
 	for (unsigned int i = 0; i < BTC.size(); i++)
-		if (tolower(S) == tolower(BTC[i].name))
+		if (aquiutils::tolower(S) == aquiutils::tolower(BTC[i].name))
 		{
 			out = i;
 			return out;

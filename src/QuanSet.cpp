@@ -110,18 +110,18 @@ Quan& QuanSet::GetVar(const string &s)
 
 string QuanSet::ToString(int _tabs)
 {
-    string out = tabs(_tabs) + name + ":\n";
-    out += tabs(_tabs) + "{\n";
+    string out = aquiutils::tabs(_tabs) + name + ":\n";
+    out += aquiutils::tabs(_tabs) + "{\n";
     if (BlockLink == blocklink::block)
-        out += tabs(_tabs+1) + "type: block\n";
+        out += aquiutils::tabs(_tabs+1) + "type: block\n";
     else if (BlockLink == blocklink::link)
-        out += tabs(_tabs+1) + "type: link\n";
+        out += aquiutils::tabs(_tabs+1) + "type: link\n";
 
     if (iconfilename!="")
     {
-        out += tabs(_tabs+1) + "icon: {\n";
-        out += tabs(_tabs+2) + "filename: " + iconfilename + "\n";
-        out += tabs(_tabs+1) + "}\n";
+        out += aquiutils::tabs(_tabs+1) + "icon: {\n";
+        out += aquiutils::tabs(_tabs+2) + "filename: " + iconfilename + "\n";
+        out += aquiutils::tabs(_tabs+1) + "}\n";
     }
 
 
@@ -130,7 +130,7 @@ string QuanSet::ToString(int _tabs)
         out += quans[it->first].ToString(_tabs+1) + "\n";
     }
 
-    out += tabs(_tabs) + "}\n";
+    out += aquiutils::tabs(_tabs) + "}\n";
     return out;
 }
 

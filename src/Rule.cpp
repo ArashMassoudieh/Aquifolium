@@ -51,9 +51,9 @@ double Rule::calc(Object *W, const Expression::timing &tmg)
 
 string Rule::ToString(int _tabs)
 {
-    string out = tabs(_tabs) + "{\n";
+    string out = aquiutils::tabs(_tabs) + "{\n";
     for (unsigned int i=0; i<rules.size(); i++)
-        out += tabs(_tabs) + rules[i].condition.ToString(_tabs+1) + ":" + rules[i].result.ToString()+ "\n";
-    out += tabs(_tabs) + "}\n";
+        out += aquiutils::tabs(_tabs) + rules[i].condition.ToString(_tabs+1) + ":" + rules[i].result.ToString()+ "\n";
+    out += aquiutils::tabs(_tabs) + "}\n";
     return out;
 }

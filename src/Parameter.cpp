@@ -36,24 +36,24 @@ Parameter& Parameter::operator=(const Parameter& rhs)
 
 string Parameter::toString(int _tabs)
 {
-    string out = tabs(_tabs) + "Name: " + GetName() + "\n";
-    out += tabs(_tabs) + "low: " + numbertostring(prior_range.low) + "\n";
-    out += tabs(_tabs) + "high: " + numbertostring(prior_range.high) + "\n";
-    out += tabs(_tabs) + "quans: {";
+    string out = aquiutils::tabs(_tabs) + "Name: " + GetName() + "\n";
+    out += aquiutils::tabs(_tabs) + "low: " + aquiutils::numbertostring(prior_range.low) + "\n";
+    out += aquiutils::tabs(_tabs) + "high: " + aquiutils::numbertostring(prior_range.high) + "\n";
+    out += aquiutils::tabs(_tabs) + "quans: {";
 
     for (int i=0; i<_quan.size(); i++ ) { out +=  _quan[i]; if (i<_quan.size()-1) out += ","; }
     out += "}\n";
-    out += tabs(_tabs) + "locations: {";
+    out += aquiutils::tabs(_tabs) + "locations: {";
     for (int i=0; i<_location.size(); i++ ) { out +=  _location[i]; if (i<_location.size()-1) out += ","; }
     out += "}\n";
-    out += tabs(_tabs) + "prior distribution: " + prior_distribution + "\n";
-    out += tabs(_tabs) + "value: " + numbertostring(value) + "\n";
+    out += aquiutils::tabs(_tabs) + "prior distribution: " + prior_distribution + "\n";
+    out += aquiutils::tabs(_tabs) + "value: " + aquiutils::numbertostring(value) + "\n";
     return out;
 }
 
 bool Parameter::HasQuantity(const string &qntty)
 {
-    if (tolower(qntty)!="location" && tolower(qntty)!="quan" && tolower(qntty)!="range" && tolower(qntty)!="low" && tolower(qntty)!="prior_distribution" && tolower(qntty)!="name" && tolower(qntty)!="value")
+    if (aquiutils::tolower(qntty)!="location" && aquiutils::tolower(qntty)!="quan" && aquiutils::tolower(qntty)!="range" && aquiutils::tolower(qntty)!="low" && aquiutils::tolower(qntty)!="prior_distribution" && aquiutils::tolower(qntty)!="name" && aquiutils::tolower(qntty)!="value")
         return false;
     else
         return true;
@@ -61,7 +61,7 @@ bool Parameter::HasQuantity(const string &qntty)
 
 string Parameter::Variable(const string &qntty)
 {
-    if (tolower(qntty)=="location")
+    if (aquiutils::tolower(qntty)=="location")
     {
         string out;
         out += "{";
@@ -69,15 +69,15 @@ string Parameter::Variable(const string &qntty)
         out += "}";
         return out;
     }
-    if (tolower(qntty)=="name")
+    if (aquiutils::tolower(qntty)=="name")
         return GetName();
 
-    if (tolower(qntty)=="low")
-        return numbertostring(prior_range.low);
-    if (tolower(qntty)=="high")
-        return numbertostring(prior_range.high);
+    if (aquiutils::tolower(qntty)=="low")
+        return aquiutils::numbertostring(prior_range.low);
+    if (aquiutils::tolower(qntty)=="high")
+        return aquiutils::numbertostring(prior_range.high);
 
-    if (tolower(qntty)=="quan")
+    if (aquiutils::tolower(qntty)=="quan")
     {
         string out;
         out += "{";
@@ -86,14 +86,14 @@ string Parameter::Variable(const string &qntty)
         return out;
     }
 
-    if (tolower(qntty)=="prior_distribution")
+    if (aquiutils::tolower(qntty)=="prior_distribution")
         return prior_distribution;
 
-    if (tolower(qntty)=="value")
-        return numbertostring(value);
+    if (aquiutils::tolower(qntty)=="value")
+        return aquiutils::numbertostring(value);
 
-    if (tolower(qntty)=="range")
-        return "{" + numbertostring(prior_range.low) +"," + numbertostring(prior_range.high) + "}";
+    if (aquiutils::tolower(qntty)=="range")
+        return "{" + aquiutils::numbertostring(prior_range.low) +"," + aquiutils::numbertostring(prior_range.high) + "}";
 
     return "";
 }

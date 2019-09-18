@@ -4,7 +4,7 @@
 #include <fstream>
 #include <string>
 #include "BTC.h"
-#include "StringOP.h"
+#include "Expression.h"
 
 using namespace std;
 
@@ -77,7 +77,7 @@ CPrecipitation::CPrecipitation(string filename)
 	s.clear(); e.clear(); i.clear();
 
 	while (fil.eof()==false)
-	{	ss = getline(fil);
+	{	ss = aquiutils::getline(fil);
 
 		if (ss.size()>=3)
 			if (ss[0].substr(0, 2) != "//")
@@ -103,7 +103,7 @@ bool CPrecipitation::isFileValid(string filename)
 
 	while (fil.eof() == false)
 	{
-		ss = getline(fil);
+		ss = aquiutils::getline(fil);
 
 		if (ss.size() >= 3)
 			if (ss[0].substr(0, 2) != "//")
@@ -134,7 +134,7 @@ void CPrecipitation::getfromfile(string filename)
 	s.clear(); e.clear(); i.clear();
 	n=0;
 	while (fil.eof()==false)
-	{	ss = getline(fil);
+	{	ss = aquiutils::getline(fil);
 		if (ss.size()>=3)
 		{	s.push_back(atof(ss[0].c_str()));
 			e.push_back(atof(ss[1].c_str()));

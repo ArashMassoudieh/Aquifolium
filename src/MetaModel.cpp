@@ -106,8 +106,8 @@ void MetaModel::Clear()
 
 string MetaModel::ToString(int _tabs)
 {
-    string out = tabs(_tabs) + "root:\n";
-    out += tabs(_tabs) + "{\n";
+    string out = aquiutils::tabs(_tabs) + "root:\n";
+    out += aquiutils::tabs(_tabs) + "{\n";
     for (map<string, QuanSet>::iterator it = metamodel.begin(); it!=metamodel.end(); it++)
         out += metamodel[it->first].ToString(_tabs+1) + "\n";
     out += "}\n";

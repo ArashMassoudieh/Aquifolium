@@ -205,9 +205,13 @@ void System::CopyQuansToMembers()
 
 }
 
-bool System::OneStepSolve()
+vector<bool> System::OneStepSolve()
 {
-	return true;
+	vector<bool> success(solvevariableorder.size());
+	for (int i = 0; i < solvevariableorder.size(); i++)
+		success[i] = OneStepSolve(i);
+
+	return success;
 }
 
 bool System::Solve(const string &variable, bool applyparameters)
@@ -242,24 +246,24 @@ bool System::Solve(const string &variable, bool applyparameters)
         }
         #endif
 
-        bool success = OneStepSolve(variable);
-        if (!success)
+        vector<bool> success = OneStepSolve();
+		if (!aquiutils::And(success))
         {
             #ifdef Debug_mode
             ShowMessage("failed!");
             #endif // Debug_mode
             SolverTempVars.dt_base *= SolverSettings.NR_timestep_reduction_factor_fail;
-            SolverTempVars.updatejacobian = true;
+            SolverTempVars.SetUpdateJacobian(true);
         }
         else
         {
             SolverTempVars.t += SolverTempVars.dt;
-            if (SolverTempVars.numiterations>SolverSettings.NR_niteration_upper)
+            if (SolverTempVars.MaxNumberOfIterations()>SolverSettings.NR_niteration_upper)
             {
                 SolverTempVars.dt_base = max(SolverTempVars.dt*SolverSettings.NR_timestep_reduction_factor,SolverSettings.minimum_timestep);
-                SolverTempVars.updatejacobian = true;
+                SolverTempVars.SetUpdateJacobian(true);
             }
-            if (SolverTempVars.numiterations<SolverSettings.NR_niteration_lower)
+            if (SolverTempVars.MaxNumberOfIterations()<SolverSettings.NR_niteration_lower)
                 SolverTempVars.dt_base = min(SolverTempVars.dt_base/SolverSettings.NR_timestep_reduction_factor,SimulationParameters.dt0*10);
             PopulateOutputs();
             Update(variable);
@@ -358,35 +362,35 @@ bool System::SetProp(const string &s, const double &val)
 bool System::SetProperty(const string &s, const string &val)
 {
     if (s=="cn_weight")
-    {   SolverSettings.C_N_weight = atof(val); return true;}
+    {   SolverSettings.C_N_weight = aquiutils::atof(val); return true;}
     if (s=="nr_tolerance")
-    {   SolverSettings.NRtolerance = atof(val); return true;}
+    {   SolverSettings.NRtolerance = aquiutils::atof(val); return true;}
     if (s=="nr_coeff_reduction_factor")
-    {   SolverSettings.NR_coeff_reduction_factor = atof(val); return true;}
+    {   SolverSettings.NR_coeff_reduction_factor = aquiutils::atof(val); return true;}
     if (s=="nr_timestep_reduction_factor")
-    {   SolverSettings.NR_timestep_reduction_factor = atof(val); return true;}
+    {   SolverSettings.NR_timestep_reduction_factor = aquiutils::atof(val); return true;}
     if (s=="nr_timestep_reduction_factor_fail")
-    {   SolverSettings.NR_timestep_reduction_factor_fail = atof(val); return true;}
+    {   SolverSettings.NR_timestep_reduction_factor_fail = aquiutils::atof(val); return true;}
     if (s=="minimum_timestep")
-    {   SolverSettings.minimum_timestep = atof(val); return true;}
+    {   SolverSettings.minimum_timestep = aquiutils::atof(val); return true;}
     if (s=="nr_niteration_lower")
-    {   SolverSettings.NR_niteration_lower=atoi(val); return true;}
+    {   SolverSettings.NR_niteration_lower= aquiutils::atoi(val); return true;}
     if (s=="nr_niteration_upper")
-    {   SolverSettings.NR_niteration_upper=atoi(val); return true;}
+    {   SolverSettings.NR_niteration_upper= aquiutils::atoi(val); return true;}
     if (s=="nr_niteration_max")
-    {   SolverSettings.NR_niteration_max=atoi(val); return true;}
+    {   SolverSettings.NR_niteration_max= aquiutils::atoi(val); return true;}
     if (s=="make_results_uniform")
-    {   SolverSettings.makeresultsuniform = atoi(val); return true;}
+    {   SolverSettings.makeresultsuniform = aquiutils::atoi(val); return true;}
 
     if (s=="tstart")
-    {   SimulationParameters.tstart = atof(val); return true;}
+    {   SimulationParameters.tstart = aquiutils::atof(val); return true;}
     if (s=="tend")
-    {   SimulationParameters.tend = atof(val); return true;}
+    {   SimulationParameters.tend = aquiutils::atof(val); return true;}
     if (s=="dt")
-    {   SimulationParameters.dt0 = atof(val); return true;}
+    {   SimulationParameters.dt0 = aquiutils::atof(val); return true;}
     if (s=="silent")
     {
-        SetSilent(atoi(val)); return true;
+        SetSilent(aquiutils::atoi(val)); return true;
     }
     if (s=="inputpath")
     {
@@ -453,8 +457,9 @@ void System::PopulateOutputs()
 }
 
 
-bool System::OneStepSolve(const string &variable)
+bool System::OneStepSolve(int i)
 {
+	string variable = solvevariableorder[i];
 	Renew(variable);
 
     CVector_arma X = GetStateVariables(variable, Expression::timing::past);
@@ -464,21 +469,21 @@ bool System::OneStepSolve(const string &variable)
     double err_ini = F.norm2();
     double err;
     double err_p = err = err_ini;
-    SolverTempVars.numiterations = 0;
+    SolverTempVars.numiterations[i] = 0;
     bool switchvartonegpos = true;
     int attempts = 0;
     while (attempts<2 && switchvartonegpos)
     {
         while (err/err_ini>SolverSettings.NRtolerance && err>1e-12)
         {
-            SolverTempVars.numiterations++;
-            if (SolverTempVars.updatejacobian)
+            SolverTempVars.numiterations[i]++;
+            if (SolverTempVars.updatejacobian[i])
             {
-                SolverTempVars.Inverse_Jacobian = Invert(Jacobian(variable,X));
-                SolverTempVars.updatejacobian = false;
-                SolverTempVars.NR_coefficient = 1;
+                SolverTempVars.Inverse_Jacobian[i] = Invert(Jacobian(variable,X));
+                SolverTempVars.updatejacobian[i] = false;
+                SolverTempVars.NR_coefficient[i] = 1;
             }
-            X = X - SolverTempVars.NR_coefficient*SolverTempVars.Inverse_Jacobian*F;
+            X = X - SolverTempVars.NR_coefficient[i]*SolverTempVars.Inverse_Jacobian[i]*F;
             F = GetResiduals(variable, X);
             err_p = err;
             err = F.norm2();
@@ -486,10 +491,10 @@ bool System::OneStepSolve(const string &variable)
             //ShowMessage(numbertostring(err));
             #endif // Debug_mode
             if (err>err_p)
-                SolverTempVars.NR_coefficient*=SolverSettings.NR_coeff_reduction_factor;
+                SolverTempVars.NR_coefficient[i]*=SolverSettings.NR_coeff_reduction_factor;
             //else
             //    SolverTempVars.NR_coefficient/=SolverSettings.NR_coeff_reduction_factor;
-            if (SolverTempVars.numiterations>SolverSettings.NR_niteration_max)
+            if (SolverTempVars.numiterations[i]>SolverSettings.NR_niteration_max)
                 return false;
         }
         switchvartonegpos = false;
@@ -499,13 +504,13 @@ bool System::OneStepSolve(const string &variable)
             {
                 blocks[i].SetLimitedOutflow(true);
                 switchvartonegpos = true;
-                SolverTempVars.updatejacobian = true;
+                SolverTempVars.updatejacobian[i] = true;
             }
             else if (X[i]>1 && blocks[i].GetLimitedOutflow())
             {
                 blocks[i].SetLimitedOutflow(false);
                 switchvartonegpos = true;
-                SolverTempVars.updatejacobian = true;
+                SolverTempVars.updatejacobian[i] = true;
             }
         }
     }
@@ -707,6 +712,7 @@ void System::clear()
 void System::TransferQuantitiesFromMetaModel()
 {
     solvevariableorder = metamodel.solvevariableorder;
+	SetNumberOfStateVariables(solvevariableorder.size()); // The size of the SolutionTemporaryVariables are adjusted based on the number of state variables. 
     vector<string> out;
     for (map<string, QuanSet>::iterator it = metamodel.GetMetaModel()->begin(); it != metamodel.GetMetaModel()->end(); it++)
         GetVars()->Append(it->second);
@@ -1023,11 +1029,11 @@ bool System::Echo(const string &obj, const string &quant, const string &feature)
             }
             if (feature == "")
                 cout<<object(obj)->Variable(quant)->ToString()<<endl;
-            else if (tolower(feature) == "value")
+            else if (aquiutils::tolower(feature) == "value")
                 cout<<object(obj)->Variable(quant)->GetVal();
-            else if (tolower(feature) == "rule")
+            else if (aquiutils::tolower(feature) == "rule")
                 cout<<object(obj)->Variable(quant)->GetRule()->ToString();
-            else if (tolower(feature) == "type")
+            else if (aquiutils::tolower(feature) == "type")
                 cout<<tostring(object(obj)->Variable(quant)->GetType());
             else
             {

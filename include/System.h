@@ -40,12 +40,22 @@ struct outputs
 
 struct solvertemporaryvars
 {
-    CMatrix_arma Inverse_Jacobian;
-    double NR_coefficient = 1;
-    bool updatejacobian = true;
-    int numiterations;
-    int epoch_count=0;
-    string fail_reason;
+    vector<CMatrix_arma> Inverse_Jacobian;
+    vector<double> NR_coefficient;
+    vector<bool> updatejacobian;
+	int MaxNumberOfIterations()
+	{
+		return aquiutils::max(numiterations);
+	}
+
+	void SetUpdateJacobian(bool x)
+	{
+		for (int i = 0; i < updatejacobian.size(); i++)
+			updatejacobian[i] = x;
+	};
+    vector<int> numiterations;
+    int epoch_count;
+    vector<string> fail_reason;
     double t;
     double dt;
     double dt_base;
@@ -94,7 +104,7 @@ class System: public Object
         double &dt() {return SolverTempVars.dt;}
         double &tend() {return SimulationParameters.tend;}
         double &tstart() {return SimulationParameters.tstart;}
-        bool OneStepSolve(const string &s);
+        bool OneStepSolve(int i);
 		bool Renew(const string &variable);
 		bool Update(const string &variable);
 		bool Solve(const string &variable, bool ApplyParams = false);
@@ -155,7 +165,7 @@ class System: public Object
         CVector_arma GetStateVariables(const string &variable, const Expression::timing &tmg = Expression::timing::past);
         solversettings SolverSettings;
         simulationparameters SimulationParameters;
-        bool OneStepSolve();
+        vector<bool> OneStepSolve();
         CMatrix_arma Jacobian(const string &variale, CVector_arma &X);
         CVector_arma Jacobian(const string &variable, CVector_arma &V, CVector_arma &F0, int i);  //Works also w/o reference (&)
         bool CalculateFlows(const string &var, const Expression::timing &tmg = Expression::timing::present);
@@ -170,6 +180,14 @@ class System: public Object
         bool silent;
         _directories paths;
         vector<CTimeSeries*> alltimeseries;
+		void SetNumberOfStateVariables(int n) 
+		{
+			SolverTempVars.fail_reason.resize(n);
+			SolverTempVars.Inverse_Jacobian.resize(n);
+			SolverTempVars.NR_coefficient.resize(n);
+			SolverTempVars.numiterations.resize(n);
+			SolverTempVars.updatejacobian.resize(n);
+		}
 
 #ifdef QT_version
         GraphWidget *diagramview;
