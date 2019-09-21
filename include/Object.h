@@ -26,6 +26,7 @@ class Object
         double GetProperty(const string&);
         System *GetParent() const {return parent;}
         string GetName() const;
+        void SetDefaults();
         bool SetName(const string &_name);
         Object* GetConnectedBlock(Expression::loc l);
         void SetConnectedBlock(Expression::loc l, const string &blockname);
@@ -41,6 +42,7 @@ class Object
         void Set_e_Block(Object *O) { e_Block = O; }
 		bool Renew(const string &variable);
 		bool Update(const string &variable);
+		vector<CTimeSeries*> TimeSeries() {return var.TimeSeries();}
 		QuanSet* GetVars()
             {
                 return &var;

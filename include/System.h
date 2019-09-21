@@ -3,6 +3,7 @@
 #include "Block.h"
 #include "Link.h"
 #include "Object.h"
+#include "Source.h"
 #include "Vector_arma.h"
 #include "Matrix_arma.h"
 #include "MetaModel.h"
@@ -39,14 +40,25 @@ struct outputs
 
 struct solvertemporaryvars
 {
-    CMatrix_arma Inverse_Jacobian;
-    double NR_coefficient = 1;
-    bool updatejacobian = true;
-    int numiterations;
-    int epoch_count=0;
-    string fail_reason;
+    vector<CMatrix_arma> Inverse_Jacobian;
+    vector<double> NR_coefficient;
+    vector<bool> updatejacobian;
+	int MaxNumberOfIterations()
+	{
+		return aquiutils::max(numiterations);
+	}
+
+	void SetUpdateJacobian(bool x)
+	{
+		for (int i = 0; i < updatejacobian.size(); i++)
+			updatejacobian[i] = x;
+	};
+    vector<int> numiterations;
+    int epoch_count;
+    vector<string> fail_reason;
     double t;
     double dt;
+    double dt_base;
 
 
 };
@@ -78,9 +90,11 @@ class System: public Object
         System& operator=(const System& other);
         double &GetTime() {return SolverTempVars.t;}
         bool AddBlock(Block &blk);
+        bool AddSource(Source &src);
         bool AddLink(Link &lnk, const string &source, const string &destination);
         Block *block(const string &s);
         Link *link(const string &s);
+        Source *source(const string &s);
         Parameter *parameter(const string &s);
         Object *object(const string &s);
         int blockid(const string &s);
@@ -90,10 +104,10 @@ class System: public Object
         double &dt() {return SolverTempVars.dt;}
         double &tend() {return SimulationParameters.tend;}
         double &tstart() {return SimulationParameters.tstart;}
-        bool OneStepSolve(const string &s);
+        bool OneStepSolve(int i);
 		bool Renew(const string &variable);
 		bool Update(const string &variable);
-		bool Solve(const string &variable, bool ApplyParams = false);
+		//bool Solve(const string &variable, bool ApplyParams = false);
 		bool Solve(bool ApplyParams = false);
 		bool SetProp(const string &s, const double &val);
 		bool SetProperty(const string &s, const string &val);
@@ -129,6 +143,8 @@ class System: public Object
         bool Echo(const string &object, const string &quantity = "", const string &feature="");
         string InputPath() {return paths.inputpath;}
         string OutputPath() {return paths.outputpath;}
+        vector<CTimeSeries*> TimeSeries();
+        double GetMinimumNextTimeStepSize();
 #ifdef QT_version
         logWindow *LogWindow() {return logwindow;}
         void SetLogWindow(logWindow *lgwnd) {logwindow=lgwnd;}
@@ -141,6 +157,7 @@ class System: public Object
         vector<string> solvevariableorder;
         vector<Block> blocks;
         vector<Link> links;
+        vector<Source> sources;
         string last_error;
         MetaModel metamodel;
         CVector_arma GetResiduals(const string &variable, CVector_arma &X);
@@ -148,7 +165,7 @@ class System: public Object
         CVector_arma GetStateVariables(const string &variable, const Expression::timing &tmg = Expression::timing::past);
         solversettings SolverSettings;
         simulationparameters SimulationParameters;
-        bool OneStepSolve();
+        vector<bool> OneStepSolve();
         CMatrix_arma Jacobian(const string &variale, CVector_arma &X);
         CVector_arma Jacobian(const string &variable, CVector_arma &V, CVector_arma &F0, int i);  //Works also w/o reference (&)
         bool CalculateFlows(const string &var, const Expression::timing &tmg = Expression::timing::present);
@@ -162,6 +179,15 @@ class System: public Object
         Parameter_Set parameter_set;
         bool silent;
         _directories paths;
+        vector<CTimeSeries*> alltimeseries;
+		void SetNumberOfStateVariables(int n) 
+		{
+			SolverTempVars.fail_reason.resize(n);
+			SolverTempVars.Inverse_Jacobian.resize(n);
+			SolverTempVars.NR_coefficient.resize(n);
+			SolverTempVars.numiterations.resize(n);
+			SolverTempVars.updatejacobian.resize(n);
+		}
 
 #ifdef QT_version
         GraphWidget *diagramview;

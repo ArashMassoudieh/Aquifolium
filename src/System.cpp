@@ -45,8 +45,10 @@ System::~System()
 
 System::System(const System& other):Object::Object(other)
 {
-    blocks = other.blocks;
+	SolverTempVars.SetUpdateJacobian(true);
+	blocks = other.blocks;
     links = other.links;
+    sources = other.sources;
     objective_function_set = other.objective_function_set;
     parameter_set = other.parameter_set;
     silent = other.silent;
@@ -61,8 +63,10 @@ System& System::operator=(const System& rhs)
 {
     if (this == &rhs) return *this; // handle self assignment
     Object::operator=(rhs);
-    blocks = rhs.blocks;
+	SolverTempVars.SetUpdateJacobian(true);
+	blocks = rhs.blocks;
     links = rhs.links;
+    sources = rhs.sources;
     silent = rhs.silent;
     objective_function_set = rhs.objective_function_set;
     parameter_set = rhs.parameter_set;
@@ -80,6 +84,15 @@ bool System::AddBlock(Block &blk)
     block(blk.GetName())->SetParent(this);
     block(blk.GetName())->SetQuantities(metamodel, blk.GetType());
     block(blk.GetName())->SetParent(this);
+	return true;
+}
+
+bool System::AddSource(Source &src)
+{
+    sources.push_back(src);
+    source(src.GetName())->SetParent(this);
+    source(src.GetName())->SetQuantities(metamodel, src.GetType());
+    source(src.GetName())->SetParent(this);
 	return true;
 }
 
@@ -134,6 +147,17 @@ Link *System::link(const string &s)
     return nullptr;
 }
 
+Source *System::source(const string &s)
+{
+    for (unsigned int i=0; i<sources.size(); i++)
+        if (sources[i].GetName() == s) return &sources[i];
+
+    //errorhandler.Append(GetName(),"System","link","Link '" + s + "' was not found",104);
+
+    return nullptr;
+}
+
+
 Parameter *System::parameter(const string &s)
 {
     if (Parameters().count(s) == 0)
@@ -152,6 +176,9 @@ Object *System::object(const string &s)
 
     for (unsigned int i=0; i<blocks.size(); i++)
         if (blocks[i].GetName() == s) return &blocks[i];
+
+    for (unsigned int i=0; i<sources.size(); i++)
+        if (sources[i].GetName() == s) return &sources[i];
 
     //errorhandler.Append(GetName(),"System","object","Object '" + s + "' was not found",105);
 
@@ -174,14 +201,22 @@ void System::CopyQuansToMembers()
     for (unsigned int i=0; i<links.size(); i++)
         links[i].SetQuantities(metamodel,blocks[i].GetType());
 
+    for (unsigned int i=0; i<sources.size(); i++)
+        sources[i].SetQuantities(metamodel,sources[i].GetType());
+
+
 }
 
-bool System::OneStepSolve()
+vector<bool> System::OneStepSolve()
 {
-	return true;
+	vector<bool> success(solvevariableorder.size());
+	for (int i = 0; i < solvevariableorder.size(); i++)
+		success[i] = OneStepSolve(i);
+
+	return success;
 }
 
-bool System::Solve(const string &variable, bool applyparameters)
+bool System::Solve(bool applyparameters)
 {
     #ifdef QT_version
     if (LogWindow())
@@ -191,17 +226,25 @@ bool System::Solve(const string &variable, bool applyparameters)
     #else
         ShowMessage("Simulation started!");
     #endif
-    if (applyparameters) ApplyParameters();
+    
+	SolverTempVars.SetUpdateJacobian(true);
+	alltimeseries = TimeSeries();
+	bool success = true;
+		
+	if (applyparameters) ApplyParameters();
     InitiateOutputs();
     PopulateOutputs();
 
-    SolverTempVars.dt = SimulationParameters.dt0;
+    SolverTempVars.dt_base = SimulationParameters.dt0;
+    SolverTempVars.dt = SolverTempVars.dt_base;
     SolverTempVars.t = SimulationParameters.tstart;
 
     while (SolverTempVars.t<SimulationParameters.tend+SolverTempVars.dt)
     {
+        SolverTempVars.dt = min(SolverTempVars.dt_base,GetMinimumNextTimeStepSize());
+        if (SolverTempVars.dt<SimulationParameters.dt0/100) SolverTempVars.dt=SimulationParameters.dt0/100;
         #ifdef Debug_mode
-        ShowMessage(string("t = ") + numbertostring(SolverTempVars.t) + ", dt = " + numbertostring(SolverTempVars.dt) + ", SolverTempVars.numiterations =" + numbertostring(SolverTempVars.numiterations));
+        ShowMessage(string("t = ") + numbertostring(SolverTempVars.t) + ", dt_base = " + numbertostring(SolverTempVars.dt_base) + ", dt = " + numbertostring(SolverTempVars.dt) + ", SolverTempVars.numiterations =" + numbertostring(SolverTempVars.numiterations));
         #endif // Debug_mode
         #ifdef QT_version
         if (rtw)
@@ -209,27 +252,30 @@ bool System::Solve(const string &variable, bool applyparameters)
             updateProgress(false);
         }
         #endif
-        bool success = OneStepSolve(variable);
-        if (!success)
+
+        vector<bool> _success = OneStepSolve();
+		success = aquiutils::And(_success);
+		if (!success)
         {
             #ifdef Debug_mode
             ShowMessage("failed!");
             #endif // Debug_mode
-            SolverTempVars.dt *= SolverSettings.NR_timestep_reduction_factor_fail;
-            SolverTempVars.updatejacobian = true;
+            SolverTempVars.dt_base *= SolverSettings.NR_timestep_reduction_factor_fail;
+            SolverTempVars.SetUpdateJacobian(true);
         }
         else
         {
             SolverTempVars.t += SolverTempVars.dt;
-            if (SolverTempVars.numiterations>SolverSettings.NR_niteration_upper)
+            if (SolverTempVars.MaxNumberOfIterations()>SolverSettings.NR_niteration_upper)
             {
-                SolverTempVars.dt = max(SolverTempVars.dt*SolverSettings.NR_timestep_reduction_factor,SolverSettings.minimum_timestep);
-                SolverTempVars.updatejacobian = true;
+                SolverTempVars.dt_base = max(SolverTempVars.dt*SolverSettings.NR_timestep_reduction_factor,SolverSettings.minimum_timestep);
+                SolverTempVars.SetUpdateJacobian(true);
             }
-            if (SolverTempVars.numiterations<SolverSettings.NR_niteration_lower)
-                SolverTempVars.dt /= SolverSettings.NR_timestep_reduction_factor;
+            if (SolverTempVars.MaxNumberOfIterations()<SolverSettings.NR_niteration_lower)
+                SolverTempVars.dt_base = min(SolverTempVars.dt_base/SolverSettings.NR_timestep_reduction_factor,SimulationParameters.dt0*10);
             PopulateOutputs();
-            Update(variable);
+            for (int i=0; i<solvevariableorder.size(); i++)
+			Update(solvevariableorder[i]);
             UpdateObjectiveFunctions(SolverTempVars.t);
         }
 
@@ -325,35 +371,35 @@ bool System::SetProp(const string &s, const double &val)
 bool System::SetProperty(const string &s, const string &val)
 {
     if (s=="cn_weight")
-    {   SolverSettings.C_N_weight = atof(val); return true;}
+    {   SolverSettings.C_N_weight = aquiutils::atof(val); return true;}
     if (s=="nr_tolerance")
-    {   SolverSettings.NRtolerance = atof(val); return true;}
+    {   SolverSettings.NRtolerance = aquiutils::atof(val); return true;}
     if (s=="nr_coeff_reduction_factor")
-    {   SolverSettings.NR_coeff_reduction_factor = atof(val); return true;}
+    {   SolverSettings.NR_coeff_reduction_factor = aquiutils::atof(val); return true;}
     if (s=="nr_timestep_reduction_factor")
-    {   SolverSettings.NR_timestep_reduction_factor = atof(val); return true;}
+    {   SolverSettings.NR_timestep_reduction_factor = aquiutils::atof(val); return true;}
     if (s=="nr_timestep_reduction_factor_fail")
-    {   SolverSettings.NR_timestep_reduction_factor_fail = atof(val); return true;}
+    {   SolverSettings.NR_timestep_reduction_factor_fail = aquiutils::atof(val); return true;}
     if (s=="minimum_timestep")
-    {   SolverSettings.minimum_timestep = atof(val); return true;}
+    {   SolverSettings.minimum_timestep = aquiutils::atof(val); return true;}
     if (s=="nr_niteration_lower")
-    {   SolverSettings.NR_niteration_lower=atoi(val); return true;}
+    {   SolverSettings.NR_niteration_lower= aquiutils::atoi(val); return true;}
     if (s=="nr_niteration_upper")
-    {   SolverSettings.NR_niteration_upper=atoi(val); return true;}
+    {   SolverSettings.NR_niteration_upper= aquiutils::atoi(val); return true;}
     if (s=="nr_niteration_max")
-    {   SolverSettings.NR_niteration_max=atoi(val); return true;}
+    {   SolverSettings.NR_niteration_max= aquiutils::atoi(val); return true;}
     if (s=="make_results_uniform")
-    {   SolverSettings.makeresultsuniform = atoi(val); return true;}
+    {   SolverSettings.makeresultsuniform = aquiutils::atoi(val); return true;}
 
     if (s=="tstart")
-    {   SimulationParameters.tstart = atof(val); return true;}
+    {   SimulationParameters.tstart = aquiutils::atof(val); return true;}
     if (s=="tend")
-    {   SimulationParameters.tend = atof(val); return true;}
+    {   SimulationParameters.tend = aquiutils::atof(val); return true;}
     if (s=="dt")
-    {   SimulationParameters.dt0 = atof(val); return true;}
+    {   SimulationParameters.dt0 = aquiutils::atof(val); return true;}
     if (s=="silent")
     {
-        SetSilent(atoi(val)); return true;
+        SetSilent(aquiutils::atoi(val)); return true;
     }
     if (s=="inputpath")
     {
@@ -386,6 +432,11 @@ void System::InitiateOutputs()
                 Outputs.AllOutputs.append(CBTC(), links[i].GetName() + "_" + it->first);
     }
 
+    for (map<string, obj_funct_weight>::iterator it=objective_function_set.begin(); it !=objective_function_set.end(); it++)
+    {
+        Outputs.AllOutputs.append(CBTC(), "Obj_" + it->first);
+    }
+
 }
 
 
@@ -407,11 +458,17 @@ void System::PopulateOutputs()
             }
     }
 
+    for (map<string, obj_funct_weight>::iterator it=objective_function_set.begin(); it !=objective_function_set.end(); it++)
+    {
+        Outputs.AllOutputs["Obj_" + it->first].append(SolverTempVars.t,ObjectiveFunction(it->first)->Value());
+    }
+
 }
 
 
-bool System::OneStepSolve(const string &variable)
+bool System::OneStepSolve(int i)
 {
+	string variable = solvevariableorder[i];
 	Renew(variable);
 
     CVector_arma X = GetStateVariables(variable, Expression::timing::past);
@@ -421,32 +478,32 @@ bool System::OneStepSolve(const string &variable)
     double err_ini = F.norm2();
     double err;
     double err_p = err = err_ini;
-    SolverTempVars.numiterations = 0;
+    SolverTempVars.numiterations[i] = 0;
     bool switchvartonegpos = true;
     int attempts = 0;
     while (attempts<2 && switchvartonegpos)
     {
-        while (err/err_ini>SolverSettings.NRtolerance)
+        while (err/err_ini>SolverSettings.NRtolerance && err>1e-12)
         {
-            SolverTempVars.numiterations++;
-            if (SolverTempVars.updatejacobian)
+            SolverTempVars.numiterations[i]++;
+            if (SolverTempVars.updatejacobian[i])
             {
-                SolverTempVars.Inverse_Jacobian = Invert(Jacobian(variable,X));
-                SolverTempVars.updatejacobian = false;
-                SolverTempVars.NR_coefficient = 1;
+                SolverTempVars.Inverse_Jacobian[i] = Invert(Jacobian(variable,X));
+                SolverTempVars.updatejacobian[i] = false;
+                SolverTempVars.NR_coefficient[i] = 1;
             }
-            X = X - SolverTempVars.NR_coefficient*SolverTempVars.Inverse_Jacobian*F;
+            X = X - SolverTempVars.NR_coefficient[i]*SolverTempVars.Inverse_Jacobian[i]*F;
             F = GetResiduals(variable, X);
             err_p = err;
             err = F.norm2();
             #ifdef Debug_mode
-            ShowMessage(numbertostring(err));
+            //ShowMessage(numbertostring(err));
             #endif // Debug_mode
             if (err>err_p)
-                SolverTempVars.NR_coefficient*=SolverSettings.NR_coeff_reduction_factor;
+                SolverTempVars.NR_coefficient[i]*=SolverSettings.NR_coeff_reduction_factor;
             //else
             //    SolverTempVars.NR_coefficient/=SolverSettings.NR_coeff_reduction_factor;
-            if (SolverTempVars.numiterations>SolverSettings.NR_niteration_max)
+            if (SolverTempVars.numiterations[i]>SolverSettings.NR_niteration_max)
                 return false;
         }
         switchvartonegpos = false;
@@ -456,13 +513,13 @@ bool System::OneStepSolve(const string &variable)
             {
                 blocks[i].SetLimitedOutflow(true);
                 switchvartonegpos = true;
-                SolverTempVars.updatejacobian = true;
+                SolverTempVars.updatejacobian[i] = true;
             }
             else if (X[i]>1 && blocks[i].GetLimitedOutflow())
             {
                 blocks[i].SetLimitedOutflow(false);
                 switchvartonegpos = true;
-                SolverTempVars.updatejacobian = true;
+                SolverTempVars.updatejacobian[i] = true;
             }
         }
     }
@@ -618,7 +675,11 @@ void System::SetVariableParents()
 	for (unsigned int i = 0; i < blocks.size(); i++)
 	{
 		blocks[i].SetVariableParents();
+	}
 
+	for (unsigned int i = 0; i < sources.size(); i++)
+	{
+		sources[i].SetVariableParents();
 	}
 }
 
@@ -660,6 +721,7 @@ void System::clear()
 void System::TransferQuantitiesFromMetaModel()
 {
     solvevariableorder = metamodel.solvevariableorder;
+	SetNumberOfStateVariables(solvevariableorder.size()); // The size of the SolutionTemporaryVariables are adjusted based on the number of state variables. 
     vector<string> out;
     for (map<string, QuanSet>::iterator it = metamodel.GetMetaModel()->begin(); it != metamodel.GetMetaModel()->end(); it++)
         GetVars()->Append(it->second);
@@ -904,7 +966,7 @@ bool System::SetParameterValue(const string &paramname, const double &val)
 bool System::SetParameterValue(int i, const double &val)
 {
     GetParameter(Parameters().getKeyAtIndex(i))->SetValue(val);
-	return true; 
+	return true;
 }
 
 bool System::ApplyParameters()
@@ -933,6 +995,9 @@ void System::SetAllParents()
     for (unsigned int i=0; i<blocks.size(); i++)
         blocks[i].SetAllParents();
 
+    for (unsigned int i=0; i<sources.size(); i++)
+        sources[i].SetAllParents();
+
     for (map<string,obj_funct_weight>::iterator it=objective_function_set.begin(); it!=objective_function_set.end(); it++)
         objective_function_set[it->first]->obj_funct.SetSystem(this);
 }
@@ -941,7 +1006,7 @@ bool System::Echo(const string &obj, const string &quant, const string &feature)
 {
     if (object(obj)==nullptr && parameter(obj)==nullptr)
     {
-        errorhandler.Append(GetName(),"System","Echo" ,"Object '" + obj + "' does not exits!", 608);
+        errorhandler.Append(GetName(),"System","Echo" ,"Object or parameter '" + obj + "' does not exits!", 608);
         return false;
     }
     if (quant=="")
@@ -956,6 +1021,11 @@ bool System::Echo(const string &obj, const string &quant, const string &feature)
             cout<<parameter(obj)->toString()<<endl;
             return true;
         }
+        else
+        {
+            errorhandler.Append(GetName(),"System","Echo" ,"Object or parameter '" + obj + "' does not exits!", 608);
+            return false;
+        }
     }
     else
     {
@@ -968,15 +1038,15 @@ bool System::Echo(const string &obj, const string &quant, const string &feature)
             }
             if (feature == "")
                 cout<<object(obj)->Variable(quant)->ToString()<<endl;
-            else if (tolower(feature) == "value")
+            else if (aquiutils::tolower(feature) == "value")
                 cout<<object(obj)->Variable(quant)->GetVal();
-            else if (tolower(feature) == "rule")
+            else if (aquiutils::tolower(feature) == "rule")
                 cout<<object(obj)->Variable(quant)->GetRule()->ToString();
-            else if (tolower(feature) == "type")
+            else if (aquiutils::tolower(feature) == "type")
                 cout<<tostring(object(obj)->Variable(quant)->GetType());
             else
             {
-                errorhandler.Append(GetName(),"System","Echo","Feature '" + feature + "' does not exist!",612);
+                errorhandler.Append(GetName(),"System","Echo","Feature '" + feature + "' is not valid!",612);
                 return false;
             }
             return true;
@@ -999,12 +1069,46 @@ bool System::Echo(const string &obj, const string &quant, const string &feature)
 
 }
 
-bool System::Solve(bool ApplyParams)
+vector<CTimeSeries*> System::TimeSeries()
 {
-    bool success = true;
-    for (unsigned int i=0; i<solvevariableorder.size(); i++)
-        success&=Solve(solvevariableorder[i],ApplyParams);
+    vector<CTimeSeries*> out;
+    for (unsigned int i=0; i<links.size(); i++)
+    {
+        for (int j=0; j<links[i].TimeSeries().size(); j++)
+        {
+            links[i].TimeSeries()[j]->assign_D();
+            out.push_back(links[i].TimeSeries()[j]);
+        }
+    }
 
-    return success;
+    for (unsigned int i=0; i<blocks.size(); i++)
+    {
+        for (int j=0; j<blocks[i].TimeSeries().size(); j++)
+        {
+            blocks[i].TimeSeries()[j]->assign_D();
+            out.push_back(blocks[i].TimeSeries()[j]);
+        }
+    }
+
+    for (unsigned int i=0; i<sources.size(); i++)
+    {
+        for (int j=0; j<sources[i].TimeSeries().size(); j++)
+        {
+            sources[i].TimeSeries()[j]->assign_D();
+            out.push_back(sources[i].TimeSeries()[j]);
+        }
+    }
+
+    return out;
 }
 
+double System::GetMinimumNextTimeStepSize()
+{
+    double x=1e12;
+
+    for (int i=0; i<alltimeseries.size(); i++)
+    {
+        x = min(x,alltimeseries[i]->interpol_D(this->SolverTempVars.t));
+    }
+    return x;
+}

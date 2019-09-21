@@ -1,6 +1,4 @@
 #include "Expression.h"
-
-#include "Expression.h"
 //#include "utility_funcs.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -59,43 +57,43 @@ Expression::Expression(string S)
 	//bool inside_quote = false;
 	unsigned int paranthesis_level = 0;
 	unsigned int last_operator_location = -1;
-	if (!parantheses_balance(S))
+	if (!aquiutils::parantheses_balance(S))
 	{
 		_errors.push_back("Parentheses do not match in" + S);
 		return;
 	}
-	if (lookup(funcs,left(S,4))!=-1)
+	if (aquiutils::lookup(funcs, aquiutils::left(S,4))!=-1)
 	{
-		function = right(left(S,4),3);
-		S = right(S, S.size() - 4);
+		function = aquiutils::right(aquiutils::left(S,4),3);
+		S = aquiutils::right(S, S.size() - 4);
 	}
-	if (left(S,1) == "(")
+	if (aquiutils::left(S,1) == "(")
 	{
-		if (corresponding_parenthesis(S,0) == -1 )
+		if (aquiutils::corresponding_parenthesis(S,0) == -1 )
 		{
 			_errors.push_back("Parentheses do not match in" + S);
 		}
-		else if (corresponding_parenthesis(S,0) == int(S.size()-1))
+		else if (aquiutils::corresponding_parenthesis(S,0) == int(S.size()-1))
 		{
-			remove(S,0);
-			remove(S,S.size() - 1);
+			aquiutils::remove(S,0);
+			aquiutils::remove(S,S.size() - 1);
 			//if (opts.contains(S.left(1)))
 			//	terms.append(CExpression("0"));
-			if (lookup(funcs,left(S,4))!=-1)
+			if (aquiutils::lookup(funcs, aquiutils::left(S,4))!=-1)
 			{
-				function = right(left(S,4),3);
+				function = aquiutils::right(aquiutils::left(S,4),3);
 			}
 
 		}
 	}
-	if (isnumber(S))
+	if (aquiutils::isnumber(S))
 	{
 		param_constant_expression = "constant";
-		constant = atof(S);
+		constant = aquiutils::atof(S);
 	}
 	else
 	{
-		if (contains(S,"(") || contains(S,")") || contains(S,"+") || contains(S,"-") || contains(S,"*") || contains(S,"/") || contains(S,"^") || contains(S,";"))
+		if (aquiutils::contains(S,"(") || aquiutils::contains(S,")") || aquiutils::contains(S,"+") || aquiutils::contains(S,"-") || aquiutils::contains(S,"*") || aquiutils::contains(S,"/") || aquiutils::contains(S,"^") || aquiutils::contains(S,";"))
 		{
 			param_constant_expression = "expression";
 			for (unsigned int i = 0; i < S.size(); i++)
@@ -110,7 +108,7 @@ Expression::Expression(string S)
 					if ((S.substr(i, 1) == "+") || (S.substr(i, 1) == "-") || (S.substr(i, 1) == "*") || (S.substr(i, 1) == "/") || (S.substr(i, 1) == "^"))
 					{
 						operators.push_back(S.substr(i, 1));
-						Expression sub_exp = Expression(trim(S.substr(last_operator_location+1, i -1- last_operator_location)));
+						Expression sub_exp = Expression(aquiutils::trim(S.substr(last_operator_location+1, i -1- last_operator_location)));
 						if (sub_exp.text != "")
 						{
 							if (operators.size() > 1)
@@ -125,37 +123,37 @@ Expression::Expression(string S)
 							sub_exp.sign = "+";
 							terms.push_back(sub_exp);
 						}
-						push_back(_errors,sub_exp._errors);
+						aquiutils::push_back(_errors,sub_exp._errors);
 						last_operator_location = i;
 					}
 			}
 
-			Expression sub_exp = Expression(trim(S.substr(last_operator_location+1, S.size() - last_operator_location)));
+			Expression sub_exp = Expression(aquiutils::trim(S.substr(last_operator_location+1, S.size() - last_operator_location)));
 			if (operators.size() > 0)
 				sub_exp.sign = operators[operators.size() - 1];
 			else
 				sub_exp.sign = "+";
 			terms.push_back(sub_exp);
-			push_back(_errors,sub_exp._errors);
+			aquiutils::push_back(_errors,sub_exp._errors);
 
 		}
 		else
 		{
 			param_constant_expression = "parameter";
-			if (split(S,'.').size()==1)
+			if (aquiutils::split(S,'.').size()==1)
 			{   parameter = S;
                 location = loc::self;
 			}
-			else if (split(S,'.').size()==2)
+			else if (aquiutils::split(S,'.').size()==2)
             {
-                if (tolower(split(S,'.')[1]) == "s")
+                if (aquiutils::tolower(aquiutils::split(S,'.')[1]) == "s")
                 {
-                    parameter = split(S,'.')[0];
+                    parameter = aquiutils::split(S,'.')[0];
                     location = loc::source;
                 }
-                if (tolower(split(S,'.')[1]) == "e")
+                if (aquiutils::tolower(aquiutils::split(S,'.')[1]) == "e")
                 {
-                    parameter = split(S,'.')[0];
+                    parameter = aquiutils::split(S,'.')[0];
                     location = loc::destination;
                 }
             }
@@ -234,18 +232,18 @@ vector<string> Expression::extract_terms(string s)
 		if (s.substr(i, 1) == "'")
 		{
 			inside_quote = !inside_quote;
-			remove(s, i);
+			aquiutils::remove(s, i);
 		}
 		if (inside_quote)
-			if (s.substr(i, 1) == " ") replace(s, i, 1, "|");
+			if (s.substr(i, 1) == " ") aquiutils::replace(s, i, 1, "|");
 
 	}
-	vector<string> out = split(s,' ');
-	for (unsigned int i = 0; i < out.size(); i++) replace(out[i],"|", " ");
+	vector<string> out = aquiutils::split(s,' ');
+	for (unsigned int i = 0; i < out.size(); i++) aquiutils::replace(out[i],"|", " ");
 	return out;
 }
 
-int lookup(const vector<string> &s, const string &s1)
+int aquiutils::lookup(const vector<string> &s, const string &s1)
 {
     for (unsigned int i=0; i<s.size(); i++)
         if (s[i]==s1)
@@ -253,7 +251,7 @@ int lookup(const vector<string> &s, const string &s1)
     return -1;
 }
 
-int lookup(const vector<int> &s, const int &s1)
+int aquiutils::lookup(const vector<int> &s, const int &s1)
 {
     for (unsigned int i=0; i<s.size(); i++)
         if (s[i]==s1)
@@ -261,7 +259,7 @@ int lookup(const vector<int> &s, const int &s1)
     return -1;
 }
 
-int lookup(const vector<vector<int> > &s, const vector<int> &s1)
+int aquiutils::lookup(const vector<vector<int> > &s, const vector<int> &s1)
 {
     for (unsigned int i=0; i<s.size(); i++)
         if (s[i]==s1)
@@ -416,14 +414,14 @@ double Expression::oprt(string &f, unsigned int i1, unsigned int i2, Object *W, 
 	{
 		if (sources.size() > i2)
 			for (unsigned int k=0; k<sources[i2].size(); k++)
-				if (lookup(sources[sources[i2][k]],sources[i1][j])==-1) sources[sources[i2][k]].push_back(sources[i1][j]);
+				if (aquiutils::lookup(sources[sources[i2][k]],sources[i1][j])==-1) sources[sources[i2][k]].push_back(sources[i1][j]);
 
 	}
 	if (sources.size() > i2)
 	for (unsigned int j = 0; j < sources[i2].size(); j++)
 	{
 		for (unsigned int k = 0; k<sources[i1].size(); k++)
-			if (lookup(sources[sources[i1][k]],sources[i2][j])==-1) sources[sources[i1][k]].push_back(sources[i2][j]);
+			if (aquiutils::lookup(sources[sources[i1][k]],sources[i2][j])==-1) sources[sources[i1][k]].push_back(sources[i2][j]);
 
 	}
 
@@ -460,7 +458,7 @@ double Expression::oprt(string &f, unsigned int i1, unsigned int i2, Object *W, 
 	return term_vals[sources[i1][0]];
 }
 
-int corresponding_parenthesis(string S, int i)
+int aquiutils::corresponding_parenthesis(string S, int i)
 {
 	string s = S;
     if (S.at(i) == '(')
@@ -498,7 +496,7 @@ int corresponding_parenthesis(string S, int i)
 	return -1;
 }
 
-bool parantheses_balance(string S)
+bool aquiutils::parantheses_balance(string S)
 {
 	if (count(S,"(") == count(S,")"))
 		return true;
@@ -506,7 +504,7 @@ bool parantheses_balance(string S)
 		return false;
 }
 
-bool contains(const string &s, const string &s1)
+bool aquiutils::contains(const string &s, const string &s1)
 {
     for (unsigned int i=0; i<s.size()-s1.size()+1; i++)
         if (s.substr(i,s1.size())==s1)
@@ -514,7 +512,7 @@ bool contains(const string &s, const string &s1)
     return false;
 }
 
-int count(const string &s, const string &s1)
+int aquiutils::count(const string &s, const string &s1)
 {
     int out=0;
     for (unsigned int i=0; i<s.size()-s1.size()+1; i++)
@@ -524,16 +522,16 @@ int count(const string &s, const string &s1)
 }
 
 
-string left(const string &s, int i)
+string aquiutils::left(const string &s, int i)
 {
     return s.substr(0,i);
 }
-string right(const string &s, int i)
+string aquiutils::right(const string &s, int i)
 {
     return s.substr(s.size()-i,i);
 }
 
-void remove(string &s,unsigned int i)
+void aquiutils::remove(string &s,unsigned int i)
 {
     string S;
     for (unsigned int j=0; j<s.size(); j++)
@@ -542,7 +540,7 @@ void remove(string &s,unsigned int i)
     s = S;
 }
 
-void replace(string &s,unsigned int i,string p)
+void aquiutils::replace(string &s,unsigned int i,string p)
 {
     string S;
     for (unsigned int j=0; j<s.size(); j++)
@@ -553,7 +551,7 @@ void replace(string &s,unsigned int i,string p)
     s = S;
 }
 
-bool replace(string &s,string s1, string s2)
+bool aquiutils::replace(string &s,string s1, string s2)
 {
 
     bool found = false;
@@ -577,7 +575,7 @@ bool replace(string &s,string s1, string s2)
     return found;
 }
 
-bool remove(string &s, string s1)
+bool aquiutils::remove(string &s, string s1)
 {
     bool found = false;
     for (unsigned int j=0; j<s.size()-s1.size()+1; j++)
@@ -589,7 +587,7 @@ bool remove(string &s, string s1)
     return found;
 }
 
-void insert(string &s, unsigned int pos, string s1)
+void aquiutils::insert(string &s, unsigned int pos, string s1)
 {
     string S;
 
@@ -603,7 +601,7 @@ void insert(string &s, unsigned int pos, string s1)
     s = S;
 }
 
-void replace(string &s,unsigned int i, unsigned int j, string p)
+void aquiutils::replace(string &s,unsigned int i, unsigned int j, string p)
 {
     string S;
     for (unsigned int k=0; k<s.size(); k++)
@@ -616,13 +614,13 @@ void replace(string &s,unsigned int i, unsigned int j, string p)
 }
 
 
-void remove(string &s,unsigned int pos, unsigned int len)
+void aquiutils::remove(string &s,unsigned int pos, unsigned int len)
 {
     for (unsigned int i=pos; i<pos+len; i++)
         remove(s, pos);
 }
 
-bool isnumber(char S)
+bool aquiutils::isnumber(char S)
 {
 	if ((((int)S > 47) && ((int)S < 58)) || (S=='.'))
 		return true;
@@ -630,7 +628,7 @@ bool isnumber(char S)
 		return false;
 }
 
-bool isnumber(string S)
+bool aquiutils::isnumber(string S)
 {
 	bool res = true;
 	for (unsigned int i = 0; i < S.size(); i++)
@@ -641,7 +639,7 @@ bool isnumber(string S)
 }
 
 
-bool isintegernumber(string S)
+bool aquiutils::isintegernumber(string S)
 {
 	bool out = true;
 	for (unsigned int i = 0; i < S.size(); i++)
@@ -652,29 +650,29 @@ bool isintegernumber(string S)
 	return out;
 }
 
-double atof(const string &S)
+double aquiutils::atof(const string &S)
 {
-    return atof(S.c_str());
+    return std::atof(S.c_str());
 }
-double atoi(const string &S)
+double aquiutils::atoi(const string &S)
 {
-    return atoi(S.c_str());
+    return std::atoi(S.c_str());
 }
 
-string trim(const string &s)
+string aquiutils::trim(const string &s)
 {
 	if (s.find_first_not_of(' ') == string::npos) return "";
 
 	return s.substr( s.find_first_not_of(' '), s.find_last_not_of(' ') + 1 );
 }
 
-void push_back(vector<string> &s, const vector<string> &s1)
+void aquiutils::push_back(vector<string> &s, const vector<string> &s1)
 {
     for (unsigned int i=0; i<s1.size(); i++)
         s.push_back(s1[i]);
 }
 
-vector<string> split(const string &s, char del)
+vector<string> aquiutils::split(const string &s, char del)
 {
 	unsigned int lastdel=0;
 	vector<string> strings;
@@ -714,7 +712,7 @@ int Expression::count_operators(const string &s)
 
 }
 
-vector<string> getline(ifstream& file)
+vector<string> aquiutils::getline(ifstream& file)
 {
 	string line;
 
@@ -727,7 +725,7 @@ vector<string> getline(ifstream& file)
 	return x;
 }
 
-vector<string> getline(ifstream& file, char del1)
+vector<string> aquiutils::getline(ifstream& file, char del1)
 {
     string line;
 
@@ -740,7 +738,7 @@ vector<string> getline(ifstream& file, char del1)
 	return x;
 }
 
-vector<vector<string>> getline_op(ifstream& file,char del1)
+vector<vector<string>> aquiutils::getline_op(ifstream& file,char del1)
 {
 	string line;
 	vector<vector<string>> s;
@@ -756,7 +754,7 @@ vector<vector<string>> getline_op(ifstream& file,char del1)
 
 }
 
-vector<vector<string>> getline_op(ifstream& file,vector<char> del1)
+vector<vector<string>> aquiutils::getline_op(ifstream& file,vector<char> del1)
 {
 		string line;
 	vector<vector<string>> s;
@@ -771,7 +769,7 @@ vector<vector<string>> getline_op(ifstream& file,vector<char> del1)
 	return s;
 }
 
-vector<vector<string>> getline_op_eqplus(ifstream& file)
+vector<vector<string>> aquiutils::getline_op_eqplus(ifstream& file)
 {
 	vector<char> del1;
 	del1.push_back('=');
@@ -791,7 +789,7 @@ vector<vector<string>> getline_op_eqplus(ifstream& file)
 
 }
 
-vector<string> split(const string &s, const vector<char> &del)
+vector<string> aquiutils::split(const string &s, const vector<char> &del)
 {
 	unsigned int lastdel=0;
 	unsigned int j=0;
@@ -812,13 +810,13 @@ vector<string> split(const string &s, const vector<char> &del)
 
 }
 
-vector<string> split_curly_semicolon(string s)
+vector<string> aquiutils::split_curly_semicolon(string s)
 {
 	vector<char> del2; del2.push_back('{'); del2.push_back('}'); del2.push_back(';');
 	return split(s,del2);
 }
 
-vector<int> look_up(string s, char del)  //Returns a vector with indices of "del"
+vector<int> aquiutils::look_up(string s, char del)  //Returns a vector with indices of "del"
 {
 	vector<int> out;
 	for (unsigned int i=0; i<s.size(); i++)
@@ -829,7 +827,7 @@ vector<int> look_up(string s, char del)  //Returns a vector with indices of "del
 
 }
 
-vector<int> ATOI(vector<string> ii)
+vector<int> aquiutils::ATOI(vector<string> ii)
 {
 	vector<int> res;
 	for (unsigned int i=0; i<ii.size(); i++)
@@ -838,7 +836,7 @@ vector<int> ATOI(vector<string> ii)
 	return res;
 }
 
-vector<double> ATOF(vector<string> ii)
+vector<double> aquiutils::ATOF(vector<string> ii)
 {
 	vector<double> res;
 	for (unsigned int i=0; i<ii.size(); i++)
@@ -848,17 +846,17 @@ vector<double> ATOF(vector<string> ii)
 }
 
 
-string tolower(const string &S)
+string aquiutils::tolower(const string &S)
 {
 	string SS = S;
 	for (unsigned int i=0; i<S.size(); i++)
 	{
-		SS[i] = tolower(S[i]);
+		SS[i] = std::tolower(S[i]);
 	}
 	return SS;
 }
 
-vector<string> tolower(const vector<string> &S)
+vector<string> aquiutils::tolower(const vector<string> &S)
 {
 	vector<string> SS = S;
 	for (unsigned int i = 0; i<S.size(); i++)
@@ -868,14 +866,14 @@ vector<string> tolower(const vector<string> &S)
 	return SS;
 }
 
-void writeline(ofstream& f, vector<string> s, string del=",")
+void aquiutils::writeline(ofstream& f, vector<string> s, string del=",")
 {
 	for (unsigned int i=0; i<s.size()-1; i++)
 		f<<s[i]<<del;
 	f<<s[s.size()-1]<<endl;
 }
 
-void writeline(ofstream& f, vector<vector<string>> s, string del=",", string del2="&")
+void aquiutils::writeline(ofstream& f, vector<vector<string>> s, string del=",", string del2="&")
 {
 	for (unsigned int i=0; i<s.size()-1; i++)
 	{	for (unsigned int j=0; j<s[i].size()-1; j++)
@@ -884,39 +882,39 @@ void writeline(ofstream& f, vector<vector<string>> s, string del=",", string del
 	}
 	f<<s[s.size()-1][s[s.size()-1].size()-1]<<endl;
 }
-void writestring(ofstream& f, string s)
+void aquiutils::writestring(ofstream& f, string s)
 {
 	f<<s;
 }
 
-void writestring(string filename, string s)
+void aquiutils::writestring(string filename, string s)
 {
 	ofstream file(filename);
 	file << s + "\n";
 	file.close();
 
 }
-void writenumber(ofstream& f, double s)
+void aquiutils::writenumber(ofstream& f, double s)
 {
 	f<<s;
 }
 
-void writeendl(ofstream& f)
+void aquiutils::writeendl(ofstream& f)
 {
 	f<<endl;
 }
 
-double Heavyside(double x)
+double aquiutils::Heavyside(double x)
 {
 	if (x>0) return 1; else return 0;
 }
 
-double Pos(double x)
+double aquiutils::Pos(double x)
 {
 	if (x>0) return x; else return 0;
 }
 
-string numbertostring(double x)
+string aquiutils::numbertostring(double x)
 {
 	string Result;          // string which will contain the result
 	ostringstream convert;   // stream used for the conversion
@@ -925,7 +923,7 @@ string numbertostring(double x)
 	return Result;
 }
 
-string numbertostring(int x)
+string aquiutils::numbertostring(int x)
 {
 	string Result;          // string which will contain the result
 	ostringstream convert;   // stream used for the conversion
@@ -934,7 +932,7 @@ string numbertostring(int x)
 	return Result;
 }
 
-string tail(std::string const& source, size_t const length) {
+string aquiutils::tail(std::string const& source, size_t const length) {
 	if (length >= source.size()) { return source; }
 	return source.substr(source.size() - length);
 } // tail
@@ -967,12 +965,22 @@ string Expression::ToString()
     return out;
 }
 
-string tabs(int i)
+string aquiutils::tabs(int i)
 {
     string out;
     for (int j=0; j<i; j++)
         out += "\t";
     return out;
+}
+
+bool aquiutils::And(vector<bool> x) { bool out = true;  for (int i = 0; i < x.size(); i++) out &= x[i]; return out; }
+double aquiutils::max(vector<double> x) { double out = -1e+24;  for (int i = 0; i < x.size(); i++) out=std::max(out, x[i]); return out; }
+int aquiutils::max(vector<int> x) 
+{	int out = -37000;  
+	for (int i = 0; i < x.size(); i++) 
+		out=std::max(out, x[i]); 
+	return out;
+
 }
 
 

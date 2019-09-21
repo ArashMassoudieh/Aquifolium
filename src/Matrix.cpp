@@ -7,8 +7,8 @@
 #include <iostream>
 #define ARMA_DONT_PRINT_ERRORS
 #include "armadillo"
-#include "StringOP.h"
 #include "Vector.h"
+#include "Expression.h"
 #ifdef QT_version
 #include "qstring.h"
 #include "qmap.h"
@@ -75,7 +75,7 @@ CMatrix::CMatrix(string filename)
 	int i=0;
 	while (!file.eof())
 	{
-		s = getline(file,'\t');
+		s = aquiutils::getline(file,'\t');
 		if (i==0) num_cols = s.size();
 		if (s.size()==num_cols) i++;
     }
@@ -94,7 +94,7 @@ CMatrix::CMatrix(string filename)
 
 	for (int i=0; i<num_rows; i++)
 	{
-		s = getline(file,'\t');
+		s = aquiutils::getline(file,'\t');
         for (int j=0; j<num_cols; j++)
             matr[i][j] = atof(s[j].c_str());
     }

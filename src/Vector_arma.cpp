@@ -605,9 +605,9 @@ CVector_arma CVector_arma::sub(int i, int j)
 
 string CVector_arma::toString()
 {
-    string s = "[" + numbertostring(vect(0));
+    string s = "[" + aquiutils::numbertostring(vect(0));
     for (int i=1; i<num; i++)
-        s += "," + numbertostring(vect(i));
+        s += "," + aquiutils::numbertostring(vect(i));
     s+= "]";
     return s;
 

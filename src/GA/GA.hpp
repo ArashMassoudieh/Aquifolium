@@ -1,9 +1,9 @@
 // GA.cpp: implementation of the CGA class.
 ////////////////////////////////////////////////////////////////////////
 #include "GA.h"
-#include "StringOP.h"
 #include <stdlib.h>
 #include <omp.h>
+#include "Expression.h"
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
@@ -38,7 +38,7 @@ CGA<T>::CGA(string filename, const T &model)
 	vector<string> s;
 	while (file.eof() == false)
 	{
-		s = getline(file);
+		s = aquiutils::getline(file);
 		if (s.size()>0)
 		{	if (s[0] == "maxpop") GA_params.maxpop = atoi(s[1].c_str());
 			if (s[0] == "ngen") GA_params.nGen = atoi(s[1].c_str());
@@ -146,8 +146,6 @@ CGA<T>::CGA(T *model)
 		Ind_old[i] = CIndividual(GA_params.nParam);
 	}
 
-	for (int i = 0; i<GA_params.nParam; i++)
-		Setminmax(i, minval[i], maxval[i],4);
 
 	MaxFitness = 0;
 }
@@ -164,6 +162,8 @@ void CGA<T>::setnparams(int n_params)
 		Ind_old[i] = CIndividual(n_params);
 
 	}
+
+
 }
 
 template<class T>
@@ -333,7 +333,7 @@ omp_set_num_threads(numberOfThreads);
 			Ind[k].actual_fitness -= Models[k].GetObjectiveFunctionValue();
 			epochs[k] += Models[k].EpochCount();
 			time_[k] = ((float)(clock() - t0))/CLOCKS_PER_SEC;
-#pragma omp critical 
+#pragma omp critical
             {
                 FileOut = fopen((filenames.pathname+"detail_GA.txt").c_str(),"a");
                 fprintf(FileOut, "%i, fitness=%le, time=%e, epochs=%i\n", k, Ind[k].actual_fitness, time_[k], epochs[k]);
@@ -407,16 +407,16 @@ void CGA<T>::crossoverRC()
 template<class T>
 bool CGA<T>::SetProperty(const string &varname, const string &value)
 {
-    if (tolower(varname) == "maxpop") {GA_params.maxpop = atoi(value); setnumpop(GA_params.maxpop); return true;}
-    if (tolower(varname) == "ngen") {GA_params.nGen = atoi(value); return true;}
-	if (tolower(varname) == "pcross") {GA_params.pcross = atof(value); return true;}
-	if (tolower(varname) == "pmute") {GA_params.pmute = atof(value); return true;}
-	if (tolower(varname) == "shakescale") {GA_params.shakescale = atof(value); return true;}
-	if (tolower(varname) == "shakescalered") {GA_params.shakescalered = atof(value); return true;}
-	if (tolower(varname) == "outputfile") {filenames.outputfilename = value; return true;}
-	if (tolower(varname) == "getfromfilename") {filenames.getfromfilename = value.c_str(); return true;}
-	if (tolower(varname) == "initial_population") {filenames.initialpopfilemame = value; return true;}
-	if (tolower(varname) == "numthreads") {numberOfThreads = atoi(value.c_str()); return true;}
+    if (aquiutils::tolower(varname) == "maxpop") {GA_params.maxpop = aquiutils::atoi(value); setnumpop(GA_params.maxpop); return true;}
+    if (aquiutils::tolower(varname) == "ngen") {GA_params.nGen = aquiutils::atoi(value); return true;}
+	if (aquiutils::tolower(varname) == "pcross") {GA_params.pcross = aquiutils::atof(value); return true;}
+	if (aquiutils::tolower(varname) == "pmute") {GA_params.pmute = aquiutils::atof(value); return true;}
+	if (aquiutils::tolower(varname) == "shakescale") {GA_params.shakescale = aquiutils::atof(value); return true;}
+	if (aquiutils::tolower(varname) == "shakescalered") {GA_params.shakescalered = aquiutils::atof(value); return true;}
+	if (aquiutils::tolower(varname) == "outputfile") {filenames.outputfilename = value; return true;}
+	if (aquiutils::tolower(varname) == "getfromfilename") {filenames.getfromfilename = value.c_str(); return true;}
+	if (aquiutils::tolower(varname) == "initial_population") {filenames.initialpopfilemame = value; return true;}
+	if (aquiutils::tolower(varname) == "numthreads") {numberOfThreads = aquiutils::atoi(value.c_str()); return true;}
     last_error = "Property '" + varname + "' was not found!";
     return false;
 }
@@ -485,7 +485,7 @@ int CGA<T>::optimize()
 
 		for (int j1=0; j1<GA_params.maxpop; j1++)
 		{
-			write_to_detailed_GA("Generation: " + numbertostring(i));
+			write_to_detailed_GA("Generation: " + aquiutils::numbertostring(i));
 			fprintf(FileOut, "%i, ", j1);
 
 			for (int k=0; k<Ind[0].nParams; k++)
@@ -654,13 +654,13 @@ double CGA<T>::getfromoutput(string filename)
 	final_params.resize(GA_params.nParam);
 	while (file.eof() == false)
 	{
-		s = getline(file);
+		s = aquiutils::getline(file);
 		if (s.size()>0)
 		{
 			if (s[0] == "Final Enhancements")
 				for (int i = 0; i<GA_params.nParam; i++)
 				{
-					s = getline(file);
+					s = aquiutils::getline(file);
 					if (s.size() == 0)
 						write_to_detailed_GA("The number of parameters in GA output file does not match the number of unknown parameters");
 					else
@@ -851,12 +851,12 @@ void CGA<T>::getinifromoutput(string filename)
 	initial_pop[0].resize(GA_params.nParam);
 	while (file.eof() == false)
 	{
-		s = getline(file);
+		s = aquiutils::getline(file);
 		if (s.size()>0)
 		{	if (s[0] == "Final Enhancements")
 			for (int i=0; i<GA_params.nParam; i++)
 			{
-				s = getline(file);
+				s = aquiutils::getline(file);
 				if (loged[i]==1)
 					initial_pop[0][i] = atof(s[1].c_str());
 				else
@@ -876,13 +876,13 @@ void CGA<T>::getinitialpop(string filename)
 
 	while (file.eof() == false)
 	{
-		s = getline(file);
+		s = aquiutils::getline(file);
 
 		if (s.size()>0)
 		{
 			vector<double> x;
 			for (int j=0; j<s.size(); j++)
-				initial_pop.push_back(ATOF(s));
+				initial_pop.push_back(aquiutils::ATOF(s));
 
 		}
 	}

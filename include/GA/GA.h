@@ -26,7 +26,7 @@ class runtimeWindow;
 struct GA_Twiking_parameters
 {
     int totnumparams;
-	int maxpop;
+	int maxpop=2;
 	int nParam;
 	int numenhancements, num_enh;
 	int nGen;

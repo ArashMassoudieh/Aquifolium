@@ -6,12 +6,13 @@
 
 class Object;
 
-enum class blocklink {block=0, link=1};
+enum class blocklink {block, link, source};
 
 class QuanSet
 {
     public:
         QuanSet();
+        QuanSet(Json::ValueIterator &object_type);
         virtual ~QuanSet();
         QuanSet(const QuanSet& other);
         QuanSet& operator=(const QuanSet& other);
@@ -33,6 +34,7 @@ class QuanSet
         void SetParent(Object *p) {parent = p; SetAllParents();}
         void SetAllParents();
         Object *Parent() {return parent; }
+        vector<CTimeSeries*> TimeSeries();
         bool AppendError(const string &objectname, const string &cls, const string &funct, const string &description, const int &code);
     protected:
 

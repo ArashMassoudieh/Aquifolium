@@ -2,10 +2,113 @@
 #include "Block.h"
 #include "Link.h"
 #include "System.h"
+#include "Precipitation.h"
+
 
 Quan::Quan()
 {
     //ctor
+}
+
+Quan::Quan(Json::ValueIterator &it)
+{
+
+    SetName(it.key().asString());
+    if ((*it)["type"].asString()=="balance")
+    {
+        SetType(Quan::_type::balance);
+        SetCorrespondingFlowVar((*it)["flow"].asString());
+        SetCorrespondingInflowVar((*it)["inflow"].asString());
+    }
+    if ((*it)["type"].asString()=="constant")
+        SetType(Quan::_type::constant);
+    if ((*it)["type"].asString()=="expression")
+    {
+        SetType(Quan::_type::expression);
+        SetExpression((*it)["expression"].asString());
+    }
+    if ((*it)["type"].asString()=="rule")
+    {
+        SetType(Quan::_type::rule);
+        for (Json::ValueIterator itrule=(*it)["rule"].begin(); itrule!=(*it)["rule"].end(); ++itrule)
+        {
+            _condplusresult Rle;
+            GetRule()->Append(itrule.key().asString(),itrule->asString());
+        }
+    }
+
+    if ((*it)["type"].asString()=="global")
+        SetType(Quan::_type::global_quan);
+    if ((*it)["type"].asString()=="timeseries")
+        SetType(Quan::_type::timeseries);
+	if ((*it)["type"].asString() == "timeseries_prec")
+		SetType(Quan::_type::prec_timeseries);
+    if ((*it)["type"].asString()=="source")
+        SetType(Quan::_type::source);
+    if ((*it)["type"].asString()=="value")
+        SetType(Quan::_type::value);
+    if (it->isMember("includeinoutput"))
+    {
+        if ((*it)["includeinoutput"].asString()=="true")
+            SetIncludeInOutput(true);
+        else
+            SetIncludeInOutput(false);
+    }
+    else
+        SetIncludeInOutput(false);
+    if (it->isMember("description"))
+    {
+        Description() = (*it)["description"].asString();
+    }
+
+    if (it->isMember("unit"))
+        Unit() = (*it)["unit"].asString();
+
+    if (it->isMember("default_unit"))
+        DefaultUnit() = (*it)["default_unit"].asString();
+
+    if (it->isMember("default"))
+        Default() = (*it)["default"].asString();
+
+    if (it->isMember("delegate"))
+        Delegate() = (*it)["delegate"].asString();
+
+    if (it->isMember("category"))
+        Category() = (*it)["category"].asString();
+
+    if (it->isMember("input"))
+        Input() = (*it)["input"].asString();
+
+    if (it->isMember("experiment_dependent"))
+    {   if ((*it)["experiment_dependent"].asString()=="Yes")
+            ExperimentDependent() = true;
+        else
+            ExperimentDependent() = false;
+
+    }
+
+    if (it->isMember("description_code"))
+        DescriptionCode() = (*it)["description_code"].asString();
+
+    if (it->isMember("criteria"))
+        Criteria() = (*it)["criteria"].asString();
+
+    if (it->isMember("warningerror"))
+        WarningError() = (*it)["warningerror"].asString();
+
+    if (it->isMember("warningmessage"))
+        WarningMessage() = (*it)["warningmessage"].asString();
+
+    if (it->isMember("inputtype"))
+        InputType() = (*it)["inputtype"].asString();
+
+    if (it->isMember("ask_user"))
+    {    if (aquiutils::tolower((*it)["ask_user"].asString())=="true")
+            AskFromUser() = true;
+    }
+    else
+       AskFromUser() = false;
+
 }
 
 Quan::~Quan()
@@ -96,6 +199,13 @@ double Quan::CalcVal(Object *block, const Expression::timing &tmg)
     }
     if (type == _type::value)
         return _val;
+    if (type == _type::source)
+    {
+        if (source!=nullptr)
+            return source->GetValue(block);
+        else
+            return 0;
+    }
     last_error = "Quantity cannot be evaluated";
     return 0;
 }
@@ -123,7 +233,7 @@ double Quan::CalcVal(const Expression::timing &tmg)
     if (type == _type::rule)
         return _rule.calc(parent,tmg);
 
-    if (type == _type::timeseries)
+    if (type == _type::timeseries || type == _type::prec_timeseries)
     {
         if (_timeseries.n>0)
             return _timeseries.interpol(parent->GetParent()->GetTime());
@@ -143,6 +253,13 @@ double Quan::CalcVal(const Expression::timing &tmg)
             return _val;
         else
             return _val_star;
+    }
+    if (type == _type::source)
+    {
+        if (source!=nullptr)
+            return source->GetValue(parent);
+        else
+            return 0;
     }
     last_error = "Quantity cannot be evaluated";
     return 0;
@@ -169,6 +286,7 @@ string tostring(const Quan::_type &typ)
     if (typ==Quan::_type::rule) return "Rule";
     if (typ==Quan::_type::timeseries) return "TimeSeries";
     if (typ==Quan::_type::value) return "Value";
+    if (typ==Quan::_type::source) return "Source";
     return "";
 }
 
@@ -197,39 +315,48 @@ Rule* Quan::GetRule()
     return &_rule;
 }
 
+Source* Quan::GetSource()
+{
+    return source;
+}
+
 
 string Quan::ToString(int _tabs)
 {
-    string out = tabs(_tabs) + _var_name + ":\n";
-    out += tabs(_tabs) + "{\n";
+    string out = aquiutils::tabs(_tabs) + _var_name + ":\n";
+    out += aquiutils::tabs(_tabs) + "{\n";
     if (type==_type::constant)
-        out += tabs(_tabs+1) + "type: constant\n";
+        out += aquiutils::tabs(_tabs+1) + "type: constant\n";
     if (type==_type::balance)
-        out += tabs(_tabs+1) + "type: balance\n";
+        out += aquiutils::tabs(_tabs+1) + "type: balance\n";
     if (type==_type::expression)
-        out += tabs(_tabs+1) + "type: expression\n";
+        out += aquiutils::tabs(_tabs+1) + "type: expression\n";
     if (type==_type::constant)
-        out += tabs(_tabs+1) + "type: constant\n";
+        out += aquiutils::tabs(_tabs+1) + "type: constant\n";
     if (type==_type::global_quan)
-        out += tabs(_tabs+1) + "type: global_quantity\n";
+        out += aquiutils::tabs(_tabs+1) + "type: global_quantity\n";
     if (type==_type::timeseries)
-        out += tabs(_tabs+1) + "type: time_series\n";
+        out += aquiutils::tabs(_tabs+1) + "type: time_series\n";
     if (type==_type::value)
-        out += tabs(_tabs+1) + "type: value\n";
+        out += aquiutils::tabs(_tabs+1) + "type: value\n";
 
     if (type==_type::expression)
-        out += tabs(_tabs+1) + "expression: " + _expression.ToString() + "\n";
+        out += aquiutils::tabs(_tabs+1) + "expression: " + _expression.ToString() + "\n";
 
     if (type==_type::rule)
-        out += tabs(_tabs+1) + "rule: " + _rule.ToString(_tabs) + "\n";
+        out += aquiutils::tabs(_tabs+1) + "rule: " + _rule.ToString(_tabs) + "\n";
 
-    out += tabs(_tabs+1) + "val: ";
-    out +=  numbertostring(_val);
+    if (type==_type::source)
+        out += aquiutils::tabs(_tabs+1) + "source: " + source->GetName() + "\n";
+
+
+    out += aquiutils::tabs(_tabs+1) + "val: ";
+    out += aquiutils::numbertostring(_val);
     out += string("\n");
-    out += tabs(_tabs+1) + "val*:";
-    out += numbertostring(_val_star);
+    out += aquiutils::tabs(_tabs+1) + "val*:";
+    out += aquiutils::numbertostring(_val_star);
     out += string("\n");
-    out += tabs(_tabs) + "}";
+    out += aquiutils::tabs(_tabs) + "}";
     return out;
 }
 
@@ -265,28 +392,82 @@ void Quan::Update()
 	_val = _val_star;
 }
 
-bool Quan::SetTimeSeries(string filename)
+
+CTimeSeries* Quan::TimeSeries()
 {
-	_timeseries.readfile(filename);
-	if (_timeseries.file_not_found)
+    if (_timeseries.C.size()!=0)
+        return &_timeseries;
+    else
+        return nullptr;
+}
+
+bool Quan::SetTimeSeries(const string &filename, bool prec)
+{
+	if (!prec)
 	{
-		AppendError(GetName(),"Quan", "SetTimeSeries", filename + " was not found!", 3001);
-		return false;
+		_timeseries.readfile(filename);
+		if (_timeseries.file_not_found)
+		{
+			AppendError(GetName(), "Quan", "SetTimeSeries", filename + " was not found!", 3001);
+			return false;
+		}
+		else
+			return true;
 	}
 	else
-		return true;
+	{
+		CPrecipitation Prec;
+		if (!Prec.isFileValid(filename))
+		{
+			AppendError(GetName(), "Quan", "SetTimeSeries", filename + " was not is not a valid precipitation file", 3023);
+			return false;
+		}
+		else
+		{
+			Prec.getfromfile(filename);
+			_timeseries = Prec.getflow(1).BTC[0];
+			return true;
+		}
+	}
 }
+
+bool Quan::SetSource(const string &sourcename)
+{
+	if (parent->GetParent()->source(sourcename))
+	{
+	    source = parent->GetParent()->source(sourcename);
+        return true;
+	}
+	else
+	{
+		AppendError(GetName(),"Quan", "Source", sourcename + " was not found!", 3062);
+		return false;
+	}
+
+}
+
 
 bool Quan::SetProperty(const string &val)
 {
     if (type == _type::balance || type== _type::constant || type==_type::global_quan || type==_type::value)
-        return SetVal(atof(val),Expression::timing::both);
+        return SetVal(aquiutils::atof(val),Expression::timing::both);
     if (type == _type::timeseries)
     {
         if (parent->Parent()->InputPath() != "")
             return SetTimeSeries(parent->Parent()->InputPath() + val);
         else
             return SetTimeSeries(val);
+    }
+	if (type == _type::prec_timeseries)
+	{
+		if (parent->Parent()->InputPath() != "")
+			return SetTimeSeries(parent->Parent()->InputPath() + val,true);
+		else
+			return SetTimeSeries(val,true);
+	}
+    else if (type == _type::source)
+    {
+        return SetSource(val);
     }
     else
     {

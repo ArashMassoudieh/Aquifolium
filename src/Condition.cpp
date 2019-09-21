@@ -1,5 +1,7 @@
 #include "Condition.h"
 
+using namespace aquiutils;
+
 Condition::Condition()
 {
     //ctor
