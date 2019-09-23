@@ -3,6 +3,7 @@
 #include "GA.h"
 #include "StringOP.h"
 #include <stdlib.h>
+#include <omp.h>
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
@@ -312,7 +313,7 @@ omp_set_num_threads(numberOfThreads);
 		for (int k=0; k<GA_params.maxpop; k++)
 		{
 			FILE *FileOut;
-#pragma omp atomic
+#pragma omp critical
             {
                 FileOut = fopen((filenames.pathname+"detail_GA.txt").c_str(),"a");
                 fprintf(FileOut, "%i, ", k);
@@ -332,7 +333,7 @@ omp_set_num_threads(numberOfThreads);
 			Ind[k].actual_fitness -= Models[k].GetObjectiveFunctionValue();
 			epochs[k] += Models[k].EpochCount();
 			time_[k] = ((float)(clock() - t0))/CLOCKS_PER_SEC;
-#pragma omp atomic
+#pragma omp critical 
             {
                 FileOut = fopen((filenames.pathname+"detail_GA.txt").c_str(),"a");
                 fprintf(FileOut, "%i, fitness=%le, time=%e, epochs=%i\n", k, Ind[k].actual_fitness, time_[k], epochs[k]);

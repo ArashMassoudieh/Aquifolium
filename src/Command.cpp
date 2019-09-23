@@ -67,6 +67,23 @@ Command::Command(const string &s, Script *parnt)
         }
     }
 
+	if (tolower(maincommand[0]) == "write")
+	{
+		if (maincommand.size() != 2)
+		{
+			last_error = "Command 'write' requires one argument! ";
+			validated = false;
+			return;
+		}
+		else
+		{
+			keyword = tolower(maincommand[0]);
+			arguments.push_back(maincommand[1]);
+			validated = true;
+		}
+	}
+
+
     for (int i=1; i<firstlevelbreakup.size(); i++)
     {
         vector<string> properties = split(firstlevelbreakup[i],',');
@@ -154,6 +171,39 @@ bool Command::Execute(System *_sys)
         else
             return false;
     }
+
+	if (tolower(keyword) == "write")
+	{
+		if (arguments.size()==0)
+		{
+			sys->errorhandler.Append("", "Command", "Execute", "In echo command 'writeoutput' an argument is needed", 7023);
+			return false; 
+		}
+		if (arguments[0] == "outputs")
+		{
+			if (assignments.count("filename") == 0)
+			{
+				sys->errorhandler.Append("", "Command", "Execute", "In echo command 'write' filename must be specified.", 7024);
+				return false;
+			}
+			if (Validate())
+			{
+				sys->GetOutputs().writetofile(sys->OutputPath() + assignments["filename"]);
+			}
+		}
+		if (arguments[0] == "errors")
+		{
+			if (assignments.count("filename") == 0)
+			{
+				sys->errorhandler.Append("", "Command", "Execute", "In echo command 'write' filename must be specified.", 7021);
+				return false;
+			}
+			if (Validate())
+			{
+				sys->errorhandler.Write(sys->OutputPath() + assignments["filename"]);
+			}
+		}
+	}
 
     if (tolower(keyword) == "echo")
     {

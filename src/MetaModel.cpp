@@ -58,7 +58,7 @@ QuanSet* MetaModel::GetItem(const string &typ)
         return &(metamodel[typ]);
 }
 
-
+#pragma warning(disable : 4996)
 bool MetaModel::GetFromJsonFile(const string &filename)
 {
     Clear();
