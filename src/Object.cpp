@@ -100,9 +100,16 @@ bool Object::SetQuantities(MetaModel &m, const string& typ )
 	}
     else
         var = *m[typ];
+    SetDefaults();
     for (map<string, Quan>::const_iterator s = var.begin(); s != var.end(); ++s)
         var[s->first].SetParent(this);
 	return true;
+}
+
+void Object::SetDefaults()
+{
+    for (map<string, Quan>::const_iterator s = var.begin(); s != var.end(); ++s)
+        var[s->first].SetVal(atof(var[s->first].Default().c_str()),Expression::timing::both);
 }
 
 bool Object::SetVal(const string& s, double value, const Expression::timing &tmg)
@@ -124,7 +131,7 @@ bool Object::SetVal(const string& s, const string & value, const Expression::tim
 {
     if (var.find(s)!=var.end())
     {
-        var[s].SetVal(atof(value),tmg);
+        var[s].SetVal(aquiutils::atof(value),tmg);
         return true;
     }
     else
@@ -277,7 +284,7 @@ bool Object::SetProperty(const string &prop, const string &value)
     }
     if (var[prop].GetType() == Quan::_type::value || var[prop].GetType() == Quan::_type::balance || var[prop].GetType() == Quan::_type::constant)
     {
-        var[prop].SetVal(atof(value),Expression::timing::both);
+        var[prop].SetVal(aquiutils::atof(value),Expression::timing::both);
         return true;
     }
     if (var[prop].GetType() == Quan::_type::expression)
@@ -291,7 +298,11 @@ bool Object::SetProperty(const string &prop, const string &value)
         return false;
     }
 
-    if (var[prop].GetType() == Quan::_type::timeseries)
+    if (var[prop].GetType() == Quan::_type::timeseries || var[prop].GetType() == Quan::_type::prec_timeseries)
+    {
+        return var[prop].SetProperty(value);
+    }
+    if (var[prop].GetType() == Quan::_type::source)
     {
         return var[prop].SetProperty(value);
     }
@@ -301,8 +312,8 @@ bool Object::SetProperty(const string &prop, const string &value)
 
 string Object::toString(int _tabs)
 {
-    string out = tabs(_tabs) + "Name: " + GetName() + "\n";
-    out += tabs(_tabs) + "Type: " + GetType() + "\n";
+    string out = aquiutils::tabs(_tabs) + "Name: " + GetName() + "\n";
+    out += aquiutils::tabs(_tabs) + "Type: " + GetType() + "\n";
     out += this->var.ToString(_tabs + 1);
     return out;
 }

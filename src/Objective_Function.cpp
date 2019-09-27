@@ -41,20 +41,20 @@ Objective_Function& Objective_Function::operator=(const Objective_Function& rhs)
 
 bool Objective_Function::SetProperty(const string &prop, const string &val)
 {
-    if (tolower(prop)=="expression")
+    if (aquiutils::tolower(prop)=="expression")
     {
         expression = Expression(val);
         return true;
     }
-    if (tolower(prop)=="location")
+    if (aquiutils::tolower(prop)=="location")
     {
         location = val;
         return true;
     }
-    if (tolower(prop)=="type")
+    if (aquiutils::tolower(prop)=="type")
     {
-        if (tolower(val)=="integrate") {type = objfunctype::Integrate; return true;}
-        if (tolower(val)=="value") {type = objfunctype::Value; return true;}
+        if (aquiutils::tolower(val)=="integrate") {type = objfunctype::Integrate; return true;}
+        if (aquiutils::tolower(val)=="value") {type = objfunctype::Value; return true;}
         lasterror = "Type '" + val + "' was not recognized!";
     }
     return false;
@@ -63,9 +63,15 @@ bool Objective_Function::SetProperty(const string &prop, const string &val)
 double Objective_Function::GetValue(const Expression::timing &tmg)
 {
     if (system->block(location) != nullptr)
-        return expression.calc(system->block(location),tmg);
+    {
+        current_value = expression.calc(system->block(location),tmg);
+        return current_value;
+    }
     if (system->link(location) != nullptr)
-        return expression.calc(system->link(location),tmg,true);
+    {
+        current_value = expression.calc(system->link(location),tmg,true);
+        return current_value;
+    }
     lasterror = "Location " + location + "was not found in the system!";
     return 0;
 }

@@ -19,3 +19,9 @@ bin/Debug/
 
 *.depend
 
+
+Aquifolium\.layout
+
+*.layout
+
+bin/Release/

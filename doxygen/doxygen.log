@@ -1,0 +1,467 @@
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:45: warning: documented symbol `Value const  & Json::Value::nullSingleton' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:52: warning: documented symbol `Value const  & Json::Value::null' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:53: warning: documented symbol `Value const  & Json::Value::nullRef' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:55: warning: documented symbol `const Int Json::Value::minInt' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:56: warning: documented symbol `const Int Json::Value::maxInt' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:57: warning: documented symbol `const UInt Json::Value::maxUInt' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:67: warning: documented symbol `const LargestInt Json::Value::minLargestInt' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:68: warning: documented symbol `const LargestInt Json::Value::maxLargestInt' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:69: warning: documented symbol `const LargestUInt Json::Value::maxLargestUInt' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:71: warning: documented symbol `const UInt Json::Value::defaultRealPrecision' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:193: warning: documented symbol `Json::Exception::Exception' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:194: warning: documented symbol `Json::Exception::~Exception' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:195: warning: documented symbol `char const  * Json::Exception::what' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:196: warning: documented symbol `Json::RuntimeError::RuntimeError' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:197: warning: documented symbol `Json::LogicError::LogicError' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:213: warning: documented symbol `Json::Value::CommentInfo::CommentInfo' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:215: warning: documented symbol `Json::Value::CommentInfo::~CommentInfo' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:220: warning: documented symbol `void Json::Value::CommentInfo::setComment' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:244: warning: documented symbol `Json::Value::CZString::CZString' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:246: warning: documented symbol `Json::Value::CZString::CZString' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:255: warning: documented symbol `Json::Value::CZString::CZString' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:278: warning: documented symbol `Json::Value::CZString::~CZString' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:288: warning: no uniquely matching class member found for 
+  void Json::Value::CZString::swap(CZString &other)
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:293: warning: no uniquely matching class member found for 
+  Value::CZString & Json::Value::CZString::operator=(const CZString &other)
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:308: warning: documented symbol `bool Json::Value::CZString::operator<' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:325: warning: no uniquely matching class member found for 
+  bool Json::Value::CZString::operator==(const CZString &other) const
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:339: warning: documented symbol `ArrayIndex Json::Value::CZString::index' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:342: warning: documented symbol `const char * Json::Value::CZString::data' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:343: warning: documented symbol `unsigned Json::Value::CZString::length' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:344: warning: documented symbol `bool Json::Value::CZString::isStaticString' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:360: warning: no matching file member found for 
+Json::Value::Value(ValueType type)
+Possible candidates:
+ '@ Value' at line 7 of file/home/arash/Projects/Aquifolium/include/Objective_Function.h
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:389: warning: no matching file member found for 
+Json::Value::Value(Int value)
+Possible candidates:
+ '@ Value' at line 7 of file/home/arash/Projects/Aquifolium/include/Objective_Function.h
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:394: warning: no matching file member found for 
+Json::Value::Value(UInt value)
+Possible candidates:
+ '@ Value' at line 7 of file/home/arash/Projects/Aquifolium/include/Objective_Function.h
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:409: warning: no matching file member found for 
+Json::Value::Value(double value)
+Possible candidates:
+ '@ Value' at line 7 of file/home/arash/Projects/Aquifolium/include/Objective_Function.h
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:414: warning: no matching file member found for 
+Json::Value::Value(const char *value)
+Possible candidates:
+ '@ Value' at line 7 of file/home/arash/Projects/Aquifolium/include/Objective_Function.h
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:421: warning: no matching file member found for 
+Json::Value::Value(const char *begin, const char *end)
+Possible candidates:
+ '@ Value' at line 7 of file/home/arash/Projects/Aquifolium/include/Objective_Function.h
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:427: warning: no matching file member found for 
+Json::Value::Value(const JSONCPP_STRING &value)
+Possible candidates:
+ '@ Value' at line 7 of file/home/arash/Projects/Aquifolium/include/Objective_Function.h
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:433: warning: no matching file member found for 
+Json::Value::Value(const StaticString &value)
+Possible candidates:
+ '@ Value' at line 7 of file/home/arash/Projects/Aquifolium/include/Objective_Function.h
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:446: warning: no matching file member found for 
+Json::Value::Value(bool value)
+Possible candidates:
+ '@ Value' at line 7 of file/home/arash/Projects/Aquifolium/include/Objective_Function.h
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:451: warning: no matching file member found for 
+Json::Value::Value(const Value &other)
+Possible candidates:
+ '@ Value' at line 7 of file/home/arash/Projects/Aquifolium/include/Objective_Function.h
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:464: warning: documented symbol `Json::Value::~Value' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:472: warning: no uniquely matching class member found for 
+  Value & Json::Value::operator=(Value other)
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:477: warning: documented symbol `void Json::Value::swapPayload' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:487: warning: documented symbol `void Json::Value::copyPayload' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:492: warning: no uniquely matching class member found for 
+  void Json::Value::swap(Value &other)
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:499: warning: documented symbol `void Json::Value::copy' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:505: warning: no uniquely matching class member found for 
+  ValueType Json::Value::type() const
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:507: warning: documented symbol `int Json::Value::compare' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:515: warning: documented symbol `bool Json::Value::operator<' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:567: warning: documented symbol `bool Json::Value::operator<=' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:569: warning: documented symbol `bool Json::Value::operator>=' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:571: warning: no matching file member found for 
+bool Json::Value::operator>(const Value &other) const
+Possible candidates:
+ 'CTimeSeries operator>(CTimeSeries BTC1, CTimeSeries BTC2)' at line 1341 of file/home/arash/Projects/Aquifolium/src/BTC.cpp
+ 'CTimeSeries operator>(CTimeSeries &BTC1, CTimeSeries &BTC2)' at line 131 of file/home/arash/Projects/Aquifolium/include/BTC.h
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:573: warning: no uniquely matching class member found for 
+  bool Json::Value::operator==(const Value &other) const
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:620: warning: documented symbol `bool Json::Value::operator!=' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:622: warning: documented symbol `const char * Json::Value::asCString' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:648: warning: documented symbol `bool Json::Value::getString' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:659: warning: documented symbol `JSONCPP_STRING Json::Value::asString' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:694: warning: documented symbol `Value::Int Json::Value::asInt' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:716: warning: documented symbol `Value::UInt Json::Value::asUInt' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:783: warning: documented symbol `LargestInt Json::Value::asLargestInt' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:791: warning: documented symbol `LargestUInt Json::Value::asLargestUInt' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:799: warning: documented symbol `double Json::Value::asDouble' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:821: warning: documented symbol `float Json::Value::asFloat' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:844: warning: documented symbol `bool Json::Value::asBool' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:863: warning: documented symbol `bool Json::Value::isConvertibleTo' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:897: warning: no uniquely matching class member found for 
+  ArrayIndex Json::Value::size() const
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:920: warning: documented symbol `bool Json::Value::empty' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:927: warning: documented symbol `Json::Value::operator bool' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:929: warning: no uniquely matching class member found for 
+  void Json::Value::clear()
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:945: warning: documented symbol `void Json::Value::resize' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:963: warning: no uniquely matching class member found for 
+  Value & Json::Value::operator[](ArrayIndex index)
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:979: warning: no uniquely matching class member found for 
+  Value & Json::Value::operator[](int index)
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:986: warning: no uniquely matching class member found for 
+  const Value & Json::Value::operator[](ArrayIndex index) const
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:999: warning: no uniquely matching class member found for 
+  const Value & Json::Value::operator[](int index) const
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:1006: warning: documented symbol `void Json::Value::initBasic' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:1014: warning: documented symbol `void Json::Value::dupPayload' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:1045: warning: documented symbol `void Json::Value::releasePayload' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:1066: warning: documented symbol `void Json::Value::dupMeta' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:1085: warning: documented symbol `Value & Json::Value::resolveReference' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:1104: warning: documented symbol `Value & Json::Value::resolveReference' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:1122: warning: no uniquely matching class member found for 
+  Value Json::Value::get(ArrayIndex index, const Value &defaultValue) const
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:1127: warning: documented symbol `bool Json::Value::isValidIndex' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:1129: warning: no uniquely matching class member found for 
+  Value const  * Json::Value::find(char const *begin, char const *end) const
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:1142: warning: no uniquely matching class member found for 
+  const Value & Json::Value::operator[](const char *key) const
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:1148: warning: no uniquely matching class member found for 
+  Value const  & Json::Value::operator[](JSONCPP_STRING const &key) const
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:1155: warning: no uniquely matching class member found for 
+  Value & Json::Value::operator[](const char *key)
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:1159: warning: no uniquely matching class member found for 
+  Value & Json::Value::operator[](const JSONCPP_STRING &key)
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:1163: warning: no uniquely matching class member found for 
+  Value & Json::Value::operator[](const StaticString &key)
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:1179: warning: no uniquely matching class member found for 
+  Value & Json::Value::append(const Value &value)
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:1187: warning: no uniquely matching class member found for 
+  Value Json::Value::get(char const *begin, char const *end, Value const &defaultValue) const
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:1193: warning: no uniquely matching class member found for 
+  Value Json::Value::get(char const *key, Value const &defaultValue) const
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:1196: warning: no uniquely matching class member found for 
+  Value Json::Value::get(JSONCPP_STRING const &key, Value const &defaultValue) const
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:1200: warning: documented symbol `bool Json::Value::removeMember' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:1218: warning: documented symbol `bool Json::Value::removeMember' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:1221: warning: documented symbol `bool Json::Value::removeMember' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:1224: warning: documented symbol `void Json::Value::removeMember' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:1233: warning: documented symbol `void Json::Value::removeMember' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:1237: warning: documented symbol `bool Json::Value::removeIndex' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:1268: warning: documented symbol `bool Json::Value::isMember' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:1272: warning: documented symbol `bool Json::Value::isMember' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:1275: warning: documented symbol `bool Json::Value::isMember' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:1285: warning: documented symbol `Value::Members Json::Value::getMemberNames' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:1331: warning: documented symbol `bool Json::Value::isNull' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:1333: warning: documented symbol `bool Json::Value::isBool' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:1335: warning: documented symbol `bool Json::Value::isInt' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:1354: warning: documented symbol `bool Json::Value::isUInt' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:1377: warning: documented symbol `bool Json::Value::isInt64' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:1397: warning: documented symbol `bool Json::Value::isUInt64' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:1417: warning: documented symbol `bool Json::Value::isIntegral' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:1439: warning: documented symbol `bool Json::Value::isDouble' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:1443: warning: documented symbol `bool Json::Value::isNumeric' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:1445: warning: documented symbol `bool Json::Value::isString' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:1447: warning: documented symbol `bool Json::Value::isArray' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:1449: warning: documented symbol `bool Json::Value::isObject' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:1451: warning: documented symbol `void Json::Value::setComment' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:1463: warning: documented symbol `void Json::Value::setComment' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:1467: warning: documented symbol `void Json::Value::setComment' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:1472: warning: documented symbol `bool Json::Value::hasComment' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:1476: warning: documented symbol `JSONCPP_STRING Json::Value::getComment' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:1482: warning: documented symbol `void Json::Value::setOffsetStart' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:1484: warning: documented symbol `void Json::Value::setOffsetLimit' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:1486: warning: documented symbol `ptrdiff_t Json::Value::getOffsetStart' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:1488: warning: documented symbol `ptrdiff_t Json::Value::getOffsetLimit' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:1490: warning: documented symbol `JSONCPP_STRING Json::Value::toStyledString' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:1500: warning: no uniquely matching class member found for 
+  Value::const_iterator Json::Value::begin() const
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:1513: warning: no uniquely matching class member found for 
+  Value::const_iterator Json::Value::end() const
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:1526: warning: no uniquely matching class member found for 
+  Value::iterator Json::Value::begin()
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:1539: warning: no uniquely matching class member found for 
+  Value::iterator Json::Value::end()
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:1555: warning: documented symbol `Json::PathArgument::PathArgument' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:1557: warning: documented symbol `Json::PathArgument::PathArgument' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:1560: warning: documented symbol `Json::PathArgument::PathArgument' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:1563: warning: documented symbol `Json::PathArgument::PathArgument' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:1569: warning: documented symbol `Json::Path::Path' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:1585: warning: documented symbol `void Json::Path::makePath' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:1616: warning: documented symbol `void Json::Path::addPathInArg' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:1629: warning: documented symbol `void Json::Path::invalidPath' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:1633: warning: documented symbol `const Value & Json::Path::resolve' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:1659: warning: documented symbol `Value Json::Path::resolve' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_value.cpp:1678: warning: documented symbol `Value & Json::Path::make' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_writer.cpp:350: warning: documented symbol `Json::Writer::~Writer' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_writer.cpp:355: warning: documented symbol `Json::FastWriter::FastWriter' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_writer.cpp:359: warning: documented symbol `void Json::FastWriter::enableYAMLCompatibility' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_writer.cpp:361: warning: documented symbol `void Json::FastWriter::dropNullPlaceholders' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_writer.cpp:363: warning: documented symbol `void Json::FastWriter::omitEndingLineFeed' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_writer.cpp:365: warning: no matching class member found for 
+  JSONCPP_STRING Json::FastWriter::write(const Value &root)
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_writer.cpp:373: warning: no matching class member found for 
+  void Json::FastWriter::writeValue(const Value &value)
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_writer.cpp:431: warning: documented symbol `Json::StyledWriter::StyledWriter' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_writer.cpp:434: warning: no matching class member found for 
+  JSONCPP_STRING Json::StyledWriter::write(const Value &root)
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_writer.cpp:445: warning: no matching class member found for 
+  void Json::StyledWriter::writeValue(const Value &value)
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_writer.cpp:505: warning: no matching class member found for 
+  void Json::StyledWriter::writeArrayValue(const Value &value)
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_writer.cpp:548: warning: no matching class member found for 
+  bool Json::StyledWriter::isMultilineArray(const Value &value)
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_writer.cpp:575: warning: no matching class member found for 
+  void Json::StyledWriter::pushValue(const JSONCPP_STRING &value)
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_writer.cpp:582: warning: no matching class member found for 
+  void Json::StyledWriter::writeIndent()
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_writer.cpp:593: warning: no matching class member found for 
+  void Json::StyledWriter::writeWithIndent(const JSONCPP_STRING &value)
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_writer.cpp:598: warning: no matching class member found for 
+  void Json::StyledWriter::indent()
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_writer.cpp:602: warning: no matching class member found for 
+  void Json::StyledWriter::unindent()
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_writer.cpp:607: warning: no matching class member found for 
+  void Json::StyledWriter::writeCommentBeforeValue(const Value &root)
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_writer.cpp:626: warning: no matching class member found for 
+  void Json::StyledWriter::writeCommentAfterValueOnSameLine(const Value &root)
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_writer.cpp:637: warning: no matching class member found for 
+  bool Json::StyledWriter::hasCommentForValue(const Value &value)
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_writer.cpp:646: warning: documented symbol `Json::StyledStreamWriter::StyledStreamWriter' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_writer.cpp:650: warning: no matching class member found for 
+  void Json::StyledStreamWriter::write(JSONCPP_OSTREAM &out, const Value &root)
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_writer.cpp:665: warning: no matching class member found for 
+  void Json::StyledStreamWriter::writeValue(const Value &value)
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_writer.cpp:725: warning: no matching class member found for 
+  void Json::StyledStreamWriter::writeArrayValue(const Value &value)
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_writer.cpp:771: warning: no matching class member found for 
+  bool Json::StyledStreamWriter::isMultilineArray(const Value &value)
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_writer.cpp:798: warning: no matching class member found for 
+  void Json::StyledStreamWriter::pushValue(const JSONCPP_STRING &value)
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_writer.cpp:805: warning: no matching class member found for 
+  void Json::StyledStreamWriter::writeIndent()
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_writer.cpp:813: warning: no matching class member found for 
+  void Json::StyledStreamWriter::writeWithIndent(const JSONCPP_STRING &value)
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_writer.cpp:820: warning: no matching class member found for 
+  void Json::StyledStreamWriter::indent()
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_writer.cpp:822: warning: no matching class member found for 
+  void Json::StyledStreamWriter::unindent()
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_writer.cpp:827: warning: no matching class member found for 
+  void Json::StyledStreamWriter::writeCommentBeforeValue(const Value &root)
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_writer.cpp:845: warning: no matching class member found for 
+  void Json::StyledStreamWriter::writeCommentAfterValueOnSameLine(const Value &root)
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_writer.cpp:856: warning: no matching class member found for 
+  bool Json::StyledStreamWriter::hasCommentForValue(const Value &value)
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_writer.cpp:1159: warning: documented symbol `StreamWriter::StreamWriter' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_writer.cpp:1160: warning: documented symbol `StreamWriter::~StreamWriter' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_writer.cpp:1161: warning: documented symbol `Json::StreamWriter::Factory::~Factory' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_writer.cpp:1162: warning: documented symbol `Json::StreamWriterBuilder::StreamWriterBuilder' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_writer.cpp:1163: warning: documented symbol `Json::StreamWriterBuilder::~StreamWriterBuilder' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_writer.cpp:1164: warning: documented symbol `StreamWriter * Json::StreamWriterBuilder::newStreamWriter' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_writer.cpp:1215: warning: documented symbol `bool Json::StreamWriterBuilder::validate' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_writer.cpp:1232: warning: no uniquely matching class member found for 
+  Value & Json::StreamWriterBuilder::operator[](JSONCPP_STRING key)
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_writer.cpp:1236: warning: documented symbol `void Json::StreamWriterBuilder::setDefaults' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_reader.cpp:68: warning: documented symbol `Json::Features::Features' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_reader.cpp:72: warning: no matching class member found for 
+  Features Json::Features::all()
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_reader.cpp:74: warning: documented symbol `Features Json::Features::strictMode' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_reader.cpp:86: warning: no matching class member found for 
+  bool Json::Reader::containsNewLine(Reader::Location begin, Reader::Location end)
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_reader.cpp:96: warning: documented symbol `Json::Reader::Reader' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_reader.cpp:101: warning: documented symbol `Json::Reader::Reader' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_reader.cpp:106: warning: no uniquely matching class member found for 
+  bool Json::Reader::parse(const std::string &document, Value &root, bool collectComments)
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_reader.cpp:115: warning: no uniquely matching class member found for 
+  bool Json::Reader::parse(std::istream &is, Value &root, bool collectComments)
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_reader.cpp:128: warning: no uniquely matching class member found for 
+  bool Json::Reader::parse(const char *beginDoc, const char *endDoc, Value &root, bool collectComments)
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_reader.cpp:169: warning: no matching class member found for 
+  bool Json::Reader::readValue()
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_reader.cpp:246: warning: no matching class member found for 
+  void Json::Reader::skipCommentTokens(Token &token)
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_reader.cpp:256: warning: no matching class member found for 
+  bool Json::Reader::readToken(Token &token)
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_reader.cpp:327: warning: no matching class member found for 
+  void Json::Reader::skipSpaces()
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_reader.cpp:337: warning: no matching class member found for 
+  bool Json::Reader::match(Location pattern, int patternLength)
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_reader.cpp:348: warning: no matching class member found for 
+  bool Json::Reader::readComment()
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_reader.cpp:371: warning: no matching class member found for 
+  JSONCPP_STRING Json::Reader::normalizeEOL(Reader::Location begin, Reader::Location end)
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_reader.cpp:391: warning: no matching class member found for 
+  void Json::Reader::addComment(Location begin, Location end, CommentPlacement placement)
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_reader.cpp:404: warning: no matching class member found for 
+  bool Json::Reader::readCStyleComment()
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_reader.cpp:413: warning: no matching class member found for 
+  bool Json::Reader::readCppStyleComment()
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_reader.cpp:429: warning: no matching class member found for 
+  void Json::Reader::readNumber()
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_reader.cpp:451: warning: no matching class member found for 
+  bool Json::Reader::readString()
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_reader.cpp:463: warning: no matching class member found for 
+  bool Json::Reader::readObject(Token &token)
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_reader.cpp:519: warning: no matching class member found for 
+  bool Json::Reader::readArray(Token &token)
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_reader.cpp:557: warning: no uniquely matching class member found for 
+  bool Json::Reader::decodeNumber(Token &token)
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_reader.cpp:567: warning: no uniquely matching class member found for 
+  bool Json::Reader::decodeNumber(Token &token, Value &decoded)
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_reader.cpp:610: warning: no uniquely matching class member found for 
+  bool Json::Reader::decodeDouble(Token &token)
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_reader.cpp:620: warning: no uniquely matching class member found for 
+  bool Json::Reader::decodeDouble(Token &token, Value &decoded)
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_reader.cpp:632: warning: no uniquely matching class member found for 
+  bool Json::Reader::decodeString(Token &token)
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_reader.cpp:643: warning: no uniquely matching class member found for 
+  bool Json::Reader::decodeString(Token &token, JSONCPP_STRING &decoded)
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_reader.cpp:696: warning: no matching class member found for 
+  bool Json::Reader::decodeUnicodeCodePoint(Token &token, Location &current, Location end, unsigned int &unicode)
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_reader.cpp:723: warning: no matching class member found for 
+  bool Json::Reader::decodeUnicodeEscapeSequence(Token &token, Location &current, Location end, unsigned int &ret_unicode)
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_reader.cpp:750: warning: no matching class member found for 
+  bool Json::Reader::addError(const JSONCPP_STRING &message, Token &token, Location extra)
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_reader.cpp:761: warning: no matching class member found for 
+  bool Json::Reader::recoverFromError(TokenType skipUntilToken)
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_reader.cpp:774: warning: no matching class member found for 
+  bool Json::Reader::addErrorAndRecover(const JSONCPP_STRING &message, Token &token, TokenType skipUntilToken)
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_reader.cpp:781: warning: no matching class member found for 
+  Value & Json::Reader::currentValue()
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_reader.cpp:783: warning: no matching class member found for 
+  Reader::Char Json::Reader::getNextChar()
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_reader.cpp:789: warning: no uniquely matching class member found for 
+  void Json::Reader::getLocationLineAndColumn(Location location, int &line, int &column) const
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_reader.cpp:812: warning: no uniquely matching class member found for 
+  JSONCPP_STRING Json::Reader::getLocationLineAndColumn(Location location) const
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_reader.cpp:821: warning: documented symbol `JSONCPP_STRING Json::Reader::getFormatedErrorMessages' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_reader.cpp:825: warning: no matching class member found for 
+  JSONCPP_STRING Json::Reader::getFormattedErrorMessages() const
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_reader.cpp:840: warning: no matching class member found for 
+  std::vector< Reader::StructuredError > Json::Reader::getStructuredErrors() const
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_reader.cpp:854: warning: no uniquely matching class member found for 
+  bool Json::Reader::pushError(const Value &value, const JSONCPP_STRING &message)
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_reader.cpp:870: warning: no uniquely matching class member found for 
+  bool Json::Reader::pushError(const Value &value, const JSONCPP_STRING &message, const Value &extra)
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_reader.cpp:889: warning: no matching class member found for 
+  bool Json::Reader::good() const
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_reader.cpp:1925: warning: documented symbol `Json::CharReaderBuilder::CharReaderBuilder' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_reader.cpp:1926: warning: documented symbol `Json::CharReaderBuilder::~CharReaderBuilder' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_reader.cpp:1927: warning: documented symbol `CharReader * Json::CharReaderBuilder::newCharReader' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_reader.cpp:1955: warning: documented symbol `bool Json::CharReaderBuilder::validate' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_reader.cpp:1972: warning: no uniquely matching class member found for 
+  Value & Json::CharReaderBuilder::operator[](JSONCPP_STRING key)
+
+/home/arash/Projects/jsoncpp/src/lib_json/json_reader.cpp:1976: warning: documented symbol `void Json::CharReaderBuilder::strictMode' was not declared or defined.
+/home/arash/Projects/jsoncpp/src/lib_json/json_reader.cpp:1990: warning: documented symbol `void Json::CharReaderBuilder::setDefaults' was not declared or defined.
