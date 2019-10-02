@@ -233,11 +233,11 @@ bool System::Solve(bool applyparameters)
 		
 	if (applyparameters) ApplyParameters();
     InitiateOutputs();
-    PopulateOutputs();
-
+    
     SolverTempVars.dt_base = SimulationParameters.dt0;
     SolverTempVars.dt = SolverTempVars.dt_base;
     SolverTempVars.t = SimulationParameters.tstart;
+	PopulateOutputs();
 
     while (SolverTempVars.t<SimulationParameters.tend+SolverTempVars.dt)
     {
