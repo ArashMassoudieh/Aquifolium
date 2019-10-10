@@ -4,6 +4,7 @@
 #include "System.h"
 #include <iostream>
 #include "GA.h"
+#include "MCMC/MCMC.h"
 #include "Script.h"
 
 using namespace std;

@@ -4,14 +4,6 @@
 #include "Individual.h"
 #include "Distribution.h"
 #include <stdio.h>
-#ifdef GIFMOD
-#include "Medium.h"
-#include "MediumSet.h"
-#endif
-#ifdef GWA
-#include "gwa.h"
-#endif
-
 #include "BTC.h"
 #include "DistributionNUnif.h"
 #include "math.h"
