@@ -17,6 +17,12 @@
 #endif
 #include "ErrorHandler.h"
 
+#ifdef _DEBUG
+#define CVector_arma CVector
+#define CMatrix_arma CMatrix
+#endif // _DEBUG
+
+
 struct solversettings
 {
     double C_N_weight; //Crank-Nicholson Weight

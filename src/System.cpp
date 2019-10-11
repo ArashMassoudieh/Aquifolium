@@ -241,7 +241,8 @@ bool System::Solve(bool applyparameters)
 
     while (SolverTempVars.t<SimulationParameters.tend+SolverTempVars.dt)
     {
-        SolverTempVars.dt = min(SolverTempVars.dt_base,GetMinimumNextTimeStepSize());
+		cout << "\r Simulation Time: " + aquiutils::numbertostring(SolverTempVars.t);
+		SolverTempVars.dt = min(SolverTempVars.dt_base,GetMinimumNextTimeStepSize());
         if (SolverTempVars.dt<SimulationParameters.dt0/100) SolverTempVars.dt=SimulationParameters.dt0/100;
         #ifdef Debug_mode
         ShowMessage(string("t = ") + numbertostring(SolverTempVars.t) + ", dt_base = " + numbertostring(SolverTempVars.dt_base) + ", dt = " + numbertostring(SolverTempVars.dt) + ", SolverTempVars.numiterations =" + numbertostring(SolverTempVars.numiterations));
@@ -492,7 +493,7 @@ bool System::OneStepSolve(int statevarno)
 		double err;
 		double err_p = err = err_ini;
 		
-		while (err/err_ini>SolverSettings.NRtolerance && err>1e-12)
+		while ((err/err_ini>SolverSettings.NRtolerance && err>1e-12) || SolverTempVars.numiterations[statevarno]>SolverSettings.NR_niteration_max)
         {
             SolverTempVars.numiterations[statevarno]++;
             if (SolverTempVars.updatejacobian[statevarno])
@@ -502,14 +503,29 @@ bool System::OneStepSolve(int statevarno)
                 SolverTempVars.NR_coefficient[statevarno] = 1;
             }
             X = X - SolverTempVars.NR_coefficient[statevarno]*SolverTempVars.Inverse_Jacobian[statevarno]*F;
-            F = GetResiduals(variable, X);
+			if (!X.is_finite())
+			{
+				SolverTempVars.fail_reason.push_back("at " + aquiutils::numbertostring(SolverTempVars.t) + ": X is infinite");
+				return false; 
+			}
+			
+			F = GetResiduals(variable, X);
+			if (!F.is_finite())
+			{
+				SolverTempVars.fail_reason.push_back("at " + aquiutils::numbertostring(SolverTempVars.t) + ": F is infinite");
+				return false;
+			}
             err_p = err;
             err = F.norm2();
             #ifdef Debug_mode
             //ShowMessage(numbertostring(err));
             #endif // Debug_mode
-            if (err>err_p)
-                SolverTempVars.NR_coefficient[statevarno]*=SolverSettings.NR_coeff_reduction_factor;
+			if (err > err_p)
+			{
+				SolverTempVars.NR_coefficient[statevarno] *= SolverSettings.NR_coeff_reduction_factor;
+				SolverTempVars.updatejacobian[statevarno] = true;
+				X = X_past; 
+			}
             //else
             //    SolverTempVars.NR_coefficient/=SolverSettings.NR_coeff_reduction_factor;
             if (SolverTempVars.numiterations[statevarno]>SolverSettings.NR_niteration_max)
@@ -535,7 +551,15 @@ bool System::OneStepSolve(int statevarno)
         }
     }
 	if (attempts == 2)
-		return false; 
+	{
+		SolverTempVars.fail_reason.push_back("at " + aquiutils::numbertostring(SolverTempVars.t) + ": attempts > 1");
+		return false;
+	}
+	if (SolverTempVars.numiterations[statevarno] > SolverSettings.NR_niteration_max)
+	{
+		SolverTempVars.fail_reason.push_back("at " + aquiutils::numbertostring(SolverTempVars.t) + ": number of iterations exceeded the limit");
+		return false;
+	}
 	#ifdef Debug_mode
 //	CMatrix_arma M = Jacobian("Storage",X);
 //	M.writetofile("M.txt");
