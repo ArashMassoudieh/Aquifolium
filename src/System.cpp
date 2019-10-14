@@ -446,8 +446,11 @@ void System::PopulateOutputs()
     for (unsigned int i=0; i<blocks.size(); i++)
     {
         for (map<string, Quan>::iterator it = blocks[i].GetVars()->begin(); it != blocks[i].GetVars()->end(); it++)
-            if (it->second.IncludeInOutput())
-                Outputs.AllOutputs[blocks[i].GetName() + "_" + it->first].append(SolverTempVars.t,blocks[i].GetVal(it->first,Expression::timing::present));
+			if (it->second.IncludeInOutput())
+			{
+				blocks[i].CalcExpressions(Expression::timing::present); 
+				Outputs.AllOutputs[blocks[i].GetName() + "_" + it->first].append(SolverTempVars.t, blocks[i].GetVal(it->first, Expression::timing::present));
+			}
     }
 
     for (unsigned int i=0; i<links.size(); i++)
@@ -455,7 +458,8 @@ void System::PopulateOutputs()
         for (map<string, Quan>::iterator it = links[i].GetVars()->begin(); it != links[i].GetVars()->end(); it++)
             if (it->second.IncludeInOutput())
             {
-                Outputs.AllOutputs[links[i].GetName() + "_" + it->first].append(SolverTempVars.t,links[i].GetVal(it->first,Expression::timing::present,true));
+				links[i].CalcExpressions(Expression::timing::present); 
+				Outputs.AllOutputs[links[i].GetName() + "_" + it->first].append(SolverTempVars.t,links[i].GetVal(it->first,Expression::timing::present,true));
             }
     }
 

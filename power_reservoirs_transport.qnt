@@ -106,7 +106,7 @@
 		},
 		"mass_flow": {
 			"type": "expression",		
-			"expression": "_ups(flow,(Pollutant/Storage))",
+			"expression": "_ups(flow;(Pollutant/Storage))",
 			"includeinoutput": "true",
 			"applylimit": "true",
 			"ask_user": "true"
@@ -131,7 +131,7 @@
 		},
 		"mass_flow": {
 			"type": "expression",		
-			"expression": "_ups(flow,(Pollutant/Storage))",
+			"expression": "_ups(flow;(Pollutant/Storage))",
 			"includeinoutput": "true",
 			"applylimit": "true",
 			"ask_user": "true"
@@ -197,7 +197,7 @@
 		},
 		"mass_flow": {
 			"type": "expression",		
-			"expression": "_ups(flow,(Pollutant/Storage))",
+			"expression": "_ups(flow;(Pollutant/Storage))",
 			"includeinoutput": "true",
 			"applylimit": "true",
 			"ask_user": "true"

@@ -265,6 +265,14 @@ bool Object::Update(const string & variable)
 
 }
 
+bool Object::CalcExpressions(const Expression::timing &tmg)
+{
+	for (map<string, Quan>::const_iterator s = var.begin(); s != var.end(); ++s)
+		if (var[s->first].GetType() == Quan::_type::expression)
+			Variable(s->first)->SetVal(Variable(s->first)->CalcVal(tmg),tmg);
+	return true; 
+}
+
 void Object::SetVariableParents()
 {
 	var.SetParent(this);

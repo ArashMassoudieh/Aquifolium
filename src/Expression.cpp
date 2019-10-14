@@ -107,7 +107,7 @@ Expression::Expression(string S)
 					paranthesis_level--;
 
 				if (paranthesis_level == 0)
-					if ((S.substr(i, 1) == "+") || (S.substr(i, 1) == "-") || (S.substr(i, 1) == "*") || (S.substr(i, 1) == "/") || (S.substr(i, 1) == "^"))
+					if ((S.substr(i, 1) == "+") || (S.substr(i, 1) == "-") || (S.substr(i, 1) == "*") || (S.substr(i, 1) == "/") || (S.substr(i, 1) == "^") || (S.substr(i, 1) == ";"))
 					{
 						operators.push_back(S.substr(i, 1));
 						Expression sub_exp = Expression(aquiutils::trim(S.substr(last_operator_location+1, i -1- last_operator_location)));
@@ -456,13 +456,13 @@ double Expression::oprt(string &f, unsigned int i1, unsigned int i2, Object *W, 
 	double val1;
 	double val2;
 	if (terms_calculated[i1]) val1 = term_vals[i1]; else val1 = terms[i1].calc(W, tmg, limit);
-	if (terms[i1].sign == "/") val1 = 1/val1;
+	if (terms[i1].sign == "/") val1 = 1/(val1+1e-23);
 	if (terms[i1].sign == "-") val1 = -val1;
 	if (sources.size() > i2)
 		if (terms_calculated[i2]) val2 = term_vals[i2]; else
 		{
 			val2 = terms[i2].calc(W, tmg, limit);
-			if (terms[i2].sign == "/") val2 = 1 / val2;
+			if (terms[i2].sign == "/") val2 = 1 / (val2+1e-23);
 			if (terms[i2].sign == "-") val2 = -val2;
 		}
 	else
@@ -957,7 +957,7 @@ string aquiutils::numbertostring(vector<double> x)
 	for (int i=0; i<x.size()-1;i++)
         Result += aquiutils::numbertostring(x[i])+",";
     Result += aquiutils::numbertostring(x[x.size()-1]) + "]";
-
+	return Result;
 }
 
 string aquiutils::numbertostring(int x)
@@ -975,7 +975,7 @@ string aquiutils::numbertostring(vector<int> x)
 	for (int i=0; i<x.size()-1;i++)
         Result += aquiutils::numbertostring(x[i])+",";
     Result += aquiutils::numbertostring(x[x.size()-1]) + "]";
-
+	return Result;
 }
 
 string aquiutils::tail(std::string const& source, size_t const length) {
