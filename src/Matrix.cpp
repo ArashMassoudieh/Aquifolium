@@ -1076,3 +1076,8 @@ CMatrix::CMatrix(CMatrix_arma &M)
 			matr[i][j] = M(i, j);
 
 }
+
+double& CMatrix::operator()(int i, int j)
+{
+	return matr[i].vec[j];
+}
