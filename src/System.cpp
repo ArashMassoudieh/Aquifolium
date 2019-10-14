@@ -226,14 +226,14 @@ bool System::Solve(bool applyparameters)
     #else
         ShowMessage("Simulation started!");
     #endif
-    
+
 	SolverTempVars.SetUpdateJacobian(true);
 	alltimeseries = TimeSeries();
 	bool success = true;
-		
+
 	if (applyparameters) ApplyParameters();
     InitiateOutputs();
-    
+
     SolverTempVars.dt_base = SimulationParameters.dt0;
     SolverTempVars.dt = SolverTempVars.dt_base;
     SolverTempVars.t = SimulationParameters.tstart;
@@ -245,7 +245,7 @@ bool System::Solve(bool applyparameters)
 		SolverTempVars.dt = min(SolverTempVars.dt_base,GetMinimumNextTimeStepSize());
         if (SolverTempVars.dt<SimulationParameters.dt0/100) SolverTempVars.dt=SimulationParameters.dt0/100;
         #ifdef Debug_mode
-        ShowMessage(string("t = ") + numbertostring(SolverTempVars.t) + ", dt_base = " + numbertostring(SolverTempVars.dt_base) + ", dt = " + numbertostring(SolverTempVars.dt) + ", SolverTempVars.numiterations =" + numbertostring(SolverTempVars.numiterations));
+        ShowMessage(string("t = ") + aquiutils::numbertostring(SolverTempVars.t) + ", dt_base = " + aquiutils::numbertostring(SolverTempVars.dt_base) + ", dt = " + aquiutils::numbertostring(SolverTempVars.dt) + ", SolverTempVars.numiterations =" + aquiutils::numbertostring(SolverTempVars.numiterations));
         #endif // Debug_mode
         #ifdef QT_version
         if (rtw)
@@ -472,7 +472,7 @@ bool System::OneStepSolve(int statevarno)
 	string variable = solvevariableorder[statevarno];
 	Renew(variable);
 
-    
+
     SolverTempVars.numiterations[statevarno] = 0;
     bool switchvartonegpos = true;
     int attempts = 0;
@@ -482,9 +482,9 @@ bool System::OneStepSolve(int statevarno)
 		for (int i = 0; i < blocks.size(); i++)
 		{
 			if (blocks[i].GetLimitedOutflow())
-				X[i] = blocks[i].GetOutflowLimitFactor(Expression::timing::past); 
+				X[i] = blocks[i].GetOutflowLimitFactor(Expression::timing::past);
 		}
-		
+
 		CVector_arma X_past = X;
 
 		CVector_arma F = GetResiduals(variable, X);
@@ -492,7 +492,7 @@ bool System::OneStepSolve(int statevarno)
 		double err_ini = F.norm2();
 		double err;
 		double err_p = err = err_ini;
-		
+
 		while ((err/err_ini>SolverSettings.NRtolerance && err>1e-12) || SolverTempVars.numiterations[statevarno]>SolverSettings.NR_niteration_max)
         {
             SolverTempVars.numiterations[statevarno]++;
@@ -506,9 +506,9 @@ bool System::OneStepSolve(int statevarno)
 			if (!X.is_finite())
 			{
 				SolverTempVars.fail_reason.push_back("at " + aquiutils::numbertostring(SolverTempVars.t) + ": X is infinite");
-				return false; 
+				return false;
 			}
-			
+
 			F = GetResiduals(variable, X);
 			if (!F.is_finite())
 			{
@@ -524,7 +524,7 @@ bool System::OneStepSolve(int statevarno)
 			{
 				SolverTempVars.NR_coefficient[statevarno] *= SolverSettings.NR_coeff_reduction_factor;
 				SolverTempVars.updatejacobian[statevarno] = true;
-				X = X_past; 
+				X = X_past;
 			}
             //else
             //    SolverTempVars.NR_coefficient/=SolverSettings.NR_coeff_reduction_factor;
@@ -546,7 +546,7 @@ bool System::OneStepSolve(int statevarno)
                 blocks[i].SetLimitedOutflow(false);
                 switchvartonegpos = true;
                 SolverTempVars.updatejacobian[statevarno] = true;
-				attempts++; 
+				attempts++;
             }
         }
     }
@@ -767,7 +767,7 @@ void System::clear()
 void System::TransferQuantitiesFromMetaModel()
 {
     solvevariableorder = metamodel.solvevariableorder;
-	SetNumberOfStateVariables(solvevariableorder.size()); // The size of the SolutionTemporaryVariables are adjusted based on the number of state variables. 
+	SetNumberOfStateVariables(solvevariableorder.size()); // The size of the SolutionTemporaryVariables are adjusted based on the number of state variables.
     vector<string> out;
     for (map<string, QuanSet>::iterator it = metamodel.GetMetaModel()->begin(); it != metamodel.GetMetaModel()->end(); it++)
         GetVars()->Append(it->second);
