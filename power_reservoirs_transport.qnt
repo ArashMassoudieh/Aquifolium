@@ -174,14 +174,14 @@
 			"description": "Initial Storage",
 			"ask_user": "true"
 		},
-                "Pollutant": {
+      "Pollutant": {
 			"type": "balance",		
 			"massbalance": "true",
 			"flow": "mass_flow",
 			"includeinoutput": "true",
 			"description": "Initial Pollutant Mass",
 			"ask_user": "true"
-		},
+		}
 	},
 "User_flow": {
 		"type": "link",
@@ -201,6 +201,6 @@
 			"includeinoutput": "true",
 			"applylimit": "true",
 			"ask_user": "true"
-		},
+		}
 	}
 }
