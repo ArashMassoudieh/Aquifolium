@@ -81,6 +81,7 @@
 		<Unit filename="include/QuickSort.h" />
 		<Unit filename="include/Rule.h" />
 		<Unit filename="include/Script.h" />
+		<Unit filename="include/Source.h" />
 		<Unit filename="include/System.h" />
 		<Unit filename="include/Vector.h" />
 		<Unit filename="include/Vector_arma.h" />

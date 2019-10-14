@@ -5,21 +5,6 @@
 #include "NormalDist.h"
 #include "GA.h"
 #include "Vector.h"
-#ifdef GIFMOD
-#include "Medium.h"
-
-
-
-
-
-#endif
-#ifdef GWA
-#include"gwa.h"
-
-
-
-
-#endif
 
 using namespace std;
 
@@ -32,31 +17,16 @@ struct Param
 	double mean, std;
 };
 
+template<class T>
 class CMCMC
 {
 public:
-#ifdef GIFMOD
-	CMediumSet G;
-	CMediumSet G_out;
 
-
-
-
-
-#endif
-#ifdef GWA
-	CGWASet G;
-	CGWASet G_out;
-
-
-
-
-
-#endif
-
+	T G;
+	T G_out;
 	CMCMC(void);
 	CMCMC(int nn, int nn_chains);
-	CMCMC(const CGA &GA);
+	CMCMC(const CGA<T> &GA);
 	~CMCMC(void);
 	int n;
 	int n_chains;
@@ -84,7 +54,7 @@ public:
     int getparamno(int j);
     double posterior(vector<double> par, bool out);
 	bool logtrans, fixedstd;
-    void getfromGA(const CGA &GA);
+    void getfromGA(const CGA<T> &GA);
 	string outputfilename;
 	int nsamples;
     int getparamno(int i,int ts)const;
@@ -95,23 +65,7 @@ public:
 	int writeinterval;
     CVector sensitivity(double d, vector<double> par);
     CVector sensitivity_ln(double d, vector<double> par);
-	runtimeWindow * rtw = 0;
-#ifdef GIFMOD
-    vector<CBTCSet*> model(vector<double> par);
-#endif
-#ifdef GWA
-    vector<CBTCSet> model(vector<double> par);
-#endif
-    vector<CBTCSet> model_lumped(vector<double> par);
-#ifdef GIFMOD
-    vector<CBTCSet> model_lumped(vector<double> par, CMedium &)const ;
-    CMatrix sensitivity_mat_lumped(double d, vector<double> par, CMedium &) const;
-#endif
-#ifdef GWA
-    vector<CBTCSet> model_lumped(vector<double> par, CGWA &)const ;
-    CMatrix sensitivity_mat_lumped(double d, vector<double> par, CGWA &) const;
-#endif
-//CMatrix sensitivity_mat(double d, vector<double> par);
+	//runtimeWindow * rtw = 0;
     CMatrix sensitivity_mat_lumped(double d, vector<double> par);
     CBTCSet prior_distribution(int n_bins);
 	double purt_fac;
@@ -142,3 +96,4 @@ public:
 
 };
 
+#include "../src/MCMC/MCMC.hpp"

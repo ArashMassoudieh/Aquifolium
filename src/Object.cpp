@@ -19,6 +19,8 @@ Object::Object(const Object& other)
     parent = other.GetParent();
 	s_Block_no = other.s_Block_no;
 	e_Block_no = other.e_Block_no;
+	outflowlimitfactor_current = other.outflowlimitfactor_current;
+	outflowlimitfactor_past = other.outflowlimitfactor_past;
 	type = other.type;
 	SetAllParents();
 }
@@ -34,6 +36,8 @@ Object& Object::operator=(const Object& rhs)
 	e_Block_no = rhs.e_Block_no;
 	type = rhs.type;
     SetAllParents();
+	outflowlimitfactor_current = rhs.outflowlimitfactor_current; 
+	outflowlimitfactor_past = rhs.outflowlimitfactor_past;
     return *this;
 }
 
@@ -63,7 +67,7 @@ double Object::GetVal(const string& s,const Expression::timing &tmg, bool limit)
         if (!limit)
             return var[s].GetVal(tmg);
         else
-            return var[s].GetVal(tmg)*outflowlimitfactor;
+            return var[s].GetVal(tmg)*GetOutflowLimitFactor(tmg);
     }
     else
     {

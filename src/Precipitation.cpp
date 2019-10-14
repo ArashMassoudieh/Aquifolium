@@ -164,8 +164,17 @@ CBTCSet CPrecipitation::getflow(double A)
 	CBTCSet Rainflowout(1);
 	Rainflowout.names.clear();
 	Rainflowout.names.push_back("flow");
-	for (int ii = 0; ii<n; ii++)
-		Rainflowout.BTC[0].append((e[ii] + s[ii])*0.5, i[ii] / (e[ii] - s[ii])*A);  //i [m]
+	for (int ii = 0; ii < n; ii++)
+	{
+		if (ii>0)
+			if (s[ii] > e[ii-1]) 
+				Rainflowout.BTC[0].append(-0.5*e[ii] + 1.5*s[ii] , 0);
+		
+		Rainflowout.BTC[0].append((e[ii] + s[ii]) * 0.5, i[ii] / (e[ii] - s[ii]) * A);  //i [m]
+		if (ii < n - 1)
+			if (e[ii] < s[ii + 1])
+				Rainflowout.BTC[0].append(1.5 * s[ii] - 0.5 * s[ii], 0);
+	}
 
 	Rainflowout.BTC[0].assign_D();
 	return Rainflowout;
