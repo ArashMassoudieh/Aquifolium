@@ -8,6 +8,9 @@
 #include <Block.h>
 #include <fstream>
 #include <sstream>
+#include <cctype>
+#include <cstring>
+#include <cstdio>
 
 
 using namespace std;
