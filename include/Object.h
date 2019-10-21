@@ -42,13 +42,30 @@ class Object
         void Set_e_Block(Object *O) { e_Block = O; }
 		bool Renew(const string &variable);
 		bool Update(const string &variable);
+		bool CalcExpressions(const Expression::timing& tmg);
 		vector<CTimeSeries*> TimeSeries() {return var.TimeSeries();}
 		QuanSet* GetVars()
             {
                 return &var;
             }
-        void SetOutflowLimitFactor(const double &val) {outflowlimitfactor = val;}
-        double GetOutflowLimitFactor() {return outflowlimitfactor;}
+        void SetOutflowLimitFactor(const double &val, const Expression::timing &tmg) 
+		{
+			if (tmg == Expression::timing::past)
+				outflowlimitfactor_past = val;
+			else 
+				outflowlimitfactor_current = val;
+		
+		
+		}
+        double GetOutflowLimitFactor(const Expression::timing &tmg)
+		{
+			
+			if (tmg == Expression::timing::past)
+				return outflowlimitfactor_past;
+			else
+				return outflowlimitfactor_current;
+		
+		}
         void SetLimitedOutflow(bool x) {limitoutflow = x;}
         bool GetLimitedOutflow() {return limitoutflow;}
 		void SetVariableParents();
@@ -71,7 +88,8 @@ class Object
         Object *e_Block;
         int s_Block_no, e_Block_no;
         string type;
-        double outflowlimitfactor = 1;
+        double outflowlimitfactor_past = 1;
+		double outflowlimitfactor_current = 1;
         bool limitoutflow = false;
 
 };

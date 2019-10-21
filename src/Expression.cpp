@@ -8,9 +8,7 @@
 #include <Block.h>
 #include <fstream>
 #include <sstream>
-#include <cctype>
-#include <cstring>
-#include <cstdio>
+#include "System.h"
 
 
 using namespace std;
@@ -49,6 +47,7 @@ Expression::Expression(string S)
 	funcs.push_back("_sqr");
 	funcs.push_back("_pos");
 	funcs.push_back("_hsd");
+	funcs.push_back("_ups");
 	opts.push_back("+");
 	opts.push_back("-");
 	opts.push_back("*");
@@ -108,7 +107,7 @@ Expression::Expression(string S)
 					paranthesis_level--;
 
 				if (paranthesis_level == 0)
-					if ((S.substr(i, 1) == "+") || (S.substr(i, 1) == "-") || (S.substr(i, 1) == "*") || (S.substr(i, 1) == "/") || (S.substr(i, 1) == "^"))
+					if ((S.substr(i, 1) == "+") || (S.substr(i, 1) == "-") || (S.substr(i, 1) == "*") || (S.substr(i, 1) == "/") || (S.substr(i, 1) == "^") || (S.substr(i, 1) == ";"))
 					{
 						operators.push_back(S.substr(i, 1));
 						Expression sub_exp = Expression(aquiutils::trim(S.substr(last_operator_location+1, i -1- last_operator_location)));
@@ -283,6 +282,32 @@ double Expression::calc(Object *W, const timing &tmg, bool limit)
     terms_calculated.clear();
     sources.clear();
 
+	if (function=="ups")
+	{
+        if (terms.size()!=2)
+        {
+            W->Parent()->errorhandler.Append(W->GetName(),"Expression","calc","Function 'ups' requiers two arguments", 7001);
+            return 0;
+        }
+        else if ((W->GetConnectedBlock(Expression::loc::source)==nullptr) || (W->GetConnectedBlock(Expression::loc::destination)==nullptr))
+        {
+            W->Parent()->errorhandler.Append(W->GetName(),"Expression","calc","When function 'ups' is used the object must have source and destination", 7002);
+            return 0;
+        }
+        else
+        {
+            double flow = terms[0].calc(W,tmg,limit);
+            if (flow>0)
+            {
+                return flow*terms[1].calc(W->GetConnectedBlock(Expression::loc::source),tmg,limit);
+            }
+            else
+            {
+                return flow*terms[1].calc(W->GetConnectedBlock(Expression::loc::destination),tmg,limit);
+            }
+        }
+	}
+
 	if (param_constant_expression == "constant")
 		return constant;
 	if (param_constant_expression == "parameter")
@@ -431,13 +456,13 @@ double Expression::oprt(string &f, unsigned int i1, unsigned int i2, Object *W, 
 	double val1;
 	double val2;
 	if (terms_calculated[i1]) val1 = term_vals[i1]; else val1 = terms[i1].calc(W, tmg, limit);
-	if (terms[i1].sign == "/") val1 = 1/val1;
+	if (terms[i1].sign == "/") val1 = 1/(val1+1e-23);
 	if (terms[i1].sign == "-") val1 = -val1;
 	if (sources.size() > i2)
 		if (terms_calculated[i2]) val2 = term_vals[i2]; else
 		{
 			val2 = terms[i2].calc(W, tmg, limit);
-			if (terms[i2].sign == "/") val2 = 1 / val2;
+			if (terms[i2].sign == "/") val2 = 1 / (val2+1e-23);
 			if (terms[i2].sign == "-") val2 = -val2;
 		}
 	else
@@ -926,12 +951,30 @@ string aquiutils::numbertostring(double x)
 	return Result;
 }
 
+string aquiutils::numbertostring(vector<double> x)
+{
+	string Result = "[";
+	for (int i=0; i<x.size()-1;i++)
+        Result += aquiutils::numbertostring(x[i])+",";
+    Result += aquiutils::numbertostring(x[x.size()-1]) + "]";
+	return Result;
+}
+
 string aquiutils::numbertostring(int x)
 {
 	string Result;          // string which will contain the result
 	ostringstream convert;   // stream used for the conversion
 	convert << x;      // insert the textual representation of 'Number' in the characters in the stream
 	Result = convert.str();
+	return Result;
+}
+
+string aquiutils::numbertostring(vector<int> x)
+{
+	string Result = "[";
+	for (int i=0; i<x.size()-1;i++)
+        Result += aquiutils::numbertostring(x[i])+",";
+    Result += aquiutils::numbertostring(x[x.size()-1]) + "]";
 	return Result;
 }
 
@@ -978,10 +1021,10 @@ string aquiutils::tabs(int i)
 
 bool aquiutils::And(vector<bool> x) { bool out = true;  for (int i = 0; i < x.size(); i++) out &= x[i]; return out; }
 double aquiutils::max(vector<double> x) { double out = -1e+24;  for (int i = 0; i < x.size(); i++) out=std::max(out, x[i]); return out; }
-int aquiutils::max(vector<int> x) 
-{	int out = -37000;  
-	for (int i = 0; i < x.size(); i++) 
-		out=std::max(out, x[i]); 
+int aquiutils::max(vector<int> x)
+{	int out = -37000;
+	for (int i = 0; i < x.size(); i++)
+		out=std::max(out, x[i]);
 	return out;
 
 }

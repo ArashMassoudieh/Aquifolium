@@ -6,11 +6,15 @@
 #include "GA.h"
 #include "Script.h"
 
+
+
+
+
 using namespace std;
 
 int main()
 {
-    cout<<"Input file name:";
+	cout<<"Input file name:";
     string filename;
     cin>>filename;
     Script scr(filename);
