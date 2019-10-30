@@ -8,6 +8,7 @@
 #include <Block.h>
 #include <fstream>
 #include <sstream>
+#include <cctype>
 #include "System.h"
 
 

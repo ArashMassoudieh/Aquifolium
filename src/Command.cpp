@@ -463,7 +463,8 @@ bool Command::Execute(System *_sys)
                     succeed = sys->AppendObjectiveFunction(assignments["name"],assignments["object"],Expression(assignments["expression"]));
                 else
                     succeed = sys->AppendObjectiveFunction(assignments["name"],assignments["object"],Expression(assignments["expression"]), aquiutils::atof(assignments["weight"]));
-                for (map<string,string>::iterator it=assignments.begin(); it!=assignments.end(); it++)
+				if (!succeed) return false; 
+				for (map<string,string>::iterator it=assignments.begin(); it!=assignments.end(); it++)
                 {
                     if (it->first!="name" && it->first!="object" && it->first!="expression" && it->first!="weight")
                     {
