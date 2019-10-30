@@ -23,7 +23,7 @@ Script::Script(const string &filename, System *sys)
     fstream file(filename);
     if (!file.good())
     {
-        cout<< "File '" + filename + "' was not found!"<<endl;
+        cout<< "File '" + filename + "' was not found!"<<std::endl;
         return;
     }
     while (!file.eof())

@@ -274,7 +274,7 @@ double Expression::calc(Object *W, const timing &tmg, bool limit)
 {
 	if (!W)
 	{
-		cout << "Pointer is empty!" << endl;
+		cout << "Pointer is empty!" << std::endl;
 		return 0;
 	}
 
@@ -898,7 +898,7 @@ void aquiutils::writeline(ofstream& f, vector<string> s, string del=",")
 {
 	for (unsigned int i=0; i<s.size()-1; i++)
 		f<<s[i]<<del;
-	f<<s[s.size()-1]<<endl;
+	f<<s[s.size()-1]<<std::endl;
 }
 
 void aquiutils::writeline(ofstream& f, vector<vector<string>> s, string del=",", string del2="&")
@@ -908,7 +908,7 @@ void aquiutils::writeline(ofstream& f, vector<vector<string>> s, string del=",",
 			f<<s[i][j]<<del2;
 		f<<s[i][s[i].size()-1]<<del;
 	}
-	f<<s[s.size()-1][s[s.size()-1].size()-1]<<endl;
+	f<<s[s.size()-1][s[s.size()-1].size()-1]<<std::endl;
 }
 void aquiutils::writestring(ofstream& f, string s)
 {
@@ -929,7 +929,7 @@ void aquiutils::writenumber(ofstream& f, double s)
 
 void aquiutils::writeendl(ofstream& f)
 {
-	f<<endl;
+	f<<std::endl;
 }
 
 double aquiutils::Heavyside(double x)

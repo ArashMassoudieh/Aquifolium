@@ -16,6 +16,10 @@
     class logWindow;
 #endif
 #include "ErrorHandler.h"
+#include <string>
+
+using namespace std; 
+
 
 #ifdef _DEBUG
 #define CVector_arma CVector
@@ -120,6 +124,7 @@ class System: public Object
         CBTCSet& GetOutputs() {return Outputs.AllOutputs;}
         vector<string> GetAllBlockTypes();
         vector<string> GetAllLinkTypes();
+		vector<string> GetAllSourceTypes();
         void SetVariableParents();
         MetaModel *GetMetaModel() {return  &metamodel;}
         QuanSet* GetModel(const string &type) {return metamodel[type];}
@@ -143,7 +148,7 @@ class System: public Object
         CTimeSeries *GetObjectiveFunctionTimeSeries(const string &name) {return objective_function_set[name]->obj_funct.GetTimeSeries();}
         void SetSilent(bool _s) {silent = _s;}
         bool IsSilent() {return silent;}
-        void ShowMessage(const string &msg) {if (!silent) cout<<msg<<endl; }
+        void ShowMessage(const string &msg) {if (!silent) cout<<msg<<std::endl; }
         void SetAllParents();
         ErrorHandler errorhandler;
         bool Echo(const string &object, const string &quantity = "", const string &feature="");

@@ -11,6 +11,7 @@ using namespace std;
 
 class System;
 class Script;
+class Object; 
 
 
 class Command
@@ -27,6 +28,7 @@ class Command
         bool Execute(System *sys=nullptr);
         bool Validate(System *sys=nullptr);
         void SetParent (Script *scr);
+		vector<Object*> Create2DGrid(System* sys, string name, string type, int n_x, int n_y);
     protected:
 
     private:

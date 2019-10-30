@@ -100,7 +100,7 @@ void CTimeSeriesSet::writetofile(string outputfile, bool writeColumnNameHeaders)
 	Fil = fopen(outputfile.c_str() , "w");
 	if (!Fil)
     {
-        cout<<"File '" + outputfile +"' cannot be opened!"<<endl;
+        cout << "File '" + outputfile +"' cannot be opened!"<<std::endl;
         return;
     }
 	if (writeColumnNameHeaders)

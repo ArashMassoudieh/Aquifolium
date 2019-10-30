@@ -23,12 +23,21 @@ QuanSet::QuanSet(Json::ValueIterator& object_types)
             IconFileName() = (*it)["filename"].asString();
         if (it.key()=="type")
         {
-            if ((*object_types)[it.key().asString()]=="block")
-                BlockLink = blocklink::block;
-            if ((*object_types)[it.key().asString()]=="link")
-                BlockLink = blocklink::link;
-            if ((*object_types)[it.key().asString()]=="source")
-                BlockLink = blocklink::source;
+			if ((*object_types)[it.key().asString()] == "block")
+			{
+				BlockLink = blocklink::block;
+				ObjectType = "Block";
+			}
+			if ((*object_types)[it.key().asString()] == "link")
+			{
+				BlockLink = blocklink::link;
+				ObjectType = "Connector";
+			}
+			if ((*object_types)[it.key().asString()] == "source")
+			{
+				BlockLink = blocklink::source;
+				ObjectType = "Source";
+			}
         }
         else
         {
@@ -45,6 +54,7 @@ QuanSet::QuanSet(const QuanSet& other)
     iconfilename = other.iconfilename;
     description = other.description;
     BlockLink = other.BlockLink;
+	ObjectType = other.ObjectType; 
     name = other.name;
     parent = nullptr;
 
@@ -58,6 +68,7 @@ QuanSet& QuanSet::operator=(const QuanSet& rhs)
     iconfilename = rhs.iconfilename;
     description = rhs.description;
     BlockLink = rhs.BlockLink;
+	ObjectType = rhs.ObjectType; 
     parent = nullptr;
     return *this;
 }
@@ -139,7 +150,7 @@ void QuanSet::ShowMessage(const string &msg)
 {
     if (parent)
         if (parent->Parent())
-            if (!parent->Parent()->IsSilent()) cout<<msg<<endl;
+            if (!parent->Parent()->IsSilent()) cout<<msg<<std::endl;
 }
 
 void QuanSet::SetAllParents()

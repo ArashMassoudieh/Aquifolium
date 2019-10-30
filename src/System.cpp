@@ -315,7 +315,7 @@ void System::updateProgress(bool finished)
             vars["progress"] = progress;
             vars["dtt"] = SolverTempVars.dt;
             vars["epoch count"] = SolverTempVars.epoch_count;
-            QString reason = QString::fromStdString(SolverTempVars.fail_reason);
+            QString reason = QString::fromStdString(SolverTempVars.fail_reason[SolverTempVars.fail_reason.size()-1]);
             ////qDebug() << reason;
             if (!reason.toLower().contains("none"))
                 vars["label"] = reason;
@@ -760,6 +760,19 @@ vector<string> System::GetAllLinkTypes()
     return out;
 }
 
+vector<string> System::GetAllSourceTypes()
+{
+	vector<string> out;
+	for (map<string, QuanSet>::iterator it = metamodel.GetMetaModel()->begin(); it != metamodel.GetMetaModel()->end(); it++)
+		if (it->second.BlockLink == blocklink::source)
+		{
+			ShowMessage(it->first);
+			out.push_back(it->first);
+		}
+
+	return out;
+}
+
 void System::clear()
 {
     blocks.clear();
@@ -1063,12 +1076,12 @@ bool System::Echo(const string &obj, const string &quant, const string &feature)
     {
         if (object(obj)!=nullptr)
         {
-            cout<<object(obj)->toString()<<endl;
+            cout<<object(obj)->toString()<<std::endl;
             return true;
         }
         else if (parameter(obj)!=nullptr)
         {
-            cout<<parameter(obj)->toString()<<endl;
+            cout<<parameter(obj)->toString()<<std::endl;
             return true;
         }
         else
@@ -1087,7 +1100,7 @@ bool System::Echo(const string &obj, const string &quant, const string &feature)
                 return false;
             }
             if (feature == "")
-                cout<<object(obj)->Variable(quant)->ToString()<<endl;
+                cout<<object(obj)->Variable(quant)->ToString()<<std::endl;
             else if (aquiutils::tolower(feature) == "value")
                 cout<<object(obj)->Variable(quant)->GetVal();
             else if (aquiutils::tolower(feature) == "rule")
@@ -1110,7 +1123,7 @@ bool System::Echo(const string &obj, const string &quant, const string &feature)
             }
             else
             {
-                cout<<parameter(obj)->Variable(quant)<<endl;
+                cout<<parameter(obj)->Variable(quant)<<std::endl;
                 return true;
             }
         }

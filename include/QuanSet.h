@@ -36,6 +36,7 @@ class QuanSet
         Object *Parent() {return parent; }
         vector<CTimeSeries*> TimeSeries();
         bool AppendError(const string &objectname, const string &cls, const string &funct, const string &description, const int &code);
+		string ObjectType; 
     protected:
 
     private:

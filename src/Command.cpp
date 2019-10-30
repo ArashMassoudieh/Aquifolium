@@ -213,12 +213,12 @@ bool Command::Execute(System *_sys)
         {
             if (arguments[0]=="-")
             {
-                cout<<"-----------------------------------------------------------------------------"<<endl;
+                cout<<"-----------------------------------------------------------------------------"<<std::endl;
                 return true;
             }
             for (int i=0; i<arguments.size(); i++)
                 cout<<arguments[i]<<" ";
-            cout<<endl;
+            cout<<std::endl;
             return true;
         }
         if (assignments.count("feature")==1 && assignments.count("quantity")==0)
@@ -271,13 +271,13 @@ bool Command::Execute(System *_sys)
             sys->SetAllParents();
             if (assignments.count("variable")!=0)
             {
-                cout<<"Solving for '" + assignments["variable"] + "'...."<<endl;
+                cout<<"Solving for '" + assignments["variable"] + "'...."<<std::endl;
 //              sys->Solve(assignments["variable"],true);
                 return true;
             }
             else
             {
-                cout<<"Solving for all variables"<<endl;
+                cout<<"Solving for all variables"<<std::endl;
                 sys->Solve(true);
                 return true;
             }
@@ -302,7 +302,7 @@ bool Command::Execute(System *_sys)
     {
         if (Validate())
         {
-            cout<<"Initializing optimizer...."<<endl;
+            cout<<"Initializing optimizer...."<<std::endl;
             parent->SetGA(new CGA<System>(sys));
             bool success = true;
             for (map<string,string>::iterator it=assignments.begin(); it!=assignments.end(); it++)
@@ -345,7 +345,7 @@ bool Command::Execute(System *_sys)
         {
             if (parent->GetGA()==nullptr)
             {
-                cout<<"Initializing optimizer...."<<endl;
+                cout<<"Initializing optimizer...."<<std::endl;
                 parent->SetGA(new CGA<System>(sys));
             }
             parent->GetGA()->SetProperty(assignments["quantity"],assignments["value"]);
@@ -545,4 +545,65 @@ bool Command::Validate(System *sys)
 void Command::SetParent (Script *scr)
 {
     parent = scr;
+}
+
+vector<Object*> Command::Create2DGrid(System* sys, string name, string type, int n_x, int n_y)
+{
+	vector<Object*> grid;
+	if (!Validate())
+		return grid;
+	
+	double x0 = atof(assignments["x"].c_str());
+	double y0 = atof(assignments["y"].c_str());
+	double dx = atof(assignments["dx"].c_str());
+	double dy = atof(assignments["dy"].c_str());
+
+	for (int i=0; i<n_x; i++)
+		for (int j=0; j<n_y; j++)
+		{ 
+			Block B;
+			B.SetName(assignments["name"]+"_"+aquiutils::numbertostring(i)+"_"+aquiutils::numbertostring(j));
+			B.SetType(assignments["blocktype"]);
+			B.SetProperty("x", aquiutils::numbertostring(x0 + i * dx));
+			B.SetProperty("y", aquiutils::numbertostring(y0 + i * dy));
+			sys->AddBlock(B);
+			for (map<string, string>::iterator it = assignments.begin(); it != assignments.end(); it++)
+			{
+				if (it->first != "name" && it->first != "blocktype" && it->first != "linktype" && it->first != "to" && it->first != "from")
+					sys->block(assignments["name"] + "_" + aquiutils::numbertostring(i) + "_" + aquiutils::numbertostring(j))->SetProperty(it->first, it->second);
+			}
+			grid.push_back(sys->block(assignments["name"] + "_" + aquiutils::numbertostring(i) + "_" + aquiutils::numbertostring(j)));
+		}
+
+	for (int i = 0; i < n_x; i++)
+		for (int j = 0; j < n_y-1; j++)
+		{
+			Link L;
+			L.SetName(assignments["name"] + "_" + aquiutils::numbertostring(i) + "_" + aquiutils::numbertostring(j) + "-" + assignments["name"] + "_" + aquiutils::numbertostring(i) + "_" + aquiutils::numbertostring(j+1));
+			L.SetType(assignments["linktype"]);
+			
+			sys->AddLink(L, assignments["name"] + "_" + aquiutils::numbertostring(i) + "_" + aquiutils::numbertostring(j), assignments["name"] + "_" + aquiutils::numbertostring(i) + "_" + aquiutils::numbertostring(j+1));
+			for (map<string, string>::iterator it = assignments.begin(); it != assignments.end(); it++)
+			{
+				if (it->first != "name" && it->first != "blocktype" && it->first != "linktype" && it->first != "to" && it->first != "from")
+					sys->block(assignments["name"] + "_" + aquiutils::numbertostring(i) + "_" + aquiutils::numbertostring(j) + "-" + assignments["name"] + "_" + aquiutils::numbertostring(i) + "_" + aquiutils::numbertostring(j + 1))->SetProperty(it->first, it->second);
+			}
+			grid.push_back(sys->link(assignments["name"] + "_" + aquiutils::numbertostring(i) + "_" + aquiutils::numbertostring(j) + "-" + assignments["name"] + "_" + aquiutils::numbertostring(i) + "_" + aquiutils::numbertostring(j + 1)));
+		}
+	for (int i = 0; i < n_x-1; i++)
+		for (int j = 0; j < n_y; j++)
+		{
+			Link L;
+			L.SetName(assignments["name"] + "_" + aquiutils::numbertostring(i) + "_" + aquiutils::numbertostring(j) + "-" + assignments["name"] + "_" + aquiutils::numbertostring(i+1) + "_" + aquiutils::numbertostring(j));
+			L.SetType(assignments["linktype"]);
+
+			sys->AddLink(L, assignments["name"] + "_" + aquiutils::numbertostring(i) + "_" + aquiutils::numbertostring(j), assignments["name"] + "_" + aquiutils::numbertostring(i+1) + "_" + aquiutils::numbertostring(j));
+			for (map<string, string>::iterator it = assignments.begin(); it != assignments.end(); it++)
+			{
+				if (it->first != "name" && it->first != "blocktype" && it->first != "linktype" && it->first != "to" && it->first != "from")
+					sys->block(assignments["name"] + "_" + aquiutils::numbertostring(i) + "_" + aquiutils::numbertostring(j) + "-" + assignments["name"] + "_" + aquiutils::numbertostring(i+1) + "_" + aquiutils::numbertostring(j))->SetProperty(it->first, it->second);
+			}
+			grid.push_back(sys->link(assignments["name"] + "_" + aquiutils::numbertostring(i) + "_" + aquiutils::numbertostring(j) + "-" + assignments["name"] + "_" + aquiutils::numbertostring(i+1) + "_" + aquiutils::numbertostring(j)));
+		}
+	return grid;
 }

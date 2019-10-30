@@ -1,5 +1,6 @@
 #include "Object.h"
 #include "System.h"
+#include <string>
 
 Object::Object()
 {
@@ -280,7 +281,7 @@ void Object::SetVariableParents()
 		var[s->first].SetParent(this);
 }
 
-void Object::ShowMessage(const string &msg) {if (!parent->IsSilent()) cout<<msg<<endl;}
+void Object::ShowMessage(const string &msg) {if (!parent->IsSilent()) cout<<msg<<std::endl;}
 
 void Object::SetAllParents()
 {
