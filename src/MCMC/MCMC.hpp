@@ -21,7 +21,7 @@ CMCMC<T>::~CMCMC(void)
 	logp1.clear();
 	logp.clear();
 }
-#ifdef GIFMOD
+
 vector<CBTCSet*> CMCMC::model(vector<double> par)
 {
 	double sum = 0;
@@ -49,7 +49,7 @@ vector<CBTCSet*> CMCMC::model(vector<double> par)
 	return G1.ANS_hyd;
 
 }
-#endif
+
 
 
 template<class T>

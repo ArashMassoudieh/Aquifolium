@@ -1,6 +1,10 @@
 #ifndef QUANSET_H
 #define QUANSET_H
 
+#ifdef QT_version
+    #include <QStringList>
+#endif
+
 #include <map>
 #include <Quan.h>
 
@@ -35,6 +39,10 @@ class QuanSet
         void SetAllParents();
         Object *Parent() {return parent; }
         vector<CTimeSeries*> TimeSeries();
+        vector<string> QuanNames();
+#ifdef QT_version
+        QStringList QQuanNames();
+#endif
         bool AppendError(const string &objectname, const string &cls, const string &funct, const string &description, const int &code);
 		string ObjectType; 
     protected:
