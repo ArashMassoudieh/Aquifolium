@@ -76,7 +76,7 @@ public:
 	bool global_sensitivity;
 	bool continue_mcmc;
     int readfromfile(string filename);
-
+    vector<CBTCSet*> model(vector<double> par);
 	vector<vector<CBTCSet>> BTCout_obs;
 	vector<vector<CBTCSet>> BTCout_obs_noise;
 	vector<vector<CBTCSet>> BTCout_obs_prcntle;

@@ -191,3 +191,21 @@ vector<CTimeSeries*> QuanSet::TimeSeries()
     }
     return out;
 }
+
+vector<string> QuanSet::QuanNames()
+{
+    vector<string> out;
+    for (map<string,Quan>::iterator it=quans.begin(); it!=quans.end(); it++)
+        out.push_back(it->first);
+    return out;
+}
+
+#ifdef QT_version
+QStringList QuanSet::QQuanNames()
+{
+    QStringList out;
+    for (map<string,Quan>::iterator it=quans.begin(); it!=quans.end(); it++)
+        out<< QString::fromStdString(it->first);
+    return out;
+}
+#endif
