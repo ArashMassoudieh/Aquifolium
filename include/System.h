@@ -60,9 +60,9 @@ struct solvertemporaryvars
 
 	void SetUpdateJacobian(bool x)
 	{
-		for (int i = 0; i < updatejacobian.size(); i++)
+        for (unsigned int i = 0; i < updatejacobian.size(); i++)
 			updatejacobian[i] = x;
-	};
+    }
     vector<int> numiterations;
     int epoch_count;
     vector<string> fail_reason;
@@ -162,7 +162,7 @@ class System: public Object
         logWindow *LogWindow() {return logwindow;}
         void SetLogWindow(logWindow *lgwnd) {logwindow=lgwnd;}
         bool stop_triggered = false;
-		QStringList System::QGetAllCategoryTypes();
+        QStringList QGetAllCategoryTypes();
 #endif
 
     protected:
