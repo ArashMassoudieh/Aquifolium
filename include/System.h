@@ -125,6 +125,7 @@ class System: public Object
         vector<string> GetAllBlockTypes();
         vector<string> GetAllLinkTypes();
 		vector<string> GetAllSourceTypes();
+		vector<string> GetAllTypesOf(const string& type);
         void SetVariableParents();
         MetaModel *GetMetaModel() {return  &metamodel;}
         QuanSet* GetModel(const string &type) {return metamodel[type];}
@@ -156,10 +157,12 @@ class System: public Object
         string OutputPath() {return paths.outputpath;}
         vector<CTimeSeries*> TimeSeries();
         double GetMinimumNextTimeStepSize();
+
 #ifdef QT_version
         logWindow *LogWindow() {return logwindow;}
         void SetLogWindow(logWindow *lgwnd) {logwindow=lgwnd;}
         bool stop_triggered = false;
+		QStringList System::QGetAllCategoryTypes();
 #endif
 
     protected:

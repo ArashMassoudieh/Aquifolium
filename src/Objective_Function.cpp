@@ -51,7 +51,7 @@ bool Objective_Function::SetProperty(const string &prop, const string &val)
         location = val;
         return true;
     }
-    if (aquiutils::tolower(prop)=="type")
+    if (aquiutils::tolower(prop)=="method")
     {
         if (aquiutils::tolower(val)=="integrate") {type = objfunctype::Integrate; return true;}
         if (aquiutils::tolower(val)=="value") {type = objfunctype::Value; return true;}

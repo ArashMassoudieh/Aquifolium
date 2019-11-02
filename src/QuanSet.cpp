@@ -21,22 +21,30 @@ QuanSet::QuanSet(Json::ValueIterator& object_types)
     {
         if (it.key()=="icon")
             IconFileName() = (*it)["filename"].asString();
-        if (it.key()=="type")
+		else if (it.key()=="typecategory")
+			typecategory = (*object_types)[it.key().asString()].asString();
+        else if (it.key()=="type")
         {
-			if ((*object_types)[it.key().asString()] == "block")
+			string _type = (*object_types)[it.key().asString()].asString(); 
+			if (_type == "block")
 			{
 				BlockLink = blocklink::block;
 				ObjectType = "Block";
 			}
-			if ((*object_types)[it.key().asString()] == "link")
+			else if (_type == "link")
 			{
 				BlockLink = blocklink::link;
 				ObjectType = "Connector";
 			}
-			if ((*object_types)[it.key().asString()] == "source")
+			else if (_type == "source")
 			{
 				BlockLink = blocklink::source;
 				ObjectType = "Source";
+			}
+			else 
+			{
+				BlockLink = blocklink::entity;
+				ObjectType = "Entity";
 			}
         }
         else
@@ -56,6 +64,7 @@ QuanSet::QuanSet(const QuanSet& other)
     BlockLink = other.BlockLink;
 	ObjectType = other.ObjectType; 
     name = other.name;
+	typecategory = other.typecategory; 
     parent = nullptr;
 
 }
@@ -69,6 +78,7 @@ QuanSet& QuanSet::operator=(const QuanSet& rhs)
     description = rhs.description;
     BlockLink = rhs.BlockLink;
 	ObjectType = rhs.ObjectType; 
+	typecategory = rhs.typecategory;
     parent = nullptr;
     return *this;
 }

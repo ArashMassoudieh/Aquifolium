@@ -6,7 +6,7 @@
 
 class Object;
 
-enum class blocklink {block, link, source};
+enum class blocklink {block, link, source, entity};
 
 class QuanSet
 {
@@ -37,6 +37,7 @@ class QuanSet
         vector<CTimeSeries*> TimeSeries();
         bool AppendError(const string &objectname, const string &cls, const string &funct, const string &description, const int &code);
 		string ObjectType; 
+		string& CategoryType() { return typecategory; }
     protected:
 
     private:
@@ -46,6 +47,7 @@ class QuanSet
         string last_error;
         string description;
         string iconfilename;
+		string typecategory; 
 
 
 };

@@ -773,6 +773,19 @@ vector<string> System::GetAllSourceTypes()
 	return out;
 }
 
+vector<string> System::GetAllTypesOf(const string &type)
+{
+	vector<string> out;
+	for (map<string, QuanSet>::iterator it = metamodel.GetMetaModel()->begin(); it != metamodel.GetMetaModel()->end(); it++)
+		if (it->second.CategoryType() == type)
+		{
+			ShowMessage(it->first);
+			out.push_back(it->first);
+		}
+
+	return out;
+}
+
 void System::clear()
 {
     blocks.clear();
@@ -1175,3 +1188,17 @@ double System::GetMinimumNextTimeStepSize()
     }
     return x;
 }
+
+#ifdef QT_version
+QStringList System::QGetAllCategoryTypes()
+{
+	QStringList out; 
+	for (map<string, QuanSet>::iterator it = metamodel.GetMetaModel()->begin(); it != metamodel.GetMetaModel()->end(); it++)
+	{
+		if (!out.contains(QString::fromStdString(it->second.CategoryType())))
+			out.append(QString::fromStdString(it->second.CategoryType()));
+	}
+	return out; 
+}
+#endif // Qt_version
+
