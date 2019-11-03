@@ -163,6 +163,8 @@ class System: public Object
         void SetLogWindow(logWindow *lgwnd) {logwindow=lgwnd;}
         bool stop_triggered = false;
         QStringList QGetAllCategoryTypes();
+		QStringList QGetAllObjectsofTypes(QString _type);
+		QStringList QGetAllObjectsofTypeCategory(QString _type);
 #endif
 
     protected:

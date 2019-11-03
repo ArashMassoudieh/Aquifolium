@@ -1200,5 +1200,30 @@ QStringList System::QGetAllCategoryTypes()
 	}
 	return out; 
 }
+
+QStringList System::QGetAllObjectsofTypeCategory(QString _type)
+{
+	QStringList out;
+	if (_type == "Blocks")
+		for (unsigned int i = 0; i < blocks.size(); i++)
+			out.append(QString::fromStdString(blocks[i].GetName()));
+
+	if (_type == "Connectors")
+		for (unsigned int i = 0; i < links.size(); i++)
+			out.append(QString::fromStdString(links[i].GetName()));
+		
+	if (_type == "Sources")
+		for (unsigned int i = 0; i < sources.size(); i++)
+			out.append(QString::fromStdString(sources[i].GetName()));
+
+
+	if (_type == "Parameters")
+		for (unsigned int i = 0; i < Parameters().size()  ; i++)
+			out.append(QString::fromStdString(Parameters().getKeyAtIndex(i)));
+	
+	if (_type == "Objective_Functions")
+		
+	return out;
+}
 #endif // Qt_version
 
