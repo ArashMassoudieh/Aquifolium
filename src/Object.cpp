@@ -278,7 +278,11 @@ void Object::SetVariableParents()
 {
 	var.SetParent(this);
 	for (map<string, Quan>::const_iterator s = var.begin(); s != var.end(); ++s)
+	{
 		var[s->first].SetParent(this);
+		if (var[s->first].GetType() == Quan::_type::source)
+			var[s->first].SetProperty(var[s->first].SourceName());
+	}
 }
 
 void Object::ShowMessage(const string &msg) {if (!parent->IsSilent()) cout<<msg<<std::endl;}
@@ -286,6 +290,7 @@ void Object::ShowMessage(const string &msg) {if (!parent->IsSilent()) cout<<msg<
 void Object::SetAllParents()
 {
     var.SetParent(this);
+
 }
 
 bool Object::SetProperty(const string &prop, const string &value)

@@ -121,6 +121,7 @@ Quan::Quan(const Quan& other)
     _expression = other._expression;
     _timeseries = other._timeseries;
     _rule = other._rule;
+	sourcename = other.sourcename;
     _var_name = other._var_name;
     _val = other._val;
     _val_star = other._val_star;
@@ -158,6 +159,7 @@ Quan& Quan::operator=(const Quan& rhs)
     _val = rhs._val;
     _val_star = rhs._val_star;
     _parameters = rhs._parameters;
+	sourcename = rhs.sourcename;
     type = rhs.type;
 	corresponding_flow_quan = rhs.corresponding_flow_quan;
 	corresponding_inflow_quan = rhs.corresponding_inflow_quan;

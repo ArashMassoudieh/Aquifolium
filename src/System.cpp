@@ -46,9 +46,9 @@ System::~System()
 System::System(const System& other):Object::Object(other)
 {
 	SolverTempVars.SetUpdateJacobian(true);
+	sources = other.sources;
 	blocks = other.blocks;
     links = other.links;
-    sources = other.sources;
     objective_function_set = other.objective_function_set;
     parameter_set = other.parameter_set;
     silent = other.silent;
