@@ -55,6 +55,7 @@ System::System(const System& other):Object::Object(other)
     SimulationParameters = other.SimulationParameters;
     SolverSettings = other. SolverSettings;
     solvevariableorder = other.solvevariableorder;
+	SolverTempVars = other.SolverTempVars;
     paths = other.paths;
     SetAllParents();
 }
@@ -73,6 +74,7 @@ System& System::operator=(const System& rhs)
     SimulationParameters = rhs.SimulationParameters;
     SolverSettings = rhs. SolverSettings;
     solvevariableorder = rhs.solvevariableorder;
+	SolverTempVars = rhs.SolverTempVars;
     paths = rhs.paths;
     SetAllParents();
     return *this;
