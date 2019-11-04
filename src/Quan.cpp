@@ -469,7 +469,9 @@ bool Quan::SetProperty(const string &val)
 	}
     else if (type == _type::source)
     {
-        return SetSource(val);
+		sourcename = val; 
+		return SetSource(val);
+
     }
     else
     {

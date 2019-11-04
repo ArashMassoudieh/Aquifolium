@@ -145,7 +145,9 @@ CGA<T>::CGA(T *model)
 		Ind[i] = CIndividual(GA_params.nParam);
 		Ind_old[i] = CIndividual(GA_params.nParam);
 	}
-
+	
+	for (int j = 0; j < GA_params.nParam; j++)
+		Setminmax(j, minval[j], maxval[j], 4);
 
 	MaxFitness = 0;
 }
