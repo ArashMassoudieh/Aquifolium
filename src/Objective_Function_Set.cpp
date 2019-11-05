@@ -71,3 +71,5 @@ void Objective_Function_Set::SetSystem(System* s)
     for (map<string, obj_funct_weight>::iterator it = objectivefunctions.begin(); it != objectivefunctions.end(); it++)
         it->second.obj_funct.SetSystem(s);
 }
+
+

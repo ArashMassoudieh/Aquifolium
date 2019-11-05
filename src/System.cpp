@@ -228,7 +228,7 @@ bool System::Solve(bool applyparameters)
     #else
         ShowMessage("Simulation started!");
     #endif
-
+	SetAllParents();
 	SolverTempVars.SetUpdateJacobian(true);
 	alltimeseries = TimeSeries();
 	bool success = true;
@@ -499,6 +499,7 @@ bool System::OneStepSolve(int statevarno)
 		double err;
 		double err_p = err = err_ini;
 
+		SolverTempVars.NR_coefficient[statevarno] = 1;
 		while ((err/err_ini>SolverSettings.NRtolerance && err>1e-12) || SolverTempVars.numiterations[statevarno]>SolverSettings.NR_niteration_max)
         {
             SolverTempVars.numiterations[statevarno]++;
@@ -506,7 +507,7 @@ bool System::OneStepSolve(int statevarno)
             {
                 SolverTempVars.Inverse_Jacobian[statevarno] = Invert(Jacobian(variable,X));
                 SolverTempVars.updatejacobian[statevarno] = false;
-                SolverTempVars.NR_coefficient[statevarno] = 1;
+                
             }
             X = X - SolverTempVars.NR_coefficient[statevarno]*SolverTempVars.Inverse_Jacobian[statevarno]*F;
 			if (!X.is_finite())

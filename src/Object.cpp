@@ -20,9 +20,10 @@ Object::Object(const Object& other)
     parent = other.GetParent();
 	s_Block_no = other.s_Block_no;
 	e_Block_no = other.e_Block_no;
-	outflowlimitfactor_current = other.outflowlimitfactor_current;
-	outflowlimitfactor_past = other.outflowlimitfactor_past;
+	outflowlimitfactor_current = 1;
+	outflowlimitfactor_past = 1;
 	type = other.type;
+	limitoutflow = false;
 	SetAllParents();
 }
 
@@ -37,8 +38,9 @@ Object& Object::operator=(const Object& rhs)
 	e_Block_no = rhs.e_Block_no;
 	type = rhs.type;
     SetAllParents();
-	outflowlimitfactor_current = rhs.outflowlimitfactor_current; 
-	outflowlimitfactor_past = rhs.outflowlimitfactor_past;
+	outflowlimitfactor_current = 1; 
+	outflowlimitfactor_past = 1;
+	limitoutflow = false; 
     return *this;
 }
 
