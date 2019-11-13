@@ -20,9 +20,10 @@ Object::Object(const Object& other)
     parent = other.GetParent();
 	s_Block_no = other.s_Block_no;
 	e_Block_no = other.e_Block_no;
-	outflowlimitfactor_current = other.outflowlimitfactor_current;
-	outflowlimitfactor_past = other.outflowlimitfactor_past;
+	outflowlimitfactor_current = 1;
+	outflowlimitfactor_past = 1;
 	type = other.type;
+	limitoutflow = false;
 	SetAllParents();
 }
 
@@ -37,8 +38,9 @@ Object& Object::operator=(const Object& rhs)
 	e_Block_no = rhs.e_Block_no;
 	type = rhs.type;
     SetAllParents();
-	outflowlimitfactor_current = rhs.outflowlimitfactor_current; 
-	outflowlimitfactor_past = rhs.outflowlimitfactor_past;
+	outflowlimitfactor_current = 1; 
+	outflowlimitfactor_past = 1;
+	limitoutflow = false; 
     return *this;
 }
 
@@ -278,7 +280,11 @@ void Object::SetVariableParents()
 {
 	var.SetParent(this);
 	for (map<string, Quan>::const_iterator s = var.begin(); s != var.end(); ++s)
+	{
 		var[s->first].SetParent(this);
+		if (var[s->first].GetType() == Quan::_type::source)
+			var[s->first].SetProperty(var[s->first].SourceName());
+	}
 }
 
 void Object::ShowMessage(const string &msg) {if (!parent->IsSilent()) cout<<msg<<std::endl;}
@@ -286,6 +292,7 @@ void Object::ShowMessage(const string &msg) {if (!parent->IsSilent()) cout<<msg<
 void Object::SetAllParents()
 {
     var.SetParent(this);
+
 }
 
 bool Object::SetProperty(const string &prop, const string &value)

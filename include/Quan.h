@@ -72,6 +72,9 @@ class Quan
 		void SetName(const string &name) {_var_name=name;}
 		bool AppendError(const string &objectname, const string &cls, const string &funct, const string &description, const int &code);
         bool SetProperty(const string &val);
+		string SourceName() { return sourcename;}
+		bool SetSourceName(const string& s) { sourcename = s; }
+		
     protected:
 
     private:
@@ -79,7 +82,8 @@ class Quan
         Rule _rule;
         CTimeSeries _timeseries;
         Source *source;
-        string _var_name;
+		string sourcename = ""; 
+		string _var_name;
         double _val=0;
         double _val_star=0;
         vector<double> _parameters;
