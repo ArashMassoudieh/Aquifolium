@@ -16,14 +16,30 @@
 		},
 		"Precipitation": {
 			"type": "source",
-			"description": "precipitation time series",
+			"includeinoutput": "true",
+                        "description": "precipitation time series",
 			"ask_user": "true"
 		},
 		"Area": {
 			"type": "value",
 			"description": "Catchment area",
 			"ask_user": "true"
-		}	
+		},
+        "Slope": {
+			"type": "value",
+			"description": "Catchment slope in the direction of flow",
+			"ask_user": "true"
+		},
+		"ManningCoeff": {
+			"type": "value",
+			"description": "Manning's Roughness Coefficient",
+			"ask_user": "true"
+		},
+		"Width": {
+			"type": "value",
+			"description": "The width of the catchment",
+			"ask_user": "true"
+		}
 },
 "Precipitation": {
 		"type": "source",
@@ -33,10 +49,10 @@
 		"coefficient": {
 			"type": "expression",		
 			"expression": "Area",
-			"ask_user": "true"
+			"ask_user": "false"
 		},
 		"timeseries": {
-			"type": "timeseries",		
+			"type": "timeseries_prec",		
 			"includeinoutput": "true",
 			"description": "Predcipitation intensity",
 			"ask_user": "true"		
@@ -84,6 +100,19 @@
 		"flow": {
 			"type": "expression",		
 			"expression": "reservoir_coeff.s*Storage.s^reservoir_power.s",
+			"includeinoutput": "true",
+			"applylimit": "true",
+			"ask_user": "true"
+		}
+	},
+"Catchment_link": {
+		"type": "link",
+		"icon": {
+			"filename": "reservoir_link.png" 
+		},
+		"flow": {
+			"type": "expression",		
+			"expression": "(Width.s/ManningCoeff.s)*(Slope.s^0.5)*(Storage.s/Area.s^(1.666667))*86400",
 			"includeinoutput": "true",
 			"applylimit": "true",
 			"ask_user": "true"
