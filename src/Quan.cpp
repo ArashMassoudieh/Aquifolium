@@ -348,8 +348,14 @@ string Quan::ToString(int _tabs)
     if (type==_type::rule)
         out += aquiutils::tabs(_tabs+1) + "rule: " + _rule.ToString(_tabs) + "\n";
 
-    if (type==_type::source)
-        out += aquiutils::tabs(_tabs+1) + "source: " + source->GetName() + "\n";
+	if (type == _type::source)
+	{
+		if (source==nullptr)
+			out += aquiutils::tabs(_tabs + 1) + "source: " + source->GetName() + "\n";
+		else
+			out += aquiutils::tabs(_tabs + 1) + "source: " + sourcename + "\n";
+
+	}
 
 
     out += aquiutils::tabs(_tabs+1) + "val: ";
