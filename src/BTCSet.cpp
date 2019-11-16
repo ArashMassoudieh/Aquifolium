@@ -33,6 +33,7 @@ CTimeSeriesSet::CTimeSeriesSet(int n)
 	names.resize(nvars);
 	for (int i=0; i<nvars; i++) BTC[i] = CTimeSeries();
 	unif = true;
+
 }
 CTimeSeriesSet::CTimeSeriesSet(vector<vector<double>> &data, int writeInterval) :CTimeSeriesSet(data[0].size())
 {
@@ -174,6 +175,7 @@ CTimeSeriesSet::CTimeSeriesSet(const CTimeSeriesSet &B)
 	names = B.names;
 	BTC = B.BTC;
 	unif = B.unif;
+    filename = B.filename;
 
 }
 
@@ -181,7 +183,7 @@ CTimeSeriesSet::CTimeSeriesSet(const CTimeSeries &B)
 {
 	nvars = 1;
 	BTC.resize(1);
-
+    filename = B.filename;
 	BTC[0] = B;
 }
 
@@ -217,13 +219,15 @@ vector<double> CTimeSeriesSet::interpolate(double t, int fnvars)
 	return out;
 }
 
-CTimeSeriesSet::CTimeSeriesSet(string filename, bool varytime)
+CTimeSeriesSet::CTimeSeriesSet(string _filename, bool varytime)
 {
 	unif = false;
 	vector<string> units;
-	ifstream file(filename);
+    filename = _filename;
+    ifstream file(filename);
 	vector<string> s;
 	nvars = 0;
+
 	if (file.good() == false)
 	{
 		file_not_found = true;
@@ -313,13 +317,14 @@ CTimeSeriesSet::CTimeSeriesSet(string filename, bool varytime)
 
 
 
-void CTimeSeriesSet::getfromfile(string filename, bool varytime)
+void CTimeSeriesSet::getfromfile(string _filename, bool varytime)
 {
 	unif = false;
 	vector<string> units;
-	ifstream file(filename);
+    ifstream file(_filename);
 	vector<string> s;
 	nvars = 0;
+    filename = _filename;
 	if (varytime==false)
 		while (file.eof()== false)
 		{
