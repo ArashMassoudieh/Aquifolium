@@ -69,7 +69,8 @@ CTimeSeries::CTimeSeries(const CTimeSeries &CC)
 		D = CC.D;
 		C = CC.C;
 	}
-	structured = CC.structured;
+    filename = CC.filename;
+    structured = CC.structured;
 	name = CC.name;
 	unit = CC.unit;
 	defaultUnit = CC.defaultUnit;
@@ -84,6 +85,7 @@ CTimeSeries::CTimeSeries(string Filename)
 	n = 0;
 	t.clear();
 	C.clear();
+    filename = Filename;
 	ifstream file(Filename);
 	if (file.good() == false)
 	{
@@ -143,6 +145,7 @@ CTimeSeries& CTimeSeries::operator = (const CTimeSeries &CC)
 		D = CC.D;
 		C = CC.C;
 	}
+    filename = CC.filename;
 	structured = CC.structured;
 	name = CC.name;
 	unit = CC.unit;
@@ -557,7 +560,8 @@ double diff(CTimeSeries BTC_p, CTimeSeries BTC_d, CTimeSeries Q)
 
 void CTimeSeries::readfile(string Filename)
 {
-	ifstream file(Filename);
+    filename = Filename;
+    ifstream file(Filename);
 	vector<string> s;
 	if (file.good() == false)
 	{

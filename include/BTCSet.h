@@ -15,6 +15,7 @@ public:
 	CTimeSeriesSet(const CTimeSeries &BTC);
 	CTimeSeriesSet(string filename, bool varytime);
 	int nvars;
+    string filename;
 	vector<CTimeSeries> BTC;
 	void writetofile(char outputfile[]);
 	int maxnumpoints();

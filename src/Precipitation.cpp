@@ -26,6 +26,7 @@ CPrecipitation::CPrecipitation(const CPrecipitation &Precip)
 	s = Precip.s;
 	e = Precip.e;
 	i = Precip.i;
+    filename = Precip.filename;
 
 
 }
@@ -36,6 +37,7 @@ CPrecipitation CPrecipitation::operator = (const CPrecipitation &Precip)
 	s = Precip.s;
 	e = Precip.e;
 	i = Precip.i;
+    filename = Precip.filename;
 	return *this;
 
 }
@@ -68,9 +70,10 @@ double CPrecipitation::getval(double time)
 	return res;
 }
 
-CPrecipitation::CPrecipitation(string filename)
+CPrecipitation::CPrecipitation(string _filename)
 {
-	ifstream fil(filename);
+    filename = _filename;
+    ifstream fil(filename);
 	n=0;
 	if (!fil.good()) return;
 	vector<string> ss;
@@ -127,9 +130,10 @@ bool CPrecipitation::isFileValid(string filename)
 	return true;
 }
 
-void CPrecipitation::getfromfile(string filename)
+void CPrecipitation::getfromfile(string _filename)
 {
-	ifstream fil(filename);
+    filename = _filename;
+    ifstream fil(filename);
 	vector<string> ss;
 	s.clear(); e.clear(); i.clear();
 	n=0;
@@ -149,6 +153,7 @@ void CPrecipitation::getfromfile(string filename)
 CBTCSet CPrecipitation::getflow (double A, double dt)
 {
 	CBTCSet Rainflowout(1);
+    Rainflowout.filename = filename;
 	if (n == 0) return Rainflowout;
 	Rainflowout.names.clear();
 	Rainflowout.names.push_back("flow");
@@ -162,7 +167,8 @@ CBTCSet CPrecipitation::getflow (double A, double dt)
 CBTCSet CPrecipitation::getflow(double A)
 {
 	CBTCSet Rainflowout(1);
-	Rainflowout.names.clear();
+    Rainflowout.filename = filename;
+    Rainflowout.names.clear();
 	Rainflowout.names.push_back("flow");
 	for (int ii = 0; ii < n; ii++)
 	{
