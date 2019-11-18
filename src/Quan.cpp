@@ -47,6 +47,8 @@ Quan::Quan(Json::ValueIterator &it)
         SetType(Quan::_type::source);
     if ((*it)["type"].asString()=="value")
         SetType(Quan::_type::value);
+	if ((*it)["type"].asString() == "string")
+		SetType(Quan::_type::string);
     if (it->isMember("includeinoutput"))
     {
         if ((*it)["includeinoutput"].asString()=="true")
@@ -120,6 +122,7 @@ Quan::Quan(const Quan& other)
 {
     _expression = other._expression;
     _timeseries = other._timeseries;
+	_string_value = other._string_value; 
     _rule = other._rule;
 	sourcename = other.sourcename;
     _var_name = other._var_name;
@@ -156,6 +159,7 @@ Quan& Quan::operator=(const Quan& rhs)
     _timeseries = rhs._timeseries;
     _rule = rhs._rule;
     _var_name = rhs._var_name;
+	_string_value = rhs._string_value;
     _val = rhs._val;
     _val_star = rhs._val_star;
     _parameters = rhs._parameters;
@@ -471,6 +475,10 @@ string Quan::GetProperty()
     {
         return sourcename;
     }
+	else if (type == _type::string)
+	{
+		return _string_value;
+	}
     return "";
 
 }
@@ -493,20 +501,22 @@ bool Quan::SetProperty(const string &val)
 		else
 			return SetTimeSeries(val,true);
 	}
-    else if (type == _type::source)
+    if (type == _type::source)
     {
 		sourcename = val; 
 		return SetSource(val);
 
     }
-    else
+    if (type == _type::expression || type== _type::rule)
     {
-        if (type == _type::expression || type== _type::rule)
-        {
-            AppendError(GetName(),"Quan","SetProperty","Expression or rule cannot be set during runtime", 3011);
-            return false;
-        }
+        AppendError(GetName(),"Quan","SetProperty","Expression or rule cannot be set during runtime", 3011);
+        return false;
     }
+	if (type == _type::string)
+	{
+		_string_value = val; 
+	}
+
     return true;
 }
 
