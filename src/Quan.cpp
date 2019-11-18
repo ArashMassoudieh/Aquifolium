@@ -455,6 +455,26 @@ bool Quan::SetSource(const string &sourcename)
 }
 
 
+string Quan::GetProperty()
+{
+    if (type == _type::balance || type== _type::constant || type==_type::global_quan || type==_type::value)
+        return aquiutils::numbertostring(GetVal(Expression::timing::present));
+    if (type == _type::timeseries)
+    {
+        return _timeseries.filename;
+    }
+    if (type == _type::prec_timeseries)
+    {
+        return _timeseries.filename;
+    }
+    else if (type == _type::source)
+    {
+        return sourcename;
+    }
+    return "";
+
+}
+
 bool Quan::SetProperty(const string &val)
 {
     if (type == _type::balance || type== _type::constant || type==_type::global_quan || type==_type::value)

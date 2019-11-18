@@ -29,7 +29,7 @@ public:
 	int n;
 	vector<double> t;
 	vector<double> C;
-
+    string filename;
 	string name = "";
 	string unit = "";
 	string defaultUnit = "";
