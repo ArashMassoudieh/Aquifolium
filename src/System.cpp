@@ -505,7 +505,7 @@ bool System::OneStepSolve(int statevarno)
             SolverTempVars.numiterations[statevarno]++;
             if (SolverTempVars.updatejacobian[statevarno])
             {
-				CMatrix J = Jacobian(variable, X);
+                CMatrix_arma J = Jacobian(variable, X);
 				if (det(J) == 0)
 				{
 					SolverTempVars.fail_reason.push_back("at " + aquiutils::numbertostring(SolverTempVars.t) + ": The Jacobian Matrix is not full-ranked");
