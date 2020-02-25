@@ -10,7 +10,6 @@
 /Aquifolium/.vs/Aquifolium/v15/ipch/AutoPCH
 /Aquifolium/.vs/Aquifolium/v15
 /.vs/Aquifolium/v15
-/Aquifolium
 /.vs
 
 bin/Debug/
@@ -25,3 +24,13 @@ Aquifolium\.layout
 *.layout
 
 bin/Release/
+
+Aquifolium/.vs/Aquifolium/v16/
+
+Aquifolium/Aquifolium/x64/Debug/
+
+Aquifolium/Aquifolium/x64/Release/
+
+Aquifolium/x64/Debug/
+
+Aquifolium/x64/Release/

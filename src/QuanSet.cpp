@@ -3,6 +3,12 @@
 #include "System.h"
 #include <json/json.h>
 
+
+#ifdef QT_version
+#include "qjsonobject.h"
+#endif // Qt_version
+
+
 QuanSet::QuanSet()
 {
     parent = nullptr;
@@ -17,7 +23,9 @@ QuanSet::QuanSet(Json::ValueIterator& object_types)
 {
     parent = nullptr;
     Name() = object_types.key().asString();
-    for (Json::ValueIterator it=object_types->begin(); it!=object_types->end(); ++it)
+	ObjectType = "Entity"; 
+	BlockLink = blocklink::entity;
+	for (Json::ValueIterator it=object_types->begin(); it!=object_types->end(); ++it)
     {
         if (it.key()=="icon")
             IconFileName() = (*it)["filename"].asString();
@@ -47,7 +55,9 @@ QuanSet::QuanSet(Json::ValueIterator& object_types)
 				ObjectType = "Entity";
 			}
         }
-        else
+		else if (it.key()=="description")
+			description = (*object_types)[it.key().asString()].asString();
+		else
         {
             //cout<<it.key().asString()<<endl;
             Quan Q(it);
@@ -208,4 +218,53 @@ QStringList QuanSet::QQuanNames()
         out<< QString::fromStdString(it->first);
     return out;
 }
+
+QuanSet::QuanSet(QJsonObject::Iterator& object_types)
+{
+	parent = nullptr;
+	Name() = object_types.key().toStdString();
+	ObjectType = "Entity";
+	BlockLink = blocklink::entity;
+	for (QJsonObject::Iterator it = object_types->toArray.begin(); it != object_types->toArray.end(); ++it)
+	{
+		if (it.key() == "icon")
+			IconFileName() = (*it)["filename"].asString();
+		else if (it.key() == "typecategory")
+			typecategory = (*object_types)[it.key().asString()].asString();
+		else if (it.key() == "type")
+		{
+			string _type = (*object_types)[it.key().asString()].asString();
+			if (_type == "block")
+			{
+				BlockLink = blocklink::block;
+				ObjectType = "Block";
+			}
+			else if (_type == "link")
+			{
+				BlockLink = blocklink::link;
+				ObjectType = "Connector";
+			}
+			else if (_type == "source")
+			{
+				BlockLink = blocklink::source;
+				ObjectType = "Source";
+			}
+			else
+			{
+				BlockLink = blocklink::entity;
+				ObjectType = "Entity";
+			}
+		}
+		else if (it.key() == "description")
+			description = (*object_types)[it.key().asString()].asString();
+		else
+		{
+			//cout<<it.key().asString()<<endl;
+			Quan Q(it);
+			Append(it.key().asString(), Q);
+		}
+	}
+}
+
+
 #endif

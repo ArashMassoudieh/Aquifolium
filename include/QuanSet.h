@@ -42,6 +42,7 @@ class QuanSet
         vector<string> QuanNames();
 #ifdef QT_version
         QStringList QQuanNames();
+		QuanSet(QJsonObject::Iterator& object_types);
 #endif
         bool AppendError(const string &objectname, const string &cls, const string &funct, const string &description, const int &code);
 		string ObjectType; 
