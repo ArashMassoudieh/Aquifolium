@@ -3,6 +3,7 @@
 
 #ifdef QT_version
     #include <QStringList>
+	#include <QJsonObject>
 #endif
 
 #include <map>
@@ -42,7 +43,7 @@ class QuanSet
         vector<string> QuanNames();
 #ifdef QT_version
         QStringList QQuanNames();
-		QuanSet(QJsonObject::Iterator& object_types);
+		QuanSet(QJsonObject& object_types);
 #endif
         bool AppendError(const string &objectname, const string &cls, const string &funct, const string &description, const int &code);
 		string ObjectType; 

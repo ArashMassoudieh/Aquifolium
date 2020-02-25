@@ -5,7 +5,10 @@
 
 
 #ifdef QT_version
-#include "qjsonobject.h"
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonValue>
+#include <QJsonArray>
 #endif // Qt_version
 
 
@@ -219,18 +222,23 @@ QStringList QuanSet::QQuanNames()
     return out;
 }
 
-QuanSet::QuanSet(QJsonObject::Iterator& object_types)
+QuanSet::QuanSet(QJsonObject& object_types)
 {
 	parent = nullptr;
-	Name() = object_types.key().toStdString();
+	qDebug() << object_types; 
+	Name() = object_types.keys()[0].toStdString();
 	ObjectType = "Entity";
 	BlockLink = blocklink::entity;
-	for (QJsonObject::Iterator it = object_types->toArray.begin(); it != object_types->toArray.end(); ++it)
-	{
-		if (it.key() == "icon")
-			IconFileName() = (*it)["filename"].asString();
+	QStringList keys = object_types.keys(); 
+	qDebug() << keys; 
+	qDebug() << object_types[keys[0]] << endl; 
+	//for each (QJsonObject it in object_types.value(object_types.keys()[0]).toArray())
+	//{
+		//qDebug() << it.value; 
+		/*if (it.key() == "icon")
+			IconFileName() = it.value["filename"].asString();
 		else if (it.key() == "typecategory")
-			typecategory = (*object_types)[it.key().asString()].asString();
+			typecategory = (*object_types)[it.key().toStdString].asString();
 		else if (it.key() == "type")
 		{
 			string _type = (*object_types)[it.key().asString()].asString();
@@ -263,7 +271,8 @@ QuanSet::QuanSet(QJsonObject::Iterator& object_types)
 			Quan Q(it);
 			Append(it.key().asString(), Q);
 		}
-	}
+	*/
+	//}
 }
 
 

@@ -113,6 +113,118 @@ Quan::Quan(Json::ValueIterator &it)
 
 }
 
+#ifdef  QT_version
+Quan::Quan(QJsonObject& it)
+{
+	//SetName(it.key().asString());
+	if (it.keys().contains("type"))
+	{
+		if (it.value("type").toString() == "balance")
+		{
+			SetType(Quan::_type::balance);
+				SetCorrespondingFlowVar(it.value("flow").toString().toStdString());
+				SetCorrespondingInflowVar(it.value("inflow").toString().toStdString());
+		}
+		if (it.value("type").toString() == "constant")
+			SetType(Quan::_type::constant);
+			if (it.value("type").toString() == "expression")
+			{
+				SetType(Quan::_type::expression);
+				SetExpression(it.value("expression").toString().toStdString());
+			}
+		if (it.value("type").toString() == "rule")
+		{
+			SetType(Quan::_type::rule);
+			for (QJsonObject::Iterator itrule = it.value("rule").toObject().begin(); itrule != it.value("rule").toObject().begin(); ++itrule)
+			{
+				_condplusresult Rle;
+				GetRule()->Append(itrule.key().toStdString(), itrule.value().toString().toStdString());
+			}
+		}
+
+		if (it.value("type").toString() == "global")
+			SetType(Quan::_type::global_quan);
+		if (it.value("type").toString() == "timeseries")
+			SetType(Quan::_type::timeseries);
+		if (it.value("type").toString() == "timeseries_prec")
+			SetType(Quan::_type::prec_timeseries);
+		if (it.value("type").toString() == "source")
+			SetType(Quan::_type::source);
+		if (it.value("type").toString() == "value")
+			SetType(Quan::_type::value);
+		if (it.value("type").toString() == "string")
+			SetType(Quan::_type::string);
+	}
+	else
+		SetType(Quan::_type::global_quan);
+	
+	if (it.keys().contains("includeinoutput"))
+	{
+		if (it.value("includeinoutput").toString().toStdString() == "true")
+			SetIncludeInOutput(true);
+		else
+			SetIncludeInOutput(false);
+	}
+	else
+		SetIncludeInOutput(false);
+	if (it.keys().contains("description"))
+	{
+		Description() = it.value("description").toString().toStdString();
+	}
+
+	if (it.keys().contains("unit"))
+		Unit() = it.value("unit").toString().toStdString();
+
+	if (it.keys().contains("default_unit"))
+		DefaultUnit() = it.value("default_unit").toString().toStdString();
+
+	if (it.keys().contains("default"))
+		Default() = it.value("default").toString().toStdString();
+
+	if (it.keys().contains("delegate"))
+		Delegate() = it.value("delegate").toString().toStdString();
+
+	if (it.keys().contains("category"))
+		Category() = it.value("category").toString().toStdString();
+
+	if (it.keys().contains("input"))
+		Input() = it.value("input").toString().toStdString();
+
+	if (it.keys().contains("experiment_dependent"))
+	{
+		if (it.value("experiment_dependent").toString().toStdString() == "Yes")
+			ExperimentDependent() = true;
+		else
+			ExperimentDependent() = false;
+
+	}
+
+	if (it.keys().contains("description_code"))
+		DescriptionCode() = it.value("description_code").toString().toStdString();
+
+	if (it.keys().contains("criteria"))
+		Criteria() = it.value("criteria").toString().toStdString();
+
+	if (it.keys().contains("warningerror"))
+		WarningError() = it.value("warningerror").toString().toStdString();
+
+	if (it.keys().contains("warningmessage"))
+		WarningMessage() = it.value("warningmessage").toString().toStdString();
+
+	if (it.keys().contains("inputtype"))
+		InputType() = it.value("inputtype").toString().toStdString();
+
+	if (it.keys().contains("ask_user"))
+	{
+		if (aquiutils::tolower(it.value("ask_user").toString().toStdString()) == "true")
+			AskFromUser() = true;
+	}
+	else
+		AskFromUser() = false;
+
+}
+#endif //  QT_version
+
 Quan::~Quan()
 {
     //dtor

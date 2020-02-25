@@ -6,6 +6,10 @@
 #include "BTC.h"
 #include <json/json.h>
 
+#ifdef QT_version
+#include <qjsonobject.h>
+#endif
+
 class Block;
 class Link;
 class System;
@@ -20,6 +24,11 @@ class Quan
         virtual ~Quan();
         Quan(const Quan& other);
         Quan(Json::ValueIterator &it);
+#ifdef QT_version
+		Quan(QJsonObject& qjobject);
+#endif // QT_version
+
+		
         Quan& operator=(const Quan& other);
         enum class _type {constant, value, balance, expression, timeseries, prec_timeseries, global_quan, rule, source, string};
         double CalcVal(Object *, const Expression::timing &tmg=Expression::timing::past);
