@@ -113,6 +113,22 @@ bool Object::SetQuantities(MetaModel &m, const string& typ )
 	return true;
 }
 
+bool Object::SetQuantities(MetaModel *m, const string& typ )
+{
+    if (m->Count(typ)==0)
+    {
+        Parent()->errorhandler.Append(GetName(),"Object","SetQuantities","Type " + typ + "was not found!",1004);
+        last_error = "Type " + typ + "was not found";
+        return false;
+    }
+    else
+        var = *(m->GetItem(typ));
+    SetDefaults();
+    for (map<string, Quan>::const_iterator s = var.begin(); s != var.end(); ++s)
+        var[s->first].SetParent(this);
+    return true;
+}
+
 void Object::SetDefaults()
 {
     for (map<string, Quan>::const_iterator s = var.begin(); s != var.end(); ++s)

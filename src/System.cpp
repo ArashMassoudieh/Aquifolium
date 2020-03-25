@@ -1198,7 +1198,7 @@ double System::GetMinimumNextTimeStepSize()
     return x;
 }
 
-#ifdef QT_version
+#if defined(QT_version) || defined(Q_version)
 QStringList System::QGetAllCategoryTypes()
 {
 	QStringList out; 
