@@ -973,9 +973,13 @@ string aquiutils::numbertostring(int x)
 string aquiutils::numbertostring(vector<int> x)
 {
 	string Result = "[";
-	for (int i=0; i<x.size()-1;i++)
-        Result += aquiutils::numbertostring(x[i])+",";
-    Result += aquiutils::numbertostring(x[x.size()-1]) + "]";
+	if (x.size()>0)
+    {   for (int i=0; i<x.size()-1;i++)
+           Result += aquiutils::numbertostring(x[i])+",";
+        Result += aquiutils::numbertostring(x[x.size()-1]) + "]";
+    }
+    else
+        Result += "]";
 	return Result;
 }
 
@@ -1030,6 +1034,14 @@ int aquiutils::max(vector<int> x)
 
 }
 
+string aquiutils::remove_backslash_r(const string &ss)
+{
+    string s = ss;
+    if (!s.empty() && s[s.size() - 1] == '\r')
+        s.erase(s.size() - 1);
+    return s;
+
+}
 
 
 
