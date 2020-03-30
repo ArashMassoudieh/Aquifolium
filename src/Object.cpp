@@ -172,6 +172,7 @@ string Object::GetName() const
 
 bool Object::SetName(const string &s)
 {
+    var["Name"].SetProperty(s);
     name = s;
     return true;
 }

@@ -113,7 +113,7 @@ Quan::Quan(Json::ValueIterator &it)
 
 }
 
-#ifdef  QT_version
+#ifdef  Q_version
 Quan::Quan(QJsonObject& it)
 {
 	//SetName(it.key().asString());

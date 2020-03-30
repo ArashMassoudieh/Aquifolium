@@ -26,6 +26,7 @@ class QuanSet
         size_t Count(const string &s) {return quans.count(s);}
         Quan& operator[] (const string &s);
         Quan& GetVar(const string &s);
+        Quan* GetVar(int i);
         std::map<string,Quan>::iterator find(const string &name) {return quans.find(name);}
         std::map<string,Quan>::iterator end() {return quans.end();}
         std::map<string,Quan>::iterator begin() {return quans.begin();}

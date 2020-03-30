@@ -6,7 +6,7 @@
 #include "BTC.h"
 #include <json/json.h>
 
-#ifdef QT_version
+#ifdef Q_version
 #include <qjsonobject.h>
 #endif
 
@@ -24,7 +24,7 @@ class Quan
         virtual ~Quan();
         Quan(const Quan& other);
         Quan(Json::ValueIterator &it);
-#ifdef QT_version
+#ifdef Q_version
 		Quan(QJsonObject& qjobject);
 #endif // QT_version
 

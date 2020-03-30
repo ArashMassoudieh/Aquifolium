@@ -12,7 +12,7 @@ Block::~Block()
 
 Block::Block(const Block& other):Object::Object(other)
 {
-
+    Object::operator=(other);
 }
 
 Block& Block::operator=(const Block& rhs)

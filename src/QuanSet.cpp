@@ -142,6 +142,26 @@ Quan& QuanSet::GetVar(const string &s)
         return quans[s];
 }
 
+Quan* QuanSet::GetVar(int i)
+{
+    if (int(quans.size())<=i)
+    {
+        AppendError(Name(),"QuanSet","GetVar","Variable " + aquiutils::numbertostring(i) + " does not exist!",2001);
+        return nullptr;
+    }
+    else
+    {
+        int j=0;
+        for (map<string,Quan>::iterator it=quans.begin(); it!=quans.end(); it++)
+        {
+            if (j==i)
+                return &it->second;
+            j++;
+        }
+        return nullptr;
+    }
+}
+
 string QuanSet::ToString(int _tabs)
 {
     string out = aquiutils::tabs(_tabs) + name + ":\n";
