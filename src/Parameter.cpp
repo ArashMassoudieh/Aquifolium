@@ -2,7 +2,7 @@
 #include "Expression.h"
 
 
-Parameter::Parameter()
+Parameter::Parameter(): Object::Object()
 {
     //ctor
 }
@@ -12,7 +12,7 @@ Parameter::~Parameter()
     //dtor
 }
 
-Parameter::Parameter(const Parameter& other)
+Parameter::Parameter(const Parameter& other):Object::Object(other)
 {
     _location = other._location;
     _quan = other._quan;
@@ -25,6 +25,7 @@ Parameter::Parameter(const Parameter& other)
 Parameter& Parameter::operator=(const Parameter& rhs)
 {
     if (this == &rhs) return *this; // handle self assignment
+    Object::operator=(rhs);
     _location = rhs._location;
     _quan = rhs._quan;
     prior_range = rhs.prior_range;

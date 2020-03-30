@@ -182,6 +182,9 @@ Object *System::object(const string &s)
     for (unsigned int i=0; i<sources.size(); i++)
         if (sources[i].GetName() == s) return &sources[i];
 
+    for (unsigned int i=0; i<ParametersCount(); i++)
+        if (Parameters()[i]->GetName() == s) return Parameters()[i];
+
     //errorhandler.Append(GetName(),"System","object","Object '" + s + "' was not found",105);
 
     return nullptr;

@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include "Object.h"
 
 using namespace std;
 struct Range
@@ -11,7 +12,7 @@ struct Range
     double high = 0;
 };
 
-class Parameter
+class Parameter : public Object
 {
     public:
         Parameter();
@@ -31,18 +32,18 @@ class Parameter
         string LastError() {return last_error;}
         bool SetProperty(const string &s, const string &val)
         {
-            if (s=="low") {prior_range.low = atof(val.c_str()); return true;}
-            if (s=="high") {prior_range.high = atof(val.c_str()); return true;}
+            if (s=="low") {prior_range.low = atof(val.c_str()); Object::SetProperty("low",val); return true;}
+            if (s=="high") {prior_range.high = atof(val.c_str()); Object::SetProperty("high",val); return true;}
             if (s=="value") {value = atof(val.c_str()); return true;}
-            if (s=="prior_distribution") {prior_distribution = val;return true;}
+            if (s=="prior_distribution") {prior_distribution = val; return true;}
             return false;
         }
         string toString(int _tabs = 0);
-        bool SetName(const string &nm) {name = nm; return true;}
+        bool SetName(const string &nm) {name = nm; Object::SetProperty("Name",nm); return true;}
         string GetName() {return name;}
         bool HasQuantity(const string &qntty);
         string Variable(const string &qntty);
-
+        string TypeCategory() {return "Parameters";}
 
     protected:
 
