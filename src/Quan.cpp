@@ -47,6 +47,8 @@ Quan::Quan(Json::ValueIterator &it)
         SetType(Quan::_type::source);
     if ((*it)["type"].asString()=="value")
         SetType(Quan::_type::value);
+	if ((*it)["type"].asString() == "string")
+		SetType(Quan::_type::string);
     if (it->isMember("includeinoutput"))
     {
         if ((*it)["includeinoutput"].asString()=="true")
@@ -111,6 +113,118 @@ Quan::Quan(Json::ValueIterator &it)
 
 }
 
+#ifdef  Q_version
+Quan::Quan(QJsonObject& it)
+{
+	//SetName(it.key().asString());
+	if (it.keys().contains("type"))
+	{
+		if (it.value("type").toString() == "balance")
+		{
+			SetType(Quan::_type::balance);
+				SetCorrespondingFlowVar(it.value("flow").toString().toStdString());
+				SetCorrespondingInflowVar(it.value("inflow").toString().toStdString());
+		}
+		if (it.value("type").toString() == "constant")
+			SetType(Quan::_type::constant);
+			if (it.value("type").toString() == "expression")
+			{
+				SetType(Quan::_type::expression);
+				SetExpression(it.value("expression").toString().toStdString());
+			}
+		if (it.value("type").toString() == "rule")
+		{
+			SetType(Quan::_type::rule);
+			for (QJsonObject::Iterator itrule = it.value("rule").toObject().begin(); itrule != it.value("rule").toObject().begin(); ++itrule)
+			{
+				_condplusresult Rle;
+				GetRule()->Append(itrule.key().toStdString(), itrule.value().toString().toStdString());
+			}
+		}
+
+		if (it.value("type").toString() == "global")
+			SetType(Quan::_type::global_quan);
+		if (it.value("type").toString() == "timeseries")
+			SetType(Quan::_type::timeseries);
+		if (it.value("type").toString() == "timeseries_prec")
+			SetType(Quan::_type::prec_timeseries);
+		if (it.value("type").toString() == "source")
+			SetType(Quan::_type::source);
+		if (it.value("type").toString() == "value")
+			SetType(Quan::_type::value);
+		if (it.value("type").toString() == "string")
+			SetType(Quan::_type::string);
+	}
+	else
+		SetType(Quan::_type::global_quan);
+	
+	if (it.keys().contains("includeinoutput"))
+	{
+		if (it.value("includeinoutput").toString().toStdString() == "true")
+			SetIncludeInOutput(true);
+		else
+			SetIncludeInOutput(false);
+	}
+	else
+		SetIncludeInOutput(false);
+	if (it.keys().contains("description"))
+	{
+		Description() = it.value("description").toString().toStdString();
+	}
+
+	if (it.keys().contains("unit"))
+		Unit() = it.value("unit").toString().toStdString();
+
+	if (it.keys().contains("default_unit"))
+		DefaultUnit() = it.value("default_unit").toString().toStdString();
+
+	if (it.keys().contains("default"))
+		Default() = it.value("default").toString().toStdString();
+
+	if (it.keys().contains("delegate"))
+		Delegate() = it.value("delegate").toString().toStdString();
+
+	if (it.keys().contains("category"))
+		Category() = it.value("category").toString().toStdString();
+
+	if (it.keys().contains("input"))
+		Input() = it.value("input").toString().toStdString();
+
+	if (it.keys().contains("experiment_dependent"))
+	{
+		if (it.value("experiment_dependent").toString().toStdString() == "Yes")
+			ExperimentDependent() = true;
+		else
+			ExperimentDependent() = false;
+
+	}
+
+	if (it.keys().contains("description_code"))
+		DescriptionCode() = it.value("description_code").toString().toStdString();
+
+	if (it.keys().contains("criteria"))
+		Criteria() = it.value("criteria").toString().toStdString();
+
+	if (it.keys().contains("warningerror"))
+		WarningError() = it.value("warningerror").toString().toStdString();
+
+	if (it.keys().contains("warningmessage"))
+		WarningMessage() = it.value("warningmessage").toString().toStdString();
+
+	if (it.keys().contains("inputtype"))
+		InputType() = it.value("inputtype").toString().toStdString();
+
+	if (it.keys().contains("ask_user"))
+	{
+		if (aquiutils::tolower(it.value("ask_user").toString().toStdString()) == "true")
+			AskFromUser() = true;
+	}
+	else
+		AskFromUser() = false;
+
+}
+#endif //  QT_version
+
 Quan::~Quan()
 {
     //dtor
@@ -120,6 +234,7 @@ Quan::Quan(const Quan& other)
 {
     _expression = other._expression;
     _timeseries = other._timeseries;
+	_string_value = other._string_value; 
     _rule = other._rule;
 	sourcename = other.sourcename;
     _var_name = other._var_name;
@@ -156,6 +271,7 @@ Quan& Quan::operator=(const Quan& rhs)
     _timeseries = rhs._timeseries;
     _rule = rhs._rule;
     _var_name = rhs._var_name;
+	_string_value = rhs._string_value;
     _val = rhs._val;
     _val_star = rhs._val_star;
     _parameters = rhs._parameters;
@@ -348,8 +464,14 @@ string Quan::ToString(int _tabs)
     if (type==_type::rule)
         out += aquiutils::tabs(_tabs+1) + "rule: " + _rule.ToString(_tabs) + "\n";
 
-    if (type==_type::source)
-        out += aquiutils::tabs(_tabs+1) + "source: " + source->GetName() + "\n";
+	if (type == _type::source)
+	{
+		if (source==nullptr)
+			out += aquiutils::tabs(_tabs + 1) + "source: " + source->GetName() + "\n";
+		else
+			out += aquiutils::tabs(_tabs + 1) + "source: " + sourcename + "\n";
+
+	}
 
 
     out += aquiutils::tabs(_tabs+1) + "val: ";
@@ -465,6 +587,10 @@ string Quan::GetProperty()
     {
         return sourcename;
     }
+	else if (type == _type::string)
+	{
+		return _string_value;
+	}
     return "";
 
 }
@@ -487,20 +613,29 @@ bool Quan::SetProperty(const string &val)
 		else
 			return SetTimeSeries(val,true);
 	}
-    else if (type == _type::source)
+    if (type == _type::source)
     {
 		sourcename = val; 
 		return SetSource(val);
 
     }
-    else
+    if (type == _type::expression || type== _type::rule)
     {
-        if (type == _type::expression || type== _type::rule)
-        {
-            AppendError(GetName(),"Quan","SetProperty","Expression or rule cannot be set during runtime", 3011);
-            return false;
-        }
+        AppendError(GetName(),"Quan","SetProperty","Expression or rule cannot be set during runtime", 3011);
+        return false;
     }
+	if (type == _type::string)
+	{
+		_string_value = val; 
+        if (GetName()=="Name")
+            parent->SetName(val,false);
+        return true;
+	}
+    _string_value = val;
+
+
+    return SetVal(aquiutils::atof(val),Expression::timing::both);
+
     return true;
 }
 

@@ -18,6 +18,10 @@
 #include "ErrorHandler.h"
 #include <string>
 
+#if Q_version
+#include <QStringList>
+#endif
+
 using namespace std; 
 
 
@@ -103,8 +107,32 @@ class System: public Object
         bool AddSource(Source &src);
         bool AddLink(Link &lnk, const string &source, const string &destination);
         Block *block(const string &s);
+        Block *block(int i)
+        {
+            if (i<blocks.size())
+                return &blocks[i];
+            else
+                return nullptr;
+        }
+        int BlockCount() {return blocks.size();}
+        int LinksCount() {return links.size();}
+        int SourcesCount() {return sources.size();}
+        int ParametersCount() {return Parameters().size();}
         Link *link(const string &s);
+        Link *link(int i)
+        {
+            if (i<links.size())
+                return &links[i];
+            else
+                return nullptr;
+        }
         Source *source(const string &s);
+        Source *source(int i)
+        {   if (i<sources.size())
+                return &sources[i];
+            else
+                return nullptr;
+        }
         Parameter *parameter(const string &s);
         Object *object(const string &s);
         int blockid(const string &s);
@@ -157,10 +185,11 @@ class System: public Object
         string OutputPath() {return paths.outputpath;}
         vector<CTimeSeries*> TimeSeries();
         double GetMinimumNextTimeStepSize();
-
-#ifdef QT_version
+#if defined(QT_version)
         logWindow *LogWindow() {return logwindow;}
         void SetLogWindow(logWindow *lgwnd) {logwindow=lgwnd;}
+#endif
+#if defined(QT_version) || defined (Q_version)
         bool stop_triggered = false;
         QStringList QGetAllCategoryTypes();
 		QStringList QGetAllObjectsofTypes(QString _type);

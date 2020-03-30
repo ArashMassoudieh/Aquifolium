@@ -106,6 +106,7 @@ namespace aquiutils
 	bool And(vector<bool> x);
 	double max(vector<double> x);
 	int max(vector<int> x);
+	string remove_backslash_r(const string &s);
 };
 
 #endif // EXPRESSION_H

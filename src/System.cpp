@@ -182,6 +182,9 @@ Object *System::object(const string &s)
     for (unsigned int i=0; i<sources.size(); i++)
         if (sources[i].GetName() == s) return &sources[i];
 
+    for (unsigned int i=0; i<ParametersCount(); i++)
+        if (Parameters()[i]->GetName() == s) return Parameters()[i];
+
     //errorhandler.Append(GetName(),"System","object","Object '" + s + "' was not found",105);
 
     return nullptr;
@@ -505,7 +508,13 @@ bool System::OneStepSolve(int statevarno)
             SolverTempVars.numiterations[statevarno]++;
             if (SolverTempVars.updatejacobian[statevarno])
             {
-                SolverTempVars.Inverse_Jacobian[statevarno] = Invert(Jacobian(variable,X));
+                CMatrix_arma J = Jacobian(variable, X);
+				if (det(J) == 0)
+				{
+					SolverTempVars.fail_reason.push_back("at " + aquiutils::numbertostring(SolverTempVars.t) + ": The Jacobian Matrix is not full-ranked");
+					return false; 
+				}
+				SolverTempVars.Inverse_Jacobian[statevarno] = Invert(J);
                 SolverTempVars.updatejacobian[statevarno] = false;
                 
             }
@@ -1192,7 +1201,7 @@ double System::GetMinimumNextTimeStepSize()
     return x;
 }
 
-#ifdef QT_version
+#if defined(QT_version) || defined(Q_version)
 QStringList System::QGetAllCategoryTypes()
 {
 	QStringList out; 

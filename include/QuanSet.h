@@ -3,6 +3,7 @@
 
 #ifdef QT_version
     #include <QStringList>
+	#include <QJsonObject>
 #endif
 
 #include <map>
@@ -25,6 +26,7 @@ class QuanSet
         size_t Count(const string &s) {return quans.count(s);}
         Quan& operator[] (const string &s);
         Quan& GetVar(const string &s);
+        Quan* GetVar(int i);
         std::map<string,Quan>::iterator find(const string &name) {return quans.find(name);}
         std::map<string,Quan>::iterator end() {return quans.end();}
         std::map<string,Quan>::iterator begin() {return quans.begin();}
@@ -42,6 +44,7 @@ class QuanSet
         vector<string> QuanNames();
 #ifdef QT_version
         QStringList QQuanNames();
+		QuanSet(QJsonObject& object_types);
 #endif
         bool AppendError(const string &objectname, const string &cls, const string &funct, const string &description, const int &code);
 		string ObjectType; 

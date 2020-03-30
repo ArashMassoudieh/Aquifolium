@@ -21,6 +21,7 @@ class MetaModel
         std::map<string,QuanSet>::iterator begin() {return metamodel.begin();}
         unsigned long size() {return metamodel.size();}
         bool GetFromJsonFile(const string &filename);
+		bool AppendFromJsonFile(const string& filename);
         void Clear();
         string ToString(int _tabs=0);
         vector<string> solvevariableorder;

@@ -314,7 +314,7 @@ omp_set_num_threads(numberOfThreads);
 #pragma omp parallel for //private(ts,l)
 		for (int k=0; k<GA_params.maxpop; k++)
 		{
-			cout << "Individual " << k << endl; 
+			cout << "Individual " << k << std::endl; 
 			FILE *FileOut;
 #pragma omp critical
             {

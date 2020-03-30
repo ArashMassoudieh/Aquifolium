@@ -84,6 +84,12 @@
 			"description": "Reservoir rating curve coefficient",
 			"ask_user": "true"
 		},
+		"Reservoir_Capacity": {
+			"type": "value",
+			"default": "10",
+			"description": "Reservoir Capacity",
+			"ask_user": "true"
+		},
 		"inflow": {
 			"type": "timeseries",		
 			"includeinoutput": "true",
@@ -100,6 +106,19 @@
 		"flow": {
 			"type": "expression",		
 			"expression": "reservoir_coeff.s*Storage.s^reservoir_power.s",
+			"includeinoutput": "true",
+			"applylimit": "true",
+			"ask_user": "true"
+		}
+	},
+"Overflow": {
+		"type": "link",
+		"icon": {
+			"filename": "reservoir_link.png" 
+		},
+		"flow": {
+			"type": "expression",		
+			"expression": "reservoir_coeff.s*(Storage.s-Reservoir_Capacity.s)^reservoir_power.s",
 			"includeinoutput": "true",
 			"applylimit": "true",
 			"ask_user": "true"

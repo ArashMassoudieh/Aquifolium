@@ -20,6 +20,7 @@ class Object
         double GetVal(const string& s, const Expression::timing &tmg=Expression::timing::past, bool limit=false);
         bool AddQnantity(const string &name,const Quan &Q);
         bool SetQuantities(MetaModel &m, const string& typ);
+        bool SetQuantities(MetaModel *m, const string& typ );
         bool HasQuantity(const string &q);
         bool SetVal(const string& s, double value, const Expression::timing &tmg = Expression::timing::both);
         bool SetVal(const string& s, const string & value, const Expression::timing &tmg = Expression::timing::both);
@@ -27,7 +28,7 @@ class Object
         System *GetParent() const {return parent;}
         string GetName() const;
         void SetDefaults();
-        bool SetName(const string &_name);
+        bool SetName(const string &_name, bool setprop=true);
         Object* GetConnectedBlock(Expression::loc l);
         void SetConnectedBlock(Expression::loc l, const string &blockname);
         void AppendError(const string &s);
@@ -44,6 +45,7 @@ class Object
 		bool Update(const string &variable);
 		bool CalcExpressions(const Expression::timing& tmg);
 		vector<CTimeSeries*> TimeSeries() {return var.TimeSeries();}
+        string TypeCategory() {return GetVars()->CategoryType();}
 		QuanSet* GetVars()
             {
                 return &var;

@@ -104,7 +104,7 @@ Command::Command(const string &s, Script *parnt)
             if (prop.size() == 2)
             {
                 if (assignments.count(prop[0])==0)
-                    assignments[prop[0]] = prop[1];
+                    assignments[prop[0]] = aquiutils::remove_backslash_r(prop[1]);
                 else
                 {
                     last_error = "In command '" + s + "': Property '" + prop[0] + "' has been already specified!";
@@ -463,7 +463,7 @@ bool Command::Execute(System *_sys)
                     succeed = sys->AppendObjectiveFunction(assignments["name"],assignments["object"],Expression(assignments["expression"]));
                 else
                     succeed = sys->AppendObjectiveFunction(assignments["name"],assignments["object"],Expression(assignments["expression"]), aquiutils::atof(assignments["weight"]));
-				if (!succeed) return false; 
+				if (!succeed) return false;
 				for (map<string,string>::iterator it=assignments.begin(); it!=assignments.end(); it++)
                 {
                     if (it->first!="name" && it->first!="object" && it->first!="expression" && it->first!="weight")
@@ -553,7 +553,7 @@ vector<Object*> Command::Create2DGrid(System* sys, string name, string type, int
 	vector<Object*> grid;
 	if (!Validate())
 		return grid;
-	
+
 	double x0 = atof(assignments["x"].c_str());
 	double y0 = atof(assignments["y"].c_str());
 	double dx = atof(assignments["dx"].c_str());
@@ -561,7 +561,7 @@ vector<Object*> Command::Create2DGrid(System* sys, string name, string type, int
 
 	for (int i=0; i<n_x; i++)
 		for (int j=0; j<n_y; j++)
-		{ 
+		{
 			Block B;
 			B.SetName(assignments["name"]+"_"+aquiutils::numbertostring(i)+"_"+aquiutils::numbertostring(j));
 			B.SetType(assignments["blocktype"]);
@@ -582,7 +582,7 @@ vector<Object*> Command::Create2DGrid(System* sys, string name, string type, int
 			Link L;
 			L.SetName(assignments["name"] + "_" + aquiutils::numbertostring(i) + "_" + aquiutils::numbertostring(j) + "-" + assignments["name"] + "_" + aquiutils::numbertostring(i) + "_" + aquiutils::numbertostring(j+1));
 			L.SetType(assignments["linktype"]);
-			
+
 			sys->AddLink(L, assignments["name"] + "_" + aquiutils::numbertostring(i) + "_" + aquiutils::numbertostring(j), assignments["name"] + "_" + aquiutils::numbertostring(i) + "_" + aquiutils::numbertostring(j+1));
 			for (map<string, string>::iterator it = assignments.begin(); it != assignments.end(); it++)
 			{
