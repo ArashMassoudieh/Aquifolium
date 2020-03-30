@@ -28,7 +28,7 @@ class Object
         System *GetParent() const {return parent;}
         string GetName() const;
         void SetDefaults();
-        bool SetName(const string &_name);
+        bool SetName(const string &_name, bool setprop=true);
         Object* GetConnectedBlock(Expression::loc l);
         void SetConnectedBlock(Expression::loc l, const string &blockname);
         void AppendError(const string &s);

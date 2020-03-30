@@ -170,9 +170,10 @@ string Object::GetName() const
     return name;
 }
 
-bool Object::SetName(const string &s)
+bool Object::SetName(const string &s, bool setprop)
 {
-    var["Name"].SetProperty(s);
+    if (setprop)
+        var["Name"].SetProperty(s);
     name = s;
     return true;
 }

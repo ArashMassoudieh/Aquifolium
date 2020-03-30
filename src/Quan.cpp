@@ -627,9 +627,13 @@ bool Quan::SetProperty(const string &val)
 	if (type == _type::string)
 	{
 		_string_value = val; 
+        if (GetName()=="Name")
+            parent->SetName(val,false);
         return true;
 	}
     _string_value = val;
+
+
     return SetVal(aquiutils::atof(val),Expression::timing::both);
 
     return true;
