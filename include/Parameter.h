@@ -23,38 +23,44 @@ class Parameter : public Object
         void AppendLocationQuan(const string &loc, const string &quan) {_location.push_back(loc); _quan.push_back(quan);}
         vector<string> GetLocations() {return _location;}
         vector<string> GetQuans() {return _quan;}
-        void SetRange(double low, double high) {prior_range.low = low; prior_range.high=high;}
-        Range GetRange() {return prior_range;}
-        void SetPriorDistribution(const string &prior) {prior_distribution = prior; }
-        string GetPriorDistribution() {return prior_distribution; }
+        void SetRange(double low, double high) {Object::SetVal("low",low); Object::SetVal("high",high);}
+        Range GetRange()
+        {
+            Range prior_range;
+            prior_range.low = Object::GetVal("low");
+            prior_range.high = Object::GetVal("high");
+            return  prior_range;
+        }
+        void SetPriorDistribution(const string &prior) {Object::SetProperty("prior_distribution",prior); }
+        string GetPriorDistribution() {return Object::Variable("priot_distribution")->GetStringValue(); }
         void SetValue(const double &val) {value = val;}
         double GetValue() {return value;}
         string LastError() {return last_error;}
         bool SetProperty(const string &s, const string &val)
         {
-            if (s=="low") {prior_range.low = atof(val.c_str()); Object::SetProperty("low",val); return true;}
-            if (s=="high") {prior_range.high = atof(val.c_str()); Object::SetProperty("high",val); return true;}
+            if (s=="low") { Object::SetProperty("low",val); return true;}
+            if (s=="high") { Object::SetProperty("high",val); return true;}
             if (s=="value") {value = atof(val.c_str()); return true;}
-            if (s=="prior_distribution") {prior_distribution = val; return true;}
+            if (s=="prior_distribution") {Object::SetProperty("prior_distribution",val); return true;}
             return false;
         }
         string toString(int _tabs = 0);
-        bool SetName(const string &nm) {name = nm; Object::SetProperty("Name",nm); return true;}
-        string GetName() {return name;}
         bool HasQuantity(const string &qntty);
-        string Variable(const string &qntty);
+        string variable(const string &qntty);
         string TypeCategory() {return "Parameters";}
-
+        bool SetName(string s);
     protected:
 
     private:
         vector<string> _location;
         vector<string> _quan;
-        Range prior_range;
-        string prior_distribution;
+        //Range prior_range;
+        double low() {return GetVars()->GetVar("low").GetVal();}
+        double high() {return GetVars()->GetVar("high").GetVal();}
+        //string prior_distribution;
         double value;
         string last_error;
-        string name;
+
 };
 
 #endif // PARAMETER_H

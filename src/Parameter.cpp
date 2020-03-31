@@ -1,5 +1,7 @@
 #include "Parameter.h"
 #include "Expression.h"
+#include "System.h"
+
 
 
 Parameter::Parameter(): Object::Object()
@@ -16,8 +18,6 @@ Parameter::Parameter(const Parameter& other):Object::Object(other)
 {
     _location = other._location;
     _quan = other._quan;
-    prior_range = other.prior_range;
-    prior_distribution = other.prior_distribution;
     value = other.value;
     last_error = other.last_error;
 }
@@ -28,8 +28,6 @@ Parameter& Parameter::operator=(const Parameter& rhs)
     Object::operator=(rhs);
     _location = rhs._location;
     _quan = rhs._quan;
-    prior_range = rhs.prior_range;
-    prior_distribution = rhs.prior_distribution;
     value = rhs.value;
     last_error = rhs.last_error;
     return *this;
@@ -38,8 +36,8 @@ Parameter& Parameter::operator=(const Parameter& rhs)
 string Parameter::toString(int _tabs)
 {
     string out = aquiutils::tabs(_tabs) + "Name: " + GetName() + "\n";
-    out += aquiutils::tabs(_tabs) + "low: " + aquiutils::numbertostring(prior_range.low) + "\n";
-    out += aquiutils::tabs(_tabs) + "high: " + aquiutils::numbertostring(prior_range.high) + "\n";
+    out += aquiutils::tabs(_tabs) + "low: " + aquiutils::numbertostring(Object::GetVal("low")) + "\n";
+    out += aquiutils::tabs(_tabs) + "high: " + aquiutils::numbertostring(Object::GetVal("high")) + "\n";
     out += aquiutils::tabs(_tabs) + "quans: {";
 
     for (int i=0; i<_quan.size(); i++ ) { out +=  _quan[i]; if (i<_quan.size()-1) out += ","; }
@@ -47,7 +45,7 @@ string Parameter::toString(int _tabs)
     out += aquiutils::tabs(_tabs) + "locations: {";
     for (int i=0; i<_location.size(); i++ ) { out +=  _location[i]; if (i<_location.size()-1) out += ","; }
     out += "}\n";
-    out += aquiutils::tabs(_tabs) + "prior distribution: " + prior_distribution + "\n";
+    out += aquiutils::tabs(_tabs) + "prior distribution: " + Object::Variable("prior_distribution")->GetStringValue() + "\n";
     out += aquiutils::tabs(_tabs) + "value: " + aquiutils::numbertostring(value) + "\n";
     return out;
 }
@@ -60,7 +58,7 @@ bool Parameter::HasQuantity(const string &qntty)
         return true;
 }
 
-string Parameter::Variable(const string &qntty)
+string Parameter::variable(const string &qntty)
 {
     if (aquiutils::tolower(qntty)=="location")
     {
@@ -74,9 +72,9 @@ string Parameter::Variable(const string &qntty)
         return GetName();
 
     if (aquiutils::tolower(qntty)=="low")
-        return aquiutils::numbertostring(prior_range.low);
+        return aquiutils::numbertostring(Object::GetVal("low"));
     if (aquiutils::tolower(qntty)=="high")
-        return aquiutils::numbertostring(prior_range.high);
+        return aquiutils::numbertostring(Object::GetVal("low"));
 
     if (aquiutils::tolower(qntty)=="quan")
     {
@@ -88,13 +86,18 @@ string Parameter::Variable(const string &qntty)
     }
 
     if (aquiutils::tolower(qntty)=="prior_distribution")
-        return prior_distribution;
+        return Object::Variable("prior_distribution")->GetStringValue();
 
     if (aquiutils::tolower(qntty)=="value")
         return aquiutils::numbertostring(value);
 
     if (aquiutils::tolower(qntty)=="range")
-        return "{" + aquiutils::numbertostring(prior_range.low) +"," + aquiutils::numbertostring(prior_range.high) + "}";
+        return "{" + aquiutils::numbertostring(Object::GetVal("low")) +"," + aquiutils::numbertostring(Object::GetVal("high")) + "}";
 
     return "";
+}
+
+bool Parameter::SetName(string s)
+{
+    Object::SetName(s);
 }

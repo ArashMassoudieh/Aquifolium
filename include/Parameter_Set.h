@@ -17,20 +17,30 @@ class Parameter_Set
         Parameter* operator[](string name);
         Parameter* operator[](int i);
         string LastError() {return lasterror;}
-        bool Contains(const string &name) {if (parameters.count(name)==0) return false; else return true;}
-        map<string, Parameter>::iterator begin() {return parameters.begin();}
-        map<string, Parameter>::iterator end() {return parameters.end();}
+        bool Contains(const string &name) {
+            for (int i=0; i<parameters.size(); i++)
+                if (parameters[i].GetName()==name)
+                    return true;
+            return false;
+        }
         bool ApplyParameters(System *system);
         unsigned int size()
         {
             return parameters.size();
         }
         string getKeyAtIndex (int index);
-        int count(const string &s) {return parameters.count(s);}
+        int count(const string &s) {
+            int j=0;
+            for (int i=0; i<parameters.size(); i++)
+                if (parameters[i].GetName()==s)
+                    j++;
+            return  j;
+        }
+
     protected:
 
     private:
-        map<string,Parameter> parameters;
+        vector<Parameter> parameters;
         string lasterror;
 };
 

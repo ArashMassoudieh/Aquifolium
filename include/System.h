@@ -167,6 +167,7 @@ class System: public Object
         double GetObjectiveFunctionValue();
         Objective_Function *ObjectiveFunction(const string &name) {return &objective_function_set[name]->obj_funct;} // returns a pointer to an objective function
         Parameter *GetParameter(const string &name) {return parameter_set[name];}
+        Parameter *GetParameter(int i) {return parameter_set[i];}
         Parameter_Set &Parameters() {return parameter_set;}
         bool AppendParameter(const string &paramname, const double &lower_limit, const double &upper_limit, const string &prior_distribution = "normal");
         bool AppendParameter(const string &paramname, const Parameter& param);

@@ -1059,14 +1059,14 @@ bool System::SetParameterValue(int i, const double &val)
 
 bool System::ApplyParameters()
 {
-    for (map<string, Parameter>::iterator it = Parameters().begin(); it != Parameters().end(); it++)
-        for (int i=0; i<GetParameter(it->first)->GetLocations().size();i++)
+    for (int i = 0; i < Parameters().size(); i++)
+        for (int i=0; i<GetParameter(i)->GetLocations().size();i++)
         {
-            if (object(GetParameter(it->first)->GetLocations()[i])!=nullptr)
-                object(GetParameter(it->first)->GetLocations()[i])->SetVal(GetParameter(it->first)->GetQuans()[i],GetParameter(it->first)->GetValue());
+            if (object(GetParameter(i)->GetLocations()[i])!=nullptr)
+                object(GetParameter(i)->GetLocations()[i])->SetVal(GetParameter(i)->GetQuans()[i],GetParameter(i)->GetValue());
             else
             {
-                errorhandler.Append(GetName(),"System","ApplyParameters" ,"Location '" + GetParameter(it->first)->GetLocations()[i] + "' does not exist!", 607);
+                errorhandler.Append(GetName(),"System","ApplyParameters" ,"Location '" + GetParameter(i)->GetLocations()[i] + "' does not exist!", 607);
                 return false;
             }
         }

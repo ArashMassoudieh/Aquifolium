@@ -84,7 +84,7 @@ class Object
         string last_error;
         bool last_operation_success;
         map<string, string> setting;
-        System *parent;
+        System *parent = nullptr;
         string name;
         Object *s_Block;
         Object *e_Block;
