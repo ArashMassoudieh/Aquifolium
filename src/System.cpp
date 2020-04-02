@@ -785,6 +785,14 @@ vector<string> System::GetAllSourceTypes()
 	return out;
 }
 
+vector<string> System::GetAllSourceNames()
+{
+    vector<string> out;
+    for (int i=0; i<sources.size(); i++)
+        out.push_back(sources[i].GetName());
+    return out;
+}
+
 vector<string> System::GetAllTypesOf(const string &type)
 {
 	vector<string> out;

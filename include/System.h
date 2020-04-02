@@ -117,6 +117,7 @@ class System: public Object
         int BlockCount() {return blocks.size();}
         int LinksCount() {return links.size();}
         int SourcesCount() {return sources.size();}
+        vector<string> GetAllSourceNames();
         int ParametersCount() {return Parameters().size();}
         Link *link(const string &s);
         Link *link(int i)
