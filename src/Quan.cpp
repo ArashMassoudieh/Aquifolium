@@ -536,7 +536,10 @@ bool Quan::SetTimeSeries(const string &filename, bool prec)
 			return false;
 		}
 		else
-			return true;
+        {
+
+            return true;
+        }
 	}
 	else
 	{
@@ -550,6 +553,7 @@ bool Quan::SetTimeSeries(const string &filename, bool prec)
 		{
 			Prec.getfromfile(filename);
 			_timeseries = Prec.getflow(1).BTC[0];
+            _timeseries.filename = Prec.filename;
 			return true;
 		}
 	}

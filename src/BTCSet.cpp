@@ -192,6 +192,7 @@ CTimeSeriesSet& CTimeSeriesSet::operator = (const CTimeSeriesSet &B)
 	nvars = B.nvars;
 	BTC.resize(nvars);
 	names = B.names;
+    filename = B.filename;
 	for (int i=0; i<nvars; i++)
 		BTC[i] = B.BTC[i];
 	unif = B.unif;
