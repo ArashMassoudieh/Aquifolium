@@ -190,6 +190,26 @@ Object *System::object(const string &s)
     return nullptr;
 }
 
+Object *System::GetObjectBasedOnPrimaryKey(const string &s)
+{
+    for (unsigned int i=0; i<links.size(); i++)
+        if (links[i].GetPrimaryKey() == s) return &links[i];
+
+    for (unsigned int i=0; i<blocks.size(); i++)
+        if (blocks[i].GetPrimaryKey() == s) return &blocks[i];
+
+    for (unsigned int i=0; i<sources.size(); i++)
+        if (sources[i].GetPrimaryKey() == s) return &sources[i];
+
+    for (unsigned int i=0; i<ParametersCount(); i++)
+        if (Parameters()[i]->GetPrimaryKey() == s) return Parameters()[i];
+
+    //errorhandler.Append(GetName(),"System","object","Object '" + s + "' was not found",105);
+
+    return nullptr;
+
+}
+
 bool System::GetQuanTemplate(const string &filename)
 {
     metamodel.GetFromJsonFile(filename);

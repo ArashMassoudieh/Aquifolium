@@ -187,6 +187,8 @@ class System: public Object
         string OutputPath() {return paths.outputpath;}
         vector<CTimeSeries*> TimeSeries();
         double GetMinimumNextTimeStepSize();
+        Object *GetObjectBasedOnPrimaryKey(const string &s);
+
 #if defined(QT_version)
         logWindow *LogWindow() {return logwindow;}
         void SetLogWindow(logWindow *lgwnd) {logwindow=lgwnd;}

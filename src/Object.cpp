@@ -24,6 +24,7 @@ Object::Object(const Object& other)
 	outflowlimitfactor_past = 1;
 	type = other.type;
 	limitoutflow = false;
+    primary_key = other.primary_key;
 	SetAllParents();
 }
 
@@ -37,6 +38,7 @@ Object& Object::operator=(const Object& rhs)
 	s_Block_no = rhs.s_Block_no;
 	e_Block_no = rhs.e_Block_no;
 	type = rhs.type;
+    primary_key = rhs.primary_key;
     SetAllParents();
 	outflowlimitfactor_current = 1; 
 	outflowlimitfactor_past = 1;
@@ -358,4 +360,12 @@ string Object::toString(int _tabs)
     out += aquiutils::tabs(_tabs) + "Type: " + GetType() + "\n";
     out += this->var.ToString(_tabs + 1);
     return out;
+}
+
+void Object::AssignRandomPrimaryKey()
+{
+    string s;
+    for (int i=0; i<20; i++)
+        s += char(rand()%(122-65) +65);
+    primary_key = s;
 }

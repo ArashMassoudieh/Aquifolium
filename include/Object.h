@@ -76,6 +76,9 @@ class Object
         void SetAllParents();
         bool SetProperty(const string &prop, const string &value);
         string toString(int _tabs=0);
+        void SetPrimaryKey(const string &prmkey) {primary_key = prmkey;}
+        string GetPrimaryKey() {return primary_key;}
+        void AssignRandomPrimaryKey();
     protected:
 
     private:
@@ -93,7 +96,7 @@ class Object
         double outflowlimitfactor_past = 1;
 		double outflowlimitfactor_current = 1;
         bool limitoutflow = false;
-
+        string primary_key = "";
 };
 
 #endif // OBJECT_H
