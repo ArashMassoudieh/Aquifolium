@@ -19,7 +19,7 @@ class Link: public Object
         Link(const Link& other);
         Link& operator=(const Link& other);
         Block* GetConnectedBlock(Expression::loc l);
-
+        string toCommand();
     protected:
 
     private:

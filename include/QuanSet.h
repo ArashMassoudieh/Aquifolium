@@ -42,6 +42,7 @@ class QuanSet
         Object *Parent() {return parent; }
         vector<CTimeSeries*> TimeSeries();
         vector<string> QuanNames();
+        string toCommand();
 #ifdef QT_version
         QStringList QQuanNames();
 		QuanSet(QJsonObject& object_types);

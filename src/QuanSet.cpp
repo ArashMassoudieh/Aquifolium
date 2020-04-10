@@ -297,3 +297,17 @@ QuanSet::QuanSet(QJsonObject& object_types)
 
 
 #endif
+string QuanSet::toCommand()
+{
+    string s;
+    int i=0;
+    for (map<string,Quan>::iterator it=quans.begin(); it!=quans.end(); it++)
+    {
+        if (it->second.AskFromUser())
+        {
+            if (i!=0) s += ",";
+            s += it->second.toCommand();
+        }
+    }
+    return s;
+}

@@ -1,4 +1,5 @@
 #include "Link.h"
+#include "Block.h"
 
 Link::Link():Object::Object()
 {
@@ -24,4 +25,10 @@ Link& Link::operator=(const Link& rhs)
 }
 
 
+string Link::toCommand()
+{
+    string out = "from=" + Object::GetConnectedBlock(Expression::loc::source)->GetName() + "," + "to=" + Object::GetConnectedBlock(Expression::loc::destination)->GetName() + ",";
+    out += Object::toCommand();
+    return out;
+}
 

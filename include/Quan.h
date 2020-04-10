@@ -84,7 +84,7 @@ class Quan
         string GetProperty();
 		string SourceName() { return sourcename;}
 		bool SetSourceName(const string& s) { sourcename = s; }
-		
+        string toCommand();
     protected:
 
     private:

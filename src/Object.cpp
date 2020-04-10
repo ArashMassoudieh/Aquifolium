@@ -369,3 +369,10 @@ void Object::AssignRandomPrimaryKey()
         s += char(rand()%(122-65) +65);
     primary_key = s;
 }
+
+string Object::toCommand()
+{
+    string out = "type=" + GetType() + ",";
+    out += var.toCommand();
+    return out;
+}

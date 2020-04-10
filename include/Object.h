@@ -79,6 +79,7 @@ class Object
         void SetPrimaryKey(const string &prmkey) {primary_key = prmkey;}
         string GetPrimaryKey() {return primary_key;}
         void AssignRandomPrimaryKey();
+        string toCommand();
     protected:
 
     private:

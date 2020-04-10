@@ -1267,3 +1267,24 @@ QStringList System::QGetAllObjectsofTypeCategory(QString _type)
 }
 #endif // Qt_version
 
+
+bool System::SavetoScriptFile(const string &filename)
+{
+    fstream file(filename,ios_base::out);
+    for (unsigned int i=0; i<sources.size(); i++)
+        file << "create source:" << sources[i].toCommand() << endl;
+
+    for (unsigned int i=0; i<ParametersCount(); i++)
+        file << "create parameter:" << Parameters()[i]->toCommand() << endl;
+
+    for (unsigned int i=0; i<blocks.size(); i++)
+        file << "create block:" << blocks[i].toCommand() << endl;
+
+    for (unsigned int i=0; i<links.size(); i++)
+        file << "create link:" << links[i].toCommand() << endl;
+
+    file.close();
+
+
+}
+

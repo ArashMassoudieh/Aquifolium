@@ -652,3 +652,10 @@ bool Quan::AppendError(const string &objectname, const string &cls, const string
     parent->Parent()->errorhandler.Append(objectname, cls, funct, description, code);
     return true;
 }
+
+string Quan::toCommand()
+{
+    string s;
+    s += GetName() + "=" + GetProperty();
+    return s;
+}

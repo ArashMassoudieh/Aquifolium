@@ -188,7 +188,7 @@ class System: public Object
         vector<CTimeSeries*> TimeSeries();
         double GetMinimumNextTimeStepSize();
         Object *GetObjectBasedOnPrimaryKey(const string &s);
-
+        bool SavetoScriptFile(const string &filename);
 #if defined(QT_version)
         logWindow *LogWindow() {return logwindow;}
         void SetLogWindow(logWindow *lgwnd) {logwindow=lgwnd;}
