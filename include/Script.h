@@ -28,6 +28,8 @@ class Script
         void Append(const Command &c);
         void SetGA(CGA<System> *G) {GA = G;}
         CGA<System> *GetGA() {return GA;}
+        int CommandsCount() {return commands.size();}
+        vector<string> &Errors() {return errors;}
     protected:
 
     private:

@@ -30,6 +30,7 @@ using namespace std;
 #define CMatrix_arma CMatrix
 #endif // _DEBUG
 
+class Script;
 
 struct solversettings
 {
@@ -101,7 +102,9 @@ class System: public Object
 #endif
         virtual ~System();
         System(const System& other);
+        System(Script& scr);
         System& operator=(const System& other);
+        void CreateFromScript(Script& scr);
         double &GetTime() {return SolverTempVars.t;}
         bool AddBlock(Block &blk);
         bool AddSource(Source &src);

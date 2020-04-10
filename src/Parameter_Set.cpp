@@ -50,5 +50,10 @@ string Parameter_Set::getKeyAtIndex (int index){
     return parameters[index].GetName();
 }
 
+void Parameter_Set::clear()
+{
+    parameters.clear();
+}
+
 
 

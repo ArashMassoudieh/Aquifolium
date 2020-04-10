@@ -36,7 +36,7 @@ class Parameter_Set
                     j++;
             return  j;
         }
-
+        void clear();
     protected:
 
     private:

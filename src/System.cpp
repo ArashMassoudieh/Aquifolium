@@ -3,6 +3,7 @@
 #pragma warning(pop)
 #pragma warning(disable : 4996)
 #include <json/json.h>
+#include <Script.h>
 
 
 
@@ -832,6 +833,11 @@ void System::clear()
     links.clear();
     Outputs.AllOutputs.clear();
     Outputs.ObservedOutputs.clear();
+    sources.clear();
+    objective_function_set.clear();
+    parameter_set.clear();
+    solvevariableorder.clear();
+    metamodel.Clear();
 }
 
 void System::TransferQuantitiesFromMetaModel()
@@ -1287,4 +1293,33 @@ bool System::SavetoScriptFile(const string &filename)
 
 
 }
+
+System::System(Script& scr)
+{
+    for (int i=0; i<scr.CommandsCount(); i++)
+    {
+        if (!scr[i]->Execute(this))
+        {
+            errorhandler.Append("","Script","CreateSystem",scr[i]->LastError(),6001);
+            scr.Errors().push_back(scr[i]->LastError());
+        }
+    }
+    SetVariableParents();
+
+}
+
+void System::CreateFromScript(Script& scr)
+{
+    for (int i=0; i<scr.CommandsCount(); i++)
+    {
+        if (!scr[i]->Execute(this))
+        {
+            errorhandler.Append("","Script","CreateSystem",scr[i]->LastError(),6001);
+            scr.Errors().push_back(scr[i]->LastError());
+        }
+    }
+    SetVariableParents();
+
+}
+
 
