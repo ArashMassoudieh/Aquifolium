@@ -404,9 +404,10 @@ bool Command::Execute(System *_sys)
                 B.SetName(assignments["name"]);
                 B.SetType(assignments["type"]);
                 sys->AddBlock(B);
+
                 for (map<string,string>::iterator it=assignments.begin(); it!=assignments.end(); it++)
                 {
-                    if (it->first!="name" && it->first!="type" && it->first!="to" && it->first!="from")
+                    if (it->first!="type" && it->first!="to" && it->first!="from")
                         sys->block(assignments["name"])->SetProperty(it->first,it->second);
                 }
                 return true;
@@ -423,9 +424,10 @@ bool Command::Execute(System *_sys)
                 L.SetType(assignments["type"]);
 
                 sys->AddLink(L,assignments["from"],assignments["to"]);
+                L.SetName(assignments["name"]);
                 for (map<string,string>::iterator it=assignments.begin(); it!=assignments.end(); it++)
                 {
-                    if (it->first!="name" && it->first!="type" && it->first!="to" && it->first!="from")
+                    if (it->first!="type" && it->first!="to" && it->first!="from")
                         sys->link(assignments["name"])->SetProperty(it->first,it->second);
                 }
                 return true;
@@ -442,7 +444,7 @@ bool Command::Execute(System *_sys)
                 sys->AppendParameter(assignments["name"], aquiutils::atof(assignments["low"]), aquiutils::atof(assignments["high"]));
                 for (map<string,string>::iterator it=assignments.begin(); it!=assignments.end(); it++)
                 {
-                    if (it->first!="name" && it->first!="type" && it->first!="to" && it->first!="from")
+                    if (it->first!="type" && it->first!="to" && it->first!="from")
                     {
                         if (!sys->parameter(assignments["name"])->SetProperty(it->first,it->second))
                             last_error = "Parameter does not have a '" + it->first + "' + property!";
@@ -466,7 +468,7 @@ bool Command::Execute(System *_sys)
 				if (!succeed) return false;
 				for (map<string,string>::iterator it=assignments.begin(); it!=assignments.end(); it++)
                 {
-                    if (it->first!="name" && it->first!="object" && it->first!="expression" && it->first!="weight")
+                    if (it->first!="object" && it->first!="expression" && it->first!="weight")
                     {
                         if (!sys->ObjectiveFunction(assignments["name"])->SetProperty(it->first,it->second))
                         {
@@ -492,7 +494,7 @@ bool Command::Execute(System *_sys)
                 sys->AddSource(B);
                 for (map<string,string>::iterator it=assignments.begin(); it!=assignments.end(); it++)
                 {
-                    if (it->first!="name" && it->first!="type" && it->first!="to" && it->first!="from")
+                    if (it->first!="type" && it->first!="to" && it->first!="from")
                         sys->source(assignments["name"])->SetProperty(it->first,it->second);
                 }
                 return true;

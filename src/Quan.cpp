@@ -631,7 +631,7 @@ bool Quan::SetProperty(const string &val)
 	if (type == _type::string)
 	{
 		_string_value = val; 
-        if (GetName()=="Name")
+        if (GetName()=="name")
             parent->SetName(val,false);
         return true;
 	}

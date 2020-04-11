@@ -836,8 +836,6 @@ void System::clear()
     sources.clear();
     objective_function_set.clear();
     parameter_set.clear();
-    solvevariableorder.clear();
-    metamodel.Clear();
 }
 
 void System::TransferQuantitiesFromMetaModel()
