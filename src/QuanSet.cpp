@@ -162,6 +162,34 @@ Quan* QuanSet::GetVar(int i)
     }
 }
 
+Quan* QuanSet::GetVarAskable(int i)
+{
+    int j=0;
+    for (map<string,Quan>::iterator it=quans.begin(); it!=quans.end(); it++)
+    {
+        if (j==i && it->second.AskFromUser())
+        {   return &it->second;
+
+        }
+        if (it->second.AskFromUser()) j++;
+
+    }
+
+    AppendError(Name(),"QuanSet","GetVar","Variable " + aquiutils::numbertostring(i) + " does not exist or is not askable!",2001);
+    return nullptr;
+
+}
+
+unsigned long QuanSet::AskableSize()
+{
+    unsigned int j=0;
+    for (map<string,Quan>::iterator it=quans.begin(); it!=quans.end(); it++)
+    {
+        if (it->second.AskFromUser()) j++;
+    }
+    return j;
+}
+
 string QuanSet::ToString(int _tabs)
 {
     string out = aquiutils::tabs(_tabs) + name + ":\n";
