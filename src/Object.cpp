@@ -99,6 +99,23 @@ bool Object::AddQnantity(const string &name,const Quan &Q)
 
 }
 
+bool Object::SetQuantities(QuanSet &Q)
+{
+    if (Q.Count("name")==0)
+    {
+        Parent()->errorhandler.Append(GetName(),"Object","AddQnantity","Variable " + name + " does not exists! ",1043);
+        return false;
+    }
+    else
+    {
+        var = Q;
+        var.SetParent(this);
+        SetName(Q["name"].GetProperty());
+        return true;
+    }
+
+}
+
 bool Object::SetQuantities(MetaModel &m, const string& typ )
 {
     if (m.Count(typ)==0)
@@ -175,7 +192,10 @@ string Object::GetName() const
 bool Object::SetName(const string &s, bool setprop)
 {
     if (setprop)
-        var["name"].SetProperty(s);
+    {
+        if (var.Count("name")>0)
+            var["name"].SetProperty(s);
+    }
     name = s;
     return true;
 }

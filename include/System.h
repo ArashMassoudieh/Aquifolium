@@ -117,7 +117,15 @@ class System: public Object
             else
                 return nullptr;
         }
+        Object *Setting(int i)
+        {
+            if (i<Settings.size())
+                return &Settings[i];
+            else
+                return nullptr;
+        }
         int BlockCount() {return blocks.size();}
+        int SettingsCount() {return Settings.size();}
         int LinksCount() {return links.size();}
         int SourcesCount() {return sources.size();}
         vector<string> GetAllSourceNames();
@@ -139,6 +147,7 @@ class System: public Object
         }
         Parameter *parameter(const string &s);
         Object *object(const string &s);
+        Object *settings(const string &s);
         int blockid(const string &s);
         int linkid(const string &s);
         bool GetQuanTemplate(const string &filename);
@@ -192,6 +201,7 @@ class System: public Object
         double GetMinimumNextTimeStepSize();
         Object *GetObjectBasedOnPrimaryKey(const string &s);
         bool SavetoScriptFile(const string &filename);
+        bool ReadSystemSettingsTemplate(const string &filename);
 #if defined(QT_version)
         logWindow *LogWindow() {return logwindow;}
         void SetLogWindow(logWindow *lgwnd) {logwindow=lgwnd;}
@@ -210,6 +220,7 @@ class System: public Object
         vector<Block> blocks;
         vector<Link> links;
         vector<Source> sources;
+        vector<Object> Settings;
         string last_error;
         MetaModel metamodel;
         CVector_arma GetResiduals(const string &variable, CVector_arma &X);
@@ -232,7 +243,7 @@ class System: public Object
         bool silent;
         _directories paths;
         vector<CTimeSeries*> alltimeseries;
-		void SetNumberOfStateVariables(int n) 
+        void SetNumberOfStateVariables(unsigned int n)
 		{
 			SolverTempVars.fail_reason.resize(n);
 			SolverTempVars.Inverse_Jacobian.resize(n);
@@ -240,6 +251,7 @@ class System: public Object
 			SolverTempVars.numiterations.resize(n);
 			SolverTempVars.updatejacobian.resize(n);
 		}
+
 
 #ifdef QT_version
         GraphWidget *diagramview;

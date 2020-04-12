@@ -23,7 +23,7 @@ class QuanSet
         QuanSet& operator=(const QuanSet& other);
         bool Append(const string &s, const Quan &q);
         void Append(QuanSet &qset);
-        size_t Count(const string &s) {return quans.count(s);}
+        size_t Count(const string &s) const {return quans.count(s);}
         Quan& operator[] (const string &s);
         Quan& GetVar(const string &s);
         Quan* GetVar(int i);
@@ -56,12 +56,12 @@ class QuanSet
 
     private:
         Object* parent = nullptr;
-        string name;
+        string name = "";
         map<string, Quan> quans;
-        string last_error;
-        string description;
-        string iconfilename;
-		string typecategory; 
+        string last_error = "";
+        string description = "";
+        string iconfilename = "";
+        string typecategory = "";
 
 
 };

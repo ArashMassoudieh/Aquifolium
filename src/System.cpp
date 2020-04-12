@@ -58,6 +58,8 @@ System::System(const System& other):Object::Object(other)
     solvevariableorder = other.solvevariableorder;
 	SolverTempVars = other.SolverTempVars;
     paths = other.paths;
+    Settings = other.Settings;
+
     SetAllParents();
 }
 
@@ -77,6 +79,7 @@ System& System::operator=(const System& rhs)
     solvevariableorder = rhs.solvevariableorder;
 	SolverTempVars = rhs.SolverTempVars;
     paths = rhs.paths;
+    Settings = rhs.Settings;
     SetAllParents();
     return *this;
 }
@@ -160,6 +163,16 @@ Source *System::source(const string &s)
     return nullptr;
 }
 
+Object *System::settings(const string &s)
+{
+    for (unsigned int i=0; i<Settings.size(); i++)
+        if (Settings[i].GetName() == s) return &Settings[i];
+
+    //errorhandler.Append(GetName(),"System","link","Link '" + s + "' was not found",104);
+
+    return nullptr;
+}
+
 
 Parameter *System::parameter(const string &s)
 {
@@ -174,6 +187,9 @@ Parameter *System::parameter(const string &s)
 
 Object *System::object(const string &s)
 {
+    for (unsigned int i=0; i<Settings.size(); i++)
+        if (Settings[i].GetName() == s) return &Settings[i];
+
     for (unsigned int i=0; i<links.size(); i++)
         if (links[i].GetName() == s) return &links[i];
 
@@ -847,122 +863,6 @@ void System::TransferQuantitiesFromMetaModel()
         GetVars()->Append(it->second);
 }
 
-#ifdef QT_version
-void System::GetModelConfiguration()
-{
-    QList <Node*> nodes = diagramview->Nodes();
-    QStringList nodenames_sorted = diagramview->nodeNames();
-    nodenames_sorted.sort();
-
-    for (int i = 0; i < nodenames_sorted.count(); i++)
-    {
-        Node* n = nodes[diagramview->nodeNames().indexOf(nodenames_sorted[i])];
-        Block B;
-        B.SetName(n->Name().toStdString());
-        B.SetType(n->GetObjectType().toStdString());
-        AddBlock(B);
-        QStringList codes = n->codes();
-
-        foreach (mProp mP , n->getmList(n->objectType).GetList())
-        {
-            QString code = mP.VariableCode;
-            if (!n->val(code).isEmpty() && n->val(code) != ".")
-                block(n->Name().toStdString())->SetVal(code.toStdString(), n->val(code).toFloat());
-            if (mP.Delegate == "Browser" && !n->val(code).isEmpty() && n->val(code) != ".")
-            {   block(n->Name().toStdString())->Variable(code.toStdString())->SetTimeSeries(fullFilename(n->val(code), diagramview->modelPathname()).toStdString());
-                qDebug() << n->val(code).toQString() << "   path:" << diagramview->modelPathname();
-            }
-            qDebug()<<code<<"  "<<QString::fromStdString(block(n->Name().toStdString())->GetName())<<"  "<<QString::fromStdString(block(n->Name().toStdString())->GetType())<<"    "<<block(n->Name().toStdString())->GetVal(code.toStdString());
-        }
-
-
-
-/*      foreach (QString code , n->codes()) //Parameters
-        {
-            if (gw->EntityNames("Parameter").contains(n->val(code).toQString()))
-            {
-                if (lookup_parameters(n->val(code).toStdString()) != -1) {
-                    parameters()[lookup_parameters(n->val(code).toStdString())].location.push_back(Blocks.size() - 1);  // Check for everything
-                    parameters()[lookup_parameters(n->val(code).toStdString())].conversion_factor.push_back(n->val(code).conversionCoefficient(n->val(code).unit, n->val(code).defaultUnit));
-                    parameters()[lookup_parameters(n->val(code).toStdString())].quan.push_back(code.toStdString());
-                    parameters()[lookup_parameters(n->val(code).toStdString())].location_type.push_back(0);
-                    parameters()[lookup_parameters(n->val(code).toStdString())].experiment_id.push_back(name);
-                }
-            }
-        } //Controller
-        foreach (QString code , n->codes())
-        {
-            if (gw->EntityNames("Controller").contains(n->val(code).toQString()))
-            {
-                if (lookup_controllers(n->val(code).toStdString()) != -1) {
-                    controllers()[lookup_controllers(n->val(code).toStdString())].application_spec.location.push_back(Blocks.size() - 1);  // Check for everything
-                    controllers()[lookup_controllers(n->val(code).toStdString())].application_spec.conversion_factor.push_back(n->val(code).conversionCoefficient(n->val(code).unit, n->val(code).defaultUnit));
-                    controllers()[lookup_controllers(n->val(code).toStdString())].application_spec.quan.push_back(code.toStdString());
-                    controllers()[lookup_controllers(n->val(code).toStdString())].application_spec.location_type.push_back(0);
-                    controllers()[lookup_controllers(n->val(code).toStdString())].application_spec.experiment_id.push_back(name);
-                }
-            }
-        }
-*/
-    }
-
-    QList <Edge*> edges = diagramview->Edges();
-    QStringList edgenames_sorted = diagramview->edgeNames();
-    edgenames_sorted.sort();
-//#pragma omp parallel for
-    for (int i = 0; i < edges.count(); i++)
-    {
-        Edge *e = edges[diagramview->edgeNames().indexOf(edgenames_sorted[i])];
-        Link L;
-        L.SetName(e->Name().toStdString());
-        L.SetType(e->GetObjectType().toStdString());
-        AddLink(L,e->sourceNode()->Name().toStdString(),e->destNode()->Name().toStdString());
-
-        foreach (mProp mP ,e->getmList(e->objectType).GetList())
-        {   QString code = mP.VariableCode;
-            if (!e->val(code).isEmpty() && e->val(code) != ".") link(e->Name().toStdString())->SetVal(code.toStdString(), e->val(code).toFloat());
-            if (mP.Delegate == "Browser" && !e->val(code).isEmpty() && e->val(code) != ".")
-                link(e->Name().toStdString())->Variable(code.toStdString())->SetTimeSeries(fullFilename(e->val(code), diagramview->modelPathname()).toStdString());
-
-        }
-
-
-        //progress->setValue(progress->value() + 1);
-
-/*
-        foreach (QString code , e->codes()) //Parameters
-        {
-            if (gw->EntityNames("Parameter").contains(e->val(code).toQString()))
-            {
-                if (lookup_parameters(e->val(code).toStdString()) != -1) {
-                    parameters()[lookup_parameters(e->val(code).toStdString())].location.push_back(Connectors.size() - 1);  // Check for everything
-                    parameters()[lookup_parameters(e->val(code).toStdString())].conversion_factor.push_back(e->val(code).conversionCoefficient(e->val(code).unit, e->val(code).defaultUnit));
-                    parameters()[lookup_parameters(e->val(code).toStdString())].quan.push_back(code.toStdString());
-                    parameters()[lookup_parameters(e->val(code).toStdString())].location_type.push_back(1);
-                    parameters()[lookup_parameters(e->val(code).toStdString())].experiment_id.push_back(name);
-                }
-            }
-        }
-        foreach (QString code , e->codes()) //Controllers
-        {
-            if (gw->EntityNames("Controller").contains(e->val(code).toQString()))
-            {
-                if (lookup_controllers(e->val(code).toStdString()) != -1) {
-                    controllers()[lookup_controllers(e->val(code).toStdString())].application_spec.location.push_back(Connectors.size() - 1);  // Check for everything
-                    controllers()[lookup_controllers(e->val(code).toStdString())].application_spec.conversion_factor.push_back(e->val(code).conversionCoefficient(e->val(code).unit, e->val(code).defaultUnit));
-                    controllers()[lookup_controllers(e->val(code).toStdString())].application_spec.quan.push_back(code.toStdString());
-                    controllers()[lookup_controllers(e->val(code).toStdString())].application_spec.location_type.push_back(1);
-                    controllers()[lookup_controllers(e->val(code).toStdString())].application_spec.experiment_id.push_back(name);
-                }
-            }
-        }
-*/
-
-
-    }
-}
-#endif
-
 void System::AppendObjectiveFunction(const string &name, const Objective_Function &obj, double weight)
 {
     objective_function_set.Append(name,obj, weight);
@@ -1242,6 +1142,7 @@ QStringList System::QGetAllCategoryTypes()
 		if (!out.contains(QString::fromStdString(it->second.CategoryType())))
 			out.append(QString::fromStdString(it->second.CategoryType()));
 	}
+
 	return out; 
 }
 
@@ -1318,6 +1219,43 @@ void System::CreateFromScript(Script& scr)
     }
     SetVariableParents();
 
+}
+
+bool System::ReadSystemSettingsTemplate(const string &filename)
+{
+    Settings.clear();
+    Json::Value root;
+    Json::Reader reader;
+
+    std::ifstream file(filename);
+    if (!file.good())
+    {
+        cout << "File " + filename + " was not found!";
+        return false;
+    }
+
+    file >> root;
+
+    if (!reader.parse(file, root, true)) {
+        //for some reason it always fails to parse
+        std::cout << "Failed to parse configuration\n"
+            << reader.getFormattedErrorMessages();
+        last_error = "Failed to parse configuration\n";
+    }
+
+
+    for (Json::ValueIterator object_types = root.begin(); object_types != root.end(); ++object_types)
+    {
+        QuanSet quanset(object_types);
+        Object settingsitem;
+        quanset.SetParent(this);
+        settingsitem.SetQuantities(quanset);
+        settingsitem.SetDefaults();
+        Settings.push_back(settingsitem);
+        metamodel.Append(object_types.key().asString(), quanset);
+
+    }
+    return true;
 }
 
 

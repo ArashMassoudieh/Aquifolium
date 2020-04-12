@@ -111,6 +111,10 @@ Quan::Quan(Json::ValueIterator &it)
     else
        AskFromUser() = false;
 
+    if (it->isMember("setvalue"))
+    {
+        SetProperty((*it)["setvalue"].asString());
+    }
 }
 
 #ifdef  Q_version
@@ -221,6 +225,11 @@ Quan::Quan(QJsonObject& it)
 	}
 	else
 		AskFromUser() = false;
+
+    if (it.keys().contains("setvalue"))
+    {
+        SetProperty(it.value("setvalue").toString().toStdString());
+    }
 
 }
 #endif //  QT_version
@@ -632,7 +641,10 @@ bool Quan::SetProperty(const string &val)
 	{
 		_string_value = val; 
         if (GetName()=="name")
-            parent->SetName(val,false);
+        {
+            if (parent)
+                parent->SetName(val,false);
+        }
         return true;
 	}
     _string_value = val;

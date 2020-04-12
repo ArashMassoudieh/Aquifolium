@@ -21,6 +21,7 @@ class Object
         bool AddQnantity(const string &name,const Quan &Q);
         bool SetQuantities(MetaModel &m, const string& typ);
         bool SetQuantities(MetaModel *m, const string& typ );
+        bool SetQuantities(QuanSet &Q);
         bool HasQuantity(const string &q);
         bool SetVal(const string& s, double value, const Expression::timing &tmg = Expression::timing::both);
         bool SetVal(const string& s, const string & value, const Expression::timing &tmg = Expression::timing::both);
