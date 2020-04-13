@@ -119,8 +119,8 @@ class System: public Object
         }
         Object *Setting(int i)
         {
-            if (i<Setting.size())
-                return &blocks[i];
+            if (i<Settings.size())
+                return &Settings[i];
             else
                 return nullptr;
         }
