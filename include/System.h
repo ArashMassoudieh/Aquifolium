@@ -20,6 +20,8 @@
 
 #if Q_version
 #include <QStringList>
+#include "runtimewindow.h"
+#include "QTime"
 #endif
 
 using namespace std; 
@@ -204,6 +206,7 @@ class System: public Object
         bool ReadSystemSettingsTemplate(const string &filename);
         void SetSystemSettings();
         bool SetSystemSettingsObjectProperties(const string &s, const string &val);
+
 #if defined(QT_version)
         logWindow *LogWindow() {return logwindow;}
         void SetLogWindow(logWindow *lgwnd) {logwindow=lgwnd;}
@@ -213,6 +216,8 @@ class System: public Object
         QStringList QGetAllCategoryTypes();
 		QStringList QGetAllObjectsofTypes(QString _type);
 		QStringList QGetAllObjectsofTypeCategory(QString _type);
+        RunTimeWindow *RunTimewindow() {return rtw;}
+        void SetRunTimeWindow(RunTimeWindow* _rtw) {rtw = _rtw;}
 #endif
 
     protected:
@@ -253,7 +258,9 @@ class System: public Object
 			SolverTempVars.numiterations.resize(n);
 			SolverTempVars.updatejacobian.resize(n);
 		}
-
+#ifdef Q_version
+    RunTimeWindow *rtw = nullptr;
+#endif
 
 #ifdef QT_version
         GraphWidget *diagramview;

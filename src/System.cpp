@@ -281,6 +281,15 @@ bool System::Solve(bool applyparameters)
     SolverTempVars.t = SimulationParameters.tstart;
 	PopulateOutputs();
 
+#ifdef Q_version
+    if (rtw)
+    {
+        rtw->AppendText("Simulation Started at " + QTime::currentTime().toString(Qt::RFC2822Date) + "!");
+        rtw->SetXRange(SimulationParameters.tstart,SimulationParameters.tend);
+        rtw->SetYRange(0,SimulationParameters.dt0*10);
+    }
+#endif
+
     while (SolverTempVars.t<SimulationParameters.tend+SolverTempVars.dt)
     {
 		cout << "\r Simulation Time: " + aquiutils::numbertostring(SolverTempVars.t);
@@ -289,12 +298,7 @@ bool System::Solve(bool applyparameters)
         #ifdef Debug_mode
         ShowMessage(string("t = ") + aquiutils::numbertostring(SolverTempVars.t) + ", dt_base = " + aquiutils::numbertostring(SolverTempVars.dt_base) + ", dt = " + aquiutils::numbertostring(SolverTempVars.dt) + ", SolverTempVars.numiterations =" + aquiutils::numbertostring(SolverTempVars.numiterations));
         #endif // Debug_mode
-        #ifdef QT_version
-        if (rtw)
-        {
-            updateProgress(false);
-        }
-        #endif
+
 
         vector<bool> _success = OneStepSolve();
 		success = aquiutils::And(_success);
@@ -320,9 +324,24 @@ bool System::Solve(bool applyparameters)
             for (int i=0; i<solvevariableorder.size(); i++)
 			Update(solvevariableorder[i]);
             UpdateObjectiveFunctions(SolverTempVars.t);
+#ifdef Q_version
+            if (rtw)
+            {
+                rtw->SetProgress((SolverTempVars.t-SimulationParameters.tstart)/(SimulationParameters.tend-SimulationParameters.tstart));
+                rtw->AddDataPoint(SolverTempVars.t,SolverTempVars.dt);
+            }
+#endif
         }
 
     }
+#ifdef Q_version
+    if (rtw)
+    {
+        rtw->SetProgress(1);
+        rtw->AddDataPoint(SolverTempVars.t,SolverTempVars.dt);
+        rtw->AppendText("Simulation finished!" + QTime::currentTime().toString(Qt::RFC2822Date) + "!");
+    }
+#endif
 
     #ifdef QT_version
     updateProgress(true);
