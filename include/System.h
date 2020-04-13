@@ -119,8 +119,8 @@ class System: public Object
         }
         Object *Setting(int i)
         {
-            if (i<Settings.size())
-                return &Settings[i];
+            if (i<Setting.size())
+                return &blocks[i];
             else
                 return nullptr;
         }
@@ -202,6 +202,7 @@ class System: public Object
         Object *GetObjectBasedOnPrimaryKey(const string &s);
         bool SavetoScriptFile(const string &filename);
         bool ReadSystemSettingsTemplate(const string &filename);
+        void SetSystemSettings();
 #if defined(QT_version)
         logWindow *LogWindow() {return logwindow;}
         void SetLogWindow(logWindow *lgwnd) {logwindow=lgwnd;}

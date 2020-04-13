@@ -1258,4 +1258,15 @@ bool System::ReadSystemSettingsTemplate(const string &filename)
     return true;
 }
 
+void System::SetSystemSettings()
+{
+    for (unsigned int i=0; i<Settings.size(); i++)
+    {
+        for (map<string, Quan>::iterator j=Settings[i].GetVars()->begin(); j!=Settings[i].GetVars()->end(); j++)
+            SetProperty(j->first,j->second.GetProperty());
+
+    }
+
+}
+
 
