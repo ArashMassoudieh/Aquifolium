@@ -203,6 +203,7 @@ class System: public Object
         bool SavetoScriptFile(const string &filename);
         bool ReadSystemSettingsTemplate(const string &filename);
         void SetSystemSettings();
+        bool SetSystemSettingsObjectProperties(const string &s, const string &val);
 #if defined(QT_version)
         logWindow *LogWindow() {return logwindow;}
         void SetLogWindow(logWindow *lgwnd) {logwindow=lgwnd;}

@@ -87,14 +87,14 @@ Command::Command(const string &s, Script *parnt)
     for (int i=1; i<firstlevelbreakup.size(); i++)
     {
         vector<string> properties = aquiutils::split(firstlevelbreakup[i],',');
-        for (int j=0; j<properties.size(); j++)
+        for (unsigned int j=0; j<properties.size(); j++)
         {
             vector<string> prop = aquiutils::split(properties[j],'=');
-            if (prop.size()<2)
+            if (prop.size()==1)
             {
                 last_error = "Property '" + prop[0] + "' does not have a right hand side!";
-                validated = false;
-                return;
+                //validated = false;
+                //break;
             }
             if (prop.size() == 0)
             {
@@ -338,7 +338,7 @@ bool Command::Execute(System *_sys)
         }
         if (aquiutils::tolower(assignments["object"])=="system")
         {
-            return sys->SetProperty(assignments["quantity"],assignments["value"]);
+            return sys->SetSystemSettingsObjectProperties(assignments["quantity"],assignments["value"]);
         }
 
         if (aquiutils::tolower(assignments["object"])=="optimizer")

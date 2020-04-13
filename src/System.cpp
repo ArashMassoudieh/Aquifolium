@@ -411,8 +411,25 @@ bool System::SetProp(const string &s, const double &val)
     return false;
 }
 
+bool System::SetSystemSettingsObjectProperties(const string &s, const string &val)
+{
+    for (unsigned int i=0; i<Settings.size(); i++)
+    {
+        for (map<string, Quan>::iterator j=Settings[i].GetVars()->begin(); j!=Settings[i].GetVars()->end(); j++)
+        {   if (j->first==s)
+            {   j->second.SetProperty(val);
+                return true;
+            }
+
+        }
+    }
+    errorhandler.Append("","System","SetSystemSettingsObjectProperties","Property '" + s + "' was not found!", 631);
+    return false;
+
+}
 bool System::SetProperty(const string &s, const string &val)
 {
+
     if (s=="cn_weight")
     {   SolverSettings.C_N_weight = aquiutils::atof(val); return true;}
     if (s=="nr_tolerance")
@@ -1176,17 +1193,22 @@ QStringList System::QGetAllObjectsofTypeCategory(QString _type)
 bool System::SavetoScriptFile(const string &filename)
 {
     fstream file(filename,ios_base::out);
+    for (unsigned int i=0; i<Settings.size(); i++)
+        for (map<string, Quan>::iterator j=Settings[i].GetVars()->begin(); j!=Settings[i].GetVars()->end(); j++)
+            if (j->second.AskFromUser())
+                file << "setvalue; object=system, quantity=" + j->first + ", value=" << j->second.GetProperty() << endl;
+
     for (unsigned int i=0; i<sources.size(); i++)
-        file << "create source:" << sources[i].toCommand() << endl;
+        file << "create source;" << sources[i].toCommand() << endl;
 
     for (unsigned int i=0; i<ParametersCount(); i++)
-        file << "create parameter:" << Parameters()[i]->toCommand() << endl;
+        file << "create parameter;" << Parameters()[i]->toCommand() << endl;
 
     for (unsigned int i=0; i<blocks.size(); i++)
-        file << "create block:" << blocks[i].toCommand() << endl;
+        file << "create block;" << blocks[i].toCommand() << endl;
 
     for (unsigned int i=0; i<links.size(); i++)
-        file << "create link:" << links[i].toCommand() << endl;
+        file << "create link;" << links[i].toCommand() << endl;
 
     file.close();
 

@@ -335,6 +335,7 @@ string QuanSet::toCommand()
         {
             if (i!=0) s += ",";
             s += it->second.toCommand();
+            i++;
         }
     }
     return s;
