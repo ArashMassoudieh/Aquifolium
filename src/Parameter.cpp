@@ -100,4 +100,5 @@ string Parameter::variable(const string &qntty)
 bool Parameter::SetName(string s)
 {
     Object::SetName(s);
+    return true;
 }
