@@ -24,6 +24,7 @@ Object::Object(const Object& other)
 	outflowlimitfactor_past = 1;
 	type = other.type;
 	limitoutflow = false;
+    primary_key = other.primary_key;
 	SetAllParents();
 }
 
@@ -37,6 +38,7 @@ Object& Object::operator=(const Object& rhs)
 	s_Block_no = rhs.s_Block_no;
 	e_Block_no = rhs.e_Block_no;
 	type = rhs.type;
+    primary_key = rhs.primary_key;
     SetAllParents();
 	outflowlimitfactor_current = 1; 
 	outflowlimitfactor_past = 1;
@@ -92,6 +94,23 @@ bool Object::AddQnantity(const string &name,const Quan &Q)
     else
     {
 		var.Append(name, Q);
+        return true;
+    }
+
+}
+
+bool Object::SetQuantities(QuanSet &Q)
+{
+    if (Q.Count("name")==0)
+    {
+        Parent()->errorhandler.Append(GetName(),"Object","AddQnantity","Variable " + name + " does not exists! ",1043);
+        return false;
+    }
+    else
+    {
+        var = Q;
+        var.SetParent(this);
+        SetName(Q["name"].GetProperty());
         return true;
     }
 
@@ -173,7 +192,10 @@ string Object::GetName() const
 bool Object::SetName(const string &s, bool setprop)
 {
     if (setprop)
-        var["Name"].SetProperty(s);
+    {
+        if (var.Count("name")>0)
+            var["name"].SetProperty(s);
+    }
     name = s;
     return true;
 }
@@ -344,6 +366,10 @@ bool Object::SetProperty(const string &prop, const string &value)
     {
         return var[prop].SetProperty(value);
     }
+    if (var[prop].GetType() == Quan::_type::string)
+    {
+        return var[prop].SetProperty(value);
+    }
 
 
 }
@@ -353,5 +379,20 @@ string Object::toString(int _tabs)
     string out = aquiutils::tabs(_tabs) + "Name: " + GetName() + "\n";
     out += aquiutils::tabs(_tabs) + "Type: " + GetType() + "\n";
     out += this->var.ToString(_tabs + 1);
+    return out;
+}
+
+void Object::AssignRandomPrimaryKey()
+{
+    string s;
+    for (int i=0; i<20; i++)
+        s += char(rand()%(122-65) +65);
+    primary_key = s;
+}
+
+string Object::toCommand()
+{
+    string out = "type=" + GetType() + ",";
+    out += var.toCommand();
     return out;
 }

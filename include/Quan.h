@@ -28,7 +28,7 @@ class Quan
 		Quan(QJsonObject& qjobject);
 #endif // QT_version
 
-		
+        string GetStringValue() {return _string_value;}
         Quan& operator=(const Quan& other);
         enum class _type {constant, value, balance, expression, timeseries, prec_timeseries, global_quan, rule, source, string};
         double CalcVal(Object *, const Expression::timing &tmg=Expression::timing::past);
@@ -84,7 +84,7 @@ class Quan
         string GetProperty();
 		string SourceName() { return sourcename;}
 		bool SetSourceName(const string& s) { sourcename = s; }
-		
+        string toCommand();
     protected:
 
     private:

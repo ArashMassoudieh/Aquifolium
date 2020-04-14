@@ -3,6 +3,7 @@
 #pragma warning(pop)
 #pragma warning(disable : 4996)
 #include <json/json.h>
+#include <Script.h>
 
 
 
@@ -57,6 +58,8 @@ System::System(const System& other):Object::Object(other)
     solvevariableorder = other.solvevariableorder;
 	SolverTempVars = other.SolverTempVars;
     paths = other.paths;
+    Settings = other.Settings;
+
     SetAllParents();
 }
 
@@ -76,6 +79,7 @@ System& System::operator=(const System& rhs)
     solvevariableorder = rhs.solvevariableorder;
 	SolverTempVars = rhs.SolverTempVars;
     paths = rhs.paths;
+    Settings = rhs.Settings;
     SetAllParents();
     return *this;
 }
@@ -159,6 +163,16 @@ Source *System::source(const string &s)
     return nullptr;
 }
 
+Object *System::settings(const string &s)
+{
+    for (unsigned int i=0; i<Settings.size(); i++)
+        if (Settings[i].GetName() == s) return &Settings[i];
+
+    //errorhandler.Append(GetName(),"System","link","Link '" + s + "' was not found",104);
+
+    return nullptr;
+}
+
 
 Parameter *System::parameter(const string &s)
 {
@@ -173,6 +187,9 @@ Parameter *System::parameter(const string &s)
 
 Object *System::object(const string &s)
 {
+    for (unsigned int i=0; i<Settings.size(); i++)
+        if (Settings[i].GetName() == s) return &Settings[i];
+
     for (unsigned int i=0; i<links.size(); i++)
         if (links[i].GetName() == s) return &links[i];
 
@@ -188,6 +205,26 @@ Object *System::object(const string &s)
     //errorhandler.Append(GetName(),"System","object","Object '" + s + "' was not found",105);
 
     return nullptr;
+}
+
+Object *System::GetObjectBasedOnPrimaryKey(const string &s)
+{
+    for (unsigned int i=0; i<links.size(); i++)
+        if (links[i].GetPrimaryKey() == s) return &links[i];
+
+    for (unsigned int i=0; i<blocks.size(); i++)
+        if (blocks[i].GetPrimaryKey() == s) return &blocks[i];
+
+    for (unsigned int i=0; i<sources.size(); i++)
+        if (sources[i].GetPrimaryKey() == s) return &sources[i];
+
+    for (unsigned int i=0; i<ParametersCount(); i++)
+        if (Parameters()[i]->GetPrimaryKey() == s) return Parameters()[i];
+
+    //errorhandler.Append(GetName(),"System","object","Object '" + s + "' was not found",105);
+
+    return nullptr;
+
 }
 
 bool System::GetQuanTemplate(const string &filename)
@@ -235,7 +272,7 @@ bool System::Solve(bool applyparameters)
 	SolverTempVars.SetUpdateJacobian(true);
 	alltimeseries = TimeSeries();
 	bool success = true;
-
+    errorhandler.SetRunTimeWindow(rtw);
 	if (applyparameters) ApplyParameters();
     InitiateOutputs();
 
@@ -243,6 +280,15 @@ bool System::Solve(bool applyparameters)
     SolverTempVars.dt = SolverTempVars.dt_base;
     SolverTempVars.t = SimulationParameters.tstart;
 	PopulateOutputs();
+
+#ifdef Q_version
+    if (rtw)
+    {
+        rtw->AppendText("Simulation Started at " + QTime::currentTime().toString(Qt::RFC2822Date) + "!");
+        rtw->SetXRange(SimulationParameters.tstart,SimulationParameters.tend);
+        rtw->SetYRange(0,SimulationParameters.dt0*10);
+    }
+#endif
 
     while (SolverTempVars.t<SimulationParameters.tend+SolverTempVars.dt)
     {
@@ -252,12 +298,7 @@ bool System::Solve(bool applyparameters)
         #ifdef Debug_mode
         ShowMessage(string("t = ") + aquiutils::numbertostring(SolverTempVars.t) + ", dt_base = " + aquiutils::numbertostring(SolverTempVars.dt_base) + ", dt = " + aquiutils::numbertostring(SolverTempVars.dt) + ", SolverTempVars.numiterations =" + aquiutils::numbertostring(SolverTempVars.numiterations));
         #endif // Debug_mode
-        #ifdef QT_version
-        if (rtw)
-        {
-            updateProgress(false);
-        }
-        #endif
+
 
         vector<bool> _success = OneStepSolve();
 		success = aquiutils::And(_success);
@@ -280,12 +321,27 @@ bool System::Solve(bool applyparameters)
             if (SolverTempVars.MaxNumberOfIterations()<SolverSettings.NR_niteration_lower)
                 SolverTempVars.dt_base = min(SolverTempVars.dt_base/SolverSettings.NR_timestep_reduction_factor,SimulationParameters.dt0*10);
             PopulateOutputs();
-            for (int i=0; i<solvevariableorder.size(); i++)
-			Update(solvevariableorder[i]);
+            for (unsigned int i=0; i<solvevariableorder.size(); i++)
+                Update(solvevariableorder[i]);
             UpdateObjectiveFunctions(SolverTempVars.t);
+#ifdef Q_version
+            if (rtw)
+            {
+                rtw->SetProgress((SolverTempVars.t-SimulationParameters.tstart)/(SimulationParameters.tend-SimulationParameters.tstart));
+                rtw->AddDataPoint(SolverTempVars.t,SolverTempVars.dt);
+            }
+#endif
         }
 
     }
+#ifdef Q_version
+    if (rtw)
+    {
+        rtw->SetProgress(1);
+        rtw->AddDataPoint(SolverTempVars.t,SolverTempVars.dt);
+        rtw->AppendText("Simulation finished!" + QTime::currentTime().toString(Qt::RFC2822Date) + "!");
+    }
+#endif
 
     #ifdef QT_version
     updateProgress(true);
@@ -374,9 +430,27 @@ bool System::SetProp(const string &s, const double &val)
     return false;
 }
 
+bool System::SetSystemSettingsObjectProperties(const string &s, const string &val)
+{
+    for (unsigned int i=0; i<Settings.size(); i++)
+    {
+        for (map<string, Quan>::iterator j=Settings[i].GetVars()->begin(); j!=Settings[i].GetVars()->end(); j++)
+        {   if (j->first==s)
+            {   j->second.SetProperty(val);
+                return true;
+            }
+
+        }
+    }
+    errorhandler.Append("","System","SetSystemSettingsObjectProperties","Property '" + s + "' was not found!", 631);
+    return false;
+
+}
 bool System::SetProperty(const string &s, const string &val)
 {
-    if (s=="cn_weight")
+
+    if (s=="name") return true;
+    if (s=="c_n_weight")
     {   SolverSettings.C_N_weight = aquiutils::atof(val); return true;}
     if (s=="nr_tolerance")
     {   SolverSettings.NRtolerance = aquiutils::atof(val); return true;}
@@ -397,9 +471,9 @@ bool System::SetProperty(const string &s, const string &val)
     if (s=="make_results_uniform")
     {   SolverSettings.makeresultsuniform = aquiutils::atoi(val); return true;}
 
-    if (s=="tstart")
+    if (s=="tstart" || s== "simulation_start_time")
     {   SimulationParameters.tstart = aquiutils::atof(val); return true;}
-    if (s=="tend")
+    if (s=="tend" || s=="simulation_end_time")
     {   SimulationParameters.tend = aquiutils::atof(val); return true;}
     if (s=="dt")
     {   SimulationParameters.dt0 = aquiutils::atof(val); return true;}
@@ -785,6 +859,14 @@ vector<string> System::GetAllSourceTypes()
 	return out;
 }
 
+vector<string> System::GetAllSourceNames()
+{
+    vector<string> out;
+    for (int i=0; i<sources.size(); i++)
+        out.push_back(sources[i].GetName());
+    return out;
+}
+
 vector<string> System::GetAllTypesOf(const string &type)
 {
 	vector<string> out;
@@ -804,6 +886,9 @@ void System::clear()
     links.clear();
     Outputs.AllOutputs.clear();
     Outputs.ObservedOutputs.clear();
+    sources.clear();
+    objective_function_set.clear();
+    parameter_set.clear();
 }
 
 void System::TransferQuantitiesFromMetaModel()
@@ -814,122 +899,6 @@ void System::TransferQuantitiesFromMetaModel()
     for (map<string, QuanSet>::iterator it = metamodel.GetMetaModel()->begin(); it != metamodel.GetMetaModel()->end(); it++)
         GetVars()->Append(it->second);
 }
-
-#ifdef QT_version
-void System::GetModelConfiguration()
-{
-    QList <Node*> nodes = diagramview->Nodes();
-    QStringList nodenames_sorted = diagramview->nodeNames();
-    nodenames_sorted.sort();
-
-    for (int i = 0; i < nodenames_sorted.count(); i++)
-    {
-        Node* n = nodes[diagramview->nodeNames().indexOf(nodenames_sorted[i])];
-        Block B;
-        B.SetName(n->Name().toStdString());
-        B.SetType(n->GetObjectType().toStdString());
-        AddBlock(B);
-        QStringList codes = n->codes();
-
-        foreach (mProp mP , n->getmList(n->objectType).GetList())
-        {
-            QString code = mP.VariableCode;
-            if (!n->val(code).isEmpty() && n->val(code) != ".")
-                block(n->Name().toStdString())->SetVal(code.toStdString(), n->val(code).toFloat());
-            if (mP.Delegate == "Browser" && !n->val(code).isEmpty() && n->val(code) != ".")
-            {   block(n->Name().toStdString())->Variable(code.toStdString())->SetTimeSeries(fullFilename(n->val(code), diagramview->modelPathname()).toStdString());
-                qDebug() << n->val(code).toQString() << "   path:" << diagramview->modelPathname();
-            }
-            qDebug()<<code<<"  "<<QString::fromStdString(block(n->Name().toStdString())->GetName())<<"  "<<QString::fromStdString(block(n->Name().toStdString())->GetType())<<"    "<<block(n->Name().toStdString())->GetVal(code.toStdString());
-        }
-
-
-
-/*      foreach (QString code , n->codes()) //Parameters
-        {
-            if (gw->EntityNames("Parameter").contains(n->val(code).toQString()))
-            {
-                if (lookup_parameters(n->val(code).toStdString()) != -1) {
-                    parameters()[lookup_parameters(n->val(code).toStdString())].location.push_back(Blocks.size() - 1);  // Check for everything
-                    parameters()[lookup_parameters(n->val(code).toStdString())].conversion_factor.push_back(n->val(code).conversionCoefficient(n->val(code).unit, n->val(code).defaultUnit));
-                    parameters()[lookup_parameters(n->val(code).toStdString())].quan.push_back(code.toStdString());
-                    parameters()[lookup_parameters(n->val(code).toStdString())].location_type.push_back(0);
-                    parameters()[lookup_parameters(n->val(code).toStdString())].experiment_id.push_back(name);
-                }
-            }
-        } //Controller
-        foreach (QString code , n->codes())
-        {
-            if (gw->EntityNames("Controller").contains(n->val(code).toQString()))
-            {
-                if (lookup_controllers(n->val(code).toStdString()) != -1) {
-                    controllers()[lookup_controllers(n->val(code).toStdString())].application_spec.location.push_back(Blocks.size() - 1);  // Check for everything
-                    controllers()[lookup_controllers(n->val(code).toStdString())].application_spec.conversion_factor.push_back(n->val(code).conversionCoefficient(n->val(code).unit, n->val(code).defaultUnit));
-                    controllers()[lookup_controllers(n->val(code).toStdString())].application_spec.quan.push_back(code.toStdString());
-                    controllers()[lookup_controllers(n->val(code).toStdString())].application_spec.location_type.push_back(0);
-                    controllers()[lookup_controllers(n->val(code).toStdString())].application_spec.experiment_id.push_back(name);
-                }
-            }
-        }
-*/
-    }
-
-    QList <Edge*> edges = diagramview->Edges();
-    QStringList edgenames_sorted = diagramview->edgeNames();
-    edgenames_sorted.sort();
-//#pragma omp parallel for
-    for (int i = 0; i < edges.count(); i++)
-    {
-        Edge *e = edges[diagramview->edgeNames().indexOf(edgenames_sorted[i])];
-        Link L;
-        L.SetName(e->Name().toStdString());
-        L.SetType(e->GetObjectType().toStdString());
-        AddLink(L,e->sourceNode()->Name().toStdString(),e->destNode()->Name().toStdString());
-
-        foreach (mProp mP ,e->getmList(e->objectType).GetList())
-        {   QString code = mP.VariableCode;
-            if (!e->val(code).isEmpty() && e->val(code) != ".") link(e->Name().toStdString())->SetVal(code.toStdString(), e->val(code).toFloat());
-            if (mP.Delegate == "Browser" && !e->val(code).isEmpty() && e->val(code) != ".")
-                link(e->Name().toStdString())->Variable(code.toStdString())->SetTimeSeries(fullFilename(e->val(code), diagramview->modelPathname()).toStdString());
-
-        }
-
-
-        //progress->setValue(progress->value() + 1);
-
-/*
-        foreach (QString code , e->codes()) //Parameters
-        {
-            if (gw->EntityNames("Parameter").contains(e->val(code).toQString()))
-            {
-                if (lookup_parameters(e->val(code).toStdString()) != -1) {
-                    parameters()[lookup_parameters(e->val(code).toStdString())].location.push_back(Connectors.size() - 1);  // Check for everything
-                    parameters()[lookup_parameters(e->val(code).toStdString())].conversion_factor.push_back(e->val(code).conversionCoefficient(e->val(code).unit, e->val(code).defaultUnit));
-                    parameters()[lookup_parameters(e->val(code).toStdString())].quan.push_back(code.toStdString());
-                    parameters()[lookup_parameters(e->val(code).toStdString())].location_type.push_back(1);
-                    parameters()[lookup_parameters(e->val(code).toStdString())].experiment_id.push_back(name);
-                }
-            }
-        }
-        foreach (QString code , e->codes()) //Controllers
-        {
-            if (gw->EntityNames("Controller").contains(e->val(code).toQString()))
-            {
-                if (lookup_controllers(e->val(code).toStdString()) != -1) {
-                    controllers()[lookup_controllers(e->val(code).toStdString())].application_spec.location.push_back(Connectors.size() - 1);  // Check for everything
-                    controllers()[lookup_controllers(e->val(code).toStdString())].application_spec.conversion_factor.push_back(e->val(code).conversionCoefficient(e->val(code).unit, e->val(code).defaultUnit));
-                    controllers()[lookup_controllers(e->val(code).toStdString())].application_spec.quan.push_back(code.toStdString());
-                    controllers()[lookup_controllers(e->val(code).toStdString())].application_spec.location_type.push_back(1);
-                    controllers()[lookup_controllers(e->val(code).toStdString())].application_spec.experiment_id.push_back(name);
-                }
-            }
-        }
-*/
-
-
-    }
-}
-#endif
 
 void System::AppendObjectiveFunction(const string &name, const Objective_Function &obj, double weight)
 {
@@ -1059,14 +1028,14 @@ bool System::SetParameterValue(int i, const double &val)
 
 bool System::ApplyParameters()
 {
-    for (map<string, Parameter>::iterator it = Parameters().begin(); it != Parameters().end(); it++)
-        for (int i=0; i<GetParameter(it->first)->GetLocations().size();i++)
+    for (int i = 0; i < Parameters().size(); i++)
+        for (int i=0; i<GetParameter(i)->GetLocations().size();i++)
         {
-            if (object(GetParameter(it->first)->GetLocations()[i])!=nullptr)
-                object(GetParameter(it->first)->GetLocations()[i])->SetVal(GetParameter(it->first)->GetQuans()[i],GetParameter(it->first)->GetValue());
+            if (object(GetParameter(i)->GetLocations()[i])!=nullptr)
+                object(GetParameter(i)->GetLocations()[i])->SetVal(GetParameter(i)->GetQuans()[i],GetParameter(i)->GetValue());
             else
             {
-                errorhandler.Append(GetName(),"System","ApplyParameters" ,"Location '" + GetParameter(it->first)->GetLocations()[i] + "' does not exist!", 607);
+                errorhandler.Append(GetName(),"System","ApplyParameters" ,"Location '" + GetParameter(i)->GetLocations()[i] + "' does not exist!", 607);
                 return false;
             }
         }
@@ -1210,6 +1179,7 @@ QStringList System::QGetAllCategoryTypes()
 		if (!out.contains(QString::fromStdString(it->second.CategoryType())))
 			out.append(QString::fromStdString(it->second.CategoryType()));
 	}
+
 	return out; 
 }
 
@@ -1238,4 +1208,107 @@ QStringList System::QGetAllObjectsofTypeCategory(QString _type)
 	return out;
 }
 #endif // Qt_version
+
+
+bool System::SavetoScriptFile(const string &filename)
+{
+    fstream file(filename,ios_base::out);
+    for (unsigned int i=0; i<Settings.size(); i++)
+        for (map<string, Quan>::iterator j=Settings[i].GetVars()->begin(); j!=Settings[i].GetVars()->end(); j++)
+            if (j->second.AskFromUser())
+                file << "setvalue; object=system, quantity=" + j->first + ", value=" << j->second.GetProperty() << endl;
+
+    for (unsigned int i=0; i<sources.size(); i++)
+        file << "create source;" << sources[i].toCommand() << endl;
+
+    for (unsigned int i=0; i<ParametersCount(); i++)
+        file << "create parameter;" << Parameters()[i]->toCommand() << endl;
+
+    for (unsigned int i=0; i<blocks.size(); i++)
+        file << "create block;" << blocks[i].toCommand() << endl;
+
+    for (unsigned int i=0; i<links.size(); i++)
+        file << "create link;" << links[i].toCommand() << endl;
+
+    file.close();
+
+
+}
+
+System::System(Script& scr)
+{
+    for (int i=0; i<scr.CommandsCount(); i++)
+    {
+        if (!scr[i]->Execute(this))
+        {
+            errorhandler.Append("","Script","CreateSystem",scr[i]->LastError(),6001);
+            scr.Errors().push_back(scr[i]->LastError());
+        }
+    }
+    SetVariableParents();
+
+}
+
+void System::CreateFromScript(Script& scr)
+{
+    for (int i=0; i<scr.CommandsCount(); i++)
+    {
+        if (!scr[i]->Execute(this))
+        {
+            errorhandler.Append("","Script","CreateSystem",scr[i]->LastError(),6001);
+            scr.Errors().push_back(scr[i]->LastError());
+        }
+    }
+    SetVariableParents();
+
+}
+
+bool System::ReadSystemSettingsTemplate(const string &filename)
+{
+    Settings.clear();
+    Json::Value root;
+    Json::Reader reader;
+
+    std::ifstream file(filename);
+    if (!file.good())
+    {
+        cout << "File " + filename + " was not found!";
+        return false;
+    }
+
+    file >> root;
+
+    if (!reader.parse(file, root, true)) {
+        //for some reason it always fails to parse
+        std::cout << "Failed to parse configuration\n"
+            << reader.getFormattedErrorMessages();
+        last_error = "Failed to parse configuration\n";
+    }
+
+
+    for (Json::ValueIterator object_types = root.begin(); object_types != root.end(); ++object_types)
+    {
+        QuanSet quanset(object_types);
+        Object settingsitem;
+        quanset.SetParent(this);
+        settingsitem.SetQuantities(quanset);
+        settingsitem.SetDefaults();
+        Settings.push_back(settingsitem);
+        metamodel.Append(object_types.key().asString(), quanset);
+
+    }
+    return true;
+}
+
+void System::SetSystemSettings()
+{
+    for (unsigned int i=0; i<Settings.size(); i++)
+    {
+        for (map<string, Quan>::iterator j=Settings[i].GetVars()->begin(); j!=Settings[i].GetVars()->end(); j++)
+            SetProperty(j->first,j->second.GetProperty());
+
+    }
+
+}
+
 

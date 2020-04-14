@@ -1,4 +1,4 @@
-	#include "Script.h"
+#include "Script.h"
 #include <iostream>
 #include <fstream>
 #include "System.h"
@@ -10,16 +10,21 @@ Script::Script()
 
 Script::~Script()
 {
-    if (system) delete system;
+    if (system && systemwascreated) delete system;
 }
 
 Script::Script(const string &filename, System *sys)
 {
+
     FillMustBeSpecified();
     if (system!=nullptr)
-        system = sys;
+    {   system = sys;
+        systemwascreated=false;
+    }
     else
-        system = new System();
+    {   system = new System();
+        systemwascreated = true;
+    }
     fstream file(filename);
     if (!file.good())
     {

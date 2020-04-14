@@ -111,6 +111,10 @@ Quan::Quan(Json::ValueIterator &it)
     else
        AskFromUser() = false;
 
+    if (it->isMember("setvalue"))
+    {
+        SetProperty((*it)["setvalue"].asString());
+    }
 }
 
 #ifdef  Q_version
@@ -221,6 +225,11 @@ Quan::Quan(QJsonObject& it)
 	}
 	else
 		AskFromUser() = false;
+
+    if (it.keys().contains("setvalue"))
+    {
+        SetProperty(it.value("setvalue").toString().toStdString());
+    }
 
 }
 #endif //  QT_version
@@ -536,7 +545,10 @@ bool Quan::SetTimeSeries(const string &filename, bool prec)
 			return false;
 		}
 		else
-			return true;
+        {
+
+            return true;
+        }
 	}
 	else
 	{
@@ -550,6 +562,7 @@ bool Quan::SetTimeSeries(const string &filename, bool prec)
 		{
 			Prec.getfromfile(filename);
 			_timeseries = Prec.getflow(1).BTC[0];
+            _timeseries.filename = Prec.filename;
 			return true;
 		}
 	}
@@ -627,8 +640,11 @@ bool Quan::SetProperty(const string &val)
 	if (type == _type::string)
 	{
 		_string_value = val; 
-        if (GetName()=="Name")
-            parent->SetName(val,false);
+        if (GetName()=="name")
+        {
+            if (parent)
+                parent->SetName(val,false);
+        }
         return true;
 	}
     _string_value = val;
@@ -647,4 +663,11 @@ bool Quan::AppendError(const string &objectname, const string &cls, const string
         return false;
     parent->Parent()->errorhandler.Append(objectname, cls, funct, description, code);
     return true;
+}
+
+string Quan::toCommand()
+{
+    string s;
+    s += GetName() + "=" + GetProperty();
+    return s;
 }

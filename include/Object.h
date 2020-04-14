@@ -21,6 +21,7 @@ class Object
         bool AddQnantity(const string &name,const Quan &Q);
         bool SetQuantities(MetaModel &m, const string& typ);
         bool SetQuantities(MetaModel *m, const string& typ );
+        bool SetQuantities(QuanSet &Q);
         bool HasQuantity(const string &q);
         bool SetVal(const string& s, double value, const Expression::timing &tmg = Expression::timing::both);
         bool SetVal(const string& s, const string & value, const Expression::timing &tmg = Expression::timing::both);
@@ -76,6 +77,10 @@ class Object
         void SetAllParents();
         bool SetProperty(const string &prop, const string &value);
         string toString(int _tabs=0);
+        void SetPrimaryKey(const string &prmkey) {primary_key = prmkey;}
+        string GetPrimaryKey() {return primary_key;}
+        void AssignRandomPrimaryKey();
+        string toCommand();
     protected:
 
     private:
@@ -84,7 +89,7 @@ class Object
         string last_error;
         bool last_operation_success;
         map<string, string> setting;
-        System *parent;
+        System *parent = nullptr;
         string name;
         Object *s_Block;
         Object *e_Block;
@@ -93,7 +98,7 @@ class Object
         double outflowlimitfactor_past = 1;
 		double outflowlimitfactor_current = 1;
         bool limitoutflow = false;
-
+        string primary_key = "";
 };
 
 #endif // OBJECT_H

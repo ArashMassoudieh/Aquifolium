@@ -72,4 +72,9 @@ void Objective_Function_Set::SetSystem(System* s)
         it->second.obj_funct.SetSystem(s);
 }
 
+void Objective_Function_Set::clear()
+{
+    objectivefunctions.clear();
+}
+
 

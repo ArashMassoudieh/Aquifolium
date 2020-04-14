@@ -26,35 +26,33 @@ Parameter_Set& Parameter_Set::operator=(const Parameter_Set& rhs)
 
 void Parameter_Set::Append(const string &name, const Parameter &param)
 {
-    parameters[name] = param;
-    parameters[name].SetName(name);
+    parameters.push_back(param);
+    parameters[parameters.size()-1].SetName(name);
     return;
 }
 Parameter* Parameter_Set::operator[](string name)
 {
-    if (parameters.count(name)==1)
-        return &parameters[name];
-    else
-    {
-        lasterror = "Parameter " + name + " does not exist!";
-        return nullptr;
-    }
+    for (int i=0; i<parameters.size(); i++)
+        if (parameters[i].GetName() == name)
+            return &parameters[i];
+
+     lasterror = "Parameter " + name + " does not exist!";
+     return nullptr;
+
 }
 
 Parameter* Parameter_Set::operator[](int i)
 {
-    return &parameters[getKeyAtIndex (i)];
+    return &parameters[i];
 }
 
 string Parameter_Set::getKeyAtIndex (int index){
-    map<string, Parameter>::const_iterator end = parameters.end();
+    return parameters[index].GetName();
+}
 
-    int counter = 0;
-    for (map<string, Parameter>::const_iterator it = parameters.begin(); it != end; ++it) {
-        if (counter == index)
-            return it->first;
-        counter++;
-    }
+void Parameter_Set::clear()
+{
+    parameters.clear();
 }
 
 

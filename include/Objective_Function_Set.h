@@ -29,6 +29,7 @@ class Objective_Function_Set
         map<string, obj_funct_weight>::iterator begin() {return objectivefunctions.begin();}
         map<string, obj_funct_weight>::iterator end() {return objectivefunctions.end();}
         void SetSystem(System* s);
+        void clear();
     protected:
 
     private:

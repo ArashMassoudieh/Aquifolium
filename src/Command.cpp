@@ -87,14 +87,14 @@ Command::Command(const string &s, Script *parnt)
     for (int i=1; i<firstlevelbreakup.size(); i++)
     {
         vector<string> properties = aquiutils::split(firstlevelbreakup[i],',');
-        for (int j=0; j<properties.size(); j++)
+        for (unsigned int j=0; j<properties.size(); j++)
         {
             vector<string> prop = aquiutils::split(properties[j],'=');
-            if (prop.size()<2)
+            if (prop.size()==1)
             {
                 last_error = "Property '" + prop[0] + "' does not have a right hand side!";
-                validated = false;
-                return;
+                //validated = false;
+                //break;
             }
             if (prop.size() == 0)
             {
@@ -338,7 +338,7 @@ bool Command::Execute(System *_sys)
         }
         if (aquiutils::tolower(assignments["object"])=="system")
         {
-            return sys->SetProperty(assignments["quantity"],assignments["value"]);
+            return sys->SetSystemSettingsObjectProperties(assignments["quantity"],assignments["value"]);
         }
 
         if (aquiutils::tolower(assignments["object"])=="optimizer")
@@ -404,9 +404,10 @@ bool Command::Execute(System *_sys)
                 B.SetName(assignments["name"]);
                 B.SetType(assignments["type"]);
                 sys->AddBlock(B);
+
                 for (map<string,string>::iterator it=assignments.begin(); it!=assignments.end(); it++)
                 {
-                    if (it->first!="name" && it->first!="type" && it->first!="to" && it->first!="from")
+                    if (it->first!="type" && it->first!="to" && it->first!="from")
                         sys->block(assignments["name"])->SetProperty(it->first,it->second);
                 }
                 return true;
@@ -423,9 +424,10 @@ bool Command::Execute(System *_sys)
                 L.SetType(assignments["type"]);
 
                 sys->AddLink(L,assignments["from"],assignments["to"]);
+                L.SetName(assignments["name"]);
                 for (map<string,string>::iterator it=assignments.begin(); it!=assignments.end(); it++)
                 {
-                    if (it->first!="name" && it->first!="type" && it->first!="to" && it->first!="from")
+                    if (it->first!="type" && it->first!="to" && it->first!="from")
                         sys->link(assignments["name"])->SetProperty(it->first,it->second);
                 }
                 return true;
@@ -442,7 +444,7 @@ bool Command::Execute(System *_sys)
                 sys->AppendParameter(assignments["name"], aquiutils::atof(assignments["low"]), aquiutils::atof(assignments["high"]));
                 for (map<string,string>::iterator it=assignments.begin(); it!=assignments.end(); it++)
                 {
-                    if (it->first!="name" && it->first!="type" && it->first!="to" && it->first!="from")
+                    if (it->first!="type" && it->first!="to" && it->first!="from")
                     {
                         if (!sys->parameter(assignments["name"])->SetProperty(it->first,it->second))
                             last_error = "Parameter does not have a '" + it->first + "' + property!";
@@ -466,7 +468,7 @@ bool Command::Execute(System *_sys)
 				if (!succeed) return false;
 				for (map<string,string>::iterator it=assignments.begin(); it!=assignments.end(); it++)
                 {
-                    if (it->first!="name" && it->first!="object" && it->first!="expression" && it->first!="weight")
+                    if (it->first!="object" && it->first!="expression" && it->first!="weight")
                     {
                         if (!sys->ObjectiveFunction(assignments["name"])->SetProperty(it->first,it->second))
                         {
@@ -492,7 +494,7 @@ bool Command::Execute(System *_sys)
                 sys->AddSource(B);
                 for (map<string,string>::iterator it=assignments.begin(); it!=assignments.end(); it++)
                 {
-                    if (it->first!="name" && it->first!="type" && it->first!="to" && it->first!="from")
+                    if (it->first!="type" && it->first!="to" && it->first!="from")
                         sys->source(assignments["name"])->SetProperty(it->first,it->second);
                 }
                 return true;

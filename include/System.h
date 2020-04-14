@@ -20,6 +20,8 @@
 
 #if Q_version
 #include <QStringList>
+#include "runtimewindow.h"
+#include "QTime"
 #endif
 
 using namespace std; 
@@ -30,6 +32,7 @@ using namespace std;
 #define CMatrix_arma CMatrix
 #endif // _DEBUG
 
+class Script;
 
 struct solversettings
 {
@@ -101,7 +104,9 @@ class System: public Object
 #endif
         virtual ~System();
         System(const System& other);
+        System(Script& scr);
         System& operator=(const System& other);
+        void CreateFromScript(Script& scr);
         double &GetTime() {return SolverTempVars.t;}
         bool AddBlock(Block &blk);
         bool AddSource(Source &src);
@@ -114,9 +119,18 @@ class System: public Object
             else
                 return nullptr;
         }
+        Object *Setting(int i)
+        {
+            if (i<Settings.size())
+                return &Settings[i];
+            else
+                return nullptr;
+        }
         int BlockCount() {return blocks.size();}
+        int SettingsCount() {return Settings.size();}
         int LinksCount() {return links.size();}
         int SourcesCount() {return sources.size();}
+        vector<string> GetAllSourceNames();
         int ParametersCount() {return Parameters().size();}
         Link *link(const string &s);
         Link *link(int i)
@@ -135,6 +149,7 @@ class System: public Object
         }
         Parameter *parameter(const string &s);
         Object *object(const string &s);
+        Object *settings(const string &s);
         int blockid(const string &s);
         int linkid(const string &s);
         bool GetQuanTemplate(const string &filename);
@@ -167,6 +182,7 @@ class System: public Object
         double GetObjectiveFunctionValue();
         Objective_Function *ObjectiveFunction(const string &name) {return &objective_function_set[name]->obj_funct;} // returns a pointer to an objective function
         Parameter *GetParameter(const string &name) {return parameter_set[name];}
+        Parameter *GetParameter(int i) {return parameter_set[i];}
         Parameter_Set &Parameters() {return parameter_set;}
         bool AppendParameter(const string &paramname, const double &lower_limit, const double &upper_limit, const string &prior_distribution = "normal");
         bool AppendParameter(const string &paramname, const Parameter& param);
@@ -185,6 +201,12 @@ class System: public Object
         string OutputPath() {return paths.outputpath;}
         vector<CTimeSeries*> TimeSeries();
         double GetMinimumNextTimeStepSize();
+        Object *GetObjectBasedOnPrimaryKey(const string &s);
+        bool SavetoScriptFile(const string &filename);
+        bool ReadSystemSettingsTemplate(const string &filename);
+        void SetSystemSettings();
+        bool SetSystemSettingsObjectProperties(const string &s, const string &val);
+
 #if defined(QT_version)
         logWindow *LogWindow() {return logwindow;}
         void SetLogWindow(logWindow *lgwnd) {logwindow=lgwnd;}
@@ -194,6 +216,8 @@ class System: public Object
         QStringList QGetAllCategoryTypes();
 		QStringList QGetAllObjectsofTypes(QString _type);
 		QStringList QGetAllObjectsofTypeCategory(QString _type);
+        RunTimeWindow *RunTimewindow() {return rtw;}
+        void SetRunTimeWindow(RunTimeWindow* _rtw) {rtw = _rtw;}
 #endif
 
     protected:
@@ -203,6 +227,7 @@ class System: public Object
         vector<Block> blocks;
         vector<Link> links;
         vector<Source> sources;
+        vector<Object> Settings;
         string last_error;
         MetaModel metamodel;
         CVector_arma GetResiduals(const string &variable, CVector_arma &X);
@@ -225,7 +250,7 @@ class System: public Object
         bool silent;
         _directories paths;
         vector<CTimeSeries*> alltimeseries;
-		void SetNumberOfStateVariables(int n) 
+        void SetNumberOfStateVariables(unsigned int n)
 		{
 			SolverTempVars.fail_reason.resize(n);
 			SolverTempVars.Inverse_Jacobian.resize(n);
@@ -233,6 +258,9 @@ class System: public Object
 			SolverTempVars.numiterations.resize(n);
 			SolverTempVars.updatejacobian.resize(n);
 		}
+#ifdef Q_version
+    RunTimeWindow *rtw = nullptr;
+#endif
 
 #ifdef QT_version
         GraphWidget *diagramview;
