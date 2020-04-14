@@ -5,6 +5,11 @@
 #include <fstream>
 #include <vector>
 
+#ifdef Q_version
+    #include "runtimewindow.h"
+    #include "QString"
+#endif
+
 using namespace std;
 
 struct _error
@@ -34,12 +39,21 @@ class ErrorHandler
             err.objectname = objectname;
             err.code = code;
             errors.push_back(err);
+#ifdef Q_version
+            if (rtw)
+                rtw->AppendErrorMessage(QString::fromStdString(description));
+#endif
             return false;
         }
+#ifdef Q_version
+        void SetRunTimeWindow(RunTimeWindow *_rtw) {rtw = _rtw;}
+#endif
+
     protected:
 
     private:
         vector<_error> errors;
+        RunTimeWindow *rtw = nullptr;
 
 };
 

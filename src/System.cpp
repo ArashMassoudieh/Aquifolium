@@ -272,7 +272,7 @@ bool System::Solve(bool applyparameters)
 	SolverTempVars.SetUpdateJacobian(true);
 	alltimeseries = TimeSeries();
 	bool success = true;
-
+    errorhandler.SetRunTimeWindow(rtw);
 	if (applyparameters) ApplyParameters();
     InitiateOutputs();
 
@@ -321,8 +321,8 @@ bool System::Solve(bool applyparameters)
             if (SolverTempVars.MaxNumberOfIterations()<SolverSettings.NR_niteration_lower)
                 SolverTempVars.dt_base = min(SolverTempVars.dt_base/SolverSettings.NR_timestep_reduction_factor,SimulationParameters.dt0*10);
             PopulateOutputs();
-            for (int i=0; i<solvevariableorder.size(); i++)
-			Update(solvevariableorder[i]);
+            for (unsigned int i=0; i<solvevariableorder.size(); i++)
+                Update(solvevariableorder[i]);
             UpdateObjectiveFunctions(SolverTempVars.t);
 #ifdef Q_version
             if (rtw)
@@ -449,7 +449,8 @@ bool System::SetSystemSettingsObjectProperties(const string &s, const string &va
 bool System::SetProperty(const string &s, const string &val)
 {
 
-    if (s=="cn_weight")
+    if (s=="name") return true;
+    if (s=="c_n_weight")
     {   SolverSettings.C_N_weight = aquiutils::atof(val); return true;}
     if (s=="nr_tolerance")
     {   SolverSettings.NRtolerance = aquiutils::atof(val); return true;}
@@ -470,9 +471,9 @@ bool System::SetProperty(const string &s, const string &val)
     if (s=="make_results_uniform")
     {   SolverSettings.makeresultsuniform = aquiutils::atoi(val); return true;}
 
-    if (s=="tstart")
+    if (s=="tstart" || s== "simulation_start_time")
     {   SimulationParameters.tstart = aquiutils::atof(val); return true;}
-    if (s=="tend")
+    if (s=="tend" || s=="simulation_end_time")
     {   SimulationParameters.tend = aquiutils::atof(val); return true;}
     if (s=="dt")
     {   SimulationParameters.dt0 = aquiutils::atof(val); return true;}
