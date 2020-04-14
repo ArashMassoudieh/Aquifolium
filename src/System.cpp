@@ -1216,23 +1216,23 @@ bool System::SavetoScriptFile(const string &filename)
     for (unsigned int i=0; i<Settings.size(); i++)
         for (map<string, Quan>::iterator j=Settings[i].GetVars()->begin(); j!=Settings[i].GetVars()->end(); j++)
             if (j->second.AskFromUser())
-                file << "setvalue; object=system, quantity=" + j->first + ", value=" << j->second.GetProperty() << endl;
+                file << "setvalue; object=system, quantity=" + j->first + ", value=" << j->second.GetProperty() << std::endl;
 
     for (unsigned int i=0; i<sources.size(); i++)
-        file << "create source;" << sources[i].toCommand() << endl;
+        file << "create source;" << sources[i].toCommand() << std::endl;
 
     for (unsigned int i=0; i<ParametersCount(); i++)
-        file << "create parameter;" << Parameters()[i]->toCommand() << endl;
+        file << "create parameter;" << Parameters()[i]->toCommand() << std::endl;
 
     for (unsigned int i=0; i<blocks.size(); i++)
-        file << "create block;" << blocks[i].toCommand() << endl;
+        file << "create block;" << blocks[i].toCommand() << std::endl;
 
     for (unsigned int i=0; i<links.size(); i++)
-        file << "create link;" << links[i].toCommand() << endl;
+        file << "create link;" << links[i].toCommand() << std::endl;
 
     file.close();
 
-
+    return true; 
 }
 
 System::System(Script& scr)
