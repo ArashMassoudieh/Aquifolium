@@ -85,6 +85,8 @@ class Quan
 		string SourceName() { return sourcename;}
 		bool SetSourceName(const string& s) { sourcename = s; }
         string toCommand();
+        void SetOutputItem(const string& s) { OutputItem = s; }
+        string GetOutputItem() { return OutputItem; }
     protected:
 
     private:
@@ -120,6 +122,7 @@ class Quan
         string warning_error;
         string warning_message;
         bool ask_from_user=false;
+        string OutputItem;
 };
 
 string tostring(const Quan::_type &typ);

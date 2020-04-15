@@ -83,6 +83,7 @@ class Object
         string GetPrimaryKey() {return primary_key;}
         void AssignRandomPrimaryKey();
         string toCommand();
+        vector<string> ItemswithOutput();
     protected:
 
     private:

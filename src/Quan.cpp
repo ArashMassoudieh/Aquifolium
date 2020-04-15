@@ -577,7 +577,8 @@ bool Quan::SetSource(const string &sourcename)
 	}
 	else
 	{
-		AppendError(GetName(),"Quan", "Source", sourcename + " was not found!", 3062);
+        source = nullptr;
+        AppendError(GetName(),"Quan", "Source", sourcename + " was not found!", 3062);
 		return false;
 	}
 

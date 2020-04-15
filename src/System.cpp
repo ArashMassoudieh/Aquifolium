@@ -502,19 +502,26 @@ void System::InitiateOutputs()
     {
         for (map<string, Quan>::iterator it = blocks[i].GetVars()->begin(); it != blocks[i].GetVars()->end(); it++)
             if (it->second.IncludeInOutput())
+            {
                 Outputs.AllOutputs.append(CBTC(), blocks[i].GetName() + "_" + it->first);
+                it->second.SetOutputItem(blocks[i].GetName() + "_" + it->first);
+            }
     }
 
     for (unsigned int i=0; i<links.size(); i++)
     {
         for (map<string, Quan>::iterator it = links[i].GetVars()->begin(); it != links[i].GetVars()->end(); it++)
             if (it->second.IncludeInOutput())
+            {
                 Outputs.AllOutputs.append(CBTC(), links[i].GetName() + "_" + it->first);
+                it->second.SetOutputItem(links[i].GetName() + "_" + it->first);
+            }
     }
 
     for (map<string, obj_funct_weight>::iterator it=objective_function_set.begin(); it !=objective_function_set.end(); it++)
     {
         Outputs.AllOutputs.append(CBTC(), "Obj_" + it->first);
+        it->second.obj_funct.SetOutputItem("Obj_" + it->first);
     }
 
 }

@@ -29,6 +29,8 @@ class Objective_Function
         void SetExpression(const Expression &exp) {expression = exp;}
         bool SetProperty(const string &prop, const string &val);
         double Value() {return current_value;}
+        void SetOutputItem(const string& s) { outputitem = s; }
+        string GetOutputItem() { return outputitem; }
     protected:
 
     private:
@@ -39,6 +41,7 @@ class Objective_Function
         string lasterror;
         objfunctype type = objfunctype::Integrate;
         double current_value;
+        string outputitem; 
          //the last error that occurred
 };
 

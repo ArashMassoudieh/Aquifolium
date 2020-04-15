@@ -396,3 +396,14 @@ string Object::toCommand()
     out += var.toCommand();
     return out;
 }
+
+vector<string> Object::ItemswithOutput()
+{
+    vector<string> items;
+    for (map<string, Quan>::iterator it = GetVars()->begin(); it != GetVars()->end(); it++)
+        if (it->second.IncludeInOutput())
+        {
+            if (it->second.GetOutputItem() != "") items.push_back(it->first);
+        }
+    return items; 
+}
