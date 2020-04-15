@@ -1311,4 +1311,45 @@ void System::SetSystemSettings()
 
 }
 
+bool System::Delete(const string& objectname)
+{
+    for (unsigned int i = 0; i < links.size(); i++)
+        if (links[i].GetName() == objectname)
+        {
+            block(links[i].GetConnectedBlock(Expression::loc::source)->GetName())->deletelinkstofrom(links[i].GetName());
+            links.erase(links.begin()+i);
+            return true;
+        }
+
+    for (unsigned int i = 0; i < blocks.size(); i++)
+        if (blocks[i].GetName() == objectname)
+        {
+            for (unsigned int j = 0; j < blocks[i].GetLinksFrom().size(); j++)
+                Delete(blocks[i].GetLinksFrom()[j]->GetName());
+
+            for (unsigned int j = 0; j < blocks[i].GetLinksTo().size(); j++)
+                Delete(blocks[i].GetLinksTo()[j]->GetName());
+
+            blocks.erase(blocks.begin() + i);
+            return true; 
+        }
+
+    for (unsigned int i = 0; i < sources.size(); i++)
+        if (sources[i].GetName() == objectname)
+        {
+            sources.erase(sources.begin() + i);
+            return true; 
+        }
+
+    for (unsigned int i = 0; i < ParametersCount(); i++)
+        if (Parameters()[i]->GetName() == objectname)
+        {
+            return Parameters().erase(i);
+        }
+
+    errorhandler.Append(GetName(),"System","object","Object '" + objectname + "' was not found",105);
+
+    return false;
+
+}
 

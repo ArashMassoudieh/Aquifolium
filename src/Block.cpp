@@ -1,4 +1,5 @@
 #include "Block.h"
+#include "Link.h"
 
 Block::Block() : Object::Object()
 {
@@ -46,6 +47,25 @@ double Block::GetInflowValue(const string &variable, const Expression::timing &t
 			return 0;
 	}
     return 0;
+}
+
+bool Block::deletelinkstofrom(const string& linkname)
+{
+    for (unsigned int i = 0; i < links_from.size(); i++)
+        if (links_from[i]->GetName() == linkname)
+        {
+            links_from.erase(links_from.begin() + i);
+            return true;
+        }
+
+    for (unsigned int i = 0; i < links_to.size(); i++)
+        if (links_to[i]->GetName() == linkname)
+        {
+            links_to.erase(links_to.begin() + i);
+            return true;
+        }
+
+    return false; 
 }
 
 /*bool Block::AddProperty(const string &s, double val)

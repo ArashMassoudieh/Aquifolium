@@ -55,5 +55,24 @@ void Parameter_Set::clear()
     parameters.clear();
 }
 
+bool Parameter_Set::erase(int i)
+{
+    if (i >= parameters.size()) return false; 
+    parameters.erase(parameters.begin() + i);
+
+    return true; 
+}
+bool Parameter_Set::erase(const string& s)
+{
+    for (unsigned int i = 0; i < parameters.size(); i++)
+        if (parameters[i].GetName() == s)
+        {
+            erase(i);
+            return true;
+        }
+    return false; 
+
+}
+
 
 

@@ -42,6 +42,8 @@ class Object
         int e_Block_No() {return e_Block_no; }
         void Set_s_Block(Object *O) { s_Block = O; }
         void Set_e_Block(Object *O) { e_Block = O; }
+        Object* Get_s_Block() { return s_Block; }
+        Object* Get_e_Block() { return e_Block; }
 		bool Renew(const string &variable);
 		bool Update(const string &variable);
 		bool CalcExpressions(const Expression::timing& tmg);

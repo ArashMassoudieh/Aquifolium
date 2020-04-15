@@ -37,6 +37,8 @@ class Parameter_Set
             return  j;
         }
         void clear();
+        bool erase(int i);
+        bool erase(const string& s);
     protected:
 
     private:

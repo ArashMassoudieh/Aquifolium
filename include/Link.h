@@ -18,7 +18,14 @@ class Link: public Object
         virtual ~Link();
         Link(const Link& other);
         Link& operator=(const Link& other);
-        Block* GetConnectedBlock(Expression::loc l);
+        Object* GetConnectedBlock(Expression::loc l) 
+        {
+            if (l == Expression::loc::source)
+                return Get_s_Block();
+            if (l == Expression::loc::destination)
+                return Get_e_Block();
+            return nullptr;
+        };
         string toCommand();
     protected:
 

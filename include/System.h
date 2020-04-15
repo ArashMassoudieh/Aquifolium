@@ -206,7 +206,7 @@ class System: public Object
         bool ReadSystemSettingsTemplate(const string &filename);
         void SetSystemSettings();
         bool SetSystemSettingsObjectProperties(const string &s, const string &val);
-
+        bool Delete(const string& objectname);
 #if defined(QT_version)
         logWindow *LogWindow() {return logwindow;}
         void SetLogWindow(logWindow *lgwnd) {logwindow=lgwnd;}
