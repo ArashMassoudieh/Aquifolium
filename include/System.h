@@ -131,6 +131,8 @@ class System: public Object
         int LinksCount() {return links.size();}
         int SourcesCount() {return sources.size();}
         vector<string> GetAllSourceNames();
+        vector<string> GetAllBlockNames();
+        vector<string> GetAllLinkNames();
         unsigned int ParametersCount() {return Parameters().size();}
         unsigned int ObjectiveFunctionsCount() {return ObjectiveFunctions().size();}
         Link *link(const string &s);

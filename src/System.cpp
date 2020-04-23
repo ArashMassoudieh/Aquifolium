@@ -888,6 +888,23 @@ vector<string> System::GetAllSourceNames()
     return out;
 }
 
+vector<string> System::GetAllBlockNames()
+{
+    vector<string> out;
+    for (int i=0; i<blocks.size(); i++)
+        out.push_back(blocks[i].GetName());
+    return out;
+}
+
+vector<string> System::GetAllLinkNames()
+{
+    vector<string> out;
+    for (int i=0; i<links.size(); i++)
+        out.push_back(links[i].GetName());
+    return out;
+}
+
+
 vector<string> System::GetAllTypesOf(const string &type)
 {
 	vector<string> out;
