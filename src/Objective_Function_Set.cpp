@@ -24,52 +24,50 @@ Objective_Function_Set& Objective_Function_Set::operator=(const Objective_Functi
 
 void Objective_Function_Set::Append(const string &name, const Objective_Function &o_func, double weight)
 {
-    obj_funct_weight tobeappended;
-    tobeappended.obj_funct = o_func;
-    tobeappended.weight = weight;
-    objectivefunctions[name] = tobeappended;
+    objectivefunctions.push_back(o_func);
+    objectivefunctions[objectivefunctions.size()-1].SetVal("Weight",weight);
+    objectivefunctions[objectivefunctions.size()-1].SetName(name);
     return;
 }
-obj_funct_weight* Objective_Function_Set::operator[](string name)
+Objective_Function* Objective_Function_Set::operator[](string name)
 {
-    if (objectivefunctions.count(name)==1)
-        return &objectivefunctions[name];
-    else
-    {
-        lasterror = "objective function " + name + " does not exist!";
-        return nullptr;
-    }
+    for (int i=0; i<objectivefunctions.size(); i++)
+        if (objectivefunctions[i].GetName() == name)
+            return &objectivefunctions[i];
+
+     lasterror = "Objective Function " + name + " does not exist!";
+     return nullptr;
 }
 
 double Objective_Function_Set::Calculate()
 {
     double out = 0;
-    for (map<string, obj_funct_weight>::iterator it = objectivefunctions.begin(); it != objectivefunctions.end(); it++)
-        out += it->second.obj_funct.GetObjective()*it->second.weight;
+    for (unsigned int i=0; i < objectivefunctions.size(); i++)
+        out += objectivefunctions[i].GetObjective()*objectivefunctions[i].Weight();
 
     return out;
 }
 
 void Objective_Function_Set::Update(double t)
 {
-    double out = 0;
-    for (map<string, obj_funct_weight>::iterator it = objectivefunctions.begin(); it != objectivefunctions.end(); it++)
-        it->second.obj_funct.append_value(t);
+
+    for (unsigned int i=0; i < objectivefunctions.size(); i++)
+        objectivefunctions[i].append_value(t);
     return;
 }
 
 CTimeSeriesSet Objective_Function_Set::GetTimeSeriesSet()
 {
     CTimeSeriesSet out;
-    for (map<string, obj_funct_weight>::iterator it = objectivefunctions.begin(); it != objectivefunctions.end(); it++)
-        out.append(*it->second.obj_funct.GetTimeSeries(),it->first);
+    for (unsigned int i=0; i < objectivefunctions.size(); i++)
+        out.append(*objectivefunctions[i].GetTimeSeries(),objectivefunctions[i].GetName());
     return out;
 }
 
 void Objective_Function_Set::SetSystem(System* s)
 {
-    for (map<string, obj_funct_weight>::iterator it = objectivefunctions.begin(); it != objectivefunctions.end(); it++)
-        it->second.obj_funct.SetSystem(s);
+    for (unsigned int i=0; i < objectivefunctions.size(); i++)
+        objectivefunctions[i].SetSystem(s);
 }
 
 void Objective_Function_Set::clear()

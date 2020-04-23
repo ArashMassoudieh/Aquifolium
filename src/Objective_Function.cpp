@@ -26,6 +26,7 @@ Objective_Function::~Objective_Function()
 
 Objective_Function::Objective_Function(const Objective_Function& other)
 {
+    Object::operator=(other);
     expression = other.expression;
     location = other.location;
     type = other.type;
@@ -34,6 +35,7 @@ Objective_Function::Objective_Function(const Objective_Function& other)
 Objective_Function& Objective_Function::operator=(const Objective_Function& rhs)
 {
     if (this == &rhs) return *this; // handle self assignment
+    Object::operator=(rhs);
     expression = rhs.expression;
     location = rhs.location;
     type = rhs.type;
@@ -97,6 +99,16 @@ double Objective_Function::GetObjective()
         return GetValue(Expression::timing::present);
     else
         return 0;
+}
+
+double Objective_Function::Weight()
+{
+    if (GetVars()->Count("Weight")>0)
+    {
+        return Variable("Weight")->GetVal();
+    }
+    else
+        return 1;
 }
 
 

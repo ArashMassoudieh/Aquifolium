@@ -7,11 +7,6 @@
 
 class System;
 
-struct obj_funct_weight
-{
-    Objective_Function obj_funct;
-    double weight = 1;
-};
 
 class Objective_Function_Set
 {
@@ -21,23 +16,35 @@ class Objective_Function_Set
         Objective_Function_Set(const Objective_Function_Set& other);
         Objective_Function_Set& operator=(const Objective_Function_Set& other);
         void Append(const string &name, const Objective_Function &o_func, double weight = 1);
-        obj_funct_weight* operator[](string name);
+        Objective_Function* operator[](string name);
+        Objective_Function* operator[](int i) {return &objectivefunctions[i];}
         double Calculate();
         void Update(double t);
         string LastError() {return lasterror;}
         CTimeSeriesSet GetTimeSeriesSet();
-        map<string, obj_funct_weight>::iterator begin() {return objectivefunctions.begin();}
-        map<string, obj_funct_weight>::iterator end() {return objectivefunctions.end();}
         void SetSystem(System* s);
         void clear();
         unsigned int size()
         {
             return objectivefunctions.size();
         }
+        bool Contains(const string &name) {
+            for (unsigned int i=0; i<objectivefunctions.size(); i++)
+                if (objectivefunctions[i].GetName()==name)
+                    return true;
+            return false;
+        }
+        int count(const string &s) {
+            int j=0;
+            for (unsigned int i=0; i<objectivefunctions.size(); i++)
+                if (objectivefunctions[i].GetName()==s)
+                    j++;
+            return  j;
+        }
     protected:
 
     private:
-        map<string,obj_funct_weight> objectivefunctions;
+        vector<Objective_Function> objectivefunctions;
         string lasterror;
 
 

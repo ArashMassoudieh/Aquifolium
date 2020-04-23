@@ -26,6 +26,7 @@ class Objective_Function: public Object
         string GetLastError() {return lasterror;}
         void SetLastError(const string &lerror) {lasterror = lerror;}
         CTimeSeries *GetTimeSeries() {return &stored_time_series;}
+        double Weight();
         void SetLocation(const string &loc) {location = loc;}
         void SetExpression(const Expression &exp) {expression = exp;}
         bool SetProperty(const string &prop, const string &val);

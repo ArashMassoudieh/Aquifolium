@@ -112,14 +112,14 @@ class System: public Object
         bool AddSource(Source &src);
         bool AddLink(Link &lnk, const string &source, const string &destination);
         Block *block(const string &s);
-        Block *block(int i)
+        Block *block(unsigned int i)
         {
             if (i<blocks.size())
                 return &blocks[i];
             else
                 return nullptr;
         }
-        Object *Setting(int i)
+        Object *Setting(unsigned int i)
         {
             if (i<Settings.size())
                 return &Settings[i];
@@ -131,10 +131,10 @@ class System: public Object
         int LinksCount() {return links.size();}
         int SourcesCount() {return sources.size();}
         vector<string> GetAllSourceNames();
-        int ParametersCount() {return Parameters().size();}
-        int ObjectiveFunctionsCount() {return ObjectiveFunctions().size();}
+        unsigned int ParametersCount() {return Parameters().size();}
+        unsigned int ObjectiveFunctionsCount() {return ObjectiveFunctions().size();}
         Link *link(const string &s);
-        Link *link(int i)
+        Link *link(unsigned int i)
         {
             if (i<links.size())
                 return &links[i];
@@ -149,8 +149,17 @@ class System: public Object
                 return nullptr;
         }
         Parameter *parameter(const string &s);
+        Objective_Function *objectivefunction(const string &s);
+        Objective_Function *objectivefunction(unsigned int i)
+        {
+            if (i<objective_function_set.size())
+                return objective_function_set[i];
+            else
+                return nullptr;
+        }
         Object *object(const string &s);
         Object *settings(const string &s);
+
         int blockid(const string &s);
         int linkid(const string &s);
         bool GetQuanTemplate(const string &filename);
@@ -181,7 +190,7 @@ class System: public Object
         bool AppendObjectiveFunction(const string &name, const string &location, const Expression &exp, double weight=1);
         void UpdateObjectiveFunctions(double t);
         double GetObjectiveFunctionValue();
-        Objective_Function *ObjectiveFunction(const string &name) {return &objective_function_set[name]->obj_funct;} // returns a pointer to an objective function
+        Objective_Function *ObjectiveFunction(const string &name); // returns a pointer to an objective function
         Parameter *GetParameter(const string &name) {return parameter_set[name];}
         Parameter *GetParameter(int i) {return parameter_set[i];}
         Parameter_Set &Parameters() {return parameter_set;}
@@ -192,7 +201,7 @@ class System: public Object
         bool SetParameterValue(const string &paramname, const double &val);
         bool SetParameterValue(int i, const double &val);
         bool ApplyParameters();
-        CTimeSeries *GetObjectiveFunctionTimeSeries(const string &name) {return objective_function_set[name]->obj_funct.GetTimeSeries();}
+        CTimeSeries *GetObjectiveFunctionTimeSeries(const string &name) {return ObjectiveFunction(name)->GetTimeSeries();}
         void SetSilent(bool _s) {silent = _s;}
         bool IsSilent() {return silent;}
         void ShowMessage(const string &msg) {if (!silent) cout<<msg<<std::endl; }

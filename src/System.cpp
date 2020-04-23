@@ -185,6 +185,17 @@ Parameter *System::parameter(const string &s)
         return (Parameters()[s]);
 }
 
+Objective_Function *System::objectivefunction(const string &s)
+{
+    if (ObjectiveFunctions().count(s) == 0)
+    {
+        errorhandler.Append(GetName(),"System","objective function","objective function '" + s + "' was not found",111);
+        return nullptr;
+    }
+    else
+        return (ObjectiveFunctions()[s]);
+}
+
 Object *System::object(const string &s)
 {
     for (unsigned int i=0; i<Settings.size(); i++)
@@ -201,6 +212,9 @@ Object *System::object(const string &s)
 
     for (unsigned int i=0; i<ParametersCount(); i++)
         if (Parameters()[i]->GetName() == s) return Parameters()[i];
+
+    for (unsigned int i=0; i<ObjectiveFunctionsCount(); i++)
+        if (ObjectiveFunctions()[i]->GetName() == s) return ObjectiveFunctions()[i];
 
     //errorhandler.Append(GetName(),"System","object","Object '" + s + "' was not found",105);
 
@@ -518,10 +532,10 @@ void System::InitiateOutputs()
             }
     }
 
-    for (map<string, obj_funct_weight>::iterator it=objective_function_set.begin(); it !=objective_function_set.end(); it++)
+    for (unsigned int i=0; i<objective_function_set.size(); i++)
     {
-        Outputs.AllOutputs.append(CBTC(), "Obj_" + it->first);
-        it->second.obj_funct.SetOutputItem("Obj_" + it->first);
+        Outputs.AllOutputs.append(CBTC(), "Obj_" + objective_function_set[i]->GetName());
+        objective_function_set[i]->SetOutputItem("Obj_" + objective_function_set[i]->GetName());
     }
 
 }
@@ -549,9 +563,9 @@ void System::PopulateOutputs()
             }
     }
 
-    for (map<string, obj_funct_weight>::iterator it=objective_function_set.begin(); it !=objective_function_set.end(); it++)
+    for (unsigned int i=0; i<objective_function_set.size(); i++)
     {
-        Outputs.AllOutputs["Obj_" + it->first].append(SolverTempVars.t,ObjectiveFunction(it->first)->Value());
+        Outputs.AllOutputs["Obj_" + objective_function_set[i]->GetName()].append(SolverTempVars.t,objectivefunction(objective_function_set[i]->GetName())->Value());
     }
 
 }
@@ -910,7 +924,7 @@ void System::TransferQuantitiesFromMetaModel()
 void System::AppendObjectiveFunction(const string &name, const Objective_Function &obj, double weight)
 {
     objective_function_set.Append(name,obj, weight);
-    objective_function_set[name]->obj_funct.SetSystem(this);
+    objective_function_set[name]->SetSystem(this);
     return;
 }
 
@@ -921,7 +935,7 @@ bool System::AppendObjectiveFunction(const string &name, const string &location,
     if (object(location)!=nullptr)
     {
         objective_function_set.Append(name,obj, weight);
-        objective_function_set[name]->obj_funct.SetSystem(this);
+        objective_function_set[name]->SetSystem(this);
         return true;
     }
 
@@ -1062,8 +1076,8 @@ void System::SetAllParents()
     for (unsigned int i=0; i<sources.size(); i++)
         sources[i].SetAllParents();
 
-    for (map<string,obj_funct_weight>::iterator it=objective_function_set.begin(); it!=objective_function_set.end(); it++)
-        objective_function_set[it->first]->obj_funct.SetSystem(this);
+    for (unsigned int i=0; i<objective_function_set.size(); i++)
+        objective_function_set[i]->SetSystem(this);
 }
 
 bool System::Echo(const string &obj, const string &quant, const string &feature)

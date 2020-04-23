@@ -136,7 +136,8 @@ bool Object::SetQuantities(MetaModel *m, const string& typ )
 {
     if (m->Count(typ)==0)
     {
-        Parent()->errorhandler.Append(GetName(),"Object","SetQuantities","Type " + typ + "was not found!",1004);
+        if (Parent())
+            Parent()->errorhandler.Append(GetName(),"Object","SetQuantities","Type " + typ + "was not found!",1004);
         last_error = "Type " + typ + "was not found";
         return false;
     }
@@ -163,7 +164,8 @@ bool Object::SetVal(const string& s, double value, const Expression::timing &tmg
     }
     else
     {
-        Parent()->errorhandler.Append(GetName(),"Object","SetVal","Variable " + s + " was not found!",1005);
+        if (Parent())
+            Parent()->errorhandler.Append(GetName(),"Object","SetVal","Variable " + s + " was not found!",1005);
         last_error = "Variable " + s + " was not found!";
         return false;
     }

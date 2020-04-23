@@ -470,7 +470,7 @@ bool Command::Execute(System *_sys)
                 {
                     if (it->first!="object" && it->first!="expression" && it->first!="weight")
                     {
-                        if (!sys->ObjectiveFunction(assignments["name"])->SetProperty(it->first,it->second))
+                        if (!sys->objectivefunction(assignments["name"])->SetProperty(it->first,it->second))
                         {
                             sys->errorhandler.Append("","Command","Execute","Objective function does not have a '" + it->first + "' + property!",7021);
                             last_error = "Parameter does not have a '" + it->first + "' + property!";

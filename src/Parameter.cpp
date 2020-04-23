@@ -16,6 +16,7 @@ Parameter::~Parameter()
 
 Parameter::Parameter(const Parameter& other):Object::Object(other)
 {
+    Object::operator=(other);
     _location = other._location;
     _quan = other._quan;
     value = other.value;
