@@ -3,12 +3,13 @@
 
 #include "Expression.h"
 #include "BTC.h"
+#include "Object.h"
 
 enum class objfunctype {Integrate, Value};
 
 class System;
 
-class Objective_Function
+class Objective_Function: public Object
 {
     public:
         Objective_Function();

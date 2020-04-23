@@ -132,6 +132,7 @@ class System: public Object
         int SourcesCount() {return sources.size();}
         vector<string> GetAllSourceNames();
         int ParametersCount() {return Parameters().size();}
+        int ObjectiveFunctionsCount() {return ObjectiveFunctions().size();}
         Link *link(const string &s);
         Link *link(int i)
         {
@@ -184,6 +185,7 @@ class System: public Object
         Parameter *GetParameter(const string &name) {return parameter_set[name];}
         Parameter *GetParameter(int i) {return parameter_set[i];}
         Parameter_Set &Parameters() {return parameter_set;}
+        Objective_Function_Set &ObjectiveFunctions() {return objective_function_set;}
         bool AppendParameter(const string &paramname, const double &lower_limit, const double &upper_limit, const string &prior_distribution = "normal");
         bool AppendParameter(const string &paramname, const Parameter& param);
         bool SetAsParameter(const string &location, const string &quantity, const string &parametername);

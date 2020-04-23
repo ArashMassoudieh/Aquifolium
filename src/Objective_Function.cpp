@@ -2,7 +2,7 @@
 #include "System.h"
 
 
-Objective_Function::Objective_Function()
+Objective_Function::Objective_Function(): Object::Object()
 {
     //ctor
 }

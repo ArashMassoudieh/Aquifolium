@@ -30,6 +30,10 @@ class Objective_Function_Set
         map<string, obj_funct_weight>::iterator end() {return objectivefunctions.end();}
         void SetSystem(System* s);
         void clear();
+        unsigned int size()
+        {
+            return objectivefunctions.size();
+        }
     protected:
 
     private:
