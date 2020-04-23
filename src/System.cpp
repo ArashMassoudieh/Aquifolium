@@ -17,7 +17,27 @@
 
 System::System():Object::Object()
 {
-    //ctor
+   PopulateOperatorsFunctions();
+}
+
+void System::PopulateOperatorsFunctions()
+{
+    operators = new vector<string>;
+    operators->push_back("+");
+    operators->push_back("-");
+    operators->push_back("*");
+    operators->push_back("/");
+    operators->push_back("^");
+    operators->push_back("(");
+    operators->push_back(")");
+    operators->push_back(":");
+
+    functions = new vector<string>;
+    functions->push_back("abs");
+    functions->push_back("exp");
+    functions->push_back("pos");
+    functions->push_back("min");
+    functions->push_back("max");
 }
 
 #ifdef QT_version
@@ -46,7 +66,8 @@ System::~System()
 
 System::System(const System& other):Object::Object(other)
 {
-	SolverTempVars.SetUpdateJacobian(true);
+    PopulateOperatorsFunctions();
+    SolverTempVars.SetUpdateJacobian(true);
 	sources = other.sources;
 	blocks = other.blocks;
     links = other.links;
@@ -81,6 +102,7 @@ System& System::operator=(const System& rhs)
     paths = rhs.paths;
     Settings = rhs.Settings;
     SetAllParents();
+    PopulateOperatorsFunctions();
     return *this;
 }
 
@@ -1283,6 +1305,7 @@ System::System(Script& scr)
             scr.Errors().push_back(scr[i]->LastError());
         }
     }
+    PopulateOperatorsFunctions();
     SetVariableParents();
 
 }
@@ -1297,6 +1320,7 @@ void System::CreateFromScript(Script& scr)
             scr.Errors().push_back(scr[i]->LastError());
         }
     }
+    PopulateOperatorsFunctions();
     SetVariableParents();
 
 }

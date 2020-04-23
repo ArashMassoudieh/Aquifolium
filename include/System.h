@@ -220,6 +220,7 @@ class System: public Object
         void SetSystemSettings();
         bool SetSystemSettingsObjectProperties(const string &s, const string &val);
         bool Delete(const string& objectname);
+        void PopulateOperatorsFunctions();
 #if defined(QT_version)
         logWindow *LogWindow() {return logwindow;}
         void SetLogWindow(logWindow *lgwnd) {logwindow=lgwnd;}
@@ -231,6 +232,8 @@ class System: public Object
 		QStringList QGetAllObjectsofTypeCategory(QString _type);
         RunTimeWindow *RunTimewindow() {return rtw;}
         void SetRunTimeWindow(RunTimeWindow* _rtw) {rtw = _rtw;}
+        vector<string> *operators;
+        vector<string> *functions;
 #endif
 
     protected:

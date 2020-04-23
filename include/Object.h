@@ -59,8 +59,6 @@ class Object
 				outflowlimitfactor_past = val;
 			else 
 				outflowlimitfactor_current = val;
-		
-		
 		}
         double GetOutflowLimitFactor(const Expression::timing &tmg)
 		{
@@ -84,6 +82,9 @@ class Object
         void AssignRandomPrimaryKey();
         string toCommand();
         vector<string> ItemswithOutput();
+        vector<string> quantitative_variable_list() {return var.quantitative_variable_list();}
+        vector<string> *operators();
+        vector<string> *functions();
     protected:
 
     private:

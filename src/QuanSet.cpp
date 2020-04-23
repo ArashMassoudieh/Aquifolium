@@ -340,3 +340,17 @@ string QuanSet::toCommand()
     }
     return s;
 }
+
+vector<string> QuanSet::quantitative_variable_list()
+{
+    vector<string> s;
+    for (map<string,Quan>::iterator it=quans.begin(); it!=quans.end(); it++)
+    {
+        if (it->second.GetType() == Quan::_type::value || it->second.GetType() == Quan::_type::balance || it->second.GetType() == Quan::_type::constant || it->second.GetType() == Quan::_type::timeseries || it->second.GetType() == Quan::_type::expression)
+        {
+            s.push_back(it->second.GetName());
+        }
+    }
+    return s;
+
+}

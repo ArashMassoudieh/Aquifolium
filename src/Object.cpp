@@ -409,3 +409,21 @@ vector<string> Object::ItemswithOutput()
         }
     return items; 
 }
+
+
+vector<string> *Object::operators()
+{
+    if (parent)
+    {
+        return parent->operators;
+    }
+    else return nullptr;
+}
+vector<string> *Object::functions()
+{
+    if (parent)
+    {
+        return parent->functions;
+    }
+    else return nullptr;
+}

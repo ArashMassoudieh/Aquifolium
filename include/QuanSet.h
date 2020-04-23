@@ -45,6 +45,7 @@ class QuanSet
         vector<CTimeSeries*> TimeSeries();
         vector<string> QuanNames();
         string toCommand();
+        vector<string> quantitative_variable_list();
 #ifdef QT_version
         QStringList QQuanNames();
 		QuanSet(QJsonObject& object_types);
