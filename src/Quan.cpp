@@ -605,6 +605,10 @@ string Quan::GetProperty()
 	{
 		return _string_value;
 	}
+    else if (type == _type::expression)
+    {
+        return this->GetExpression()->ToString();
+    }
     return "";
 
 }
@@ -633,9 +637,13 @@ bool Quan::SetProperty(const string &val)
 		return SetSource(val);
 
     }
-    if (type == _type::expression || type== _type::rule)
+    if (type == _type::expression)
     {
-        AppendError(GetName(),"Quan","SetProperty","Expression or rule cannot be set during runtime", 3011);
+        return SetExpression(val);
+    }
+    if (type== _type::rule)
+    {
+        AppendError(GetName(),"Quan","SetProperty","Rule cannot be set during runtime", 3011);
         return false;
     }
 	if (type == _type::string)

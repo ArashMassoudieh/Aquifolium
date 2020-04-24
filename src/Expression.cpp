@@ -1002,7 +1002,7 @@ string Expression::ToString()
     }
     if (param_constant_expression=="constant")
     {
-        out += constant;
+        out += aquiutils::numbertostring(constant);
         return out;
     }
     if (function!="") out += function;
