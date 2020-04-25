@@ -58,6 +58,16 @@ Quan::Quan(Json::ValueIterator &it)
     }
     else
         SetIncludeInOutput(false);
+    if (it->isMember("estimate"))
+    {
+        if ((*it)["estimate"].asString()=="true")
+            SetEstimable(true);
+        else
+            SetEstimable(false);
+    }
+    else
+        SetEstimable(false);
+
     if (it->isMember("description"))
     {
         Description() = (*it)["description"].asString();
@@ -270,12 +280,14 @@ Quan::Quan(const Quan& other)
     warning_error = other.warning_error;
     warning_message = other.warning_message;
     ask_from_user = other.ask_from_user;
+    estimable = other.estimable;
 	//parent = other.parent;
 }
 
 Quan& Quan::operator=(const Quan& rhs)
 {
     if (this == &rhs) return *this; // handle self assignment
+    estimable = rhs.estimable;
     _expression = rhs._expression;
     _timeseries = rhs._timeseries;
     _rule = rhs._rule;

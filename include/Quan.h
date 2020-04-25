@@ -57,6 +57,7 @@ class Quan
 		void Renew();
 		void Update();
         void SetIncludeInOutput(bool x) {includeinoutput = x;}
+        void SetEstimable(bool x) {estimable=x;}
         string GetName() {return _var_name;}
         CTimeSeries* TimeSeries();
         bool IncludeInOutput() {return includeinoutput;}
@@ -66,6 +67,7 @@ class Quan
         string &DefaultUnit() {return default_unit;}
         string &Defaults() {return defaults;}
         string &Delegate() {return delegate;}
+        bool Estimable() {return estimable;}
         string &Category() {return category;}
         string &Input() {return input;}
         string &Default() {return default_val;}
@@ -106,6 +108,7 @@ class Quan
         string corresponding_inflow_quan;
         Object *parent = nullptr;
         bool includeinoutput = false;
+        bool estimable = false;
         string description;
         string unit;
         string default_unit;
