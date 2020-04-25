@@ -89,6 +89,8 @@ class Quan
         string toCommand();
         void SetOutputItem(const string& s) { OutputItem = s; }
         string GetOutputItem() { return OutputItem; }
+        void SetParameterAssignedTo(const string &s) {_parameterassignedto=s;}
+        string GetParameterAssignedTo() {return _parameterassignedto;}
     protected:
 
     private:
@@ -126,6 +128,7 @@ class Quan
         string warning_message;
         bool ask_from_user=false;
         string OutputItem;
+        string _parameterassignedto = "";
 };
 
 string tostring(const Quan::_type &typ);

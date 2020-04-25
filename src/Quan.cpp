@@ -260,6 +260,7 @@ Quan::Quan(const Quan& other)
     _val = other._val;
     _val_star = other._val_star;
     _parameters = other._parameters;
+    _parameterassignedto = other._parameterassignedto;
     type = other.type;
 	corresponding_flow_quan = other.corresponding_flow_quan;
 	corresponding_inflow_quan = other.corresponding_inflow_quan;
@@ -296,7 +297,8 @@ Quan& Quan::operator=(const Quan& rhs)
     _val = rhs._val;
     _val_star = rhs._val_star;
     _parameters = rhs._parameters;
-	sourcename = rhs.sourcename;
+    _parameterassignedto = rhs._parameterassignedto;
+    sourcename = rhs.sourcename;
     type = rhs.type;
 	corresponding_flow_quan = rhs.corresponding_flow_quan;
 	corresponding_inflow_quan = rhs.corresponding_inflow_quan;
