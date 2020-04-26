@@ -993,6 +993,12 @@ double System::GetObjectiveFunctionValue()
     return objective_function_set.Calculate();
 }
 
+bool System::RemoveAsParameter(const string &location, const string &quantity, const string &parametername)
+{
+    if (GetParameter(parametername)!=nullptr)
+        return GetParameter(parametername)->RemoveLocationQuan(location,quantity);
+    return false;
+}
 bool System::SetAsParameter(const string &location, const string &quantity, const string &parametername)
 {
     if (object(location)==nullptr)

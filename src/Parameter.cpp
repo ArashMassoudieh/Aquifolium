@@ -103,3 +103,19 @@ bool Parameter::SetName(string s)
     Object::SetName(s);
     return true;
 }
+
+bool Parameter::RemoveLocationQuan(const string &loc, const string &quan)
+{
+    for (int i=0; i<_location.size(); i++)
+    {
+        if (_location[i]==loc && _quan[i]==quan)
+        {
+            _location.erase(_location.begin()+i);
+            _quan.erase(_quan.begin()+i);
+            return true;
+        }
+    }
+    return false;
+
+
+}

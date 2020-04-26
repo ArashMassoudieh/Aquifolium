@@ -21,6 +21,7 @@ class Parameter : public Object
         Parameter& operator=(const Parameter& other);
         void SetLocations(const vector<string> &loc) {_location = loc;}
         void AppendLocationQuan(const string &loc, const string &quan) {_location.push_back(loc); _quan.push_back(quan);}
+        bool RemoveLocationQuan(const string &loc, const string &quan);
         vector<string> GetLocations() {return _location;}
         vector<string> GetQuans() {return _quan;}
         void SetRange(double low, double high) {Object::SetVal("low",low); Object::SetVal("high",high);}
