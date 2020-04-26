@@ -77,7 +77,7 @@ struct _filenames
 using namespace std;
 
 template<class T>
-class CGA : public Object
+class CGA
 {
 public:
 
@@ -115,6 +115,7 @@ public:
     int optimize();
     bool SetProperty(const string &varname, const string &value);
     string last_error;
+    void SetParameters(Object *obj);
 private:
     void Setminmax(int a, double minrange, double maxrange, int prec);
     void fitnessdistini();
@@ -144,6 +145,7 @@ private:
     int get_time_series(int i);
     double evaluateforward();
     double evaluateforward_mixed(vector<double> v);
+
     CDistribution fitdist;
 
 	// GUI

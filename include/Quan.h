@@ -114,7 +114,7 @@ class Quan
         string description;
         string unit;
         string default_unit;
-        string default_val="0";
+        string default_val="";
         string input_type;
         string defaults;
         string delegate;

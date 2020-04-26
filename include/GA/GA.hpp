@@ -1,5 +1,5 @@
-#ifndef GA_HPP
-#define GA_HPP
+
+
 // GA.cpp: implementation of the CGA class.
 ////////////////////////////////////////////////////////////////////////
 #include "GA.h"
@@ -13,7 +13,7 @@
 
 
 template<class T>
-CGA<T>::CGA() : Object::Object()
+CGA<T>::CGA()
 {
 	GA_params.maxpop = 100;
 	Ind.resize(GA_params.maxpop);
@@ -27,7 +27,7 @@ CGA<T>::CGA() : Object::Object()
 }
 
 template<class T>
-CGA<T>::CGA(string filename, const T &model) : Object::Object()
+CGA<T>::CGA(string filename, const T &model)
 {
 	Model = model;
 	ifstream file(filename);
@@ -101,7 +101,7 @@ CGA<T>::CGA(string filename, const T &model) : Object::Object()
 }
 
 template<class T>
-CGA<T>::CGA(T *model) : Object::Object()
+CGA<T>::CGA(T *model)
 {
 	Model = *model;
 	GA_params.nParam = 0;
@@ -201,7 +201,6 @@ void CGA<T>::setnumpop(int n)
 template<class T>
 CGA<T>::CGA(const CGA<T> &C)
 {
-    Object::Object(C);
     GA_params.maxpop = C.maxpop;
 	Ind.resize(GA_params.maxpop);
 	Ind_old.resize(GA_params.maxpop);
@@ -448,6 +447,15 @@ void CGA<T>::write_to_detailed_GA(string s)
     fprintf(FileOut, "%s\n", s.c_str());
 	fclose(FileOut);
 
+}
+
+template<class T>
+void CGA<T>::SetParameters(Object *obj)
+{
+    for (map<string,Quan>::iterator it=obj->GetVars()->begin(); it!=obj->GetVars()->end(); it++)
+    {
+        SetProperty(it->first,it->second.GetProperty());
+    }
 }
 
 template<class T>
@@ -897,4 +905,4 @@ void CGA<T>::getinitialpop(string filename)
 	file.close();
 }
 
-#endif
+

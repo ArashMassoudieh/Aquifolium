@@ -586,7 +586,8 @@ bool Quan::SetSource(const string &sourcename)
 {
 	if (parent->GetParent()->source(sourcename))
 	{
-	    source = parent->GetParent()->source(sourcename);
+        if (parent->GetParent())
+            source = parent->GetParent()->source(sourcename);
         return true;
 	}
 	else

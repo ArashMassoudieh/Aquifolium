@@ -153,7 +153,10 @@ bool Object::SetQuantities(MetaModel *m, const string& typ )
 void Object::SetDefaults()
 {
     for (map<string, Quan>::const_iterator s = var.begin(); s != var.end(); ++s)
-        var[s->first].SetVal(atof(var[s->first].Default().c_str()),Expression::timing::both);
+    {
+        if (var[s->first].Default()!="")
+            var[s->first].SetProperty(var[s->first].Default().c_str());
+    }
 }
 
 bool Object::SetVal(const string& s, double value, const Expression::timing &tmg)
