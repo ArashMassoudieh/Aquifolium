@@ -103,7 +103,8 @@ bool Object::SetQuantities(QuanSet &Q)
 {
     if (Q.Count("name")==0)
     {
-        Parent()->errorhandler.Append(GetName(),"Object","AddQnantity","Variable " + name + " does not exists! ",1043);
+        if (Parent())
+            Parent()->errorhandler.Append(GetName(),"Object","AddQnantity","Variable " + name + " does not exists! ",1043);
         return false;
     }
     else

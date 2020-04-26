@@ -1,16 +1,19 @@
+#ifndef GA_HPP
+#define GA_HPP
 // GA.cpp: implementation of the CGA class.
 ////////////////////////////////////////////////////////////////////////
 #include "GA.h"
 #include <stdlib.h>
 #include <omp.h>
 #include "Expression.h"
+#include "Object.h"
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
 
 template<class T>
-CGA<T>::CGA()
+CGA<T>::CGA() : Object::Object()
 {
 	GA_params.maxpop = 100;
 	Ind.resize(GA_params.maxpop);
@@ -24,7 +27,7 @@ CGA<T>::CGA()
 }
 
 template<class T>
-CGA<T>::CGA(string filename, const T &model)
+CGA<T>::CGA(string filename, const T &model) : Object::Object()
 {
 	Model = model;
 	ifstream file(filename);
@@ -98,7 +101,7 @@ CGA<T>::CGA(string filename, const T &model)
 }
 
 template<class T>
-CGA<T>::CGA(T *model)
+CGA<T>::CGA(T *model) : Object::Object()
 {
 	Model = *model;
 	GA_params.nParam = 0;
@@ -198,7 +201,8 @@ void CGA<T>::setnumpop(int n)
 template<class T>
 CGA<T>::CGA(const CGA<T> &C)
 {
-	GA_params.maxpop = C.maxpop;
+    Object::Object(C);
+    GA_params.maxpop = C.maxpop;
 	Ind.resize(GA_params.maxpop);
 	Ind_old.resize(GA_params.maxpop);
 	Ind = C.Ind;
@@ -215,7 +219,8 @@ CGA<T>::CGA(const CGA<T> &C)
 template<class T>
 CGA<T> CGA<T>::operator=(CGA<T> &C)
 {
-	GA_params = C.GA_params;
+    Object::operators(C);
+    GA_params = C.GA_params;
 	filenames = C.filenames;
 	Ind = C.Ind;
     Ind_old = C.Ind_old;
@@ -892,3 +897,4 @@ void CGA<T>::getinitialpop(string filename)
 	file.close();
 }
 
+#endif

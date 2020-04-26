@@ -11,6 +11,7 @@
 #include "Matrix.h"
 #include "omp.h"
 #include <vector>
+#include "Object.h"
 
 //GUI
 class runtimeWindow;
@@ -76,7 +77,7 @@ struct _filenames
 using namespace std;
 
 template<class T>
-class CGA
+class CGA : public Object
 {
 public:
 
@@ -157,7 +158,7 @@ private:
 
 };
 
-#include "../src/GA/GA.hpp"
+#include "GA.hpp"
 
 
 
