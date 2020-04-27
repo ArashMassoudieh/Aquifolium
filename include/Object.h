@@ -81,6 +81,7 @@ class Object
         string GetPrimaryKey() {return primary_key;}
         void AssignRandomPrimaryKey();
         string toCommand();
+        string toCommandSetAsParam();
         vector<string> ItemswithOutput();
         vector<string> quantitative_variable_list() {return var.quantitative_variable_list();}
         vector<string> *operators();

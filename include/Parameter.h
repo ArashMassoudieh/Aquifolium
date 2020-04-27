@@ -34,8 +34,8 @@ class Parameter : public Object
         }
         void SetPriorDistribution(const string &prior) {Object::SetProperty("prior_distribution",prior); }
         string GetPriorDistribution() {return Object::Variable("priot_distribution")->GetStringValue(); }
-        void SetValue(const double &val) {value = val;}
-        double GetValue() {return value;}
+        void SetValue(const double &val) {value = val; SetProperty("value", aquiutils::numbertostring(val));}
+        double GetValue() {return Object::GetVal("value");}
         string LastError() {return last_error;}
         bool SetProperty(const string &s, const string &val)
         {

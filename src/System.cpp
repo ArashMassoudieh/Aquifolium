@@ -1053,6 +1053,8 @@ bool System::AppendParameter(const string &paramname, const double &lower_limit,
         Parameter param;
         param.SetRange(lower_limit, upper_limit);
         param.SetPriorDistribution(prior_distribution);
+        param.SetQuantities(metamodel, "Parameter");
+
         Parameters().Append(paramname,param);
         return true;
     }
@@ -1295,6 +1297,12 @@ bool System::SavetoScriptFile(const string &filename)
 
     for (unsigned int i=0; i<links.size(); i++)
         file << "create link;" << links[i].toCommand() << std::endl;
+
+    for (unsigned int i=0; i<blocks.size(); i++)
+        file << blocks[i].toCommandSetAsParam() << std::endl;
+
+    for (unsigned int i=0; i<links.size(); i++)
+        file << links[i].toCommandSetAsParam() << std::endl;
 
     file.close();
 

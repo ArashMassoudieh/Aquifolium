@@ -387,6 +387,7 @@ bool Command::Execute(System *_sys)
         if (Validate())
         {
             sys->SetAsParameter(assignments["object"],assignments["quantity"],assignments["parametername"]);
+            sys->object(assignments["object"])->Variable(assignments["quantity"])->SetParameterAssignedTo(assignments["parametername"]);
             return true;
         }
         else

@@ -404,6 +404,13 @@ string Object::toCommand()
     return out;
 }
 
+string Object::toCommandSetAsParam()
+{
+    string out;
+    out += var.toCommandSetAsParam();
+    return out;
+}
+
 vector<string> Object::ItemswithOutput()
 {
     vector<string> items;

@@ -341,6 +341,27 @@ string QuanSet::toCommand()
     return s;
 }
 
+string QuanSet::toCommandSetAsParam()
+{
+    string s;
+    int i=0;
+    for (map<string,Quan>::iterator it=quans.begin(); it!=quans.end(); it++)
+    {
+        if (it->second.AskFromUser())
+        {
+            if (it->second.GetParameterAssignedTo()!="")
+            {
+                if (i>0) s+= "\n";
+                s+="setasparameter; object= " + quans["name"].GetProperty() + ", parametername= "  + it->second.GetParameterAssignedTo() + ", quantity= " + it->second.GetName();
+                i++;
+            }
+
+        }
+    }
+    return s;
+}
+
+
 vector<string> QuanSet::quantitative_variable_list()
 {
     vector<string> s;
