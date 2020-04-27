@@ -7,10 +7,10 @@
 #include <omp.h>
 #include "Expression.h"
 #include "Object.h"
-//////////////////////////////////////////////////////////////////////
-// Construction/Destruction
-//////////////////////////////////////////////////////////////////////
 
+#ifdef Q_version
+    #include "runtimewindow.h"
+#endif
 
 template<class T>
 CGA<T>::CGA()
@@ -520,6 +520,12 @@ int CGA<T>::optimize()
 
 		Fitness[i][0] = Ind[j].actual_fitness;
 
+#ifdef Q_version
+    if (rtw)
+    {   rtw->SetProgress(double(i)/double(GA_params.nGen)*100);
+        rtw->AddDataPoint(i,Ind[j].actual_fitness);
+    }
+#endif
 		if (i>10)
 		{
 			if ((Fitness[i][0] == Fitness[i - 3][0]) && GA_params.shakescale>pow(10.0, -Ind[0].precision[0]))

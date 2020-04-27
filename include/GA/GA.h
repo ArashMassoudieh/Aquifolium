@@ -14,7 +14,7 @@
 #include "Object.h"
 
 //GUI
-class runtimeWindow;
+class RunTimeWindow;
 
 struct GA_Twiking_parameters
 {
@@ -116,6 +116,9 @@ public:
     bool SetProperty(const string &varname, const string &value);
     string last_error;
     void SetParameters(Object *obj);
+#ifdef Q_version
+    void SetRunTimeWindow(RunTimeWindow *_rtw) {rtw=_rtw;}
+#endif
 private:
     void Setminmax(int a, double minrange, double maxrange, int prec);
     void fitnessdistini();
@@ -150,12 +153,9 @@ private:
 
 	// GUI
 	int numberOfThreads;
-	#ifdef QT_version
-	int optimize(runtimeWindow* rtw);
-	void assignfitnesses(runtimeWindow* rtw);
-	void updateProgress(runtimeWindow* rtw, QMap<QString, QString> vars, bool finished = false) const;
-	void updateProgress(runtimeWindow* rtw, bool resetGeneration = false) const;
-	#endif // QT_version
+        #ifdef Q_version
+            RunTimeWindow *rtw=nullptr;
+        #endif // QT_version
 
 
 };

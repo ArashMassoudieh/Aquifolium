@@ -345,7 +345,8 @@ bool Object::SetProperty(const string &prop, const string &value)
 {
     if (!HasQuantity(prop))
     {
-        Parent()->errorhandler.Append(GetName(),"Object","SetProperty","Object '" + GetName() + "' has no property called '" + prop + "'",1012);
+        if (Parent())
+            Parent()->errorhandler.Append(GetName(),"Object","SetProperty","Object '" + GetName() + "' has no property called '" + prop + "'",1012);
         return false;
     }
     if (var[prop].GetType() == Quan::_type::value || var[prop].GetType() == Quan::_type::balance || var[prop].GetType() == Quan::_type::constant)

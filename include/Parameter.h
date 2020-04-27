@@ -39,11 +39,11 @@ class Parameter : public Object
         string LastError() {return last_error;}
         bool SetProperty(const string &s, const string &val)
         {
-            if (s=="low") { Object::SetProperty("low",val); return true;}
-            if (s=="high") { Object::SetProperty("high",val); return true;}
-            if (s=="value") {value = atof(val.c_str()); return true;}
-            if (s=="prior_distribution") {Object::SetProperty("prior_distribution",val); return true;}
-            return false;
+            if (s=="low") { Object::SetProperty("low",val);}
+            if (s=="high") { Object::SetProperty("high",val);}
+            if (s=="value") {value = atof(val.c_str());}
+            return Object::SetProperty(s,val);
+
         }
         string toString(int _tabs = 0);
         bool HasQuantity(const string &qntty);
