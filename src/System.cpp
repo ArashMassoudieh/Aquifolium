@@ -566,6 +566,37 @@ void System::InitiateOutputs()
 
 }
 
+void System::SetOutputItems()
+{
+    for (unsigned int i=0; i<blocks.size(); i++)
+    {
+        for (map<string, Quan>::iterator it = blocks[i].GetVars()->begin(); it != blocks[i].GetVars()->end(); it++)
+            if (it->second.IncludeInOutput())
+            {
+                it->second.SetOutputItem(blocks[i].GetName() + "_" + it->first);
+            }
+    }
+
+    for (unsigned int i=0; i<links.size(); i++)
+    {
+        for (map<string, Quan>::iterator it = links[i].GetVars()->begin(); it != links[i].GetVars()->end(); it++)
+            if (it->second.IncludeInOutput())
+            {
+                it->second.SetOutputItem(links[i].GetName() + "_" + it->first);
+            }
+    }
+
+    for (unsigned int i=0; i<objective_function_set.size(); i++)
+    {
+        objective_function_set[i]->SetOutputItem("Obj_" + objective_function_set[i]->GetName());
+    }
+
+}
+
+bool System::TransferResultsFrom(System *other)
+{
+    Outputs = other->Outputs;
+}
 
 void System::PopulateOutputs()
 {
@@ -1101,14 +1132,14 @@ bool System::SetParameterValue(int i, const double &val)
 
 bool System::ApplyParameters()
 {
-    for (int i = 0; i < Parameters().size(); i++)
-        for (int i=0; i<GetParameter(i)->GetLocations().size();i++)
+    for (unsigned int i = 0; i < Parameters().size(); i++)
+        for (unsigned int j=0; j<GetParameter(i)->GetLocations().size();j++)
         {
-            if (object(GetParameter(i)->GetLocations()[i])!=nullptr)
-                object(GetParameter(i)->GetLocations()[i])->SetVal(GetParameter(i)->GetQuans()[i],GetParameter(i)->GetValue());
+            if (object(GetParameter(i)->GetLocations()[j])!=nullptr)
+                object(GetParameter(i)->GetLocations()[j])->SetVal(GetParameter(i)->GetQuans()[i],GetParameter(i)->GetValue());
             else
             {
-                errorhandler.Append(GetName(),"System","ApplyParameters" ,"Location '" + GetParameter(i)->GetLocations()[i] + "' does not exist!", 607);
+                errorhandler.Append(GetName(),"System","ApplyParameters" ,"Location '" + GetParameter(i)->GetLocations()[j] + "' does not exist!", 607);
                 return false;
             }
         }

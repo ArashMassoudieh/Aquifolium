@@ -105,6 +105,7 @@ class System: public Object
         virtual ~System();
         System(const System& other);
         System(Script& scr);
+        bool TransferResultsFrom(System *other);
         System& operator=(const System& other);
         void CreateFromScript(Script& scr);
         double &GetTime() {return SolverTempVars.t;}
@@ -235,6 +236,7 @@ class System: public Object
         void SetRunTimeWindow(RunTimeWindow* _rtw) {rtw = _rtw;}
         vector<string> *operators;
         vector<string> *functions;
+        void SetOutputItems();
 #endif
 
     protected:

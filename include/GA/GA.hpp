@@ -628,11 +628,11 @@ double CGA<T>::assignfitnesses(vector<double> inp)
         Models.SetParameterValue(i, inp[i]);
 
 	Models.ApplyParameters();
-
+    Models.Solve();
 	likelihood -= Models.GetObjectiveFunctionValue();
 
 	Model_out = Models;
-
+    Model_out.TransferResultsFrom(&Models);
 	return likelihood;
 
 }
