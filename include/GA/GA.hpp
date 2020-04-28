@@ -522,8 +522,10 @@ int CGA<T>::optimize()
 
 #ifdef Q_version
     if (rtw)
-    {   rtw->SetProgress(double(i)/double(GA_params.nGen)*100);
+    {   if (i==0) rtw->SetYRange(0,Ind[j].actual_fitness*1.1);
+        rtw->SetProgress(double(i)/double(GA_params.nGen));
         rtw->AddDataPoint(i,Ind[j].actual_fitness);
+        QCoreApplication::processEvents();
     }
 #endif
 		if (i>10)

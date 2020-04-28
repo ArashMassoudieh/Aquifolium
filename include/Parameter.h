@@ -33,7 +33,12 @@ class Parameter : public Object
             return  prior_range;
         }
         void SetPriorDistribution(const string &prior) {Object::SetProperty("prior_distribution",prior); }
-        string GetPriorDistribution() {return Object::Variable("priot_distribution")->GetStringValue(); }
+        string GetPriorDistribution()
+        {
+            if (!Object::HasQuantity("prior_distribution"))
+                return "normal";
+            return Object::Variable("priot_distribution")->GetStringValue();
+        }
         void SetValue(const double &val) {value = val; SetProperty("value", aquiutils::numbertostring(val));}
         double GetValue() {return Object::GetVal("value");}
         string LastError() {return last_error;}
