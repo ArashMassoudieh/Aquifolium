@@ -33,6 +33,7 @@ class Objective_Function: public Object
         double Value() {return current_value;}
         void SetOutputItem(const string& s) { outputitem = s; }
         string GetOutputItem() { return outputitem; }
+        vector<string> ItemswithOutput();
     protected:
 
     private:

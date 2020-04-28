@@ -121,7 +121,8 @@ bool Object::SetQuantities(MetaModel &m, const string& typ )
 {
     if (m.Count(typ)==0)
     {
-        Parent()->errorhandler.Append(GetName(),"Object","SetQuantities","Type " + typ + "was not found!",1004);
+        if (Parent())
+            Parent()->errorhandler.Append(GetName(),"Object","SetQuantities","Type " + typ + "was not found!",1004);
         last_error = "Type " + typ + "was not found";
 		return false;
 	}
@@ -356,8 +357,7 @@ bool Object::SetProperty(const string &prop, const string &value)
     }
     if (var[prop].GetType() == Quan::_type::expression)
     {
-        Parent()->errorhandler.Append(GetName(),"Object","SetProperty","In object '" + GetName() + "', property '" + prop + "' is an expression and cannot be set during the run time",1013);
-        return false;
+        return var[prop].SetExpression(value);
     }
     if (var[prop].GetType() == Quan::_type::rule)
     {

@@ -25,7 +25,7 @@ Objective_Function_Set& Objective_Function_Set::operator=(const Objective_Functi
 void Objective_Function_Set::Append(const string &name, const Objective_Function &o_func, double weight)
 {
     objectivefunctions.push_back(o_func);
-    objectivefunctions[objectivefunctions.size()-1].SetVal("Weight",weight);
+    objectivefunctions[objectivefunctions.size()-1].SetVal("weight",weight);
     objectivefunctions[objectivefunctions.size()-1].SetName(name);
     return;
 }

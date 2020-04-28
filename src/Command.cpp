@@ -161,6 +161,8 @@ bool Command::Execute(System *_sys)
     {
         if (Validate())
         {
+            sys->clear();
+            sys->GetMetaModel()->Clear();
             if (sys->GetQuanTemplate(assignments["filename"]))
                 return true;
             else
@@ -469,15 +471,14 @@ bool Command::Execute(System *_sys)
 				if (!succeed) return false;
 				for (map<string,string>::iterator it=assignments.begin(); it!=assignments.end(); it++)
                 {
-                    if (it->first!="object" && it->first!="expression" && it->first!="weight")
+
+                    if (!sys->objectivefunction(assignments["name"])->SetProperty(it->first,it->second))
                     {
-                        if (!sys->objectivefunction(assignments["name"])->SetProperty(it->first,it->second))
-                        {
-                            sys->errorhandler.Append("","Command","Execute","Objective function does not have a '" + it->first + "' + property!",7021);
-                            last_error = "Parameter does not have a '" + it->first + "' + property!";
-                            succeed = false;
-                        }
+                        sys->errorhandler.Append("","Command","Execute","Objective function does not have a '" + it->first + "' + property!",7021);
+                        last_error = "Parameter does not have a '" + it->first + "' + property!";
+                        succeed = false;
                     }
+
                 }
                 return succeed;
             }

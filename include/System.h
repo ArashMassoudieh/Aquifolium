@@ -216,7 +216,7 @@ class System: public Object
         vector<CTimeSeries*> TimeSeries();
         double GetMinimumNextTimeStepSize();
         Object *GetObjectBasedOnPrimaryKey(const string &s);
-        bool SavetoScriptFile(const string &filename);
+        bool SavetoScriptFile(const string &filename, const string &templatefilename="");
         bool ReadSystemSettingsTemplate(const string &filename);
         void SetSystemSettings();
         bool SetSystemSettingsObjectProperties(const string &s, const string &val);

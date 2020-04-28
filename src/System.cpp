@@ -316,7 +316,10 @@ bool System::Solve(bool applyparameters)
     SolverTempVars.dt = SolverTempVars.dt_base;
     SolverTempVars.t = SimulationParameters.tstart;
 	PopulateOutputs();
-
+    for (unsigned int i=0; i<ObjectiveFunctionsCount(); i++)
+    {
+        ObjectiveFunctions()[i]->GetTimeSeries()->clear();
+    }
 #ifdef Q_version
     if (rtw)
     {
@@ -356,10 +359,11 @@ bool System::Solve(bool applyparameters)
             }
             if (SolverTempVars.MaxNumberOfIterations()<SolverSettings.NR_niteration_lower)
                 SolverTempVars.dt_base = min(SolverTempVars.dt_base/SolverSettings.NR_timestep_reduction_factor,SimulationParameters.dt0*10);
-            PopulateOutputs();
+
             for (unsigned int i=0; i<solvevariableorder.size(); i++)
                 Update(solvevariableorder[i]);
             UpdateObjectiveFunctions(SolverTempVars.t);
+            PopulateOutputs();
 #ifdef Q_version
             if (rtw)
             {
@@ -973,6 +977,7 @@ bool System::AppendObjectiveFunction(const string &name, const string &location,
     obj.SetSystem(this);
     if (object(location)!=nullptr)
     {
+        obj.SetQuantities(metamodel, "Objective_Function");
         objective_function_set.Append(name,obj, weight);
         objective_function_set[name]->SetSystem(this);
         return true;
@@ -1278,9 +1283,15 @@ QStringList System::QGetAllObjectsofTypeCategory(QString _type)
 #endif // Qt_version
 
 
-bool System::SavetoScriptFile(const string &filename)
+bool System::SavetoScriptFile(const string &filename, const string &templatefilename)
 {
+
     fstream file(filename,ios_base::out);
+    if (templatefilename!="")
+    {
+        file << "loadtemplate; filename = " << templatefilename << endl;
+    }
+
     for (unsigned int i=0; i<Settings.size(); i++)
         for (map<string, Quan>::iterator j=Settings[i].GetVars()->begin(); j!=Settings[i].GetVars()->end(); j++)
             if (j->second.AskFromUser())
@@ -1303,6 +1314,9 @@ bool System::SavetoScriptFile(const string &filename)
 
     for (unsigned int i=0; i<links.size(); i++)
         file << links[i].toCommandSetAsParam() << std::endl;
+
+    for (unsigned int i=0; i<ObjectiveFunctionsCount(); i++)
+        file << "create objectivefunction;" << ObjectiveFunctions()[i]->toCommand() << std::endl;
 
     file.close();
 
@@ -1361,7 +1375,7 @@ bool System::ReadSystemSettingsTemplate(const string &filename)
         last_error = "Failed to parse configuration\n";
     }
 
-
+    Settings.clear();
     for (Json::ValueIterator object_types = root.begin(); object_types != root.end(); ++object_types)
     {
         QuanSet quanset(object_types);

@@ -47,19 +47,20 @@ bool Objective_Function::SetProperty(const string &prop, const string &val)
     if (aquiutils::tolower(prop)=="expression")
     {
         expression = Expression(val);
-        return true;
+
     }
-    if (aquiutils::tolower(prop)=="location")
+    if (aquiutils::tolower(prop)=="location" || aquiutils::tolower(prop)=="object")
     {
         location = val;
-        return true;
+
     }
     if (aquiutils::tolower(prop)=="method")
     {
-        if (aquiutils::tolower(val)=="integrate") {type = objfunctype::Integrate; return true;}
-        if (aquiutils::tolower(val)=="value") {type = objfunctype::Value; return true;}
+        if (aquiutils::tolower(val)=="integrate") {type = objfunctype::Integrate;}
+        if (aquiutils::tolower(val)=="value") {type = objfunctype::Value;}
         lasterror = "Type '" + val + "' was not recognized!";
     }
+    return Object::SetProperty(prop,val);
     return false;
 }
 
@@ -91,6 +92,13 @@ void Objective_Function::append_value(double t)
     return;
 }
 
+vector<string> Objective_Function::ItemswithOutput()
+{
+    vector<string> s = Object::ItemswithOutput();
+    s.push_back("Time Series");
+    return s;
+}
+
 double Objective_Function::GetObjective()
 {
     if (type==objfunctype::Integrate)
@@ -103,9 +111,9 @@ double Objective_Function::GetObjective()
 
 double Objective_Function::Weight()
 {
-    if (GetVars()->Count("Weight")>0)
+    if (GetVars()->Count("weight")>0)
     {
-        return Variable("Weight")->GetVal();
+        return Variable("weight")->GetVal();
     }
     else
         return 1;
