@@ -107,8 +107,11 @@ class System: public Object
         System(Script& scr);
         bool TransferResultsFrom(System *other);
         System& operator=(const System& other);
-        void CreateFromScript(Script& scr);
-        double &GetTime() {return SolverTempVars.t;}
+        void CreateFromScript(Script& scr, const string &settingsfilename="");
+        double &GetTime() 
+        {
+            return SolverTempVars.t;
+        }
         bool AddBlock(Block &blk);
         bool AddSource(Source &src);
         bool AddLink(Link &lnk, const string &source, const string &destination);

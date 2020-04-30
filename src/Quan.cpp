@@ -359,6 +359,15 @@ double Quan::GetVal(const Expression::timing &tmg)
         return _val_star;
 }
 
+CTimeSeries* Quan::GetTimeSeries()
+{
+    if (_timeseries.n != 0)
+        return &_timeseries;
+    else
+        return nullptr;
+
+}
+
 double Quan::CalcVal(const Expression::timing &tmg)
 {
 

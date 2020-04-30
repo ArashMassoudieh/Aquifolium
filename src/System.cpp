@@ -18,6 +18,7 @@
 System::System():Object::Object()
 {
    PopulateOperatorsFunctions();
+   Object::AssignRandomPrimaryKey();
 }
 
 void System::PopulateOperatorsFunctions()
@@ -82,6 +83,7 @@ System::System(const System& other):Object::Object(other)
     Settings = other.Settings;
 
     SetAllParents();
+    Object::AssignRandomPrimaryKey();
 }
 
 System& System::operator=(const System& rhs)
@@ -103,6 +105,7 @@ System& System::operator=(const System& rhs)
     Settings = rhs.Settings;
     SetAllParents();
     PopulateOperatorsFunctions();
+    Object::AssignRandomPrimaryKey();
     return *this;
 }
 
@@ -369,6 +372,7 @@ bool System::Solve(bool applyparameters)
             {
                 rtw->SetProgress((SolverTempVars.t-SimulationParameters.tstart)/(SimulationParameters.tend-SimulationParameters.tstart));
                 rtw->AddDataPoint(SolverTempVars.t,SolverTempVars.dt);
+                QCoreApplication::processEvents();
             }
 #endif
         }
@@ -380,6 +384,7 @@ bool System::Solve(bool applyparameters)
         rtw->SetProgress(1);
         rtw->AddDataPoint(SolverTempVars.t,SolverTempVars.dt);
         rtw->AppendText("Simulation finished!" + QTime::currentTime().toString(Qt::RFC2822Date) + "!");
+        QCoreApplication::processEvents();
     }
 #endif
 
@@ -596,6 +601,7 @@ void System::SetOutputItems()
 bool System::TransferResultsFrom(System *other)
 {
     Outputs = other->Outputs;
+    return true; 
 }
 
 void System::PopulateOutputs()
@@ -1150,17 +1156,25 @@ bool System::ApplyParameters()
 void System::SetAllParents()
 {
     SetVariableParents();
-    for (unsigned int i=0; i<links.size(); i++)
-        links[i].SetAllParents();
+    for (unsigned int i = 0; i < links.size(); i++)
+        links[i].SetParent(this);
 
-    for (unsigned int i=0; i<blocks.size(); i++)
-        blocks[i].SetAllParents();
+    for (unsigned int i = 0; i < blocks.size(); i++)
+        blocks[i].SetParent(this);
 
-    for (unsigned int i=0; i<sources.size(); i++)
-        sources[i].SetAllParents();
-
-    for (unsigned int i=0; i<objective_function_set.size(); i++)
+    for (unsigned int i = 0; i < sources.size(); i++)
+        sources[i].SetParent(this);
+    for (unsigned int i = 0; i < objective_function_set.size(); i++)
+    {
+        objective_function_set[i]->SetParent(this);
         objective_function_set[i]->SetSystem(this);
+    }
+    for (unsigned int i = 0; i < ParametersCount(); i++)
+    {
+        Parameters()[i]->SetParent(this);
+        //Parameters()[i]->SetSystem(this);
+    }
+
 }
 
 bool System::Echo(const string &obj, const string &quant, const string &feature)
@@ -1320,7 +1334,7 @@ bool System::SavetoScriptFile(const string &filename, const string &templatefile
     fstream file(filename,ios_base::out);
     if (templatefilename!="")
     {
-        file << "loadtemplate; filename = " << templatefilename << endl;
+        file << "loadtemplate; filename = " << templatefilename << std::endl;
     }
 
     for (unsigned int i=0; i<Settings.size(); i++)
@@ -1366,10 +1380,11 @@ System::System(Script& scr)
     }
     PopulateOperatorsFunctions();
     SetVariableParents();
+    Object::AssignRandomPrimaryKey();
 
 }
 
-void System::CreateFromScript(Script& scr)
+void System::CreateFromScript(Script& scr, const string& settingsfilename)
 {
     for (int i=0; i<scr.CommandsCount(); i++)
     {
@@ -1377,6 +1392,11 @@ void System::CreateFromScript(Script& scr)
         {
             errorhandler.Append("","Script","CreateSystem",scr[i]->LastError(),6001);
             scr.Errors().push_back(scr[i]->LastError());
+        }
+        if (scr[i]->Keyword() == "loadtemplate")
+        {
+            if (settingsfilename!="")
+                ReadSystemSettingsTemplate(settingsfilename);
         }
     }
     PopulateOperatorsFunctions();

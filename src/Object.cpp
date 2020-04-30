@@ -339,7 +339,6 @@ void Object::ShowMessage(const string &msg) {if (!parent->IsSilent()) cout<<msg<
 void Object::SetAllParents()
 {
     var.SetParent(this);
-
 }
 
 bool Object::SetProperty(const string &prop, const string &value)

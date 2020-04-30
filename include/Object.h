@@ -26,7 +26,10 @@ class Object
         bool SetVal(const string& s, double value, const Expression::timing &tmg = Expression::timing::both);
         bool SetVal(const string& s, const string & value, const Expression::timing &tmg = Expression::timing::both);
         double GetProperty(const string&);
-        System *GetParent() const {return parent;}
+        System *GetParent() const 
+        {
+            return parent;
+        }
         string GetName() const;
         void SetDefaults();
         bool SetName(const string &_name, bool setprop=true);

@@ -34,6 +34,7 @@ class Quan
         double CalcVal(Object *, const Expression::timing &tmg=Expression::timing::past);
         double CalcVal(const Expression::timing &tmg=Expression::timing::past);
         double GetVal(const Expression::timing &tmg=Expression::timing::past);
+		CTimeSeries* GetTimeSeries();
         string last_error;
         void SetType(const _type &t) {type = t;}
         _type GetType() {return type;}
