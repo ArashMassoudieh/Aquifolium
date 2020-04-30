@@ -331,7 +331,7 @@ bool System::Solve(bool applyparameters)
         rtw->SetYRange(0,SimulationParameters.dt0*10);
     }
 #endif
-
+    CalculateAllExpressions(Expression::timing::past);
     while (SolverTempVars.t<SimulationParameters.tend+SolverTempVars.dt)
     {
 		cout << "\r Simulation Time: " + aquiutils::numbertostring(SolverTempVars.t);
@@ -800,12 +800,33 @@ void System::SetStateVariables(const string &variable, CVector_arma &X, const Ex
     }
 }
 
+void System::CalculateAllExpressions(Expression::timing tmg)
+{
+    for (unsigned int i=0; i<blocks.size(); i++)
+    {
+        for (map<string, Quan>::iterator it = blocks[i].GetVars()->begin(); it!=blocks[i].GetVars()->end(); it++)
+        {
+            if (it->second.GetType() == Quan::_type::expression)
+                it->second.SetVal(it->second.CalcVal(tmg),tmg);
+        }
+    }
+
+    for (unsigned int i=0; i<links.size(); i++)
+    {
+        for (map<string, Quan>::iterator it = links[i].GetVars()->begin(); it!=links[i].GetVars()->end(); it++)
+        {
+            if (it->second.GetType() == Quan::_type::expression)
+                it->second.SetVal(it->second.CalcVal(tmg),tmg);
+        }
+    }
+}
 
 CVector_arma System::GetResiduals(const string &variable, CVector_arma &X)
 {
     CVector_arma F(blocks.size());
     SetStateVariables(variable,X,Expression::timing::present);
-    CalculateFlows(Variable(variable)->GetCorrespondingFlowVar(),Expression::timing::present);
+    CalculateAllExpressions();
+    //CalculateFlows(Variable(variable)->GetCorrespondingFlowVar(),Expression::timing::present);
 
     for (unsigned int i=0; i<blocks.size(); i++)
     {

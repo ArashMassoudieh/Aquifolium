@@ -272,6 +272,7 @@ class System: public Object
         bool silent;
         _directories paths;
         vector<CTimeSeries*> alltimeseries;
+        void CalculateAllExpressions(Expression::timing tmg = Expression::timing::present);
         void SetNumberOfStateVariables(unsigned int n)
 		{
 			SolverTempVars.fail_reason.resize(n);
