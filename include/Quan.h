@@ -92,6 +92,7 @@ class Quan
         string GetOutputItem() { return OutputItem; }
         void SetParameterAssignedTo(const string &s) {_parameterassignedto=s;}
         string GetParameterAssignedTo() {return _parameterassignedto;}
+        bool Validate();
     protected:
 
     private:

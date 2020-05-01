@@ -3,6 +3,7 @@
 #include "Link.h"
 #include "System.h"
 #include "Precipitation.h"
+#include "Expression.h"
 
 
 Quan::Quan()
@@ -703,4 +704,11 @@ string Quan::toCommand()
     string s;
     s += GetName() + "=" + GetProperty();
     return s;
+}
+
+bool Quan::Validate()
+{
+    vector<string> s = aquiutils::split(criteria,'<');
+
+    return true;
 }
