@@ -444,6 +444,8 @@ string tostring(const Quan::_type &typ)
 
 bool Quan::SetVal(const double &v, const Expression::timing &tmg)
 {
+    double past_val = _val;
+    double past_val_star = _val;
     if (tmg == Expression::timing::past)
         _val = v;
     else if (tmg == Expression::timing::present)
@@ -452,6 +454,18 @@ bool Quan::SetVal(const double &v, const Expression::timing &tmg)
     {
         _val = v;
         _val_star = v;
+        if (HasCriteria() && parent != nullptr)
+        {
+            bool validate = Criteria().calc(parent, tmg);
+            if (!validate)
+            {
+                AppendError(parent->GetName(), "Quan", "SetVal", warning_message, 8012);
+                _val = past_val;
+                _val_star = past_val_star;
+                return false; 
+            }
+
+        }
     }
 	return true;
 }
@@ -708,7 +722,7 @@ string Quan::toCommand()
 
 bool Quan::Validate()
 {
-    vector<string> s = aquiutils::split(criteria,'<');
+    
 
     return true;
 }

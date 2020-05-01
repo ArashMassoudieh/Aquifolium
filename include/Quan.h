@@ -5,6 +5,7 @@
 #include "Rule.h"
 #include "BTC.h"
 #include <json/json.h>
+#include "Condition.h"
 
 #ifdef Q_version
 #include <qjsonobject.h>
@@ -77,7 +78,7 @@ class Quan
         string &Abbreviation() {return abbreviation;}
         string &WarningError() {return warning_error;}
         string &WarningMessage() {return warning_message;}
-        string &Criteria () {return criteria;}
+        Condition &Criteria () {return criteria;}
         string &InputType() {return input_type;}
 		string ToString(int _tabs=1);
         bool &AskFromUser() {return ask_from_user;}
@@ -93,6 +94,7 @@ class Quan
         void SetParameterAssignedTo(const string &s) {_parameterassignedto=s;}
         string GetParameterAssignedTo() {return _parameterassignedto;}
         bool Validate();
+        bool HasCriteria() { if (criteria.Count() > 0) return true; else return false; }
     protected:
 
     private:
@@ -125,7 +127,7 @@ class Quan
         bool experiment_dependent = false;
         string description_code;
         string abbreviation;
-        string criteria;
+        Condition criteria;
         string warning_error;
         string warning_message;
         bool ask_from_user=false;
