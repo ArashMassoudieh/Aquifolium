@@ -25,7 +25,7 @@ class Object
         bool HasQuantity(const string &q);
         bool SetVal(const string& s, double value, const Expression::timing &tmg = Expression::timing::both);
         bool SetVal(const string& s, const string & value, const Expression::timing &tmg = Expression::timing::both);
-        double GetProperty(const string&);
+        double GetProperty(const string& s) { if (Variable(s) != nullptr) Variable(s)->GetVal(); else return 0; }
         System *GetParent() const 
         {
             return parent;
