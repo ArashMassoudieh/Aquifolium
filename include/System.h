@@ -112,7 +112,7 @@ class System: public Object
         {
             return SolverTempVars.t;
         }
-        bool AddBlock(Block &blk);
+        bool AddBlock(Block &blk, bool SetQuantities=true);
         bool AddSource(Source &src);
         bool AddLink(Link &lnk, const string &source, const string &destination);
         Block *block(const string &s);

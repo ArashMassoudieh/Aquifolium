@@ -51,6 +51,12 @@ double Block::GetInflowValue(const string &variable, const Expression::timing &t
 
 bool Block::deletelinkstofrom(const string& linkname)
 {
+    if (linkname == "_all")
+    {
+        links_from.clear();
+        links_to.clear();
+        return true; 
+    }
     for (unsigned int i = 0; i < links_from.size(); i++)
         if (links_from[i]->GetName() == linkname)
         {

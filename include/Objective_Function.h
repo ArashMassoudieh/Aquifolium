@@ -43,8 +43,8 @@ class Objective_Function: public Object
         System *system; // pointer to the system the objective function is evaluated at
         string lasterror;
         objfunctype type = objfunctype::Integrate;
-        double current_value;
-        string outputitem; 
+        double current_value=0;
+        string outputitem=""; 
          //the last error that occurred
 };
 
