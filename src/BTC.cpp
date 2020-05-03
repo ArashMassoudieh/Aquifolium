@@ -864,6 +864,17 @@ double CTimeSeries::integrate()
 	return sum;
 }
 
+double CTimeSeries::variance()
+{
+	double sum = 0;
+	double mean = average(); 
+	for (int i = 1; i < n; i++)
+	{
+		sum += pow((C[i] + C[i - 1]) / 2.0 - mean, 2) * (t[i] - t[i - 1]);
+	}
+	return sum/(t[n-1]-t[0]);
+}
+
 double CTimeSeries::integrate(double tt)
 {
 	double sum = 0;

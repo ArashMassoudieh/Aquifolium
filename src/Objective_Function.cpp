@@ -58,6 +58,8 @@ bool Objective_Function::SetProperty(const string &prop, const string &val)
     {
         if (aquiutils::tolower(val)=="integrate") {type = objfunctype::Integrate;}
         if (aquiutils::tolower(val)=="value") {type = objfunctype::Value;}
+        if (aquiutils::tolower(val) == "maximum") { type = objfunctype::Maximum; }
+        if (aquiutils::tolower(val) == "variance") { type = objfunctype::Variance; }
         lasterror = "Type '" + val + "' was not recognized!";
     }
     return Object::SetProperty(prop,val);
@@ -101,10 +103,14 @@ vector<string> Objective_Function::ItemswithOutput()
 
 double Objective_Function::GetObjective()
 {
-    if (type==objfunctype::Integrate)
+    if (type == objfunctype::Integrate)
         return stored_time_series.integrate();
-    else if (type==objfunctype::Value)
+    else if (type == objfunctype::Value)
         return GetValue(Expression::timing::present);
+    else if (type == objfunctype::Maximum)
+        return stored_time_series.maxC();
+    else if (type == objfunctype::Variance)
+        return stored_time_series.variance(); 
     else
         return 0;
 }

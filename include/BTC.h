@@ -60,6 +60,7 @@ public:
 	double std(int nlimit); // standard deviation of the data after excluding "limit" data points
 	double mean_log(int limit); //mean of log transformed data after excluding "limit" data points
 	double integrate(); // integral of the time series
+	double variance(); //calculates the variance of the value of the timeseries
 	double integrate(double t); //integral from the begining to time t
 	double integrate(double t1, double t2); //integral between time t1 and t2
 	int lookupt(double t); // finds the index of the datapoint with time t

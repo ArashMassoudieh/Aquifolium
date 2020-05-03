@@ -5,7 +5,7 @@
 #include "BTC.h"
 #include "Object.h"
 
-enum class objfunctype {Integrate, Value};
+enum class objfunctype {Integrate, Value, Maximum, Variance};
 
 class System;
 
