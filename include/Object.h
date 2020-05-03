@@ -89,6 +89,7 @@ class Object
         vector<string> quantitative_variable_list() {return var.quantitative_variable_list();}
         vector<string> *operators();
         vector<string> *functions();
+        string lasterror() {return last_error;}
     protected:
 
     private:
