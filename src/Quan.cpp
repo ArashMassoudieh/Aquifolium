@@ -726,3 +726,14 @@ bool Quan::Validate()
 
     return true;
 }
+
+vector<string> Quan::GetAllRequieredStartingBlockProperties()
+{
+    return _expression.GetAllRequieredStartingBlockProperties();
+
+}
+
+vector<string> Quan::GetAllRequieredEndingBlockProperties()
+{
+    return _expression.GetAllRequieredEndingBlockProperties();
+}

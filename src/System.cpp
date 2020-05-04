@@ -130,6 +130,10 @@ bool System::AddSource(Source &src)
 
 bool System::AddLink(Link &lnk, const string &source, const string &destination)
 {
+    if (!VerifyAsDestination(block(destination), &lnk))
+        return false; 
+    if (!VerifyAsSource(block(source), &lnk))
+        return false;
     links.push_back(lnk);
     link(lnk.GetName())->SetParent(this);
     link(lnk.GetName())->SetConnectedBlock(Expression::loc::source, source);
@@ -1093,8 +1097,8 @@ bool System::SetAsParameter(const string &location, const string &quantity, cons
     {
         if (!block(location)->HasQuantity(quantity))
         {
-            last_error = "In block" + location + ": variable " + quantity + " does not exist";
-            errorhandler.Append(GetName(),"System","SetAsParameter",last_error, 604);
+            lasterror() = "In block" + location + ": variable " + quantity + " does not exist";
+            errorhandler.Append(GetName(),"System","SetAsParameter",lasterror(), 604);
             return false;
         }
         else
@@ -1445,7 +1449,7 @@ bool System::ReadSystemSettingsTemplate(const string &filename)
         //for some reason it always fails to parse
         std::cout << "Failed to parse configuration\n"
             << reader.getFormattedErrorMessages();
-        last_error = "Failed to parse configuration\n";
+        lasterror() = "Failed to parse configuration\n";
     }
 
     Settings.clear();
@@ -1513,6 +1517,36 @@ bool System::Delete(const string& objectname)
     errorhandler.Append(GetName(),"System","object","Object '" + objectname + "' was not found",105);
 
     return false;
+
+}
+
+bool System::VerifyAsSource(Block* blk, Link* lnk)
+{
+    for (unsigned int i = 0; i < lnk->GetAllRequieredStartingBlockProperties().size(); i++)
+    {
+        if (!blk->HasQuantity(lnk->GetAllRequieredStartingBlockProperties()[i]))
+        {
+            errorhandler.Append(lnk->GetName(), "System", "VerifyAsSource", "The source block must have a '" + lnk->GetAllRequieredStartingBlockProperties()[i] + "' property",106);
+            lasterror() = "The source block must have a '" + lnk->GetAllRequieredStartingBlockProperties()[i] + "' property";
+            return false; 
+        }
+    }
+    return true; 
+}
+
+
+bool System::VerifyAsDestination(Block* blk, Link* lnk)
+{
+    for (unsigned int i = 0; i < lnk->GetAllRequieredDestinationBlockProperties().size(); i++)
+    {
+        if (!blk->HasQuantity(lnk->GetAllRequieredDestinationBlockProperties()[i]))
+        {
+            errorhandler.Append(lnk->GetName(), "System", "VerifyAsSource", "The destination block must have a '" + lnk->GetAllRequieredStartingBlockProperties()[i] + "' property", 106);
+            lasterror() = "The destination block must have a '" + lnk->GetAllRequieredStartingBlockProperties()[i] + "' property";
+            return false;
+        }
+    }
+    return true;
 
 }
 

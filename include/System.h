@@ -226,6 +226,8 @@ class System: public Object
         bool SetSystemSettingsObjectProperties(const string &s, const string &val);
         bool Delete(const string& objectname);
         void PopulateOperatorsFunctions();
+        bool VerifyAsSource(Block* blk, Link* lnk);
+        bool VerifyAsDestination(Block* blk, Link* lnk);
 #if defined(QT_version)
         logWindow *LogWindow() {return logwindow;}
         void SetLogWindow(logWindow *lgwnd) {logwindow=lgwnd;}
@@ -250,7 +252,6 @@ class System: public Object
         vector<Link> links;
         vector<Source> sources;
         vector<Object> Settings;
-        string last_error;
         MetaModel metamodel;
         CVector_arma GetResiduals(const string &variable, CVector_arma &X);
         CVector_arma CalcStateVariables(const string &variable, const Expression::timing &tmg = Expression::timing::past);

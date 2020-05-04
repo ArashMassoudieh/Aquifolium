@@ -27,6 +27,8 @@ class Link: public Object
             return nullptr;
         };
         string toCommand();
+        vector<string> GetAllRequieredStartingBlockProperties(); 
+        vector<string> GetAllRequieredDestinationBlockProperties();
     protected:
 
     private:

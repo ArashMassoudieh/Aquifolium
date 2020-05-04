@@ -41,6 +41,8 @@ class Expression
         int count_operators(const string &s);
         enum loc {self, source, destination};
         string ToString();
+		vector<string> GetAllRequieredStartingBlockProperties();
+		vector<string> GetAllRequieredEndingBlockProperties();
     protected:
 
     private:

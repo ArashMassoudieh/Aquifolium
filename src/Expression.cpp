@@ -1043,5 +1043,46 @@ string aquiutils::remove_backslash_r(const string &ss)
 
 }
 
+vector<string> Expression::GetAllRequieredStartingBlockProperties()
+{
+	vector<string> s; 
+	if (param_constant_expression == "parameter")
+	{
+		if (location == loc::source)
+			s.push_back(parameter);
+		return s; 
+	}
+	if (param_constant_expression == "expression")
+	{
+		for (unsigned int i = 0; i < terms.size(); i++)
+		{
+			for (unsigned int j = 0; j < terms[i].GetAllRequieredStartingBlockProperties().size(); j++)
+				s.push_back(terms[i].GetAllRequieredStartingBlockProperties()[j]);
+		}
+		return s; 
+	}
+	return s; 
+}
+vector<string> Expression::GetAllRequieredEndingBlockProperties()
+{
+	vector<string> s;
+	if (param_constant_expression == "parameter")
+	{
+		if (location == loc::destination)
+			s.push_back(parameter);
+		return s;
+	}
+	if (param_constant_expression == "expression")
+	{
+		for (unsigned int i = 0; i < terms.size(); i++)
+		{
+			for (unsigned int j = 0; j < terms[i].GetAllRequieredEndingBlockProperties().size(); j++)
+				s.push_back(terms[i].GetAllRequieredEndingBlockProperties()[j]);
+		}
+		return s;
+	}
+	return s;
+}
+
 
 
