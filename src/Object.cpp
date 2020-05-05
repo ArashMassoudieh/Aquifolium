@@ -1,6 +1,7 @@
 #include "Object.h"
 #include "System.h"
 #include <string>
+#include <qdebug.h>
 
 Object::Object()
 {
@@ -155,8 +156,12 @@ void Object::SetDefaults()
 {
     for (map<string, Quan>::const_iterator s = var.begin(); s != var.end(); ++s)
     {
-        if (var[s->first].Default()!="")
+        //qDebug() << "Setting Defults for variable " << QString::fromStdString(s->first);
+        if (var[s->first].Default() != "")
+        {
             var[s->first].SetProperty(var[s->first].Default().c_str());
+            //qDebug() << "Default Value was set to " << QString::fromStdString(var[s->first].Default()); 
+        }
     }
 }
 
@@ -270,6 +275,7 @@ Quan* Object::Variable(const string &s)
 {
     if (var.Count(s)==0)
     {
+        //qDebug() << QString::fromStdString("In '" + name + "': " + "Variable '" + s + "' does not exist!"); 
 #ifdef Debug_mode
 		ShowMessage("In '" + name + "': " + "Variable '" + s + "' does not exist!");
 #endif

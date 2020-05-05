@@ -6,6 +6,7 @@
 #include <map>
 #include "Quan.h"
 #include "MetaModel.h"
+#include <qdebug.h>
 
 using namespace std;
 
@@ -25,7 +26,18 @@ class Object
         bool HasQuantity(const string &q);
         bool SetVal(const string& s, double value, const Expression::timing &tmg = Expression::timing::both);
         bool SetVal(const string& s, const string & value, const Expression::timing &tmg = Expression::timing::both);
-        double GetProperty(const string& s) { if (Variable(s) != nullptr) Variable(s)->GetVal(); else return 0; }
+        double GetProperty(const string& s) { 
+            if (Variable(s) != nullptr)
+            {
+                return Variable(s)->GetVal();
+                //qDebug() << QString::fromStdString(s) << ": " << var.GetVar(s).GetVal();
+            }
+            else
+            {
+                //qDebug() << "NullPtr";
+                return 0;
+            }
+        }
         System *GetParent() const 
         {
             return parent;

@@ -114,7 +114,8 @@ bool System::AddBlock(Block &blk, bool SetQuantities)
 {
     blocks.push_back(blk);
     block(blk.GetName())->SetParent(this);
-    if (SetQuantities) block(blk.GetName())->SetQuantities(metamodel, blk.GetType());
+    if (SetQuantities) 
+        block(blk.GetName())->SetQuantities(metamodel, blk.GetType());
     block(blk.GetName())->SetParent(this);
 	return true;
 }
