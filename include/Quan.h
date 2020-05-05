@@ -95,8 +95,8 @@ class Quan
         string GetParameterAssignedTo() {return _parameterassignedto;}
         bool Validate();
         bool HasCriteria() { if (criteria.Count() > 0) return true; else return false; }
-        vector<string> Quan::GetAllRequieredStartingBlockProperties();
-            vector<string> Quan::GetAllRequieredEndingBlockProperties();
+        vector<string> GetAllRequieredStartingBlockProperties();
+        vector<string> GetAllRequieredEndingBlockProperties();
     protected:
 
     private:
