@@ -84,7 +84,7 @@ Expression::Expression(string S)
 			//	terms.append(CExpression("0"));
 			if (aquiutils::lookup(funcs, aquiutils::left(S,4))!=-1)
 			{
-				function = aquiutils::right(aquiutils::left(S,4),3);
+                //function = aquiutils::right(aquiutils::left(S,4),3);
 			}
 
 		}
@@ -114,7 +114,7 @@ Expression::Expression(string S)
 						Expression sub_exp = Expression(aquiutils::trim(S.substr(last_operator_location+1, i -1- last_operator_location)));
 						if (sub_exp.text != "")
 						{
-							if (operators.size() > 1)
+                            if (operators.size() > 1 && terms.size()==0)
 								sub_exp.sign = operators[operators.size() - 2];
 							else
 								sub_exp.sign = "+";
@@ -365,13 +365,26 @@ double Expression::calc(Object *W, const timing &tmg, bool limit)
 				oprt(operators[i], i, i + 1, W, tmg,limit);
 			}
 		}
+        unsigned int seploc=0;
+        for (int i = operators.size() - 1; i >= 0; i--)
+        {
+            if (operators[i] == ";")
+            {
+                seploc = i;
+                if (i==0)
+                    term_vals[0] = terms[0].calc(W,tmg,limit);
+                if (i==operators.size()-1)
+                    term_vals[i+1] = terms[i+1].calc(W,tmg,limit);
+
+            }
+        }
 
 		if (function == "")
 			return term_vals[0];
 		else if (count_operators(";")==0)
 			return func(function, term_vals[0]);
 		else if (count_operators(";")==1)
-			return func(function, term_vals[0], term_vals[1]);
+            return func(function, term_vals[seploc], term_vals[seploc+1]);
         else if (count_operators(";")==2)
             return func(function, term_vals[0], term_vals[1], term_vals[2]);
 	}
