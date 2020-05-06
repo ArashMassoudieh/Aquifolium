@@ -114,7 +114,7 @@ Expression::Expression(string S)
 						Expression sub_exp = Expression(aquiutils::trim(S.substr(last_operator_location+1, i -1- last_operator_location)));
 						if (sub_exp.text != "")
 						{
-                            if (operators.size() > 1 && terms.size()==0)
+                            if (operators.size() > 1)
 								sub_exp.sign = operators[operators.size() - 2];
 							else
 								sub_exp.sign = "+";
@@ -438,11 +438,16 @@ double Expression::func(string &f, double cond, double val1, double val2)
 
 double Expression::oprt(string &f, double val1, double val2)
 {
-	if (f == "^") return pow(val1, val2);
-	if (f == "+") return val1 + val2;
-	if (f == "-") return val1 + val2;
-	if (f == "/") return val1 * val2;
-	if (f == "*") return val1*val2;
+    if (f == "^") return
+        pow(val1, val2);
+    if (f == "+") return
+        val1 + val2;
+    if (f == "-") return
+        val1 + val2;
+    if (f == "/") return
+        val1 * val2;
+    if (f == "*") return
+        val1*val2;
 	return 0;
 }
 
@@ -492,8 +497,12 @@ double Expression::oprt(string &f, unsigned int i1, unsigned int i2, Object *W, 
 	}
 
 	for (unsigned int j = 0; j<sources[i1].size(); j++)
-		term_vals[sources[i1][j]] = oprt(f, val1, val2);
-
+    {
+        if (f=="^" && terms[i1].sign == "-")
+            term_vals[sources[i1][j]] = -oprt(f, -val1, val2);
+        else
+            term_vals[sources[i1][j]] = oprt(f, val1, val2);
+    }
 	terms_calculated[i1] = true;
 	terms_calculated[i2] = true;
 
