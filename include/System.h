@@ -169,6 +169,7 @@ class System: public Object
         int blockid(const string &s);
         int linkid(const string &s);
         bool GetQuanTemplate(const string &filename);
+        bool AppendQuanTemplate(const string &filename);
         void CopyQuansToMembers();
         double &dt() {return SolverTempVars.dt;}
         double &tend() {return SimulationParameters.tend;}
@@ -187,10 +188,11 @@ class System: public Object
 		vector<string> GetAllTypesOf(const string& type);
         void SetVariableParents();
         MetaModel *GetMetaModel() {return  &metamodel;}
-        QuanSet* GetModel(const string &type) {return metamodel[type];}
+        QuanSet* GetModel(const string &type) {if (metamodel.Count(type)==1) return metamodel[type]; else return nullptr;}
         void clear();
         int lookup_observation(const string &s) {return 0;}
         int EpochCount() {return SolverTempVars.epoch_count;}
+        ErrorHandler *GetErrorHandler() {return &errorhandler;}
  //Objective Functions
         void AppendObjectiveFunction(const string &name, const Objective_Function&, double weight=1);
         bool AppendObjectiveFunction(const string &name, const string &location, const Expression &exp, double weight=1);
@@ -220,7 +222,7 @@ class System: public Object
         vector<CTimeSeries*> TimeSeries();
         double GetMinimumNextTimeStepSize();
         Object *GetObjectBasedOnPrimaryKey(const string &s);
-        bool SavetoScriptFile(const string &filename, const string &templatefilename="");
+        bool SavetoScriptFile(const string &filename, const string &templatefilename="", const vector<string> addedtemplates = vector<string>());
         bool ReadSystemSettingsTemplate(const string &filename);
         void SetSystemSettings();
         bool SetSystemSettingsObjectProperties(const string &s, const string &val);
@@ -268,6 +270,7 @@ class System: public Object
         void InitiateOutputs();
         void PopulateOutputs();
         void TransferQuantitiesFromMetaModel();
+        void AppendQuantitiesFromMetaModel();
         Objective_Function_Set objective_function_set;
         Parameter_Set parameter_set;
         bool silent;

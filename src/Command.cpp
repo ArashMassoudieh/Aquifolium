@@ -29,7 +29,7 @@ Command::Command(const string &s, Script *parnt)
         }
     }
     vector<string> maincommand = aquiutils::split(firstlevelbreakup[0],' ');
-    if (aquiutils::tolower(maincommand[0])=="loadtemplate" || aquiutils::tolower(maincommand[0])=="setasparameter" || aquiutils::tolower(maincommand[0])=="setvalue" || aquiutils::tolower(maincommand[0])=="solve" || aquiutils::tolower(maincommand[0])=="optimize")
+    if (aquiutils::tolower(maincommand[0])=="loadtemplate" || aquiutils::tolower(maincommand[0])=="addtemplate" || aquiutils::tolower(maincommand[0])=="setasparameter" || aquiutils::tolower(maincommand[0])=="setvalue" || aquiutils::tolower(maincommand[0])=="solve" || aquiutils::tolower(maincommand[0])=="optimize")
     {
         if (maincommand.size()!=1)
             {
@@ -164,6 +164,20 @@ bool Command::Execute(System *_sys)
             sys->clear();
             sys->GetMetaModel()->Clear();
             if (sys->GetQuanTemplate(assignments["filename"]))
+                return true;
+            else
+            {
+                last_error = "File '" + assignments["filename"] + "' was not found!";
+            }
+        }
+        else
+            return false;
+    }
+    if (aquiutils::tolower(keyword) == "addtemplate")
+    {
+        if (Validate())
+        {
+            if (sys->AppendQuanTemplate(assignments["filename"]))
                 return true;
             else
             {
@@ -399,11 +413,17 @@ bool Command::Execute(System *_sys)
 
     if (aquiutils::tolower(keyword)=="create")
     {
+        if (sys->GetModel(assignments["type"])==nullptr)
+        {
+            sys->GetErrorHandler()->Append("system","command","Execute","Type '" + assignments["type"] + "' does not exist!",11234);
+            return false;
+        }
         if (aquiutils::tolower(arguments[0])=="block")
         {
             if (Validate())
             {
                 Block B;
+
                 B.SetName(assignments["name"]);
                 B.SetType(assignments["type"]);
                 sys->AddBlock(B);

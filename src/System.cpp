@@ -279,6 +279,14 @@ bool System::GetQuanTemplate(const string &filename)
     return true;
 }
 
+bool System::AppendQuanTemplate(const string &filename)
+{
+    metamodel.AppendFromJsonFile(filename);
+    TransferQuantitiesFromMetaModel();
+    return true;
+}
+
+
 void System::CopyQuansToMembers()
 {
     for (unsigned int i=0; i<blocks.size(); i++)
@@ -1028,6 +1036,16 @@ void System::TransferQuantitiesFromMetaModel()
         GetVars()->Append(it->second);
 }
 
+void System::AppendQuantitiesFromMetaModel()
+{
+    for (map<string, QuanSet>::iterator it = metamodel.GetMetaModel()->begin(); it != metamodel.GetMetaModel()->end(); it++)
+    {
+        if (Variable(it->first)==nullptr)
+            GetVars()->Append(it->second);
+    }
+}
+
+
 void System::AppendObjectiveFunction(const string &name, const Objective_Function &obj, double weight)
 {
     objective_function_set.Append(name,obj, weight);
@@ -1355,13 +1373,18 @@ QStringList System::QGetAllObjectsofTypeCategory(QString _type)
 #endif // Qt_version
 
 
-bool System::SavetoScriptFile(const string &filename, const string &templatefilename)
+bool System::SavetoScriptFile(const string &filename, const string &templatefilename, const vector<string> addedtemplates)
 {
 
     fstream file(filename,ios_base::out);
     if (templatefilename!="")
     {
         file << "loadtemplate; filename = " << templatefilename << std::endl;
+    }
+
+    for (int i=0; i<addedtemplates.size();i++)
+    {
+        file << "addtemplate; filename = " << addedtemplates[i] << std::endl;
     }
 
     for (unsigned int i=0; i<Settings.size(); i++)

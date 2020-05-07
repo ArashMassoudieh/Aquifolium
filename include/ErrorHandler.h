@@ -30,6 +30,22 @@ class ErrorHandler
         ErrorHandler& operator=(const ErrorHandler& other);
         void Write(const string &filename);
         bool Append(const _error &err) {errors.push_back(err); return false;}
+        int Count() {return errors.size();}
+        _error* operator[](int i)
+        {
+            if (i>=Count())
+                return nullptr;
+            else
+                return &errors[i];
+        }
+        _error* at(int i)
+        {
+            if (i>=Count())
+                return nullptr;
+            else
+                return &errors[i];
+        }
+        void clear() {errors.clear();}
         bool Append(const string &objectname, const string &cls, const string &funct, const string &description, const int &code)
         {
             _error err;

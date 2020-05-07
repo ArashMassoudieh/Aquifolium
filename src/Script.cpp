@@ -83,6 +83,9 @@ void Script::FillMustBeSpecified()
     mustbespecifiedatcreation["loadtemplate"] = map<string, vector<string>>();
         mustbespecifiedatcreation["loadtemplate"]["*"] = vector<string>();
             mustbespecifiedatcreation["loadtemplate"]["*"].push_back("filename");
+    mustbespecifiedatcreation["addtemplate"] = map<string, vector<string>>();
+        mustbespecifiedatcreation["addtemplate"]["*"] = vector<string>();
+            mustbespecifiedatcreation["addtemplate"]["*"].push_back("filename");
     mustbespecifiedatcreation["setasparameter"] = map<string, vector<string>>();
         mustbespecifiedatcreation["setasparameter"]["*"] = vector<string>();
             mustbespecifiedatcreation["setasparameter"]["*"].push_back("object");
