@@ -722,9 +722,7 @@ string Quan::toCommand()
 
 bool Quan::Validate()
 {
-    
-
-    return true;
+    return Criteria().calc(parent, Expression::timing::both);
 }
 
 vector<string> Quan::GetAllRequieredStartingBlockProperties()

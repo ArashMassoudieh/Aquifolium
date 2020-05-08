@@ -286,6 +286,17 @@ Quan* Object::Variable(const string &s)
         return &var[s];
 }
 
+void Object::VerifyQuans(ErrorHandler *errorhandler)
+{
+    for (map<string,Quan>::iterator it = var.begin(); it!=var.end(); it++)
+    {
+        if (!it->second.Validate())
+        {
+            errorhandler->Append(GetName(),"Object","VerifyQuans","In object '" + GetName() + "', " + it->second.WarningMessage(),14001);
+        }
+    }
+}
+
 bool Object::HasQuantity(const string &q)
 {
     if (var.Count(q)==0)

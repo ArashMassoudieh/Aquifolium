@@ -252,6 +252,30 @@ Object *System::object(const string &s)
     return nullptr;
 }
 
+ErrorHandler System::VerifyAllQuantities()
+{
+    ErrorHandler errs;
+    for (unsigned int i=0; i<Settings.size(); i++)
+        Settings[i].VerifyQuans(&errs);
+
+    for (unsigned int i=0; i<links.size(); i++)
+        links[i].VerifyQuans(&errs);
+
+    for (unsigned int i=0; i<blocks.size(); i++)
+        blocks[i].VerifyQuans(&errs);
+
+    for (unsigned int i=0; i<sources.size(); i++)
+        sources[i].VerifyQuans(&errs);
+
+    for (unsigned int i=0; i<ParametersCount(); i++)
+        Parameters()[i]->VerifyQuans(&errs);
+
+    for (unsigned int i=0; i<ObjectiveFunctionsCount(); i++)
+        ObjectiveFunctions()[i]->VerifyQuans(&errs);
+
+    return errs;
+}
+
 Object *System::GetObjectBasedOnPrimaryKey(const string &s)
 {
     for (unsigned int i=0; i<links.size(); i++)

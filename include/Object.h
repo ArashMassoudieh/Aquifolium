@@ -7,6 +7,7 @@
 #include "Quan.h"
 #include "MetaModel.h"
 #include <qdebug.h>
+#include "ErrorHandler.h"
 
 using namespace std;
 
@@ -62,6 +63,7 @@ class Object
 		bool Renew(const string &variable);
 		bool Update(const string &variable);
 		bool CalcExpressions(const Expression::timing& tmg);
+        void VerifyQuans(ErrorHandler *errorhandler);
 		vector<CTimeSeries*> TimeSeries() {return var.TimeSeries();}
         string TypeCategory() {return GetVars()->CategoryType();}
 		QuanSet* GetVars()

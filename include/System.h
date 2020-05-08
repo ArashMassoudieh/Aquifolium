@@ -230,6 +230,7 @@ class System: public Object
         void PopulateOperatorsFunctions();
         bool VerifyAsSource(Block* blk, Link* lnk);
         bool VerifyAsDestination(Block* blk, Link* lnk);
+        ErrorHandler VerifyAllQuantities();
 #if defined(QT_version)
         logWindow *LogWindow() {return logwindow;}
         void SetLogWindow(logWindow *lgwnd) {logwindow=lgwnd;}
