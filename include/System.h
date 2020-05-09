@@ -245,6 +245,7 @@ class System: public Object
         vector<string> *operators;
         vector<string> *functions;
         void SetOutputItems();
+        vector<string> addedtemplates;
 #endif
 
     protected:

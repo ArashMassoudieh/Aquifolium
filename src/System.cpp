@@ -306,6 +306,7 @@ bool System::GetQuanTemplate(const string &filename)
 bool System::AppendQuanTemplate(const string &filename)
 {
     metamodel.AppendFromJsonFile(filename);
+    addedtemplates.push_back(filename);
     TransferQuantitiesFromMetaModel();
     return true;
 }

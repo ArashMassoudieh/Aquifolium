@@ -55,7 +55,7 @@ class Quan
         string GetCorrespondingInflowVar() {return corresponding_inflow_quan;}
         void SetMassBalance(bool on);
         void SetParent(Object *);
-        Quan *Corresponding_flow_variable;
+        Quan *Corresponding_flow_variable = nullptr;
 		void Renew();
 		void Update();
         void SetIncludeInOutput(bool x) {includeinoutput = x;}
@@ -103,10 +103,10 @@ class Quan
         Expression _expression;
         Rule _rule;
         CTimeSeries _timeseries;
-        Source *source;
+        Source *source = nullptr;
 		string sourcename = ""; 
 		string _var_name;
-		string _string_value; 
+		string _string_value = ""; 
         double _val=0;
         double _val_star=0;
         vector<double> _parameters;

@@ -347,7 +347,8 @@ void Object::SetVariableParents()
 	{
 		var[s->first].SetParent(this);
 		if (var[s->first].GetType() == Quan::_type::source)
-			var[s->first].SetProperty(var[s->first].SourceName());
+            if (var[s->first].SourceName() != "")
+			    var[s->first].SetProperty(var[s->first].SourceName());
 	}
 }
 
