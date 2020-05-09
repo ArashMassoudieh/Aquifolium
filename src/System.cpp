@@ -139,8 +139,8 @@ bool System::AddLink(Link &lnk, const string &source, const string &destination)
     link(lnk.GetName())->SetParent(this);
     link(lnk.GetName())->SetConnectedBlock(Expression::loc::source, source);
     link(lnk.GetName())->SetConnectedBlock(Expression::loc::destination, destination);
-    block(source)->AppendLink(link(lnk.GetName()),Expression::loc::source);
-    block(destination)->AppendLink(link(lnk.GetName()),Expression::loc::destination);
+    block(source)->AppendLink(links.size()-1,Expression::loc::source);
+    block(destination)->AppendLink(links.size()-1,Expression::loc::destination);
 	link(lnk.GetName())->SetQuantities(metamodel, lnk.GetType());
 	link(lnk.GetName())->SetParent(this);
 	return true;

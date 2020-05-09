@@ -1,5 +1,6 @@
 #include "Block.h"
 #include "Link.h"
+#include "System.h"
 
 Block::Block() : Object::Object()
 {
@@ -24,13 +25,13 @@ Block& Block::operator=(const Block& rhs)
 }
 
 
-void Block::AppendLink(Link* l, const Expression::loc &loc)
+void Block::AppendLink(int i, const Expression::loc &loc)
 {
     if (loc==Expression::loc::source)
-        links_from.push_back(l);
+        links_from_ids.push_back(i);
 
     if (loc==Expression::loc::destination)
-        links_to.push_back(l);
+        links_to_ids.push_back(i);
 }
 
 double Block::GetInflowValue(const string &variable, const Expression::timing &tmg)
@@ -53,21 +54,21 @@ bool Block::deletelinkstofrom(const string& linkname)
 {
     if (linkname == "_all")
     {
-        links_from.clear();
-        links_to.clear();
+        links_from_ids.clear();
+        links_to_ids.clear();
         return true; 
     }
-    for (unsigned int i = 0; i < links_from.size(); i++)
-        if (links_from[i]->GetName() == linkname)
+    for (unsigned int i = 0; i < links_from_ids.size(); i++)
+        if (GetLinksFrom()[i]->GetName() == linkname)
         {
-            links_from.erase(links_from.begin() + i);
+            links_from_ids.erase(links_from_ids.begin() + i);
             return true;
         }
 
-    for (unsigned int i = 0; i < links_to.size(); i++)
-        if (links_to[i]->GetName() == linkname)
+    for (unsigned int i = 0; i < links_to_ids.size(); i++)
+        if (GetLinksTo()[i]->GetName() == linkname)
         {
-            links_to.erase(links_to.begin() + i);
+            links_to_ids.erase(links_to_ids.begin() + i);
             return true;
         }
 
@@ -114,6 +115,22 @@ bool Block::deletelinkstofrom(const string& linkname)
         return 0;
     }
 }*/
+
+vector<Link*> Block::GetLinksFrom() {
+    vector<Link* > v;
+    for (unsigned int i=0; i<links_from_ids.size(); i++)
+        v.push_back(Parent()->link(i));
+
+    return v;
+}
+vector<Link*> Block::GetLinksTo() {
+    vector<Link* > v;
+    for (unsigned int i=0; i<links_to_ids.size(); i++)
+        v.push_back(Parent()->link(i));
+
+    return v;
+
+}
 
 
 
