@@ -22,6 +22,7 @@ Expression::Expression(void)
 	funcs.push_back("_log");
 	funcs.push_back("_abs");
 	funcs.push_back("_sqr");
+    funcs.push_back("_sqt");
 	funcs.push_back("_pos");
 	funcs.push_back("_hsd");
 	opts.push_back("+");
@@ -46,6 +47,7 @@ Expression::Expression(string S)
 	funcs.push_back("_log");
 	funcs.push_back("_abs");
 	funcs.push_back("_sqr");
+    funcs.push_back("_sqt");
 	funcs.push_back("_pos");
 	funcs.push_back("_hsd");
 	funcs.push_back("_ups");
@@ -404,6 +406,12 @@ double Expression::func(string &f, double val)
 		return fabs(val);
 	if (f == "sqr")
 		return sqrt(val);
+    if (f == "sqt")
+    {	if (val>0)
+            return sqrt(fabs(val));
+        else
+            return -sqrt(fabs(val));
+    }
     if (f == "pos")
         return (val+fabs(val))/2.0;
     if (f == "hsd")
