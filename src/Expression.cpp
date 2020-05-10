@@ -475,7 +475,8 @@ double Expression::oprt(string &f, unsigned int i1, unsigned int i2, Object *W, 
 	double val1;
 	double val2;
 	if (terms_calculated[i1]) val1 = term_vals[i1]; else val1 = terms[i1].calc(W, tmg, limit);
-	if (terms[i1].sign == "/") val1 = 1/(val1+1e-23);
+	if (!(i1>0 && terms_calculated[i1]))
+		if (terms[i1].sign == "/") val1 = 1/(val1+1e-23);
 	if (terms[i1].sign == "-") val1 = -val1;
 	if (sources.size() > i2)
 		if (terms_calculated[i2]) val2 = term_vals[i2]; else
