@@ -338,15 +338,7 @@ vector<bool> System::OneStepSolve()
 
 bool System::Solve(bool applyparameters)
 {
-    #ifdef QT_version
-    if (LogWindow())
-    {
-        LogWindow()->append("Simulation started!");
-    }
-    #else
-        ShowMessage("Simulation started!");
-    #endif
-	SetAllParents();
+    SetAllParents();
 	SolverTempVars.SetUpdateJacobian(true);
 	alltimeseries = TimeSeries();
 	bool success = true;
@@ -357,7 +349,8 @@ bool System::Solve(bool applyparameters)
     SolverTempVars.dt_base = SimulationParameters.dt0;
     SolverTempVars.dt = SolverTempVars.dt_base;
     SolverTempVars.t = SimulationParameters.tstart;
-	PopulateOutputs();
+    CalculateAllExpressions();
+    PopulateOutputs();
     for (unsigned int i=0; i<ObjectiveFunctionsCount(); i++)
     {
         ObjectiveFunctions()[i]->GetTimeSeries()->clear();
@@ -371,9 +364,9 @@ bool System::Solve(bool applyparameters)
     }
 #endif
     CalculateAllExpressions(Expression::timing::past);
-    while (SolverTempVars.t<SimulationParameters.tend+SolverTempVars.dt)
+    while (SolverTempVars.t<SimulationParameters.tend+SolverTempVars.dt && !stop_triggered)
     {
-		cout << "\r Simulation Time: " + aquiutils::numbertostring(SolverTempVars.t);
+        //cout << "\r Simulation Time: " + aquiutils::numbertostring(SolverTempVars.t);
 		SolverTempVars.dt = min(SolverTempVars.dt_base,GetMinimumNextTimeStepSize());
         if (SolverTempVars.dt<SimulationParameters.dt0/100) SolverTempVars.dt=SimulationParameters.dt0/100;
         #ifdef Debug_mode
@@ -388,6 +381,13 @@ bool System::Solve(bool applyparameters)
             #ifdef Debug_mode
             ShowMessage("failed!");
             #endif // Debug_mode
+#ifdef Q_version
+            if (rtw)
+                if (rtw->detailson)
+                {   rtw->AppendtoDetails(QString::fromStdString(SolverTempVars.fail_reason[SolverTempVars.fail_reason.size()-1]));
+                    QCoreApplication::processEvents();
+                }
+#endif
             SolverTempVars.dt_base *= SolverSettings.NR_timestep_reduction_factor_fail;
             SolverTempVars.SetUpdateJacobian(true);
         }
@@ -411,6 +411,8 @@ bool System::Solve(bool applyparameters)
             {
                 rtw->SetProgress((SolverTempVars.t-SimulationParameters.tstart)/(SimulationParameters.tend-SimulationParameters.tstart));
                 rtw->AddDataPoint(SolverTempVars.t,SolverTempVars.dt);
+                if (rtw->detailson) rtw->AppendtoDetails("Number of iterations:" + QString::number(SolverTempVars.MaxNumberOfIterations()));
+                if (rtw->stoptriggered) stop_triggered = true;
                 QCoreApplication::processEvents();
             }
 #endif
@@ -423,6 +425,7 @@ bool System::Solve(bool applyparameters)
         rtw->SetProgress(1);
         rtw->AddDataPoint(SolverTempVars.t,SolverTempVars.dt);
         rtw->AppendText("Simulation finished!" + QTime::currentTime().toString(Qt::RFC2822Date) + "!");
+
         QCoreApplication::processEvents();
     }
 #endif
