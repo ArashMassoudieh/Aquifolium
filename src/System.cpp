@@ -425,8 +425,9 @@ bool System::Solve(bool applyparameters)
                     if (rtw->detailson)
                     {
                         rtw->AppendtoDetails("The attempt to solve the problem failed");
-                        rtw->AppendErrorMessage("The attempt to solve the problem failed!");
+                        
                     }
+                    rtw->AppendErrorMessage("The attempt to solve the problem failed!");
                     QCoreApplication::processEvents();
                 }
 #endif
