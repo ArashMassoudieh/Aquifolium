@@ -106,6 +106,8 @@ class Object
         string& lasterror() {
             return last_error;
         }
+        vector<string>& QuantitOrder() { return var.Quantity_Order();  }
+        void UnUpdateAllValues() { var.UnUpdateAllValues(); }
     protected:
 
     private:

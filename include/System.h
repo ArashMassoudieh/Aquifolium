@@ -177,6 +177,7 @@ class System: public Object
         bool OneStepSolve(int i);
 		bool Renew(const string &variable);
 		bool Update(const string &variable);
+        void UnUpdateAllVariables(); 
 		//bool Solve(const string &variable, bool ApplyParams = false);
 		bool Solve(bool ApplyParams = false);
 		bool SetProp(const string &s, const double &val);

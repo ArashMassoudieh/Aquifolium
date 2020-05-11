@@ -357,7 +357,19 @@ double Quan::GetVal(const Expression::timing &tmg)
     if (tmg==Expression::timing::past)
         return _val;
     else
-        return _val_star;
+    {
+        if (value_star_updated)
+            return _val_star;
+        else
+        {
+            if (type == _type::expression)
+            {
+                _val_star = CalcVal(tmg);
+                value_star_updated = true;
+            }
+            return _val_star;
+        }
+    }
 }
 
 CTimeSeries* Quan::GetTimeSeries()
@@ -380,7 +392,9 @@ double Quan::CalcVal(const Expression::timing &tmg)
             return _val_star;
     }
     if (type == _type::expression)
+    {   
         return _expression.calc(parent,tmg);
+    }
     if (type == _type::rule)
         return _rule.calc(parent,tmg);
 

@@ -276,6 +276,21 @@ ErrorHandler System::VerifyAllQuantities()
     return errs;
 }
 
+void System::UnUpdateAllVariables()
+{
+    for (unsigned int i = 0; i < links.size(); i++)
+        links[i].UnUpdateAllValues();
+
+    for (unsigned int i = 0; i < blocks.size(); i++)
+        blocks[i].UnUpdateAllValues();
+
+    for (unsigned int i = 0; i < sources.size(); i++)
+        sources[i].UnUpdateAllValues();
+
+    for (unsigned int i = 0; i < ObjectiveFunctionsCount(); i++)
+        ObjectiveFunctions()[i]->UnUpdateAllValues();
+}
+
 Object *System::GetObjectBasedOnPrimaryKey(const string &s)
 {
     for (unsigned int i=0; i<links.size(); i++)
@@ -364,11 +379,16 @@ bool System::Solve(bool applyparameters)
     }
 #endif
     CalculateAllExpressions(Expression::timing::past);
+    int counter = 0; 
+    int fail_counter = 0; 
     while (SolverTempVars.t<SimulationParameters.tend+SolverTempVars.dt && !stop_triggered)
     {
+        counter++; 
         //cout << "\r Simulation Time: " + aquiutils::numbertostring(SolverTempVars.t);
-		SolverTempVars.dt = min(SolverTempVars.dt_base,GetMinimumNextTimeStepSize());
-        if (SolverTempVars.dt<SimulationParameters.dt0/100) SolverTempVars.dt=SimulationParameters.dt0/100;
+		if (counter%50==0) 
+            SolverTempVars.SetUpdateJacobian(true);
+        SolverTempVars.dt = min(SolverTempVars.dt_base,GetMinimumNextTimeStepSize());
+        if (SolverTempVars.dt<SimulationParameters.dt0/10000) SolverTempVars.dt=SimulationParameters.dt0/10000;
         #ifdef Debug_mode
         ShowMessage(string("t = ") + aquiutils::numbertostring(SolverTempVars.t) + ", dt_base = " + aquiutils::numbertostring(SolverTempVars.dt_base) + ", dt = " + aquiutils::numbertostring(SolverTempVars.dt) + ", SolverTempVars.numiterations =" + aquiutils::numbertostring(SolverTempVars.numiterations));
         #endif // Debug_mode
@@ -378,21 +398,44 @@ bool System::Solve(bool applyparameters)
 		success = aquiutils::And(_success);
 		if (!success)
         {
+            fail_counter++; 
             #ifdef Debug_mode
             ShowMessage("failed!");
             #endif // Debug_mode
 #ifdef Q_version
             if (rtw)
+            {
                 if (rtw->detailson)
-                {   rtw->AppendtoDetails(QString::fromStdString(SolverTempVars.fail_reason[SolverTempVars.fail_reason.size()-1]));
-                    QCoreApplication::processEvents();
+                {
+                    rtw->AppendtoDetails(QString::fromStdString(SolverTempVars.fail_reason[SolverTempVars.fail_reason.size() - 1]) + ", dt = " + QString::number(SolverTempVars.dt,'e'));
+                    if (rtw->stoptriggered) stop_triggered = true;
+
                 }
+                QCoreApplication::processEvents();
+            }
 #endif
             SolverTempVars.dt_base *= SolverSettings.NR_timestep_reduction_factor_fail;
             SolverTempVars.SetUpdateJacobian(true);
+
+            if (fail_counter > 20)
+            {
+#ifdef Q_version
+                if (rtw)
+                {
+                    if (rtw->detailson)
+                    {
+                        rtw->AppendtoDetails("The attempt to solve the problem failed");
+                        rtw->AppendErrorMessage("The attempt to solve the problem failed!");
+                    }
+                    QCoreApplication::processEvents();
+                }
+#endif
+                stop_triggered = true;
+            }
         }
         else
         {
+            fail_counter = 0; 
             SolverTempVars.t += SolverTempVars.dt;
             if (SolverTempVars.MaxNumberOfIterations()>SolverSettings.NR_niteration_upper)
             {
@@ -422,10 +465,11 @@ bool System::Solve(bool applyparameters)
 #ifdef Q_version
     if (rtw)
     {
-        rtw->SetProgress(1);
+        if (!stop_triggered)
+            rtw->SetProgress(1);
         rtw->AddDataPoint(SolverTempVars.t,SolverTempVars.dt);
         rtw->AppendText("Simulation finished!" + QTime::currentTime().toString(Qt::RFC2822Date) + "!");
-
+        
         QCoreApplication::processEvents();
     }
 #endif
@@ -562,8 +606,10 @@ bool System::SetProperty(const string &s, const string &val)
     {   SimulationParameters.tstart = aquiutils::atof(val); return true;}
     if (s=="tend" || s=="simulation_end_time")
     {   SimulationParameters.tend = aquiutils::atof(val); return true;}
-    if (s=="dt")
-    {   SimulationParameters.dt0 = aquiutils::atof(val); return true;}
+    if (s=="dt" || s=="initial_time_step")
+    {   
+        SimulationParameters.dt0 = aquiutils::atof(val); return true;
+    }
     if (s=="silent")
     {
         SetSilent(aquiutils::atoi(val)); return true;
@@ -697,7 +743,7 @@ bool System::OneStepSolve(int statevarno)
 		CVector_arma X_past = X;
 
 		CVector_arma F = GetResiduals(variable, X);
-
+        double error_increase_counter = 0; 
 		double err_ini = F.norm2();
 		double err;
 		double err_p = err = err_ini;
@@ -740,8 +786,14 @@ bool System::OneStepSolve(int statevarno)
 			{
 				SolverTempVars.NR_coefficient[statevarno] *= SolverSettings.NR_coeff_reduction_factor;
 				SolverTempVars.updatejacobian[statevarno] = true;
-				X = X_past;
+                error_increase_counter++;
+                X = X_past;
 			}
+            if (error_increase_counter > 3)
+            {
+                SolverTempVars.fail_reason.push_back("at " + aquiutils::numbertostring(SolverTempVars.t) + ": Error kept increasing");
+                return false; 
+            }
             //else
             //    SolverTempVars.NR_coefficient/=SolverSettings.NR_coeff_reduction_factor;
             if (SolverTempVars.numiterations[statevarno]>SolverSettings.NR_niteration_max)
@@ -846,19 +898,19 @@ void System::CalculateAllExpressions(Expression::timing tmg)
 {
     for (unsigned int i=0; i<blocks.size(); i++)
     {
-        for (map<string, Quan>::iterator it = blocks[i].GetVars()->begin(); it!=blocks[i].GetVars()->end(); it++)
+        for (int j = 0; j < blocks[i].QuantitOrder().size(); j++)
         {
-            if (it->second.GetType() == Quan::_type::expression)
-                it->second.SetVal(it->second.CalcVal(tmg),tmg);
+            if (blocks[i].Variable(blocks[i].QuantitOrder()[j])->GetType() == Quan::_type::expression)
+                blocks[i].Variable(blocks[i].QuantitOrder()[j])->SetVal(blocks[i].Variable(blocks[i].QuantitOrder()[j])->CalcVal(tmg), tmg);
         }
     }
 
     for (unsigned int i=0; i<links.size(); i++)
     {
-        for (map<string, Quan>::iterator it = links[i].GetVars()->begin(); it!=links[i].GetVars()->end(); it++)
+        for (int j = 0; j < links[i].QuantitOrder().size(); j++)
         {
-            if (it->second.GetType() == Quan::_type::expression)
-                it->second.SetVal(it->second.CalcVal(tmg),tmg);
+            if (links[i].Variable(links[i].QuantitOrder()[j])->GetType() == Quan::_type::expression)
+                links[i].Variable(links[i].QuantitOrder()[j])->SetVal(links[i].Variable(links[i].QuantitOrder()[j])->CalcVal(tmg), tmg);
         }
     }
 }
@@ -867,7 +919,7 @@ CVector_arma System::GetResiduals(const string &variable, CVector_arma &X)
 {
     CVector_arma F(blocks.size());
     SetStateVariables(variable,X,Expression::timing::present);
-    CalculateAllExpressions();
+    UnUpdateAllVariables(); 
     //CalculateFlows(Variable(variable)->GetCorrespondingFlowVar(),Expression::timing::present);
 
     for (unsigned int i=0; i<blocks.size(); i++)
@@ -875,7 +927,7 @@ CVector_arma System::GetResiduals(const string &variable, CVector_arma &X)
         if (blocks[i].GetLimitedOutflow())
         {
             blocks[i].SetOutflowLimitFactor(X[i],Expression::timing::present);
-            blocks[i].SetVal(variable,0);
+            blocks[i].SetVal(variable,0,Expression::timing::present);
             F[i] = (0-blocks[i].GetVal(variable,Expression::timing::past))/dt() - blocks[i].GetInflowValue(variable,Expression::timing::present);
         }
         else
@@ -928,7 +980,7 @@ CMatrix_arma System::Jacobian(const string &variable, CVector_arma &X)
 CVector_arma System::Jacobian(const string &variable, CVector_arma &V, CVector_arma &F0, int i)  //Works also w/o reference (&)
 {
   double epsilon;
-  epsilon = -1e-6;
+  epsilon = -1e-6*(fabs(V[i])+1);
   CVector_arma V1(V);
   V1[i] += epsilon;
   CVector_arma F1;
@@ -936,7 +988,7 @@ CVector_arma System::Jacobian(const string &variable, CVector_arma &V, CVector_a
   CVector_arma grad = (F1 - F0) / epsilon;
   if (grad.norm2() == 0)
   {
-    epsilon = 1e-6;
+    epsilon = 1e-6*(fabs(V[i]) + 1);
     V1 = V;
     V1[i] += epsilon;
     F1 = GetResiduals(variable,V1);

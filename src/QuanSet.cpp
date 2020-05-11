@@ -78,6 +78,7 @@ QuanSet::QuanSet(const QuanSet& other)
 	ObjectType = other.ObjectType; 
     name = other.name;
 	typecategory = other.typecategory; 
+    quantity_order = other.quantity_order;
     parent = nullptr;
 
 }
@@ -92,6 +93,7 @@ QuanSet& QuanSet::operator=(const QuanSet& rhs)
     BlockLink = rhs.BlockLink;
 	ObjectType = rhs.ObjectType; 
 	typecategory = rhs.typecategory;
+    quantity_order = rhs.quantity_order;
     parent = nullptr;
     return *this;
 }
@@ -106,6 +108,7 @@ bool QuanSet::Append(const string &s, const Quan &q)
     else
     {
         quans[s] = q;
+        quantity_order.push_back(s);
     }
 }
 
@@ -160,6 +163,12 @@ Quan* QuanSet::GetVar(int i)
         }
         return nullptr;
     }
+}
+
+void QuanSet::UnUpdateAllValues()
+{
+    for (map<string, Quan>::iterator it = quans.begin(); it != quans.end(); it++)
+        it->second.Set_Value_Update(false);
 }
 
 Quan* QuanSet::GetVarAskable(int i)

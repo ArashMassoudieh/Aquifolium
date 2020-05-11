@@ -28,6 +28,7 @@ class QuanSet
         Quan& GetVar(const string &s);
         Quan* GetVar(int i);
         Quan* GetVarAskable(int i);
+        void UnUpdateAllValues();
         std::map<string,Quan>::iterator find(const string &name) {return quans.find(name);}
         std::map<string,Quan>::iterator end() {return quans.end();}
         std::map<string,Quan>::iterator begin() {return quans.begin();}
@@ -54,6 +55,9 @@ class QuanSet
         bool AppendError(const string &objectname, const string &cls, const string &funct, const string &description, const int &code);
 		string ObjectType; 
 		string& CategoryType() { return typecategory; }
+        vector<string>& Quantity_Order() {
+            return quantity_order;
+        }
     protected:
 
     private:
@@ -64,6 +68,7 @@ class QuanSet
         string description = "";
         string iconfilename = "";
         string typecategory = "";
+        vector<string> quantity_order; 
 
 
 };

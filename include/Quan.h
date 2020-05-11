@@ -97,6 +97,7 @@ class Quan
         bool HasCriteria() { if (criteria.Count() > 0) return true; else return false; }
         vector<string> GetAllRequieredStartingBlockProperties();
         vector<string> GetAllRequieredEndingBlockProperties();
+        void Set_Value_Update(bool x) { value_star_updated = x; }
     protected:
 
     private:
@@ -109,6 +110,7 @@ class Quan
 		string _string_value = ""; 
         double _val=0;
         double _val_star=0;
+        bool value_star_updated = false; 
         vector<double> _parameters;
         _type type;
         bool perform_mass_balance = false;

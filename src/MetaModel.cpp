@@ -131,6 +131,7 @@ bool MetaModel::AppendFromJsonFile(const string &filename)
 
 void MetaModel::Clear()
 {
+    solvevariableorder.clear(); 
     metamodel.clear();
     errors.clear();
 }
