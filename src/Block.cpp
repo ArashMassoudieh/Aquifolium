@@ -119,14 +119,14 @@ bool Block::deletelinkstofrom(const string& linkname)
 vector<Link*> Block::GetLinksFrom() {
     vector<Link* > v;
     for (unsigned int i=0; i<links_from_ids.size(); i++)
-        v.push_back(Parent()->link(i));
+        v.push_back(Parent()->link(links_from_ids[i]));
 
     return v;
 }
 vector<Link*> Block::GetLinksTo() {
     vector<Link* > v;
     for (unsigned int i=0; i<links_to_ids.size(); i++)
-        v.push_back(Parent()->link(i));
+        v.push_back(Parent()->link(links_to_ids[i]));
 
     return v;
 

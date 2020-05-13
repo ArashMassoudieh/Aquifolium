@@ -73,9 +73,9 @@ class Object
         void SetOutflowLimitFactor(const double &val, const Expression::timing &tmg) 
 		{
 			if (tmg == Expression::timing::past)
-				outflowlimitfactor_past = val;
+				outflowlimitfactor_past = max(0.0,val);
 			else 
-				outflowlimitfactor_current = val;
+				outflowlimitfactor_current = max(0.0,val);
 		}
         double GetOutflowLimitFactor(const Expression::timing &tmg)
 		{

@@ -24,6 +24,10 @@ class Block: public Object
         bool deletelinkstofrom(const string& linkname="_all"); //deletes a specific links from the list of links to and from the block
         vector<Link*> GetLinksFrom();
         vector<Link*> GetLinksTo();
+        void ClearLinksToFrom() {
+            links_from_ids.clear(); links_to_ids.clear();
+        }
+
 
     protected:
 
