@@ -622,7 +622,12 @@ bool Quan::SetTimeSeries(const string &filename, bool prec)
 
 bool Quan::SetSource(const string &sourcename)
 {
-	if (parent->GetParent()->source(sourcename))
+    if (sourcename=="")
+    {
+        source = nullptr;
+        return true;
+    }
+    if (parent->GetParent()->source(sourcename))
 	{
         if (parent->GetParent())
             source = parent->GetParent()->source(sourcename);
