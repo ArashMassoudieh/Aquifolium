@@ -991,18 +991,17 @@ CVector_arma System::GetResiduals(const string &variable, CVector_arma &X)
         bool alloutflowszero = true;
         if (blocks[i].GetLimitedOutflow())
         {
-            double outflow1 = blocks[i].GetInflowValue(variable, Expression::timing::present);
-            alloutflowszero &= !(outflow1 < 0);
-            double outflow2, outflow3;
+            double outflow = blocks[i].GetInflowValue(variable, Expression::timing::present);
+            alloutflowszero &= !(outflow < 0);
             for (int j = 0; j < blocks[i].GetLinksFrom().size(); j++)
             {
-                outflow2 = blocks[i].GetLinksFrom()[j]->GetVal(blocks[i].Variable(variable)->GetCorrespondingFlowVar(), Expression::timing::present);
-                alloutflowszero &= !(outflow2 > 0);
+                outflow = blocks[i].GetLinksFrom()[j]->GetVal(blocks[i].Variable(variable)->GetCorrespondingFlowVar(), Expression::timing::present);
+                alloutflowszero &= !(outflow > 0);
             }
             for (int j = 0; j < blocks[i].GetLinksTo().size(); j++)
             {
-                outflow3 = blocks[i].GetLinksTo()[j]->GetVal(blocks[i].Variable(variable)->GetCorrespondingFlowVar(), Expression::timing::present);
-                alloutflowszero &= !(outflow3 < 0);
+                outflow = blocks[i].GetLinksTo()[j]->GetVal(blocks[i].Variable(variable)->GetCorrespondingFlowVar(), Expression::timing::present);
+                alloutflowszero &= !(outflow < 0);
             }
         
             if (alloutflowszero)
