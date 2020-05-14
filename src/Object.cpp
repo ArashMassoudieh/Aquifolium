@@ -70,7 +70,7 @@ double Object::GetVal(const string& s,const Expression::timing &tmg, bool limit)
 {
     if (var.Count(s)==1)
     {
-        if (!limit)
+        if (!limit || !var[s].ApplyLimit())
             return var[s].GetVal(tmg);
         else
             return var[s].GetVal(tmg)*GetOutflowLimitFactor(tmg);

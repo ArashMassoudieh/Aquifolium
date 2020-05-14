@@ -47,6 +47,7 @@ class Quan
         bool SetVal(const double &v, const Expression::timing &tmg=Expression::timing::past);
         bool SetSource(const string &sourcename);
         void SetCorrespondingFlowVar(const string &s);
+        
         string GetCorrespondingFlowVar()
         {
             return corresponding_flow_quan;
@@ -98,6 +99,7 @@ class Quan
         vector<string> GetAllRequieredStartingBlockProperties();
         vector<string> GetAllRequieredEndingBlockProperties();
         void Set_Value_Update(bool x) { value_star_updated = x; }
+        bool ApplyLimit() { return applylimit; }
     protected:
 
     private:
@@ -137,6 +139,7 @@ class Quan
         bool ask_from_user=false;
         string OutputItem;
         string _parameterassignedto = "";
+        bool applylimit = false; 
 };
 
 string tostring(const Quan::_type &typ);

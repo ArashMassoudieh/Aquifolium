@@ -69,6 +69,16 @@ Quan::Quan(Json::ValueIterator &it)
     else
         SetEstimable(false);
 
+    if (it->isMember("applylimit"))
+    {
+        if ((*it)["applylimit"].asString() == "true")
+            applylimit = true;
+        else
+            applylimit = false; 
+    }
+    else
+        applylimit = false;
+
     if (it->isMember("description"))
     {
         Description() = (*it)["description"].asString();
@@ -237,6 +247,16 @@ Quan::Quan(QJsonObject& it)
 	else
 		AskFromUser() = false;
 
+    if (it.keys().contains("applylimit"))
+    {
+        if (aquiutils::tolower(it.value("applylimit").toString().toStdString()) == "true")
+            applylimit = true;
+        else
+            applylimit = false; 
+    }
+    else
+        applylimit = false;
+
     if (it.keys().contains("setvalue"))
     {
         SetProperty(it.value("setvalue").toString().toStdString());
@@ -283,6 +303,7 @@ Quan::Quan(const Quan& other)
     warning_message = other.warning_message;
     ask_from_user = other.ask_from_user;
     estimable = other.estimable;
+    applylimit = other.applylimit; 
 	//parent = other.parent;
 }
 
@@ -320,6 +341,7 @@ Quan& Quan::operator=(const Quan& rhs)
     warning_error = rhs.warning_error;
     warning_message = rhs.warning_message;
     ask_from_user = rhs.ask_from_user;
+    applylimit = rhs.applylimit;
     //parent = rhs.parent;
     return *this;
 }
