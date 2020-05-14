@@ -745,7 +745,7 @@ bool System::OneStepSolve(int statevarno)
 {
 	string variable = solvevariableorder[statevarno];
 	Renew(variable);
-
+    for (unsigned int i = 0; i < links.size(); i++) links[i].SetOutflowLimitFactor(links[i].GetOutflowLimitFactor(Expression::timing::past), Expression::timing::present);
     vector<bool> outflowlimitstatus_old = GetOutflowLimitedVector(); 
     SolverTempVars.numiterations[statevarno] = 0;
     bool switchvartonegpos = true;
@@ -965,11 +965,12 @@ CVector_arma System::GetResiduals(const string &variable, CVector_arma &X)
 
     for (unsigned int i=0; i<links.size(); i++)
     {
-        if (blocks[links[i].s_Block_No()].GetLimitedOutflow() && links[i].GetVal(blocks[links[i].s_Block_No()].Variable(variable)->GetCorrespondingFlowVar(),Expression::timing::present)>0)
+        if (blocks[links[i].s_Block_No()].GetLimitedOutflow() && links[i].GetVal(blocks[links[i].s_Block_No()].Variable(variable)->GetCorrespondingFlowVar(), Expression::timing::present) > 0)
             links[i].SetOutflowLimitFactor(blocks[links[i].s_Block_No()].GetOutflowLimitFactor(Expression::timing::present), Expression::timing::present);
-        if (blocks[links[i].e_Block_No()].GetLimitedOutflow() && links[i].GetVal(blocks[links[i].e_Block_No()].Variable(variable)->GetCorrespondingFlowVar(),Expression::timing::present)<0)
+        else if (blocks[links[i].e_Block_No()].GetLimitedOutflow() && links[i].GetVal(blocks[links[i].e_Block_No()].Variable(variable)->GetCorrespondingFlowVar(),Expression::timing::present)<0)
             links[i].SetOutflowLimitFactor(blocks[links[i].e_Block_No()].GetOutflowLimitFactor(Expression::timing::present), Expression::timing::present);
-        
+        else
+            links[i].SetOutflowLimitFactor(1, Expression::timing::present);
 
     }
 
