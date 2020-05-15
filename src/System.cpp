@@ -753,7 +753,7 @@ bool System::OneStepSolve(int statevarno)
     while (attempts<2 && switchvartonegpos)
     {
 		CVector_arma X = GetStateVariables(variable, Expression::timing::past);
-		for (int i = 0; i < blocks.size(); i++)
+        for (unsigned int i = 0; i < blocks.size(); i++)
 		{
 			if (blocks[i].GetLimitedOutflow())
 				X[i] = blocks[i].GetOutflowLimitFactor(Expression::timing::past);
