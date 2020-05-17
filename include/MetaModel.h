@@ -25,6 +25,7 @@ class MetaModel
         void Clear();
         string ToString(int _tabs=0);
         vector<string> solvevariableorder;
+        string GetLastError() {return last_error; }
     protected:
 
     private:

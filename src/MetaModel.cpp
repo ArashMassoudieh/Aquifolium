@@ -109,8 +109,18 @@ bool MetaModel::AppendFromJsonFile(const string &filename)
         cout << "File " + filename + " was not found!";
         return false;
     }
-
-    file >> root;
+    if (file.good())
+    {   Json::CharReaderBuilder b;
+        JSONCPP_STRING errs;
+        bool ok = Json::parseFromStream(b, file, &root, &errs);
+        if (!ok) {
+            last_error = errs;
+            return false;
+        }
+    }
+    else {
+        return false;
+    }
 
     if(!reader.parse(file, root, true)){
             //for some reason it always fails to parse
