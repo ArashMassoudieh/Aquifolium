@@ -24,6 +24,7 @@ class Objective_Function_Set
         CTimeSeriesSet GetTimeSeriesSet();
         void SetSystem(System* s);
         void clear();
+        bool erase(int i);
         unsigned int size()
         {
             return objectivefunctions.size();

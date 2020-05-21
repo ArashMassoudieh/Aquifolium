@@ -470,7 +470,7 @@ bool Command::Execute(System *_sys)
                     if (it->first!="type" && it->first!="to" && it->first!="from")
                     {
                         if (!sys->parameter(assignments["name"])->SetProperty(it->first,it->second))
-                            last_error = "Parameter does not have a '" + it->first + "' + property!";
+                            last_error = "Parameter does not have a '" + it->first + "' property!";
                     }
                 }
                 return true;
@@ -494,9 +494,12 @@ bool Command::Execute(System *_sys)
 
                     if (!sys->objectivefunction(assignments["name"])->SetProperty(it->first,it->second))
                     {
-                        sys->errorhandler.Append("","Command","Execute","Objective function does not have a '" + it->first + "' + property!",7021);
-                        last_error = "Parameter does not have a '" + it->first + "' + property!";
-                        succeed = false;
+                        if (it->first != "type")
+                        {
+                            sys->errorhandler.Append("", "Command", "Execute", "Objective function does not have a '" + it->first + "' + property!", 7021);
+                            last_error = "Objective Function does not have a '" + it->first + "' + property!";
+                            succeed = false;
+                        }
                     }
 
                 }

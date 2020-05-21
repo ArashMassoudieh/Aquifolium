@@ -768,7 +768,7 @@ bool System::OneStepSolve(int statevarno)
 		double err_p = err = err_ini;
         
 		SolverTempVars.NR_coefficient[statevarno] = 1;
-		while ((err/err_ini>SolverSettings.NRtolerance && err>1e-12) || SolverTempVars.numiterations[statevarno]>SolverSettings.NR_niteration_max)
+		while ((err/(err_ini+1e-6)>SolverSettings.NRtolerance && err>1e-12) || SolverTempVars.numiterations[statevarno]>SolverSettings.NR_niteration_max)
         {
             SolverTempVars.numiterations[statevarno]++;
             if (SolverTempVars.updatejacobian[statevarno])
@@ -821,6 +821,7 @@ bool System::OneStepSolve(int statevarno)
             //    SolverTempVars.NR_coefficient/=SolverSettings.NR_coeff_reduction_factor;
             if (SolverTempVars.numiterations[statevarno] > SolverSettings.NR_niteration_max)
             {
+                SolverTempVars.fail_reason.push_back("at " + aquiutils::numbertostring(SolverTempVars.t) + ": numbe of iterations exceeded the maximum threshold");
                 SetOutflowLimitedVector(outflowlimitstatus_old);
                 return false;
             }
@@ -1050,7 +1051,7 @@ CVector_arma System::Jacobian(const string &variable, CVector_arma &V, CVector_a
   CVector_arma F1;
   F1 = GetResiduals(variable,V1);
   CVector_arma grad = (F1 - F0) / epsilon;
-  if (grad.norm2() == 0)
+  if (grad.norm2() == 0 || !grad.is_finite())
   {
     epsilon = +1e-6*(fabs(V[i]) + 1);
     V1 = V;
@@ -1685,6 +1686,12 @@ bool System::Delete(const string& objectname)
         if (Parameters()[i]->GetName() == objectname)
         {
             return Parameters().erase(i);
+        }
+
+    for (unsigned int i = 0; i < ObjectiveFunctionsCount(); i++)
+        if (ObjectiveFunctions()[i]->GetName() == objectname)
+        {
+            return ObjectiveFunctions().erase(i);
         }
 
     errorhandler.Append(GetName(),"System","object","Object '" + objectname + "' was not found",105);

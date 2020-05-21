@@ -75,4 +75,12 @@ void Objective_Function_Set::clear()
     objectivefunctions.clear();
 }
 
+bool Objective_Function_Set::erase(int i)
+{
+    if (i >= objectivefunctions.size()) return false;
+    objectivefunctions.erase(objectivefunctions.begin() + i);
+
+    return true;
+}
+
 
