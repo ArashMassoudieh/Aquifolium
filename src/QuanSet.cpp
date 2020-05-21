@@ -62,9 +62,14 @@ QuanSet::QuanSet(Json::ValueIterator& object_types)
 			description = (*object_types)[it.key().asString()].asString();
 		else
         {
-            //cout<<it.key().asString()<<endl;
-            Quan Q(it);
-            Append(it.key().asString(),Q);
+            if (it->size()!=0)
+            {
+                Quan Q(it);
+                Append(it.key().asString(),Q);
+            }
+            else {
+                AppendError(it.key().asString(),"QuanSet","Constructor","Syntax error in '" + it.key().asString(),18021);
+            }
         }
     }
 }

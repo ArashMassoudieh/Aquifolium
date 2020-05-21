@@ -247,6 +247,7 @@ class System: public Object
         vector<string> *functions;
         void SetOutputItems();
         vector<string> addedtemplates;
+        void AddPropertytoAllBlocks(Quan &quan);
 #endif
 
     protected:
