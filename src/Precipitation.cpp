@@ -179,7 +179,7 @@ CBTCSet CPrecipitation::getflow(double A)
 		Rainflowout.BTC[0].append((e[ii] + s[ii]) * 0.5, i[ii] / (e[ii] - s[ii]) * A);  //i [m]
 		if (ii < n - 1)
 			if (e[ii] < s[ii + 1])
-				Rainflowout.BTC[0].append(1.5 * s[ii] - 0.5 * s[ii], 0);
+                Rainflowout.BTC[0].append(1.5 * e[ii] - 0.5 * s[ii], 0);
 	}
 
 	Rainflowout.BTC[0].assign_D();

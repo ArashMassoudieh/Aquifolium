@@ -67,10 +67,12 @@ Expression::Expression(string S)
 		_errors.push_back("Parentheses do not match in" + S);
 		return;
 	}
-	if (aquiutils::lookup(funcs, aquiutils::left(S,4))!=-1)
+    if (aquiutils::lookup(funcs, aquiutils::left(S,4))!=-1 )
 	{
-		function = aquiutils::right(aquiutils::left(S,4),3);
-		S = aquiutils::right(S, S.size() - 4);
+        if (aquiutils::corresponding_parenthesis(S,4) == int(S.size()-1))
+        {   function = aquiutils::right(aquiutils::left(S,4),3);
+            S = aquiutils::right(S, S.size() - 4);
+        }
 	}
 	if (aquiutils::left(S,1) == "(")
 	{

@@ -1659,6 +1659,7 @@ bool System::Delete(const string& objectname)
         {
             block(links[i].GetConnectedBlock(Expression::loc::source)->GetName())->deletelinkstofrom(links[i].GetName());
             links.erase(links.begin()+i);
+
             return true;
         }
 
