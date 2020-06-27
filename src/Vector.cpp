@@ -7,6 +7,7 @@
 #include "Matrix.h"
 #include <cfloat>
 #include "Vector_arma.h"
+#include "Expression.h"
 
 
 //////////////////////////////////////////////////////////////////////
@@ -295,6 +296,13 @@ bool CVector::is_finite()
 		if (isfinite(vec[i])!=true)
 			r=false;
 	return r;
+}
+
+string CVector::toString()
+{
+	string s;
+	s += aquiutils::numbertostring(vec);
+	return s; 
 }
 
 double CVector::max()

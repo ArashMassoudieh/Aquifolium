@@ -624,3 +624,11 @@ CVector_arma normalize_diag( CVector_arma V, CMatrix_arma M2)
 	}
 	return M;
 }
+
+void CMatrix_arma::ScaleDiagonal(double x)
+{
+	for (int i = 0; i < getnumcols(); i++)
+	{
+		matr(i, i) *= x;
+	}
+}

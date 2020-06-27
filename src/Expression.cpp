@@ -46,6 +46,7 @@ Expression::Expression(string S)
 	funcs.push_back("_exp");
 	funcs.push_back("_log");
 	funcs.push_back("_abs");
+	funcs.push_back("_sgn");
 	funcs.push_back("_sqr");
     funcs.push_back("_sqt");
 	funcs.push_back("_pos");
@@ -406,6 +407,8 @@ double Expression::func(string &f, double val)
 		return log(val);
 	if (f == "abs")
 		return fabs(val);
+	if (f == "sgn")
+		return (val>0?+1:-1);
 	if (f == "sqr")
 		return sqrt(val);
     if (f == "sqt")

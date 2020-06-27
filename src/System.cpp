@@ -35,6 +35,7 @@ void System::PopulateOperatorsFunctions()
 
     functions = new vector<string>;
     functions->push_back("abs");
+    functions->push_back("sgn");
     functions->push_back("exp");
     functions->push_back("pos");
     functions->push_back("min");
@@ -438,30 +439,34 @@ bool System::Solve(bool applyparameters)
         }
         else
         {
+#ifdef Q_version
+            if (rtw)
+            {
+                rtw->SetProgress((SolverTempVars.t - SimulationParameters.tstart) / (SimulationParameters.tend - SimulationParameters.tstart));
+                rtw->AddDataPoint(SolverTempVars.t, SolverTempVars.dt);
+                if (rtw->detailson) rtw->AppendtoDetails("Number of iterations:" + QString::number(SolverTempVars.MaxNumberOfIterations()) + ",dt = " + QString::number(SolverTempVars.dt) + ",t = " + QString::number(SolverTempVars.t, 'f', 6) + ", NR_factor = " + QString::fromStdString(CVector(SolverTempVars.NR_coefficient).toString()));
+                if (rtw->stoptriggered) stop_triggered = true;
+                QCoreApplication::processEvents();
+            }
+#endif
             fail_counter = 0; 
             SolverTempVars.t += SolverTempVars.dt;
             if (SolverTempVars.MaxNumberOfIterations()>SolverSettings.NR_niteration_upper)
             {
                 SolverTempVars.dt_base = max(SolverTempVars.dt*SolverSettings.NR_timestep_reduction_factor,SolverSettings.minimum_timestep);
                 SolverTempVars.SetUpdateJacobian(true);
+                SolverTempVars.NR_coefficient = (CVector(SolverTempVars.NR_coefficient.size()) + 1).vec;
             }
-            if (SolverTempVars.MaxNumberOfIterations()<SolverSettings.NR_niteration_lower)
-                SolverTempVars.dt_base = min(SolverTempVars.dt_base/SolverSettings.NR_timestep_reduction_factor,SimulationParameters.dt0*timestepmaxfactor);
+            if (SolverTempVars.MaxNumberOfIterations() < SolverSettings.NR_niteration_lower)
+            {
+                SolverTempVars.dt_base = min(SolverTempVars.dt_base / SolverSettings.NR_timestep_reduction_factor, SimulationParameters.dt0 * timestepmaxfactor);
+                SolverTempVars.NR_coefficient = (CVector(SolverTempVars.NR_coefficient.size()) + 1).vec;
+            }
 
             for (unsigned int i=0; i<solvevariableorder.size(); i++)
                 Update(solvevariableorder[i]);
             UpdateObjectiveFunctions(SolverTempVars.t);
             PopulateOutputs();
-#ifdef Q_version
-            if (rtw)
-            {
-                rtw->SetProgress((SolverTempVars.t-SimulationParameters.tstart)/(SimulationParameters.tend-SimulationParameters.tstart));
-                rtw->AddDataPoint(SolverTempVars.t,SolverTempVars.dt);
-                if (rtw->detailson) rtw->AppendtoDetails("Number of iterations:" + QString::number(SolverTempVars.MaxNumberOfIterations()));
-                if (rtw->stoptriggered) stop_triggered = true;
-                QCoreApplication::processEvents();
-            }
-#endif
         }
 
     }
@@ -767,13 +772,16 @@ bool System::OneStepSolve(int statevarno)
 		double err;
 		double err_p = err = err_ini;
         
-		SolverTempVars.NR_coefficient[statevarno] = 1;
-		while ((err/(err_ini+1e-6)>SolverSettings.NRtolerance && err>1e-12) || SolverTempVars.numiterations[statevarno]>SolverSettings.NR_niteration_max)
+		//if (SolverTempVars.NR_coefficient[statevarno]==0) 
+            SolverTempVars.NR_coefficient[statevarno] = 1;
+		while ((err>SolverSettings.NRtolerance && err>1e-12) || SolverTempVars.numiterations[statevarno]>SolverSettings.NR_niteration_max)
         {
             SolverTempVars.numiterations[statevarno]++;
             if (SolverTempVars.updatejacobian[statevarno])
             {
                 CMatrix_arma J = Jacobian(variable, X);
+                if (SolverSettings.scalediagonal)
+                    J.ScaleDiagonal(1.0 / SolverTempVars.NR_coefficient[statevarno]);
 				if (det(J) == 0)
 				{
 					SolverTempVars.fail_reason.push_back("at " + aquiutils::numbertostring(SolverTempVars.t) + ": The Jacobian Matrix is not full-ranked");
@@ -784,7 +792,10 @@ bool System::OneStepSolve(int statevarno)
                 SolverTempVars.updatejacobian[statevarno] = false;
                 
             }
-            X = X - SolverTempVars.NR_coefficient[statevarno]*SolverTempVars.Inverse_Jacobian[statevarno]*F;
+            if (SolverSettings.scalediagonal)
+                X = X - SolverTempVars.Inverse_Jacobian[statevarno] * F;
+            else
+                X = X - SolverTempVars.NR_coefficient[statevarno]*SolverTempVars.Inverse_Jacobian[statevarno]*F;
 			if (!X.is_finite())
 			{
 				SolverTempVars.fail_reason.push_back("at " + aquiutils::numbertostring(SolverTempVars.t) + ": X is infinite");
@@ -811,14 +822,19 @@ bool System::OneStepSolve(int statevarno)
                 error_increase_counter++;
                 X = X_past;
 			}
-            if (error_increase_counter > 3)
+            else if (err<err_p/2.0)
+            {
+                if (SolverTempVars.NR_coefficient[statevarno] < 0.99)
+                    SolverTempVars.updatejacobian[statevarno] = true;
+                SolverTempVars.NR_coefficient[statevarno] = max(min(SolverTempVars.NR_coefficient[statevarno] * SolverSettings.NR_coeff_reduction_factor, 1.0), 0.05);
+             }
+            if (error_increase_counter > 5)
             {
                 SolverTempVars.fail_reason.push_back("at " + aquiutils::numbertostring(SolverTempVars.t) + ": Error kept increasing");
                 SetOutflowLimitedVector(outflowlimitstatus_old);
                 return false; 
             }
-            //else
-            //    SolverTempVars.NR_coefficient/=SolverSettings.NR_coeff_reduction_factor;
+            
             if (SolverTempVars.numiterations[statevarno] > SolverSettings.NR_niteration_max)
             {
                 SolverTempVars.fail_reason.push_back("at " + aquiutils::numbertostring(SolverTempVars.t) + ": numbe of iterations exceeded the maximum threshold");
@@ -845,7 +861,8 @@ bool System::OneStepSolve(int statevarno)
         }
         if (switchvartonegpos) attempts++;
     }
-	/*if (attempts == 2)
+    //CorrectStoragesBasedonFluxes(variable);
+    /*if (attempts == 2)
 	{
 		SolverTempVars.fail_reason.push_back("at " + aquiutils::numbertostring(SolverTempVars.t) + ": attempts > 1");
         SetOutflowLimitedVector(outflowlimitstatus_old);
@@ -956,8 +973,8 @@ CVector_arma System::GetResiduals(const string &variable, CVector_arma &X)
         if (blocks[i].GetLimitedOutflow())
         {
             blocks[i].SetOutflowLimitFactor(X[i],Expression::timing::present);
-            blocks[i].SetVal(variable,0,Expression::timing::both);
-            F[i] = (0-blocks[i].GetVal(variable,Expression::timing::past))/dt() - blocks[i].GetInflowValue(variable,Expression::timing::present);
+            blocks[i].SetVal(variable, blocks[i].GetVal(variable, Expression::timing::past) * SolverSettings.landtozero_factor,Expression::timing::present);
+            F[i] = -blocks[i].GetVal(variable,Expression::timing::past)*(1.0-SolverSettings.landtozero_factor)/dt() - blocks[i].GetInflowValue(variable,Expression::timing::present);
         }
         else
             F[i] = (X[i]-blocks[i].GetVal(variable,Expression::timing::past))/dt() - blocks[i].GetInflowValue(variable,Expression::timing::present);
@@ -1015,6 +1032,34 @@ CVector_arma System::GetResiduals(const string &variable, CVector_arma &X)
         
     }
     return F;
+}
+
+void System::CorrectStoragesBasedonFluxes(const string& variable)
+{
+    CVector_arma UpdatedStorage(blocks.size());
+    for (unsigned int i = 0; i < blocks.size(); i++)
+        UpdatedStorage[i] = (blocks[i].GetVal(variable, Expression::timing::past)) + blocks[i].GetInflowValue(variable, Expression::timing::present)*dt();
+
+    for (unsigned int i = 0; i < links.size(); i++)
+    {
+        if (blocks[links[i].s_Block_No()].GetLimitedOutflow() && links[i].GetVal(blocks[links[i].s_Block_No()].Variable(variable)->GetCorrespondingFlowVar(), Expression::timing::present) > 0)
+            links[i].SetOutflowLimitFactor(blocks[links[i].s_Block_No()].GetOutflowLimitFactor(Expression::timing::present), Expression::timing::present);
+        else if (blocks[links[i].e_Block_No()].GetLimitedOutflow() && links[i].GetVal(blocks[links[i].e_Block_No()].Variable(variable)->GetCorrespondingFlowVar(), Expression::timing::present) < 0)
+            links[i].SetOutflowLimitFactor(blocks[links[i].e_Block_No()].GetOutflowLimitFactor(Expression::timing::present), Expression::timing::present);
+        else
+            links[i].SetOutflowLimitFactor(1, Expression::timing::present);
+
+    }
+
+    for (unsigned int i = 0; i < links.size(); i++)
+    {
+        UpdatedStorage[links[i].s_Block_No()] -= links[i].GetVal(blocks[links[i].s_Block_No()].Variable(variable)->GetCorrespondingFlowVar(), Expression::timing::present) * links[i].GetOutflowLimitFactor(Expression::timing::present)* dt();
+        UpdatedStorage[links[i].e_Block_No()] += links[i].GetVal(blocks[links[i].s_Block_No()].Variable(variable)->GetCorrespondingFlowVar(), Expression::timing::present) * links[i].GetOutflowLimitFactor(Expression::timing::present)* dt();
+    }
+    
+    for (unsigned int i = 0; i < blocks.size(); i++)
+        blocks[i].SetVal(variable, UpdatedStorage[i], Expression::timing::present);
+    
 }
 
 bool System::CalculateFlows(const string &var, const Expression::timing &tmg)
@@ -1652,12 +1697,25 @@ void System::SetSystemSettings()
 
 }
 
+void System::DisconnectLink(const string linkname)
+{
+    for (unsigned int i = 0; i < links.size(); i++)
+        if (links[i].GetName() == linkname)
+        {
+            block(links[i].GetConnectedBlock(Expression::loc::source)->GetName())->deletelinkstofrom(links[i].GetName());
+        }
+}
+
 bool System::Delete(const string& objectname)
 {
     for (unsigned int i = 0; i < links.size(); i++)
         if (links[i].GetName() == objectname)
         {
             block(links[i].GetConnectedBlock(Expression::loc::source)->GetName())->deletelinkstofrom(links[i].GetName());
+            for (unsigned int j = 0; j < blocks.size(); j++)
+            {
+                blocks[j].shiftlinkIds(i);
+            }
             links.erase(links.begin()+i);
 
             return true;
@@ -1666,11 +1724,18 @@ bool System::Delete(const string& objectname)
     for (unsigned int i = 0; i < blocks.size(); i++)
         if (blocks[i].GetName() == objectname)
         {
+            vector<string> links_to_be_deleted; 
             for (unsigned int j = 0; j < blocks[i].GetLinksFrom().size(); j++)
-                Delete(blocks[i].GetLinksFrom()[j]->GetName());
-
+                links_to_be_deleted.push_back(blocks[i].GetLinksFrom()[j]->GetName());
+                
             for (unsigned int j = 0; j < blocks[i].GetLinksTo().size(); j++)
-                Delete(blocks[i].GetLinksTo()[j]->GetName());
+                links_to_be_deleted.push_back(blocks[i].GetLinksTo()[j]->GetName());
+
+            //for (unsigned int j = 0; j < links_to_be_deleted.size(); j++)
+            //    DisconnectLink(links_to_be_deleted[j]);
+
+            for (unsigned int j = 0; j < links_to_be_deleted.size(); j++)
+                Delete(links_to_be_deleted[j]);
 
             blocks.erase(blocks.begin() + i);
             return true; 

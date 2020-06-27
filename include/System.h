@@ -46,6 +46,8 @@ struct solversettings
     int NR_niteration_upper=40;
     int NR_niteration_max=100;
     bool makeresultsuniform = false;
+    bool scalediagonal = false; 
+    double landtozero_factor = 0.1; 
 
 };
 
@@ -226,6 +228,7 @@ class System: public Object
         bool SavetoScriptFile(const string &filename, const string &templatefilename="", const vector<string> addedtemplates = vector<string>());
         bool ReadSystemSettingsTemplate(const string &filename);
         void SetSystemSettings();
+        void DisconnectLink(const string linkname);
         bool SetSystemSettingsObjectProperties(const string &s, const string &val);
         bool Delete(const string& objectname);
         void PopulateOperatorsFunctions();
@@ -260,6 +263,7 @@ class System: public Object
         vector<Object> Settings;
         MetaModel metamodel;
         CVector_arma GetResiduals(const string &variable, CVector_arma &X);
+		void CorrectStoragesBasedonFluxes(const string& variable);
         CVector_arma CalcStateVariables(const string &variable, const Expression::timing &tmg = Expression::timing::past);
         CVector_arma GetStateVariables(const string &variable, const Expression::timing &tmg = Expression::timing::past);
         solversettings SolverSettings;

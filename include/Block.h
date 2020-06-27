@@ -21,6 +21,7 @@ class Block: public Object
         virtual ~Block();
         void AppendLink(int i, const Expression::loc &loc);
         double GetInflowValue(const string &variable,const Expression::timing &t);
+		void shiftlinkIds(int i);
         bool deletelinkstofrom(const string& linkname="_all"); //deletes a specific links from the list of links to and from the block
         vector<Link*> GetLinksFrom();
         vector<Link*> GetLinksTo();

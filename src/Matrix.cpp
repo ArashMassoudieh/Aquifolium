@@ -1081,3 +1081,11 @@ double& CMatrix::operator()(int i, int j)
 {
 	return matr[i].vec[j];
 }
+
+void CMatrix::ScaleDiagonal(double x)
+{
+	for (int i = 0; i < getnumcols(); i++)
+	{
+		matr[i].vec[i] *= x;
+	}
+}

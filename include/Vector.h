@@ -77,6 +77,7 @@ public:
     void print(string s);
     CVector sub(int i, int j);
     bool is_finite();
+    string toString();
 
 };
 

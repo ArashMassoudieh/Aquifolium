@@ -73,6 +73,8 @@ public:
     void setcol(int i, CVector_arma V);
     void setcol(int i, CVector V);
 
+	void ScaleDiagonal(double x);
+
 
 };
 

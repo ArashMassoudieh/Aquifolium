@@ -50,6 +50,15 @@ double Block::GetInflowValue(const string &variable, const Expression::timing &t
     return 0;
 }
 
+void Block::shiftlinkIds(int i)
+{
+    for (int j = 0; j < links_from_ids.size(); j++)
+        if (links_from_ids[j] > i) links_from_ids[j]--; 
+
+    for (int j = 0; j < links_to_ids.size(); j++)
+        if (links_to_ids[j] > i) links_to_ids[j]--;
+}
+
 bool Block::deletelinkstofrom(const string& linkname)
 {
     if (linkname == "_all")
