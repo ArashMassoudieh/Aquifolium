@@ -79,6 +79,16 @@ Quan::Quan(Json::ValueIterator &it)
     else
         applylimit = false;
 
+    if (it->isMember("rigid"))
+    {
+        if ((*it)["rigid"].asString() == "true")
+            rigid = true;
+        else
+            rigid = false;
+    }
+    else
+        rigid = false;
+
     if (it->isMember("description"))
     {
         Description() = (*it)["description"].asString();
@@ -247,6 +257,16 @@ Quan::Quan(QJsonObject& it)
 	else
 		AskFromUser() = false;
 
+    if (it.keys().contains("rigid"))
+    {
+        if (aquiutils::tolower(it.value("rigid").toString().toStdString()) == "true")
+            rigid = true;
+        else
+            rigid = false; 
+    }
+    else
+        rigid = false;
+
     if (it.keys().contains("applylimit"))
     {
         if (aquiutils::tolower(it.value("applylimit").toString().toStdString()) == "true")
@@ -304,6 +324,7 @@ Quan::Quan(const Quan& other)
     ask_from_user = other.ask_from_user;
     estimable = other.estimable;
     applylimit = other.applylimit; 
+    rigid = other.rigid;
 	//parent = other.parent;
 }
 
@@ -342,6 +363,7 @@ Quan& Quan::operator=(const Quan& rhs)
     warning_message = rhs.warning_message;
     ask_from_user = rhs.ask_from_user;
     applylimit = rhs.applylimit;
+    rigid = rhs.rigid;
     //parent = rhs.parent;
     return *this;
 }

@@ -52,6 +52,8 @@ Expression::Expression(string S)
 	funcs.push_back("_pos");
 	funcs.push_back("_hsd");
 	funcs.push_back("_ups");
+	funcs.push_back("_mon");
+	funcs.push_back("_mbs");
 	opts.push_back("+");
 	opts.push_back("-");
 	opts.push_back("*");
@@ -432,6 +434,10 @@ double Expression::func(string &f, double val1, double val2)
 		return min(val1, val2);
 	if (f == "max")
 		return max(val1, val2);
+	if (f == "mon")
+		return val1 / (val1 + val2);
+	if (f == "mbs")
+		return abs(val1) / (abs(val1) + val2);
 	return val1;
 }
 

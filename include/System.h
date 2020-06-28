@@ -48,6 +48,9 @@ struct solversettings
     bool makeresultsuniform = false;
     bool scalediagonal = false; 
     double landtozero_factor = 0.1; 
+    bool optimize_lambda = true; 
+    bool direct_jacobian = true; 
+    
 
 };
 

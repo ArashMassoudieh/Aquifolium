@@ -100,6 +100,7 @@ class Quan
         vector<string> GetAllRequieredEndingBlockProperties();
         void Set_Value_Update(bool x) { value_star_updated = x; }
         bool ApplyLimit() { return applylimit; }
+        bool isrigid() { return rigid; }
     protected:
 
     private:
@@ -140,6 +141,7 @@ class Quan
         string OutputItem;
         string _parameterassignedto = "";
         bool applylimit = false; 
+        bool rigid = false; 
 };
 
 string tostring(const Quan::_type &typ);

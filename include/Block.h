@@ -28,6 +28,7 @@ class Block: public Object
         void ClearLinksToFrom() {
             links_from_ids.clear(); links_to_ids.clear();
         }
+        bool isrigid(const string& variable) { return Variable(variable)->isrigid(); }
 
 
     protected:

@@ -40,6 +40,8 @@ void System::PopulateOperatorsFunctions()
     functions->push_back("pos");
     functions->push_back("min");
     functions->push_back("max");
+    functions->push_back("mon");
+    functions->push_back("mbs");
 }
 
 #ifdef QT_version
@@ -788,14 +790,35 @@ bool System::OneStepSolve(int statevarno)
                     SetOutflowLimitedVector(outflowlimitstatus_old);
                     return false; 
 				}
-				SolverTempVars.Inverse_Jacobian[statevarno] = Invert(J);
+				if (!SolverSettings.direct_jacobian)
+                    SolverTempVars.Inverse_Jacobian[statevarno] = Invert(J);
+                else
+                    SolverTempVars.Inverse_Jacobian[statevarno] = J;
                 SolverTempVars.updatejacobian[statevarno] = false;
                 
             }
+            CVector_arma X1;
             if (SolverSettings.scalediagonal)
-                X = X - SolverTempVars.Inverse_Jacobian[statevarno] * F;
+            {
+                if (!SolverSettings.direct_jacobian)
+                    X = X - SolverTempVars.Inverse_Jacobian[statevarno] * F;
+                else
+                    X = X - F/SolverTempVars.Inverse_Jacobian[statevarno];
+            }
             else
-                X = X - SolverTempVars.NR_coefficient[statevarno]*SolverTempVars.Inverse_Jacobian[statevarno]*F;
+            {
+                if (!SolverSettings.direct_jacobian)
+                    X = X - SolverTempVars.NR_coefficient[statevarno] * SolverTempVars.Inverse_Jacobian[statevarno] * F;
+                else
+                    X = X - SolverTempVars.NR_coefficient[statevarno] * F/ SolverTempVars.Inverse_Jacobian[statevarno];
+                if (SolverSettings.optimize_lambda)
+                {
+                    if (!SolverSettings.direct_jacobian)
+                        X1 = X + 0.5 * SolverTempVars.NR_coefficient[statevarno] * SolverTempVars.Inverse_Jacobian[statevarno] * F;
+                    else
+                        X1 = X + 0.5 * SolverTempVars.NR_coefficient[statevarno] * F / SolverTempVars.Inverse_Jacobian[statevarno];
+                }
+            }
 			if (!X.is_finite())
 			{
 				SolverTempVars.fail_reason.push_back("at " + aquiutils::numbertostring(SolverTempVars.t) + ": X is infinite");
@@ -804,6 +827,9 @@ bool System::OneStepSolve(int statevarno)
 			}
 
 			F = GetResiduals(variable, X);
+            CVector F1; 
+            if (SolverSettings.optimize_lambda)
+                F1 = GetResiduals(variable, X1);
 			if (!F.is_finite())
 			{
 				SolverTempVars.fail_reason.push_back("at " + aquiutils::numbertostring(SolverTempVars.t) + ": F is infinite");
@@ -812,23 +838,43 @@ bool System::OneStepSolve(int statevarno)
 			}
             err_p = err;
             err = F.norm2();
+            double err2; 
+            if (SolverSettings.optimize_lambda)
+            {
+                err2 = F1.norm2();
+                if (err2 < err)
+                {
+                    SolverTempVars.NR_coefficient[statevarno] = max(SolverTempVars.NR_coefficient[statevarno]/2.0, 0.05);
+                    SolverTempVars.updatejacobian[statevarno] = true;
+                    X = X1;
+                }
+                else
+                {
+                    SolverTempVars.NR_coefficient[statevarno] = max(min(SolverTempVars.NR_coefficient[statevarno] * 1.25, 1.0), 0.05);
+                }
+                if (min(err2, err) > err_p)
+                {
+                    error_increase_counter++;
+                }
+            }
             #ifdef Debug_mode
             //ShowMessage(numbertostring(err));
             #endif // Debug_mode
-			if (err > err_p)
+			if (err > err_p*0.9 && !SolverSettings.optimize_lambda)
 			{
-				SolverTempVars.NR_coefficient[statevarno] *= SolverSettings.NR_coeff_reduction_factor;
+				SolverTempVars.NR_coefficient[statevarno] = max(SolverTempVars.NR_coefficient[statevarno]*SolverSettings.NR_coeff_reduction_factor,0.05);
 				SolverTempVars.updatejacobian[statevarno] = true;
-                error_increase_counter++;
                 X = X_past;
 			}
-            else if (err<err_p/2.0)
+            if (err>err_p && !SolverSettings.optimize_lambda)
+                error_increase_counter++;
+            else if (err<err_p/2.0 && !SolverSettings.optimize_lambda)
             {
                 if (SolverTempVars.NR_coefficient[statevarno] < 0.99)
                     SolverTempVars.updatejacobian[statevarno] = true;
-                SolverTempVars.NR_coefficient[statevarno] = max(min(SolverTempVars.NR_coefficient[statevarno] * SolverSettings.NR_coeff_reduction_factor, 1.0), 0.05);
+                SolverTempVars.NR_coefficient[statevarno] = max(min(SolverTempVars.NR_coefficient[statevarno] / SolverSettings.NR_coeff_reduction_factor, 1.0), 0.05);
              }
-            if (error_increase_counter > 5)
+            if (error_increase_counter > 10)
             {
                 SolverTempVars.fail_reason.push_back("at " + aquiutils::numbertostring(SolverTempVars.t) + ": Error kept increasing");
                 SetOutflowLimitedVector(outflowlimitstatus_old);
@@ -970,7 +1016,11 @@ CVector_arma System::GetResiduals(const string &variable, CVector_arma &X)
 
     for (unsigned int i=0; i<blocks.size(); i++)
     {
-        if (blocks[i].GetLimitedOutflow())
+        if (blocks[i].isrigid(variable))
+        {
+            F[i] = - blocks[i].GetInflowValue(variable, Expression::timing::present);
+        }
+        else if (blocks[i].GetLimitedOutflow())
         {
             blocks[i].SetOutflowLimitFactor(X[i],Expression::timing::present);
             blocks[i].SetVal(variable, blocks[i].GetVal(variable, Expression::timing::past) * SolverSettings.landtozero_factor,Expression::timing::present);
