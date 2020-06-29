@@ -68,12 +68,15 @@ bool Objective_Function::SetProperty(const string &prop, const string &val)
 
 double Objective_Function::GetValue(const Expression::timing &tmg)
 {
-    if (system->block(location) != nullptr)
+    if (expression.param_constant_expression == "") 
+        expression = Variable("expression")->GetProperty();
+    
+    if (system->block(Variable("object")->GetProperty()) != nullptr)
     {
         current_value = expression.calc(system->block(location),tmg);
         return current_value;
     }
-    if (system->link(location) != nullptr)
+    if (system->link(Variable("object")->GetProperty()) != nullptr)
     {
         current_value = expression.calc(system->link(location),tmg,true);
         return current_value;
@@ -103,6 +106,7 @@ vector<string> Objective_Function::ItemswithOutput()
 
 double Objective_Function::GetObjective()
 {
+    SetProperty("method", Variable("method")->GetProperty());
     if (type == objfunctype::Integrate)
         return stored_time_series.integrate();
     else if (type == objfunctype::Value)

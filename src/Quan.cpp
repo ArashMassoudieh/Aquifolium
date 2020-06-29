@@ -750,7 +750,7 @@ bool Quan::SetProperty(const string &val)
     }
 	if (type == _type::string)
 	{
-		_string_value = val; 
+		_string_value = val;
         if (GetName()=="name")
         {
             if (parent)
