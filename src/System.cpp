@@ -810,13 +810,13 @@ bool System::OneStepSolve(int statevarno)
                 if (!SolverSettings.direct_jacobian)
                     X = X - SolverTempVars.NR_coefficient[statevarno] * SolverTempVars.Inverse_Jacobian[statevarno] * F;
                 else
-                    X = X - SolverTempVars.NR_coefficient[statevarno] * F/ SolverTempVars.Inverse_Jacobian[statevarno];
+                    X -= SolverTempVars.NR_coefficient[statevarno] * (F/ SolverTempVars.Inverse_Jacobian[statevarno]);
                 if (SolverSettings.optimize_lambda)
                 {
                     if (!SolverSettings.direct_jacobian)
                         X1 = X + 0.5 * SolverTempVars.NR_coefficient[statevarno] * SolverTempVars.Inverse_Jacobian[statevarno] * F;
                     else
-                        X1 = X + 0.5 * SolverTempVars.NR_coefficient[statevarno] * F / SolverTempVars.Inverse_Jacobian[statevarno];
+                        X1 = X + 0.5 * SolverTempVars.NR_coefficient[statevarno] * (F / SolverTempVars.Inverse_Jacobian[statevarno]);
                 }
             }
 			if (!X.is_finite())
@@ -827,7 +827,7 @@ bool System::OneStepSolve(int statevarno)
 			}
 
 			F = GetResiduals(variable, X);
-            CVector F1; 
+            CVector_arma F1;
             if (SolverSettings.optimize_lambda)
                 F1 = GetResiduals(variable, X1);
 			if (!F.is_finite())
