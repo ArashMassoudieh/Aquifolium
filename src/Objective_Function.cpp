@@ -14,6 +14,7 @@ Objective_Function::Objective_Function(System *_system)
 
 Objective_Function::Objective_Function(System *_system, const Expression &expr, const string &loc)
 {
+    SetType("Objective_Function");
     system = _system;
     expression = expr;
     location = loc;

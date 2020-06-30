@@ -62,14 +62,14 @@ CGA<T>::CGA(string filename, const T &model)
         GA_params.nParam++;
         params.push_back(i);
         if (Model.Parameters()[i]->GetPriorDistribution() == "lognormal")
-        {	minval.push_back(log10(Model.Parameters()[i]->GetRange().low));
-            maxval.push_back(log10(Model.Parameters()[i]->GetRange().high));
+        {	minval.push_back(log10(Model.Parameters()[i]->GetVal("low")));
+            maxval.push_back(log10(Model.Parameters()[i]->GetVal("high")));
 
         }
         else
         {
-            minval.push_back(Model.Parameters()[i]->GetRange().low);
-            maxval.push_back(Model.Parameters()[i]->GetRange().high);
+            minval.push_back(Model.Parameters()[i]->GetVal("low"));
+            maxval.push_back(Model.Parameters()[i]->GetVal("high"));
         }
         apply_to_all.push_back(false);
         if (Model.Parameters()[i]->GetPriorDistribution() == "lognormal")
@@ -117,14 +117,14 @@ CGA<T>::CGA(T *model)
         GA_params.nParam++;
         params.push_back(i);
         if (Model.Parameters()[i]->GetPriorDistribution() == "lognormal")
-        {	minval.push_back(log10(Model.Parameters()[i]->GetRange().low));
-            maxval.push_back(log10(Model.Parameters()[i]->GetRange().high));
+        {	minval.push_back(log10(Model.Parameters()[i]->GetVal("low")));
+            maxval.push_back(log10(Model.Parameters()[i]->GetVal("high")));
 
         }
         else
         {
-            minval.push_back(Model.Parameters()[i]->GetRange().low);
-            maxval.push_back(Model.Parameters()[i]->GetRange().high);
+            minval.push_back(Model.Parameters()[i]->GetVal("low"));
+            maxval.push_back(Model.Parameters()[i]->GetVal("high"));
         }
         apply_to_all.push_back(false);
         if (Model.Parameters()[i]->GetPriorDistribution() == "lognormal")

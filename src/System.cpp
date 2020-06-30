@@ -1383,6 +1383,7 @@ bool System::AppendParameter(const string &paramname, const double &lower_limit,
     else
     {
         Parameter param;
+        param.SetType("Parameter");
         param.SetRange(lower_limit, upper_limit);
         param.SetPriorDistribution(prior_distribution);
         param.SetQuantities(metamodel, "Parameter");
