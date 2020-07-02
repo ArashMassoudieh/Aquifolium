@@ -403,7 +403,13 @@ bool Command::Execute(System *_sys)
         if (Validate())
         {
             sys->SetAsParameter(assignments["object"],assignments["quantity"],assignments["parametername"]);
-            sys->object(assignments["object"])->Variable(assignments["quantity"])->SetParameterAssignedTo(assignments["parametername"]);
+			if (sys->object(assignments["object"]))
+				sys->object(assignments["object"])->Variable(assignments["quantity"])->SetParameterAssignedTo(assignments["parametername"]);
+			else
+			{
+				return false;
+				sys->GetErrorHandler()->Append("system", "command", "Execute", "object '" + assignments["object"] + "' was not found!", 11237);
+			}
             return true;
         }
         else

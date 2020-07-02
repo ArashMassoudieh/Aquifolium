@@ -1651,10 +1651,12 @@ bool System::SavetoScriptFile(const string &filename, const string &templatefile
         file << "create link;" << links[i].toCommand() << std::endl;
 
     for (unsigned int i=0; i<blocks.size(); i++)
-        file << blocks[i].toCommandSetAsParam() << std::endl;
+        if (blocks[i].toCommandSetAsParam()!="")
+			file << blocks[i].toCommandSetAsParam() << std::endl;
 
     for (unsigned int i=0; i<links.size(); i++)
-        file << links[i].toCommandSetAsParam() << std::endl;
+		if (links[i].toCommandSetAsParam() != "")
+			file << links[i].toCommandSetAsParam() << std::endl;
 
     for (unsigned int i=0; i<ObjectiveFunctionsCount(); i++)
         file << "create objectivefunction;" << ObjectiveFunctions()[i]->toCommand() << std::endl;
