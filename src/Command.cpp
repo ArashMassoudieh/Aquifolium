@@ -163,11 +163,20 @@ bool Command::Execute(System *_sys)
         {
             sys->clear();
             sys->GetMetaModel()->Clear();
-            if (sys->GetQuanTemplate(assignments["filename"]))
-                return true;
+						
+			if (sys->GetQuanTemplate(assignments["filename"]))
+			{
+				return true;
+			}
             else
             {
-                last_error = "File '" + assignments["filename"] + "' was not found!";
+				if (!sys->GetQuanTemplate(sys->DefaultTemplatePath() + assignments["filename"]))
+				{
+					last_error = "File '" + assignments["filename"] + "' was not found!";
+					return false;
+				}
+				else
+					return true; 
             }
         }
         else
@@ -181,7 +190,13 @@ bool Command::Execute(System *_sys)
                 return true;
             else
             {
-                last_error = "File '" + assignments["filename"] + "' was not found!";
+				if (!sys->AppendQuanTemplate(sys->DefaultTemplatePath() + assignments["filename"]))
+				{
+					last_error = "File '" + assignments["filename"] + "' was not found!";
+					return false;
+				}
+				else
+					return true; 
             }
         }
         else
@@ -452,14 +467,16 @@ bool Command::Execute(System *_sys)
                 L.SetName(assignments["name"]);
                 L.SetType(assignments["type"]);
 
-                sys->AddLink(L,assignments["from"],assignments["to"]);
-                L.SetName(assignments["name"]);
-                for (map<string,string>::iterator it=assignments.begin(); it!=assignments.end(); it++)
-                {
-                    if (it->first!="type" && it->first!="to" && it->first!="from")
-                        sys->link(assignments["name"])->SetProperty(it->first,it->second);
-                }
-                return true;
+				if (sys->AddLink(L, assignments["from"], assignments["to"]))
+				{	L.SetName(assignments["name"]);
+					for (map<string, string>::iterator it = assignments.begin(); it != assignments.end(); it++)
+					{
+						if (it->first != "type" && it->first != "to" && it->first != "from")
+							sys->link(assignments["name"])->SetProperty(it->first, it->second);
+					}
+					return true;
+				}
+				else return false;
             }
             else
                 return false;

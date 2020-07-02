@@ -96,6 +96,7 @@ struct _directories
 {
     string inputpath;
     string outputpath;
+	string default_template_path; 
 };
 
 class System: public Object
@@ -223,7 +224,8 @@ class System: public Object
         void SetAllParents();
         ErrorHandler errorhandler;
         bool Echo(const string &object, const string &quantity = "", const string &feature="");
-        string InputPath() {return paths.inputpath;}
+		string& DefaultTemplatePath() { return paths.default_template_path; }
+		string InputPath() {return paths.inputpath;}
         string OutputPath() {return paths.outputpath;}
         vector<CTimeSeries*> TimeSeries();
         double GetMinimumNextTimeStepSize();

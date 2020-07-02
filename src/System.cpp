@@ -134,7 +134,20 @@ bool System::AddSource(Source &src)
 
 bool System::AddLink(Link &lnk, const string &source, const string &destination)
 {
-    if (!VerifyAsDestination(block(destination), &lnk))
+	if (!block(source))
+	{
+		errorhandler.Append("System", "System", "AddLink", "Block '" + source + "' does not exist!", 8791);
+		return false;
+	}
+
+	if (!block(destination))
+	{
+		errorhandler.Append("System", "System", "AddLink", "Block '" + destination + "' does not exist!", 8792);
+		return false;
+	}
+	
+	
+	if (!VerifyAsDestination(block(destination), &lnk))
         return false; 
     if (!VerifyAsSource(block(source), &lnk))
         return false;
@@ -142,8 +155,8 @@ bool System::AddLink(Link &lnk, const string &source, const string &destination)
     link(lnk.GetName())->SetParent(this);
     link(lnk.GetName())->SetConnectedBlock(Expression::loc::source, source);
     link(lnk.GetName())->SetConnectedBlock(Expression::loc::destination, destination);
-    block(source)->AppendLink(links.size()-1,Expression::loc::source);
-    block(destination)->AppendLink(links.size()-1,Expression::loc::destination);
+	block(source)->AppendLink(links.size()-1,Expression::loc::source);
+	block(destination)->AppendLink(links.size()-1,Expression::loc::destination);
 	link(lnk.GetName())->SetQuantities(metamodel, lnk.GetType());
 	link(lnk.GetName())->SetParent(this);
 	return true;
@@ -316,7 +329,7 @@ Object *System::GetObjectBasedOnPrimaryKey(const string &s)
 
 bool System::GetQuanTemplate(const string &filename)
 {
-    metamodel.GetFromJsonFile(filename);
+    if (!metamodel.GetFromJsonFile(filename)) return false;
     TransferQuantitiesFromMetaModel();
     return true;
 }
