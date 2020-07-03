@@ -206,6 +206,7 @@ class System: public Object
         void UpdateObjectiveFunctions(double t);
         double GetObjectiveFunctionValue();
         Objective_Function *ObjectiveFunction(const string &name); // returns a pointer to an objective function
+// Parameters
         Parameter *GetParameter(const string &name) {return parameter_set[name];}
         Parameter *GetParameter(int i) {return parameter_set[i];}
         Parameter_Set &Parameters() {return parameter_set;}
@@ -255,7 +256,9 @@ class System: public Object
         vector<string> *functions;
         void SetOutputItems();
         vector<string> addedtemplates;
-        void AddPropertytoAllBlocks(Quan &quan);
+        void AddPropertytoAllBlocks(const string &name, Quan &quan);
+        void AddPropertytoAllLinks(const string &name, Quan &quan);
+        void UpdateAddedPropertiestoAllBlockLinks();
 #endif
 
     protected:
@@ -266,6 +269,8 @@ class System: public Object
         vector<Link> links;
         vector<Source> sources;
         vector<Object> Settings;
+        map<string, Quan> addedpropertiestoallblocks;
+        map<string, Quan> addedpropertiestoalllinks;
         MetaModel metamodel;
         CVector_arma GetResiduals(const string &variable, CVector_arma &X);
 		void CorrectStoragesBasedonFluxes(const string& variable);

@@ -1862,3 +1862,56 @@ bool System::VerifyAsDestination(Block* blk, Link* lnk)
 
 }
 
+void System::AddPropertytoAllBlocks(const string &name, Quan &quan)
+{
+    if (addedpropertiestoallblocks.count(name)==0)
+        addedpropertiestoallblocks[name] = quan;
+    else
+        errorhandler.Append("System", "System", "AddPropertytoAllBlocks", "Property '" + name + "' has already been added to all blocks", 7649);
+    for (unsigned int i=0; i<blocks.size(); i++)
+    {
+        if (!blocks[i].HasQuantity(name))
+        {
+            blocks[i].AddQnantity(name, quan);
+        }
+    }
+}
+void System::AddPropertytoAllLinks(const string &name, Quan &quan)
+{
+    if (addedpropertiestoalllinks.count(name)==0)
+        addedpropertiestoalllinks[name] = quan;
+    else
+        errorhandler.Append("System", "System", "AddPropertytoAllLinks", "Property '" + name + "' has already been added to all links", 7648);
+    for (unsigned int i=0; i<links.size(); i++)
+    {
+        if (!links[i].HasQuantity(name))
+        {
+            links[i].AddQnantity(name, quan);
+        }
+    }
+}
+void System::UpdateAddedPropertiestoAllBlockLinks()
+{
+    for (map<string,Quan>::iterator it = addedpropertiestoallblocks.begin(); it!=addedpropertiestoallblocks.end(); it++  )
+    {
+        for (unsigned int i=0; i<blocks.size(); i++)
+        {
+            if (!blocks[i].HasQuantity(it->first))
+            {
+                blocks[i].AddQnantity(it->first, it->second);
+            }
+        }
+    }
+
+    for (map<string,Quan>::iterator it = addedpropertiestoalllinks.begin(); it!=addedpropertiestoalllinks.end(); it++  )
+    {
+        for (unsigned int i=0; i<links.size(); i++)
+        {
+            if (!links[i].HasQuantity(it->first))
+            {
+                links[i].AddQnantity(it->first, it->second);
+            }
+        }
+    }
+}
+
