@@ -11,7 +11,7 @@ public:
 	CBinary(int n);
     CBinary(int n, int preci);
 	virtual ~CBinary();
-	int nDigits;
+    int nDigits = 4;
     vector<int> Digit;
 	int precision;
 	CBinary(const CBinary &B);
