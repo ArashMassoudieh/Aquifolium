@@ -20,7 +20,7 @@ class Rule
         double calc(Object *W, const Expression::timing &tmg);
         string GetLastError() {return last_error;}
         _condplusresult *operator[](int i) {return &rules[i];}
-        string ToString(int _tabs = 0);
+        string ToString(int _tabs = 0) const;
     protected:
 
     private:

@@ -73,7 +73,7 @@ bool Condition::calc(Object *W, const Expression::timing &tmg)
     return out;
 }
 
-string Condition::ToString(int _tabs)
+string Condition::ToString(int _tabs) const
 {
     string s = tabs(_tabs+1);
     for (unsigned int i=0; i<oprtr.size(); i++)

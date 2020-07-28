@@ -1,5 +1,8 @@
 #include "MetaModel.h"
 #include <json/json.h>
+#ifdef Q_version
+    #include <QDebug>
+#endif
 
 MetaModel::MetaModel()
 {
@@ -61,7 +64,9 @@ QuanSet* MetaModel::GetItem(const string &typ)
 #pragma warning(disable : 4996)
 bool MetaModel::GetFromJsonFile(const string &filename)
 {
+    //qDebug()<<"Clearing!";
     Clear();
+    //qDebug()<<"Cleared!";
     Json::Value root;
     Json::Reader reader;
 
@@ -71,9 +76,11 @@ bool MetaModel::GetFromJsonFile(const string &filename)
 		cout << "File " + filename + " was not found!";
 		return false;
 	}
+    //else
+    //    qDebug()<<"File is good!";
 
     file >> root;
-
+    //qDebug()<<"File loaded!";
     if(!reader.parse(file, root, true)){
             //for some reason it always fails to parse
         std::cout  << "Failed to parse configuration\n"
@@ -81,9 +88,13 @@ bool MetaModel::GetFromJsonFile(const string &filename)
         last_error = "Failed to parse configuration\n";
     }
 
+    //qDebug()<<"Parsed!";
+
 
     for (Json::ValueIterator object_types=root.begin(); object_types!=root.end(); ++object_types)
     {
+        //qDebug()<<QString::fromStdString(object_types.key().asString());
+
         if (object_types.key().asString()=="solutionorder")
         {
             for (Json::Value::ArrayIndex i = 0; i != root["solutionorder"].size(); i++)
@@ -93,6 +104,7 @@ bool MetaModel::GetFromJsonFile(const string &filename)
             break;
         }
         QuanSet quanset(object_types);
+        //qDebug()<<QString::fromStdString(object_types.key().asString());
         Append(object_types.key().asString(),quanset);
     }
 	return true;

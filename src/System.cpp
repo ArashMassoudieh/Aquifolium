@@ -6,6 +6,10 @@
 #include <Script.h>
 
 
+#ifdef Q_version
+    #include <QDebug>
+#endif
+
 
 #ifdef QT_version
 #include "node.h"
@@ -329,6 +333,7 @@ Object *System::GetObjectBasedOnPrimaryKey(const string &s)
 
 bool System::GetQuanTemplate(const string &filename)
 {
+    //qDebug()<<QString::fromStdString(filename);
     if (!metamodel.GetFromJsonFile(filename)) return false;
     TransferQuantitiesFromMetaModel();
     return true;

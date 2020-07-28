@@ -1031,7 +1031,7 @@ string aquiutils::tail(std::string const& source, size_t const length) {
 	return source.substr(source.size() - length);
 } // tail
 
-string Expression::ToString()
+string Expression::ToString() const
 {
     string out;
     if (param_constant_expression=="parameter")

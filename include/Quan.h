@@ -81,7 +81,7 @@ class Quan
         string &WarningMessage() {return warning_message;}
         Condition &Criteria () {return criteria;}
         string &InputType() {return input_type;}
-		string ToString(int _tabs=1);
+        string ToString(int _tabs=1) const;
         bool &AskFromUser() {return ask_from_user;}
 		void SetName(const string &name) {_var_name=name;}
 		bool AppendError(const string &objectname, const string &cls, const string &funct, const string &description, const int &code);

@@ -4,6 +4,10 @@
 #include <json/json.h>
 
 
+#ifdef Q_version
+    #include <QDebug>
+#endif
+
 #ifdef QT_version
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -64,7 +68,9 @@ QuanSet::QuanSet(Json::ValueIterator& object_types)
         {
             if (it->size()!=0)
             {
+                //qDebug()<<QString::fromStdString(it.key().asString());
                 Quan Q(it);
+                //qDebug()<<QString::fromStdString(Q.ToString());
                 Append(it.key().asString(),Q);
             }
             else {
@@ -112,9 +118,14 @@ bool QuanSet::Append(const string &s, const Quan &q)
     }
     else
     {
+        //qDebug()<<QString::fromStdString(q.ToString());
         quans[s] = q;
+        //qDebug()<<"Done!";
         quantity_order.push_back(s);
+        //qDebug()<<"Done!";
+        return true;
     }
+
 }
 
 void QuanSet::Append(QuanSet &qset)
@@ -287,13 +298,13 @@ QStringList QuanSet::QQuanNames()
 QuanSet::QuanSet(QJsonObject& object_types)
 {
 	parent = nullptr;
-	qDebug() << object_types; 
+    //qDebug() << object_types;
 	Name() = object_types.keys()[0].toStdString();
 	ObjectType = "Entity";
 	BlockLink = blocklink::entity;
 	QStringList keys = object_types.keys(); 
-	qDebug() << keys; 
-	qDebug() << object_types[keys[0]] << endl; 
+    //qDebug() << keys;
+    //qDebug() << object_types[keys[0]] << endl;
 	//for each (QJsonObject it in object_types.value(object_types.keys()[0]).toArray())
 	//{
 		//qDebug() << it.value; 

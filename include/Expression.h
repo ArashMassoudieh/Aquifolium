@@ -40,7 +40,7 @@ class Expression
         int lookup_operators(const string &s);
         int count_operators(const string &s);
         enum loc {self, source, destination};
-        string ToString();
+        string ToString() const;
 		vector<string> GetAllRequieredStartingBlockProperties();
 		vector<string> GetAllRequieredEndingBlockProperties();
     protected:

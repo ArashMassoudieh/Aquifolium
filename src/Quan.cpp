@@ -544,7 +544,7 @@ Source* Quan::GetSource()
 }
 
 
-string Quan::ToString(int _tabs)
+string Quan::ToString(int _tabs) const
 {
     string out = aquiutils::tabs(_tabs) + _var_name + ":\n";
     out += aquiutils::tabs(_tabs) + "{\n";
@@ -571,7 +571,7 @@ string Quan::ToString(int _tabs)
 
 	if (type == _type::source)
 	{
-		if (source==nullptr)
+        if (source!=nullptr)
 			out += aquiutils::tabs(_tabs + 1) + "source: " + source->GetName() + "\n";
 		else
 			out += aquiutils::tabs(_tabs + 1) + "source: " + sourcename + "\n";

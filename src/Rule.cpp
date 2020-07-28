@@ -49,7 +49,7 @@ double Rule::calc(Object *W, const Expression::timing &tmg)
     return 0;
 }
 
-string Rule::ToString(int _tabs)
+string Rule::ToString(int _tabs) const
 {
     string out = aquiutils::tabs(_tabs) + "{\n";
     for (unsigned int i=0; i<rules.size(); i++)
