@@ -83,6 +83,7 @@ class Quan
         string &InputType() {return input_type;}
         string ToString(int _tabs=1) const;
         bool &AskFromUser() {return ask_from_user;}
+        bool &WhenCopied() {return when_copied;}
 		void SetName(const string &name) {_var_name=name;}
 		bool AppendError(const string &objectname, const string &cls, const string &funct, const string &description, const int &code);
         bool SetProperty(const string &val);
@@ -138,6 +139,7 @@ class Quan
         string warning_error;
         string warning_message;
         bool ask_from_user=false;
+        bool when_copied =false;
         string OutputItem;
         string _parameterassignedto = "";
         bool applylimit = false; 

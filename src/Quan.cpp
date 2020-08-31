@@ -136,7 +136,12 @@ Quan::Quan(Json::ValueIterator &it)
         InputType() = (*it)["inputtype"].asString();
 
     if (it->isMember("ask_user"))
-    {    if (aquiutils::tolower((*it)["ask_user"].asString())=="true")
+    {   if (aquiutils::tolower((*it)["ask_user"].asString())=="when_copied")
+        {
+            AskFromUser() = false;
+            WhenCopied() = true;
+        }
+        if (aquiutils::tolower((*it)["ask_user"].asString())=="true")
             AskFromUser() = true;
     }
     else
@@ -251,7 +256,12 @@ Quan::Quan(QJsonObject& it)
 
 	if (it.keys().contains("ask_user"))
 	{
-		if (aquiutils::tolower(it.value("ask_user").toString().toStdString()) == "true")
+        if (aquiutils::tolower(it.value("ask_user").toString().toStdString()) == "when_copied")
+        {
+            AskFromUser() = false;
+            WhenCopied() = true;
+        }
+        if (aquiutils::tolower(it.value("ask_user").toString().toStdString()) == "true")
 			AskFromUser() = true;
 	}
 	else
