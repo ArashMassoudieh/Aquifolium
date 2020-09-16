@@ -334,16 +334,23 @@ Object *System::GetObjectBasedOnPrimaryKey(const string &s)
 bool System::GetQuanTemplate(const string &filename)
 {
     //qDebug()<<QString::fromStdString(filename);
-    if (!metamodel.GetFromJsonFile(filename)) return false;
-    TransferQuantitiesFromMetaModel();
+    if (aquiutils::lookup(addedtemplates,filename)==-1)
+    {
+        if (!metamodel.GetFromJsonFile(filename)) return false;
+        addedtemplates.push_back(filename);
+        TransferQuantitiesFromMetaModel();
+    }
     return true;
 }
 
 bool System::AppendQuanTemplate(const string &filename)
 {
-    if (!metamodel.AppendFromJsonFile(filename)) return false;
-    addedtemplates.push_back(filename);
-    TransferQuantitiesFromMetaModel();
+    if (aquiutils::lookup(addedtemplates,filename)==-1)
+    {
+        if (!metamodel.AppendFromJsonFile(filename)) return false;
+        addedtemplates.push_back(filename);
+        TransferQuantitiesFromMetaModel();
+    }
     return true;
 }
 

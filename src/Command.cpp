@@ -162,6 +162,7 @@ bool Command::Execute(System *_sys)
         if (Validate())
         {
             sys->clear();
+            sys->addedtemplates.clear();
             sys->GetMetaModel()->Clear();
 						
 			if (sys->GetQuanTemplate(assignments["filename"]))
@@ -170,7 +171,7 @@ bool Command::Execute(System *_sys)
 			}
             else
             {
-				if (!sys->GetQuanTemplate(sys->DefaultTemplatePath() + assignments["filename"]))
+                if (!sys->GetQuanTemplate(sys->DefaultTemplatePath() + aquiutils::GetOnlyFileName(assignments["filename"])))
 				{
 					last_error = "File '" + assignments["filename"] + "' was not found!";
 					return false;
@@ -190,7 +191,7 @@ bool Command::Execute(System *_sys)
                 return true;
             else
             {
-				if (!sys->AppendQuanTemplate(sys->DefaultTemplatePath() + assignments["filename"]))
+                if (!sys->AppendQuanTemplate(sys->DefaultTemplatePath() + aquiutils::GetOnlyFileName(assignments["filename"])))
 				{
 					last_error = "File '" + assignments["filename"] + "' was not found!";
 					return false;

@@ -153,7 +153,7 @@ bool MetaModel::AppendFromJsonFile(const string &filename)
 
 void MetaModel::Clear()
 {
-    solvevariableorder.clear(); 
+    solvevariableorder.clear();
     metamodel.clear();
     errors.clear();
 }

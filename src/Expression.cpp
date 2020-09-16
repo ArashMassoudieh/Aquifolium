@@ -1127,5 +1127,15 @@ vector<string> Expression::GetAllRequieredEndingBlockProperties()
 	return s;
 }
 
+string aquiutils::GetOnlyFileName(const string &fullfilename)
+{
+    vector<char> del;
+    del.push_back('/');
+    del.push_back('\\');
+    vector<string> splittedbyslash = aquiutils::split(fullfilename,del);
+    return splittedbyslash[splittedbyslash.size()-1];
+
+}
+
 
 

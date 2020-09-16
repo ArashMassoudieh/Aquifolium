@@ -109,6 +109,7 @@ namespace aquiutils
 	double max(vector<double> x);
 	int max(vector<int> x);
 	string remove_backslash_r(const string &s);
+    string GetOnlyFileName(const string &fullfilename);
 };
 
 #endif // EXPRESSION_H
