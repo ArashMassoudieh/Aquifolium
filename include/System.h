@@ -4,6 +4,7 @@
 #include "Link.h"
 #include "Object.h"
 #include "Source.h"
+#include "constituent.h"
 #include "Vector_arma.h"
 #include "Matrix_arma.h"
 #include "MetaModel.h"
@@ -121,6 +122,7 @@ class System: public Object
         bool AddBlock(Block &blk, bool SetQuantities=true);
         bool AddSource(Source &src);
         bool AddLink(Link &lnk, const string &source, const string &destination);
+        bool AddConstituent(Constituent &cnst);
         Block *block(const string &s);
         Block *block(unsigned int i)
         {
@@ -145,6 +147,7 @@ class System: public Object
         vector<string> GetAllLinkNames();
         unsigned int ParametersCount() {return Parameters().size();}
         unsigned int ObjectiveFunctionsCount() {return ObjectiveFunctions().size();}
+        unsigned int ConstituentsCount() {return constituents.size();}
         Link *link(const string &s);
         Link *link(unsigned int i)
         {
@@ -154,9 +157,16 @@ class System: public Object
                 return nullptr;
         }
         Source *source(const string &s);
+        Constituent *constituent(const string &s);
         Source *source(int i)
         {   if (i<sources.size())
                 return &sources[i];
+            else
+                return nullptr;
+        }
+        Constituent *constituent(int i)
+        {   if (i<constituents.size())
+                return &constituents[i];
             else
                 return nullptr;
         }
@@ -256,9 +266,12 @@ class System: public Object
         vector<string> *functions;
         void SetOutputItems();
         vector<string> addedtemplates;
+        //constituents
         void AddPropertytoAllBlocks(const string &name, Quan &quan);
         void AddPropertytoAllLinks(const string &name, Quan &quan);
         void UpdateAddedPropertiestoAllBlockLinks();
+        vector<Quan> GetToBeCopiedQuantities();
+        //constituents
 #endif
 
     protected:
@@ -268,6 +281,7 @@ class System: public Object
         vector<Block> blocks;
         vector<Link> links;
         vector<Source> sources;
+        vector<Constituent> constituents;
         vector<Object> Settings;
         map<string, Quan> addedpropertiestoallblocks;
         map<string, Quan> addedpropertiestoalllinks;

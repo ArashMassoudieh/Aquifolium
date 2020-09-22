@@ -11,14 +11,6 @@
 #endif
 
 
-#ifdef QT_version
-#include "node.h"
-#include "edge.h"
-#include "GWidget.h"
-#include "QDebug"
-#include "logwindow.h"
-#endif
-
 System::System():Object::Object()
 {
    PopulateOperatorsFunctions();
@@ -136,6 +128,16 @@ bool System::AddSource(Source &src)
 	return true;
 }
 
+bool System::AddConstituent(Constituent &cnst)
+{
+    constituents.push_back(cnst);
+    constituent(cnst.GetName())->SetParent(this);
+    constituent(cnst.GetName())->SetQuantities(metamodel, cnst.GetType());
+    constituent(cnst.GetName())->SetParent(this);
+    return true;
+}
+
+
 bool System::AddLink(Link &lnk, const string &source, const string &destination)
 {
 	if (!block(source))
@@ -209,7 +211,13 @@ Source *System::source(const string &s)
     for (unsigned int i=0; i<sources.size(); i++)
         if (sources[i].GetName() == s) return &sources[i];
 
-    //errorhandler.Append(GetName(),"System","link","Link '" + s + "' was not found",104);
+    return nullptr;
+}
+
+Constituent *System::constituent(const string &s)
+{
+    for (unsigned int i=0; i<constituents.size(); i++)
+        if (constituents[i].GetName() == s) return &constituents[i];
 
     return nullptr;
 }
@@ -260,6 +268,9 @@ Object *System::object(const string &s)
 
     for (unsigned int i=0; i<sources.size(); i++)
         if (sources[i].GetName() == s) return &sources[i];
+
+    for (unsigned int i=0; i<constituents.size(); i++)
+        if (constituents[i].GetName() == s) return &constituents[i];
 
     for (unsigned int i=0; i<ParametersCount(); i++)
         if (Parameters()[i]->GetName() == s) return Parameters()[i];
@@ -1925,5 +1936,12 @@ void System::UpdateAddedPropertiestoAllBlockLinks()
             }
         }
     }
+}
+
+vector<Quan> System::GetToBeCopiedQuantities()
+{
+
+
+
 }
 
