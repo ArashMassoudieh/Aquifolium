@@ -18,6 +18,7 @@ Objective_Function::Objective_Function(System *_system, const Expression &expr, 
     system = _system;
     expression = expr;
     location = loc;
+    
 }
 
 Objective_Function::~Objective_Function()
@@ -31,6 +32,7 @@ Objective_Function::Objective_Function(const Objective_Function& other)
     expression = other.expression;
     location = other.location;
     type = other.type;
+    stored_time_series = other.stored_time_series;
 }
 
 Objective_Function& Objective_Function::operator=(const Objective_Function& rhs)
@@ -40,6 +42,7 @@ Objective_Function& Objective_Function::operator=(const Objective_Function& rhs)
     expression = rhs.expression;
     location = rhs.location;
     type = rhs.type;
+    stored_time_series = rhs.stored_time_series; 
     return *this;
 }
 

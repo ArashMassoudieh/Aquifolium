@@ -1940,8 +1940,21 @@ void System::UpdateAddedPropertiestoAllBlockLinks()
 
 vector<Quan> System::GetToBeCopiedQuantities()
 {
+    vector<Quan> quantitiestobecopiedtoallobjects;
+    for (int i = 0; i < constituents.size(); i++)
+    {
+        vector<Quan> quans = constituent(i)->GetCopyofAllQuans();
+        for (int j = 0; j < quans.size(); j++)
+        {
+            if (quans[j].WhenCopied())
+            {
+                quans[j].SetName(constituent(i)->GetName() + ":" + quans[j].GetName());
+                quantitiestobecopiedtoallobjects.push_back(quans[j]);
+            }
+        }
 
-
+    }
+    return quantitiestobecopiedtoallobjects;
 
 }
 

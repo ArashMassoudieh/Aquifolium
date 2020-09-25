@@ -304,10 +304,7 @@ void CGA<T>::assignfitnesses()
 
 		int jj = 0;
 		Ind[k].actual_fitness = 0;
-#ifdef Q_version
-   if (rtw!=nullptr)
-       rtw->SetProgress2(double(k+1)/GA_params.maxpop);
-#endif
+
 		Models[k] = Model;
         Models[k].SetSilent(true);
 		for (int i = 0; i < GA_params.nParam; i++)
@@ -343,6 +340,13 @@ omp_set_num_threads(numberOfThreads);
 			Ind[k].actual_fitness = Models[k].GetObjectiveFunctionValue();
 			epochs[k] += Models[k].EpochCount();
 			time_[k] = ((float)(clock() - t0))/CLOCKS_PER_SEC;
+#ifdef Q_version
+			if (rtw != nullptr)
+			{
+				rtw->SetProgress2(double(k + 1) / GA_params.maxpop);
+				QCoreApplication::processEvents();
+			}
+#endif
 #pragma omp critical
             {
                 FileOut = fopen((filenames.pathname+"detail_GA.txt").c_str(),"a");
@@ -464,7 +468,8 @@ void CGA<T>::SetParameters(Object *obj)
 template<class T>
 int CGA<T>::optimize()
 {
-    string RunFileName = filenames.pathname + filenames.outputfilename;
+	QCoreApplication::processEvents();
+	string RunFileName = filenames.pathname + filenames.outputfilename;
 
 	FILE *FileOut;
 	FILE *FileOut1;
@@ -526,8 +531,8 @@ int CGA<T>::optimize()
 #ifdef Q_version
     if (rtw)
     {   if (i==0) rtw->SetYRange(0,Ind[j].actual_fitness*1.1);
-        rtw->SetProgress(double(i+1)/double(GA_params.nGen));
-        rtw->AddDataPoint(i,Ind[j].actual_fitness);
+        rtw->SetProgress(double(i)/double(GA_params.nGen));
+        rtw->AddDataPoint(i+1,Ind[j].actual_fitness);
         QCoreApplication::processEvents();
     }
 #endif
@@ -612,6 +617,14 @@ int CGA<T>::optimize()
 	fclose(FileOut);
 
 	assignfitnesses(final_params);
+
+#ifdef Q_version
+	if (rtw)
+	{
+		rtw->SetProgress(1.0);
+		QCoreApplication::processEvents();
+	}
+#endif
 
 	Models.clear();
 

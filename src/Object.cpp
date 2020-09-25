@@ -297,6 +297,16 @@ void Object::VerifyQuans(ErrorHandler *errorhandler)
     }
 }
 
+vector<Quan> Object::GetCopyofAllQuans()
+{
+	vector<Quan> out;
+    for (map<string, Quan>::iterator it = GetVars()->begin(); it != GetVars()->end(); it++)
+    {
+        out.push_back(it->second);
+    }
+    return out;
+}
+
 bool Object::HasQuantity(const string &q)
 {
     if (var.Count(q)==0)

@@ -70,6 +70,7 @@ class Object
             {
                 return &var;
             }
+        vector<Quan> GetCopyofAllQuans();
         void SetOutflowLimitFactor(const double &val, const Expression::timing &tmg) 
 		{
 			if (tmg == Expression::timing::past)
