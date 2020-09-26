@@ -335,6 +335,7 @@ Quan::Quan(const Quan& other)
     estimable = other.estimable;
     applylimit = other.applylimit; 
     rigid = other.rigid;
+    when_copied = other.when_copied;
 	//parent = other.parent;
 }
 
@@ -374,6 +375,7 @@ Quan& Quan::operator=(const Quan& rhs)
     ask_from_user = rhs.ask_from_user;
     applylimit = rhs.applylimit;
     rigid = rhs.rigid;
+    when_copied = rhs.when_copied;
     //parent = rhs.parent;
     return *this;
 }

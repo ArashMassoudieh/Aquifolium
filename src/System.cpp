@@ -1958,3 +1958,80 @@ vector<Quan> System::GetToBeCopiedQuantities()
 
 }
 
+vector<Quan> System::GetToBeCopiedQuantities(Constituent *consttnt)
+{
+    vector<Quan> quantitiestobecopiedtoallobjects;
+    vector<Quan> quans = consttnt->GetCopyofAllQuans();
+    for (unsigned int j = 0; j < quans.size(); j++)
+    {
+        if (quans[j].WhenCopied())
+        {
+            quans[j].SetName(consttnt->GetName() + ":" + quans[j].GetName());
+            quans[j].Description() = consttnt->GetName() + ":" + quans[j].Description();
+            quans[j].AskFromUser() = true;
+            quantitiestobecopiedtoallobjects.push_back(quans[j]);
+        }
+    }
+
+    return quantitiestobecopiedtoallobjects;
+}
+
+bool System::AddAllConstituentRelateProperties()
+{
+
+
+}
+
+
+bool System::AddAllConstituentRelateProperties(Block *blk)
+{
+    for (unsigned int i=0; i<constituents.size();i++)
+    {
+        vector<Quan> quanstobecopied = GetToBeCopiedQuantities(constituent(i));
+        for (unsigned int j=0; j<quanstobecopied.size(); j++)
+        {
+            if (blk->GetVars()->Count(quanstobecopied[j].GetName())==0)
+                blk->GetVars()->Append(quanstobecopied[j].GetName(),quanstobecopied[j]);
+        }
+    }
+    return true;
+}
+
+bool System::AddAllConstituentRelateProperties(Link *lnk)
+{
+    for (unsigned int i=0; i<constituents.size();i++)
+    {
+        vector<Quan> quanstobecopied = GetToBeCopiedQuantities(constituent(i));
+        for (unsigned int j=0; j<quanstobecopied.size(); j++)
+        {
+            if (lnk->GetVars()->Count(quanstobecopied[j].GetName())==0)
+                lnk->GetVars()->Append(quanstobecopied[j].GetName(),quanstobecopied[j]);
+        }
+    }
+    return true;
+
+}
+
+
+bool System::AddConstituentRelateProperties(Constituent *consttnt)
+{
+    vector<Quan> quanstobecopied = GetToBeCopiedQuantities(consttnt);
+    for (unsigned int i=0; i<blocks.size(); i++)
+    {
+        for (unsigned int j=0; j<quanstobecopied.size(); j++)
+        {
+            if (blocks[i].GetVars()->Count(quanstobecopied[j].GetName())==0)
+                block(i)->GetVars()->Append(quanstobecopied[j].GetName(),quanstobecopied[j]);
+        }
+    }
+
+    for (unsigned int i=0; i<links.size(); i++)
+    {
+        for (unsigned int j=0; j<quanstobecopied.size(); j++)
+        {
+            if (links[i].GetVars()->Count(quanstobecopied[j].GetName())==0)
+                link(i)->GetVars()->Append(quanstobecopied[j].GetName(),quanstobecopied[j]);
+        }
+    }
+}
+

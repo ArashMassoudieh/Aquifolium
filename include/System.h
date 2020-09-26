@@ -271,6 +271,12 @@ class System: public Object
         void AddPropertytoAllLinks(const string &name, Quan &quan);
         void UpdateAddedPropertiestoAllBlockLinks();
         vector<Quan> GetToBeCopiedQuantities();
+        vector<Quan> GetToBeCopiedQuantities(Constituent *consttnt);
+        bool AddAllConstituentRelateProperties();
+        bool AddConstituentRelateProperties(Constituent *constituent);
+        bool AddAllConstituentRelateProperties(Block *blk);
+        bool AddAllConstituentRelateProperties(Link *lnk);
+
         //constituents
 #endif
 
