@@ -1941,14 +1941,15 @@ void System::UpdateAddedPropertiestoAllBlockLinks()
 vector<Quan> System::GetToBeCopiedQuantities()
 {
     vector<Quan> quantitiestobecopiedtoallobjects;
-    for (int i = 0; i < constituents.size(); i++)
+    for (unsigned int i = 0; i < constituents.size(); i++)
     {
         vector<Quan> quans = constituent(i)->GetCopyofAllQuans();
-        for (int j = 0; j < quans.size(); j++)
+        for (unsigned int j = 0; j < quans.size(); j++)
         {
             if (quans[j].WhenCopied())
             {
                 quans[j].SetName(constituent(i)->GetName() + ":" + quans[j].GetName());
+                quans[j].SetRole(Quan::_role::none);
                 quantitiestobecopiedtoallobjects.push_back(quans[j]);
             }
         }
@@ -1968,7 +1969,7 @@ vector<Quan> System::GetToBeCopiedQuantities(Constituent *consttnt)
         {
             quans[j].SetName(consttnt->GetName() + ":" + quans[j].GetName());
             quans[j].Description() = consttnt->GetName() + ":" + quans[j].Description();
-            quans[j].AskFromUser() = true;
+            quans[j].SetRole(Quan::_role::none);
             quantitiestobecopiedtoallobjects.push_back(quans[j]);
         }
     }

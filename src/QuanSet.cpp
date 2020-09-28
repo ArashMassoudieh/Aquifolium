@@ -192,11 +192,11 @@ Quan* QuanSet::GetVarAskable(int i)
     int j=0;
     for (map<string,Quan>::iterator it=quans.begin(); it!=quans.end(); it++)
     {
-        if (j==i && it->second.AskFromUser())
-        {   return &it->second;
+        if (j==i && it->second.AskFromUser() && !it->second.WhenCopied())
+           return &it->second;
 
-        }
-        if (it->second.AskFromUser()) j++;
+
+        if (it->second.AskFromUser() && !it->second.WhenCopied()) j++;
 
     }
 
@@ -210,7 +210,7 @@ unsigned long QuanSet::AskableSize()
     unsigned int j=0;
     for (map<string,Quan>::iterator it=quans.begin(); it!=quans.end(); it++)
     {
-        if (it->second.AskFromUser()) j++;
+        if (it->second.AskFromUser() && !it->second.WhenCopied() ) j++;
     }
     return j;
 }

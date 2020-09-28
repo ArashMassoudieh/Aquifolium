@@ -136,17 +136,22 @@ Quan::Quan(Json::ValueIterator &it)
         InputType() = (*it)["inputtype"].asString();
 
     if (it->isMember("ask_user"))
-    {   if (aquiutils::tolower((*it)["ask_user"].asString())=="when_copied")
-        {
-            AskFromUser() = false;
-            WhenCopied() = true;
-        }
+    {   AskFromUser() = false;
         if (aquiutils::tolower((*it)["ask_user"].asString())=="true")
             AskFromUser() = true;
     }
     else
        AskFromUser() = false;
 
+    if (it->isMember("role"))
+    {   SetRole(_role::none);
+        if (aquiutils::tolower((*it)["role"].asString())=="copytoblocklinks")
+            SetRole(_role::copytoblocklinks);
+        else if (aquiutils::tolower((*it)["role"].asString())=="copytosources")
+            SetRole(_role::copytosources);
+    }
+    else
+       SetRole(_role::none);
     if (it->isMember("setvalue"))
     {
         SetProperty((*it)["setvalue"].asString());
@@ -256,16 +261,22 @@ Quan::Quan(QJsonObject& it)
 
 	if (it.keys().contains("ask_user"))
 	{
-        if (aquiutils::tolower(it.value("ask_user").toString().toStdString()) == "when_copied")
-        {
-            AskFromUser() = false;
-            WhenCopied() = true;
-        }
+        AskFromUser() = false;
         if (aquiutils::tolower(it.value("ask_user").toString().toStdString()) == "true")
 			AskFromUser() = true;
 	}
 	else
 		AskFromUser() = false;
+
+    if (it.keys().contains("role"))
+    {   SetRole(_role::none);
+        if (aquiutils::tolower(it.value("role").toString().toStdString())=="copytoblocklinks")
+            SetRole(_role::copytoblocklinks);
+        else if (aquiutils::tolower(it.value("role").toString().toStdString())=="copytosources")
+            SetRole(_role::copytosources);
+    }
+    else
+       SetRole(_role::none);
 
     if (it.keys().contains("rigid"))
     {
@@ -335,7 +346,7 @@ Quan::Quan(const Quan& other)
     estimable = other.estimable;
     applylimit = other.applylimit; 
     rigid = other.rigid;
-    when_copied = other.when_copied;
+    role = other.role;
 	//parent = other.parent;
 }
 
@@ -375,7 +386,7 @@ Quan& Quan::operator=(const Quan& rhs)
     ask_from_user = rhs.ask_from_user;
     applylimit = rhs.applylimit;
     rigid = rhs.rigid;
-    when_copied = rhs.when_copied;
+    role = rhs.role;
     //parent = rhs.parent;
     return *this;
 }
