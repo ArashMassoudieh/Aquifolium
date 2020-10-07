@@ -400,3 +400,5 @@ vector<string> QuanSet::quantitative_variable_list()
     return s;
 
 }
+
+
