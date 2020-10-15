@@ -78,6 +78,8 @@ public:
     CVector sub(int i, int j);
     bool is_finite();
     string toString();
+    vector<int> negative_elements();
+
 
 };
 

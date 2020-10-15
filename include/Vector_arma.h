@@ -78,6 +78,7 @@ public:
 	bool is_finite();
 	vector<int> get_nan_elements();
 	string toString();
+    vector<int> negative_elements();
 };
 
 CVector_arma Log(CVector_arma &);

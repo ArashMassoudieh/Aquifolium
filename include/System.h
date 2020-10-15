@@ -28,7 +28,7 @@
 using namespace std; 
 
 
-#ifdef _DEBUG
+#ifdef DEBUG
 #define CVector_arma CVector
 #define CMatrix_arma CMatrix
 #endif // _DEBUG

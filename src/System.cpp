@@ -11,6 +11,7 @@
 #endif
 
 
+
 System::System():Object::Object()
 {
    PopulateOperatorsFunctions();
@@ -789,7 +790,9 @@ bool System::OneStepSolve(int statevarno)
 	string variable = solvevariableorder[statevarno];
 	Renew(variable);
     for (unsigned int i = 0; i < links.size(); i++) links[i].SetOutflowLimitFactor(links[i].GetOutflowLimitFactor(Expression::timing::past), Expression::timing::present);
-    vector<bool> outflowlimitstatus_old = GetOutflowLimitedVector(); 
+    for (unsigned int i = 0; i < blocks.size(); i++) blocks[i].SetOutflowLimitFactor(blocks[i].GetOutflowLimitFactor(Expression::timing::past), Expression::timing::present);
+
+    vector<bool> outflowlimitstatus_old = GetOutflowLimitedVector();
     SolverTempVars.numiterations[statevarno] = 0;
     bool switchvartonegpos = true;
     int attempts = 0;
@@ -940,6 +943,11 @@ bool System::OneStepSolve(int statevarno)
                 switchvartonegpos = true;
                 SolverTempVars.updatejacobian[statevarno] = true;
             }
+            else if (X[i]<0)
+            {
+                //qDebug()<<"X has negative elements";
+                blocks[i].SetOutflowLimitFactor(0,Expression::timing::present);
+            }
         }
         if (switchvartonegpos) attempts++;
     }
@@ -979,7 +987,10 @@ bool System::Update(const string & variable)
 {
 	bool out = true;
 	for (unsigned int i = 0; i < blocks.size(); i++)
-		out &= blocks[i].Update(variable);
+    {	out &= blocks[i].Update(variable);
+        blocks[i].SetOutflowLimitFactor(blocks[i].GetOutflowLimitFactor(Expression::timing::present),Expression::timing::past);
+    }
+
 
 //	for (unsigned int i = 0; i < links.size(); i++)
 //		out &= links[i].Update(variable);
@@ -1058,7 +1069,7 @@ CVector_arma System::GetResiduals(const string &variable, CVector_arma &X)
         }
         else if (blocks[i].GetLimitedOutflow())
         {
-            blocks[i].SetOutflowLimitFactor(X[i],Expression::timing::present);
+            blocks[i].SetOutflowLimitFactor(max(X[i],0.0),Expression::timing::present);
             blocks[i].SetVal(variable, blocks[i].GetVal(variable, Expression::timing::past) * SolverSettings.landtozero_factor,Expression::timing::present);
             F[i] = -blocks[i].GetVal(variable,Expression::timing::past)*(1.0-SolverSettings.landtozero_factor)/dt() - blocks[i].GetInflowValue(variable,Expression::timing::present);
         }
@@ -1112,6 +1123,11 @@ CVector_arma System::GetResiduals(const string &variable, CVector_arma &X)
             if (alloutflowszero)
             {
                 F[i] = X[i] - 1.1;
+            }
+            if (X[i]<0)
+            {
+                //qDebug()<<"flow factor is negative!";
+                F[i] = X[i];
             }
 
         }

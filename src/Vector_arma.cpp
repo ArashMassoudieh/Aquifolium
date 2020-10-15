@@ -612,6 +612,17 @@ string CVector_arma::toString()
     return s;
 
 }
+
+vector<int> CVector_arma::negative_elements()
+{
+    vector<int> out;
+    for (int i=0; i<num; i++)
+        if (vect(i)<0)
+            out.push_back(i);
+    return out;
+
+}
+
 //mat CVector_arma::operator=(const CVector_arma&V)
 //{
 //	mat A(num,1);

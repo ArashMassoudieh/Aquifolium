@@ -682,3 +682,13 @@ vector<vector<double>> create_vector(int i, int j)
 
 }
 
+vector<int> CVector::negative_elements()
+{
+    vector<int> out;
+    for (int i=0; i<num; i++)
+        if (vec[i]<0)
+            out.push_back(i);
+    return out;
+
+}
+
