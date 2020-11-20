@@ -271,7 +271,7 @@ class System: public Object
         void AddPropertytoAllLinks(const string &name, Quan &quan);
         void UpdateAddedPropertiestoAllBlockLinks();
         vector<Quan> GetToBeCopiedQuantities();
-        vector<Quan> GetToBeCopiedQuantities(Constituent *consttnt);
+        vector<Quan> GetToBeCopiedQuantities(Constituent *consttnt, const object_type &object_typ = object_type::none);
         bool AddAllConstituentRelateProperties();
         bool AddConstituentRelateProperties(Constituent *constituent);
         bool AddAllConstituentRelateProperties(Block *blk);

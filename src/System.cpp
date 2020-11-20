@@ -1975,13 +1975,21 @@ vector<Quan> System::GetToBeCopiedQuantities()
 
 }
 
-vector<Quan> System::GetToBeCopiedQuantities(Constituent *consttnt)
+vector<Quan> System::GetToBeCopiedQuantities(Constituent *consttnt, const object_type &object_typ)
 {
+    Quan::_role role = Quan::_role::none;
+    if (object_typ == object_type::block)
+        role = Quan::_role::copytoblocks;
+    if (object_typ == object_type::link)
+        role = Quan::_role::copytolinks;
+    if (object_typ == object_type::source)
+        role = Quan::_role::copytosources;
+
     vector<Quan> quantitiestobecopiedtoallobjects;
     vector<Quan> quans = consttnt->GetCopyofAllQuans();
     for (unsigned int j = 0; j < quans.size(); j++)
     {
-        if (quans[j].WhenCopied())
+        if (quans[j].WhenCopied() && (quans[j].GetRole() == role || role == Quan::_role::none))
         {
             quans[j].SetName(consttnt->GetName() + ":" + quans[j].GetName());
             quans[j].Description() = consttnt->GetName() + ":" + quans[j].Description();
@@ -1995,7 +2003,7 @@ vector<Quan> System::GetToBeCopiedQuantities(Constituent *consttnt)
 
 bool System::AddAllConstituentRelateProperties()
 {
-
+    return true;
 
 }
 
@@ -2004,7 +2012,7 @@ bool System::AddAllConstituentRelateProperties(Block *blk)
 {
     for (unsigned int i=0; i<constituents.size();i++)
     {
-        vector<Quan> quanstobecopied = GetToBeCopiedQuantities(constituent(i));
+        vector<Quan> quanstobecopied = GetToBeCopiedQuantities(constituent(i),object_type::block);
         for (unsigned int j=0; j<quanstobecopied.size(); j++)
         {
             if (blk->GetVars()->Count(quanstobecopied[j].GetName())==0)
@@ -2018,7 +2026,7 @@ bool System::AddAllConstituentRelateProperties(Link *lnk)
 {
     for (unsigned int i=0; i<constituents.size();i++)
     {
-        vector<Quan> quanstobecopied = GetToBeCopiedQuantities(constituent(i));
+        vector<Quan> quanstobecopied = GetToBeCopiedQuantities(constituent(i),object_type::link);
         for (unsigned int j=0; j<quanstobecopied.size(); j++)
         {
             if (lnk->GetVars()->Count(quanstobecopied[j].GetName())==0)
@@ -2032,7 +2040,7 @@ bool System::AddAllConstituentRelateProperties(Link *lnk)
 
 bool System::AddConstituentRelateProperties(Constituent *consttnt)
 {
-    vector<Quan> quanstobecopied = GetToBeCopiedQuantities(consttnt);
+    vector<Quan> quanstobecopied = GetToBeCopiedQuantities(consttnt,object_type::block);
     for (unsigned int i=0; i<blocks.size(); i++)
     {
         for (unsigned int j=0; j<quanstobecopied.size(); j++)
@@ -2041,7 +2049,7 @@ bool System::AddConstituentRelateProperties(Constituent *consttnt)
                 block(i)->GetVars()->Append(quanstobecopied[j].GetName(),quanstobecopied[j]);
         }
     }
-
+    quanstobecopied = GetToBeCopiedQuantities(consttnt,object_type::link);
     for (unsigned int i=0; i<links.size(); i++)
     {
         for (unsigned int j=0; j<quanstobecopied.size(); j++)

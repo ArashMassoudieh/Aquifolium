@@ -401,4 +401,20 @@ vector<string> QuanSet::quantitative_variable_list()
 
 }
 
+bool QuanSet::RenameProperty(const string &oldname, const string &newname)
+{
+    map<string,Quan>::iterator i = quans.find(oldname);
+
+    if (i != quans.end())
+    {
+      Quan value = i->second;
+      value.SetName(newname);
+      quans.erase(i);
+      return Append(newname,value);
+    }
+    else
+        return false;
+
+}
+
 

@@ -145,8 +145,10 @@ Quan::Quan(Json::ValueIterator &it)
 
     if (it->isMember("role"))
     {   SetRole(_role::none);
-        if (aquiutils::tolower((*it)["role"].asString())=="copytoblocklinks")
-            SetRole(_role::copytoblocklinks);
+        if (aquiutils::tolower((*it)["role"].asString())=="copytoblocks")
+            SetRole(_role::copytoblocks);
+        if (aquiutils::tolower((*it)["role"].asString())=="copytolinks")
+            SetRole(_role::copytolinks);
         else if (aquiutils::tolower((*it)["role"].asString())=="copytosources")
             SetRole(_role::copytosources);
     }
@@ -270,8 +272,10 @@ Quan::Quan(QJsonObject& it)
 
     if (it.keys().contains("role"))
     {   SetRole(_role::none);
-        if (aquiutils::tolower(it.value("role").toString().toStdString())=="copytoblocklinks")
-            SetRole(_role::copytoblocklinks);
+        if (aquiutils::tolower(it.value("role").toString().toStdString())=="copytoblocks")
+            SetRole(_role::copytoblocks);
+        if (aquiutils::tolower(it.value("role").toString().toStdString())=="copytolinks")
+            SetRole(_role::copytolinks);
         else if (aquiutils::tolower(it.value("role").toString().toStdString())=="copytosources")
             SetRole(_role::copytosources);
     }

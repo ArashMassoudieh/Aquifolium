@@ -32,7 +32,7 @@ class Quan
         string GetStringValue() {return _string_value;}
         Quan& operator=(const Quan& other);
         enum class _type {constant, value, balance, expression, timeseries, prec_timeseries, global_quan, rule, source, string};
-        enum class _role {none, copytoblocklinks, copytosources};
+        enum class _role {none, copytoblocks, copytolinks, copytosources};
         double CalcVal(Object *, const Expression::timing &tmg=Expression::timing::past);
         double CalcVal(const Expression::timing &tmg=Expression::timing::past);
         double GetVal(const Expression::timing &tmg=Expression::timing::past);
@@ -85,7 +85,7 @@ class Quan
         string ToString(int _tabs=1) const;
         bool &AskFromUser() {return ask_from_user;}
         bool WhenCopied() {
-            if (role == _role::copytoblocklinks)
+            if (role == _role::copytoblocks || role==_role::copytolinks)
                 return true;
             else {
                 return false;
@@ -94,6 +94,10 @@ class Quan
         void SetRole(const _role &r)
         {
             role = r;
+        }
+        _role GetRole()
+        {
+            return role;
         }
 		void SetName(const string &name) {_var_name=name;}
 		bool AppendError(const string &objectname, const string &cls, const string &funct, const string &description, const int &code);

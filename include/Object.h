@@ -11,6 +11,8 @@
 
 using namespace std;
 
+enum class object_type {none, block, link, source, parameter, objective_function};
+
 class Object
 {
     public:
@@ -112,6 +114,10 @@ class Object
         }
         vector<string>& QuantitOrder() { return var.Quantity_Order();  }
         void UnUpdateAllValues() { var.UnUpdateAllValues(); }
+        bool RenameProperty(const string &oldname, const string &newname)
+        {
+            return var.RenameProperty(oldname, newname);
+        }
     protected:
 
     private:

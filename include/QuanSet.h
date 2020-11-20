@@ -48,6 +48,7 @@ class QuanSet
         string toCommand();
         string toCommandSetAsParam();
         vector<string> quantitative_variable_list();
+        bool RenameProperty(const string &oldname, const string &newname);
 #ifdef QT_version
         QStringList QQuanNames();
 		QuanSet(QJsonObject& object_types);
