@@ -2060,3 +2060,12 @@ bool System::AddConstituentRelateProperties(Constituent *consttnt)
     }
 }
 
+void System::RenameConstituents(const string &oldname, const string &newname)
+{
+    for (unsigned int i=0; i<blocks.size(); i++)
+    {
+        blocks[i].RenameConstituents(oldname, newname);
+    }
+
+}
+

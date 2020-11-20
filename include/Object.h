@@ -47,7 +47,7 @@ class Object
         }
         string GetName() const;
         void SetDefaults();
-        bool SetName(const string &_name, bool setprop=true);
+        virtual bool SetName(const string &_name, bool setprop=true);
         Object* GetConnectedBlock(Expression::loc l);
         void SetConnectedBlock(Expression::loc l, const string &blockname);
         void AppendError(const string &s);
@@ -118,6 +118,7 @@ class Object
         {
             return var.RenameProperty(oldname, newname);
         }
+        bool RenameConstituents(const string &oldname, const string &newname);
     protected:
 
     private:

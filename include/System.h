@@ -276,7 +276,7 @@ class System: public Object
         bool AddConstituentRelateProperties(Constituent *constituent);
         bool AddAllConstituentRelateProperties(Block *blk);
         bool AddAllConstituentRelateProperties(Link *lnk);
-
+        void RenameConstituents(const string &oldname, const string &newname);
         //constituents
 #endif
 

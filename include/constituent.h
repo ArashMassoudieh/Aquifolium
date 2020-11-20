@@ -14,6 +14,7 @@ public:
     virtual ~Constituent();
     Constituent(const Constituent& other);
     Constituent& operator=(const Constituent& other);
+    bool SetName(const string &s, bool setprop=true);
 
 };
 

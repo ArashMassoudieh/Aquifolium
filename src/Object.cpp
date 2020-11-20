@@ -466,3 +466,26 @@ vector<string> *Object::functions()
     }
     else return nullptr;
 }
+
+bool Object::RenameConstituents(const string &oldname, const string &newname)
+{
+    vector<string> oldfullname;
+    vector<string> newfullname;
+    for (map<string, Quan>::iterator it = GetVars()->begin(); it != GetVars()->end(); it++)
+    {
+        if (aquiutils::split(it->first,':').size()==2)
+        {   if (aquiutils::split(it->first,':')[0]==oldname)
+            {
+                oldfullname.push_back(it->first);
+                newfullname.push_back(newname + ":" + aquiutils::split(it->first,':')[1]);
+            }
+        }
+    }
+    bool succeed = true;
+    for (unsigned int i=0; i<oldfullname.size(); i++)
+    {
+        succeed &= RenameProperty(oldfullname[i],newfullname[i]);
+        var[newfullname[i]].Description() = newname + ":" + aquiutils::split(newfullname[i],':')[1];
+    }
+    return succeed;
+}
