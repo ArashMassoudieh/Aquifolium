@@ -2003,7 +2003,11 @@ vector<Quan> System::GetToBeCopiedQuantities(Constituent *consttnt, const object
 
 bool System::AddAllConstituentRelateProperties()
 {
+<<<<<<< Updated upstream
     return true;
+=======
+    return true; 
+>>>>>>> Stashed changes
 
 }
 
@@ -2058,6 +2062,7 @@ bool System::AddConstituentRelateProperties(Constituent *consttnt)
                 link(i)->GetVars()->Append(quanstobecopied[j].GetName(),quanstobecopied[j]);
         }
     }
+    return true; 
 }
 
 void System::RenameConstituents(const string &oldname, const string &newname)
