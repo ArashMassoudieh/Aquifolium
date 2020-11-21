@@ -2003,11 +2003,8 @@ vector<Quan> System::GetToBeCopiedQuantities(Constituent *consttnt, const object
 
 bool System::AddAllConstituentRelateProperties()
 {
-<<<<<<< Updated upstream
+
     return true;
-=======
-    return true; 
->>>>>>> Stashed changes
 
 }
 
