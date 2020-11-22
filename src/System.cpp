@@ -2095,7 +2095,7 @@ bool System::CalcAllInitialValues()
     {
         sources[i].CalculateInitialValues();
     }
-
+    return true; 
 }
 
 

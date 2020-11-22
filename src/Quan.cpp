@@ -746,7 +746,6 @@ string Quan::GetProperty(bool force_value)
     }
 	else if (type == _type::string)
 	{
-        cout<<_string_value<<endl;
         return _string_value;
 	}
     else if (type == _type::expression)
