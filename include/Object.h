@@ -98,7 +98,7 @@ class Object
         void ShowMessage(const string &msg);
         System* Parent() {if (parent!=nullptr) return parent; else return nullptr;}
         void SetAllParents();
-        bool SetProperty(const string &prop, const string &value);
+        bool SetProperty(const string &prop, const string &value, bool force_value=false);
         string toString(int _tabs=0);
         void SetPrimaryKey(const string &prmkey) {primary_key = prmkey;}
         string GetPrimaryKey() {return primary_key;}
@@ -119,6 +119,7 @@ class Object
             return var.RenameProperty(oldname, newname);
         }
         bool RenameConstituents(const string &oldname, const string &newname);
+        bool CalculateInitialValues();
     protected:
 
     private:

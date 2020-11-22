@@ -123,6 +123,9 @@ Quan::Quan(Json::ValueIterator &it)
     if (it->isMember("description_code"))
         DescriptionCode() = (*it)["description_code"].asString();
 
+    if (it->isMember("initial_value_expression"))
+       SetInitialValueExpression((*it)["initial_value_expression"].asString());
+
     if (it->isMember("criteria"))
         Criteria() = (*it)["criteria"].asString();
 
@@ -236,6 +239,9 @@ Quan::Quan(QJsonObject& it)
 
 	if (it.keys().contains("input"))
 		Input() = it.value("input").toString().toStdString();
+
+    if (it.keys().contains("initial_value_expression"))
+       SetInitialValueExpression(it.value("initial_value_expression").toString().toStdString());
 
 	if (it.keys().contains("experiment_dependent"))
 	{
@@ -351,6 +357,8 @@ Quan::Quan(const Quan& other)
     applylimit = other.applylimit; 
     rigid = other.rigid;
     role = other.role;
+    initial_value_expression = other.initial_value_expression;
+    calculate_initial_value_from_expression = other.calculate_initial_value_from_expression;
 	//parent = other.parent;
 }
 
@@ -391,6 +399,8 @@ Quan& Quan::operator=(const Quan& rhs)
     applylimit = rhs.applylimit;
     rigid = rhs.rigid;
     role = rhs.role;
+    initial_value_expression = rhs.initial_value_expression;
+    calculate_initial_value_from_expression = rhs.calculate_initial_value_from_expression;
     //parent = rhs.parent;
     return *this;
 }
@@ -552,7 +562,8 @@ bool Quan::SetVal(const double &v, const Expression::timing &tmg)
 
         }
     }
-	return true;
+    value_star_updated = true;
+    return true;
 }
 
 Expression* Quan::GetExpression()
@@ -605,7 +616,10 @@ string Quan::ToString(int _tabs) const
 
 	}
 
-
+    if (calculate_initial_value_from_expression)
+    {
+        out += aquiutils::tabs(_tabs+1) + "initial_value_expression: " + initial_value_expression.ToString() + "\n";
+    }
     out += aquiutils::tabs(_tabs+1) + "val: ";
     out += aquiutils::numbertostring(_val);
     out += string("\n");
@@ -714,9 +728,9 @@ bool Quan::SetSource(const string &sourcename)
 }
 
 
-string Quan::GetProperty()
+string Quan::GetProperty(bool force_value)
 {
-    if (type == _type::balance || type== _type::constant || type==_type::global_quan || type==_type::value)
+    if (type == _type::balance || type== _type::constant || type==_type::global_quan || type==_type::value || (type==_type::expression && force_value))
         return aquiutils::numbertostring(GetVal(Expression::timing::present));
     if (type == _type::timeseries)
     {
@@ -732,7 +746,8 @@ string Quan::GetProperty()
     }
 	else if (type == _type::string)
 	{
-		return _string_value;
+        cout<<_string_value<<endl;
+        return _string_value;
 	}
     else if (type == _type::expression)
     {
@@ -742,9 +757,9 @@ string Quan::GetProperty()
 
 }
 
-bool Quan::SetProperty(const string &val)
+bool Quan::SetProperty(const string &val, bool force_value)
 {
-    if (type == _type::balance || type== _type::constant || type==_type::global_quan || type==_type::value)
+    if (type == _type::balance || type== _type::constant || type==_type::global_quan || type==_type::value || (type==_type::expression && force_value))
         return SetVal(aquiutils::atof(val),Expression::timing::both);
     if (type == _type::timeseries)
     {
@@ -806,7 +821,7 @@ bool Quan::AppendError(const string &objectname, const string &cls, const string
 string Quan::toCommand()
 {
     string s;
-    s += GetName() + "=" + GetProperty();
+    s += GetName() + "=" + GetProperty(true);
     return s;
 }
 
@@ -824,4 +839,10 @@ vector<string> Quan::GetAllRequieredStartingBlockProperties()
 vector<string> Quan::GetAllRequieredEndingBlockProperties()
 {
     return _expression.GetAllRequieredEndingBlockProperties();
+}
+
+void Quan::SetInitialValueExpression(const string &expression)
+{
+    calculate_initial_value_from_expression = true;
+    initial_value_expression = expression;
 }

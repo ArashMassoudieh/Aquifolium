@@ -407,7 +407,7 @@ bool System::Solve(bool applyparameters)
     SolverTempVars.dt = SolverTempVars.dt_base;
     SolverTempVars.t = SimulationParameters.tstart;
     CalculateAllExpressions();
-    PopulateOutputs();
+
     for (unsigned int i=0; i<ObjectiveFunctionsCount(); i++)
     {
         ObjectiveFunctions()[i]->GetTimeSeries()->clear();
@@ -420,7 +420,9 @@ bool System::Solve(bool applyparameters)
         rtw->SetYRange(0,SimulationParameters.dt0*timestepmaxfactor);
     }
 #endif
+    CalcAllInitialValues();
     CalculateAllExpressions(Expression::timing::past);
+    PopulateOutputs();
     int counter = 0; 
     int fail_counter = 0; 
     while (SolverTempVars.t<SimulationParameters.tend+SolverTempVars.dt && !stop_triggered)
@@ -1037,7 +1039,7 @@ void System::CalculateAllExpressions(Expression::timing tmg)
 {
     for (unsigned int i=0; i<blocks.size(); i++)
     {
-        for (int j = 0; j < blocks[i].QuantitOrder().size(); j++)
+        for (unsigned int j = 0; j < blocks[i].QuantitOrder().size(); j++)
         {
             if (blocks[i].Variable(blocks[i].QuantitOrder()[j])->GetType() == Quan::_type::expression)
                 blocks[i].Variable(blocks[i].QuantitOrder()[j])->SetVal(blocks[i].Variable(blocks[i].QuantitOrder()[j])->CalcVal(tmg), tmg);
@@ -1046,7 +1048,7 @@ void System::CalculateAllExpressions(Expression::timing tmg)
 
     for (unsigned int i=0; i<links.size(); i++)
     {
-        for (int j = 0; j < links[i].QuantitOrder().size(); j++)
+        for (unsigned int j = 0; j < links[i].QuantitOrder().size(); j++)
         {
             if (links[i].Variable(links[i].QuantitOrder()[j])->GetType() == Quan::_type::expression)
                 links[i].Variable(links[i].QuantitOrder()[j])->SetVal(links[i].Variable(links[i].QuantitOrder()[j])->CalcVal(tmg), tmg);
@@ -2068,6 +2070,32 @@ void System::RenameConstituents(const string &oldname, const string &newname)
     {
         blocks[i].RenameConstituents(oldname, newname);
     }
+    for (unsigned int i=0; i<links.size(); i++)
+    {
+        links[i].RenameConstituents(oldname, newname);
+    }
+    for (unsigned int i=0; i<sources.size(); i++)
+    {
+        sources[i].RenameConstituents(oldname, newname);
+    }
 
 }
+
+bool System::CalcAllInitialValues()
+{
+    for (unsigned int i=0; i<blocks.size(); i++)
+    {
+        blocks[i].CalculateInitialValues();
+    }
+    for (unsigned int i=0; i<links.size(); i++)
+    {
+        links[i].CalculateInitialValues();
+    }
+    for (unsigned int i=0; i<sources.size(); i++)
+    {
+        sources[i].CalculateInitialValues();
+    }
+
+}
+
 

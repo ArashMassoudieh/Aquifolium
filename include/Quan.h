@@ -101,8 +101,8 @@ class Quan
         }
 		void SetName(const string &name) {_var_name=name;}
 		bool AppendError(const string &objectname, const string &cls, const string &funct, const string &description, const int &code);
-        bool SetProperty(const string &val);
-        string GetProperty();
+        bool SetProperty(const string &val, bool force_value = false);
+        string GetProperty(bool force_value = false);
 		string SourceName() { return sourcename;}
 		bool SetSourceName(const string& s) { sourcename = s; }
         string toCommand();
@@ -117,6 +117,10 @@ class Quan
         void Set_Value_Update(bool x) { value_star_updated = x; }
         bool ApplyLimit() { return applylimit; }
         bool isrigid() { return rigid; }
+        void SetInitialValueExpression(const string &expression);
+
+        Expression &InitialValueExpression() {return initial_value_expression;}
+        bool calcinivalue() {return calculate_initial_value_from_expression;}
     protected:
 
     private:
@@ -159,6 +163,8 @@ class Quan
         string _parameterassignedto = "";
         bool applylimit = false; 
         bool rigid = false; 
+        bool calculate_initial_value_from_expression = false;
+        Expression initial_value_expression;
 };
 
 string tostring(const Quan::_type &typ);

@@ -369,7 +369,7 @@ void Object::SetAllParents()
     var.SetParent(this);
 }
 
-bool Object::SetProperty(const string &prop, const string &value)
+bool Object::SetProperty(const string &prop, const string &value, bool force_value)
 {
     if (!HasQuantity(prop))
     {
@@ -377,7 +377,7 @@ bool Object::SetProperty(const string &prop, const string &value)
             Parent()->errorhandler.Append(GetName(),"Object","SetProperty","Object '" + GetName() + "' has no property called '" + prop + "'",1012);
         return false;
     }
-    if (var[prop].GetType() == Quan::_type::value || var[prop].GetType() == Quan::_type::balance || var[prop].GetType() == Quan::_type::constant)
+    if (var[prop].GetType() == Quan::_type::value || var[prop].GetType() == Quan::_type::balance || var[prop].GetType() == Quan::_type::constant || (var[prop].GetType() == Quan::_type::expression && force_value))
     {
         var[prop].SetVal(aquiutils::atof(value),Expression::timing::both);
         return true;
@@ -486,6 +486,19 @@ bool Object::RenameConstituents(const string &oldname, const string &newname)
     {
         succeed &= RenameProperty(oldfullname[i],newfullname[i]);
         var[newfullname[i]].Description() = newname + ":" + aquiutils::split(newfullname[i],':')[1];
+    }
+    return succeed;
+}
+
+bool Object::CalculateInitialValues()
+{
+    bool succeed = true;
+    for (map<string, Quan>::iterator it = GetVars()->begin(); it != GetVars()->end(); it++)
+    {
+        if (it->second.calcinivalue())
+        {   double ini_value = Expression(it->second.InitialValueExpression()).calc(this,Expression::timing::past);
+            it->second.SetVal(ini_value,Expression::timing::both);
+        }
     }
     return succeed;
 }

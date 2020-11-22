@@ -251,6 +251,7 @@ class System: public Object
         bool VerifyAsSource(Block* blk, Link* lnk);
         bool VerifyAsDestination(Block* blk, Link* lnk);
         ErrorHandler VerifyAllQuantities();
+        bool CalcAllInitialValues();
 #if defined(QT_version)
         logWindow *LogWindow() {return logwindow;}
         void SetLogWindow(logWindow *lgwnd) {logwindow=lgwnd;}
@@ -277,6 +278,7 @@ class System: public Object
         bool AddAllConstituentRelateProperties(Block *blk);
         bool AddAllConstituentRelateProperties(Link *lnk);
         void RenameConstituents(const string &oldname, const string &newname);
+
         //constituents
 #endif
 

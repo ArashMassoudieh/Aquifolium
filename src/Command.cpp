@@ -453,7 +453,7 @@ bool Command::Execute(System *_sys)
                 for (map<string,string>::iterator it=assignments.begin(); it!=assignments.end(); it++)
                 {
                     if (it->first!="type" && it->first!="to" && it->first!="from")
-                        sys->block(assignments["name"])->SetProperty(it->first,it->second);
+                        sys->block(assignments["name"])->SetProperty(it->first,it->second, true);
                 }
                 return true;
             }
@@ -473,7 +473,7 @@ bool Command::Execute(System *_sys)
 					for (map<string, string>::iterator it = assignments.begin(); it != assignments.end(); it++)
 					{
 						if (it->first != "type" && it->first != "to" && it->first != "from")
-							sys->link(assignments["name"])->SetProperty(it->first, it->second);
+                            sys->link(assignments["name"])->SetProperty(it->first, it->second, true);
 					}
 					return true;
 				}
@@ -544,7 +544,7 @@ bool Command::Execute(System *_sys)
                 for (map<string,string>::iterator it=assignments.begin(); it!=assignments.end(); it++)
                 {
                     if (it->first!="type" && it->first!="to" && it->first!="from")
-                        sys->source(assignments["name"])->SetProperty(it->first,it->second);
+                        sys->source(assignments["name"])->SetProperty(it->first,it->second,true);
                 }
                 return true;
             }
