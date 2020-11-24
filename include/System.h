@@ -124,6 +124,7 @@ class System: public Object
         bool AddSource(Source &src);
         bool AddLink(Link &lnk, const string &source, const string &destination);
         bool AddConstituent(Constituent &cnst);
+        bool AddReaction(Reaction &rxn);
         Block *block(const string &s);
         Block *block(unsigned int i)
         {
@@ -139,16 +140,19 @@ class System: public Object
             else
                 return nullptr;
         }
-        int BlockCount() {return blocks.size();}
-        int SettingsCount() {return Settings.size();}
-        int LinksCount() {return links.size();}
-        int SourcesCount() {return sources.size();}
+        unsigned long BlockCount() {return blocks.size();}
+        unsigned long SettingsCount() {return Settings.size();}
+        unsigned long LinksCount() {return links.size();}
+        unsigned long SourcesCount() {return sources.size();}
+        unsigned long ReactionsCount() {return reactions.size();}
+        unsigned long ParametersCount() {return Parameters().size();}
+        unsigned long ObjectiveFunctionsCount() {return ObjectiveFunctions().size();}
+        unsigned long ConstituentsCount() {return constituents.size();}
         vector<string> GetAllSourceNames();
         vector<string> GetAllBlockNames();
         vector<string> GetAllLinkNames();
-        unsigned int ParametersCount() {return Parameters().size();}
-        unsigned int ObjectiveFunctionsCount() {return ObjectiveFunctions().size();}
-        unsigned int ConstituentsCount() {return constituents.size();}
+        vector<string> GetAllReactionNames();
+
         Link *link(const string &s);
         Link *link(unsigned int i)
         {
@@ -159,15 +163,22 @@ class System: public Object
         }
         Source *source(const string &s);
         Constituent *constituent(const string &s);
-        Source *source(int i)
+        Reaction *reaction(const string &s);
+        Source *source(unsigned int i)
         {   if (i<sources.size())
                 return &sources[i];
             else
                 return nullptr;
         }
-        Constituent *constituent(int i)
+        Constituent *constituent(unsigned int i)
         {   if (i<constituents.size())
                 return &constituents[i];
+            else
+                return nullptr;
+        }
+        Reaction *reaction(unsigned int i)
+        {   if (i<reactions.size())
+                return &reactions[i];
             else
                 return nullptr;
         }
@@ -291,6 +302,7 @@ class System: public Object
         vector<Link> links;
         vector<Source> sources;
         vector<Constituent> constituents;
+        vector<Reaction> reactions;
         vector<Object> Settings;
         map<string, Quan> addedpropertiestoallblocks;
         map<string, Quan> addedpropertiestoalllinks;

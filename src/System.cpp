@@ -138,6 +138,14 @@ bool System::AddConstituent(Constituent &cnst)
     return true;
 }
 
+bool System::AddReaction(Reaction &rxn)
+{
+    reactions.push_back(rxn);
+    constituent(rxn.GetName())->SetParent(this);
+    constituent(rxn.GetName())->SetQuantities(metamodel, rxn.GetType());
+    constituent(rxn.GetName())->SetParent(this);
+    return true;
+}
 
 bool System::AddLink(Link &lnk, const string &source, const string &destination)
 {
@@ -219,6 +227,14 @@ Constituent *System::constituent(const string &s)
 {
     for (unsigned int i=0; i<constituents.size(); i++)
         if (constituents[i].GetName() == s) return &constituents[i];
+
+    return nullptr;
+}
+
+Reaction *System::reaction(const string &s)
+{
+    for (unsigned int i=0; i<reactions.size(); i++)
+        if (constituents[i].GetName() == s) return &reactions[i];
 
     return nullptr;
 }
@@ -1280,7 +1296,7 @@ vector<string> System::GetAllSourceTypes()
 vector<string> System::GetAllSourceNames()
 {
     vector<string> out;
-    for (int i=0; i<sources.size(); i++)
+    for (unsigned int i=0; i<sources.size(); i++)
         out.push_back(sources[i].GetName());
     return out;
 }
@@ -1288,7 +1304,7 @@ vector<string> System::GetAllSourceNames()
 vector<string> System::GetAllBlockNames()
 {
     vector<string> out;
-    for (int i=0; i<blocks.size(); i++)
+    for (unsigned int i=0; i<blocks.size(); i++)
         out.push_back(blocks[i].GetName());
     return out;
 }
@@ -1296,9 +1312,18 @@ vector<string> System::GetAllBlockNames()
 vector<string> System::GetAllLinkNames()
 {
     vector<string> out;
-    for (int i=0; i<links.size(); i++)
+    for (unsigned int i=0; i<links.size(); i++)
         out.push_back(links[i].GetName());
     return out;
+}
+
+vector<string> System::GetAllReactionNames()
+{
+    vector<string> out;
+    for (unsigned int i=0; i<reactions.size(); i++)
+        out.push_back(reactions[i].GetName());
+    return out;
+
 }
 
 

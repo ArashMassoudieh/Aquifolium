@@ -9,14 +9,14 @@ class Reaction : public Object
 {
 public:
     Reaction();
-
-private:
-    map<string,Expression> Stoichiometries;
-    Expression RateExpression;
     Reaction(System *parent);
     Reaction(const Reaction& other);
     Reaction& operator=(const Reaction& rhs);
     virtual ~Reaction();
+
+private:
+    map<string,Expression> Stoichiometries;
+    Expression RateExpression;
 
 };
 
