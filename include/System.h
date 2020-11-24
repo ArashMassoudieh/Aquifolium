@@ -11,6 +11,7 @@
 #include "BTCSet.h"
 #include "Objective_Function_Set.h"
 #include "Parameter_Set.h"
+#include "reaction.h"
 #ifdef QT_version
     #include "runtimeWindow.h"
     class GWidget;
