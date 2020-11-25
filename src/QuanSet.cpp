@@ -425,4 +425,12 @@ vector<string> QuanSet::AllConstituents()
         return vector<string>();
 }
 
+vector<string> QuanSet::AllReactionParameters()
+{
+    if (parent)
+        return parent->AllReactionParameters();
+    else
+        return vector<string>();
+
+}
 

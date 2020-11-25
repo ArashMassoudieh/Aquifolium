@@ -12,6 +12,7 @@
 #include "Objective_Function_Set.h"
 #include "Parameter_Set.h"
 #include "reaction.h"
+#include "RxnParameter.h"
 #ifdef QT_version
     #include "runtimeWindow.h"
     class GWidget;
@@ -125,6 +126,7 @@ class System: public Object
         bool AddLink(Link &lnk, const string &source, const string &destination);
         bool AddConstituent(Constituent &cnst);
         bool AddReaction(Reaction &rxn);
+        bool AddReactionParameter(RxnParameter &rxn);
         Block *block(const string &s);
         Block *block(unsigned int i)
         {
@@ -148,6 +150,7 @@ class System: public Object
         unsigned long ParametersCount() {return Parameters().size();}
         unsigned long ObjectiveFunctionsCount() {return ObjectiveFunctions().size();}
         unsigned long ConstituentsCount() {return constituents.size();}
+        unsigned long ReactionParametersCount() {return reaction_parameters.size();}
         vector<string> GetAllSourceNames();
         vector<string> GetAllBlockNames();
         vector<string> GetAllLinkNames();
@@ -164,6 +167,7 @@ class System: public Object
         Source *source(const string &s);
         Constituent *constituent(const string &s);
         Reaction *reaction(const string &s);
+        RxnParameter *reactionparameter(const string &s);
         Source *source(unsigned int i)
         {   if (i<sources.size())
                 return &sources[i];
@@ -173,6 +177,12 @@ class System: public Object
         Constituent *constituent(unsigned int i)
         {   if (i<constituents.size())
                 return &constituents[i];
+            else
+                return nullptr;
+        }
+        RxnParameter *reactionparameter(unsigned int i)
+        {   if (i<reaction_parameters.size())
+                return &reaction_parameters[i];
             else
                 return nullptr;
         }
@@ -291,6 +301,7 @@ class System: public Object
         bool AddAllConstituentRelateProperties(Link *lnk);
         void RenameConstituents(const string &oldname, const string &newname);
         vector<string> AllConstituents();
+        vector<string> AllReactionParameters();
 
         //constituents
 #endif
@@ -304,6 +315,7 @@ class System: public Object
         vector<Source> sources;
         vector<Constituent> constituents;
         vector<Reaction> reactions;
+        vector<RxnParameter> reaction_parameters;
         vector<Object> Settings;
         map<string, Quan> addedpropertiestoallblocks;
         map<string, Quan> addedpropertiestoalllinks;

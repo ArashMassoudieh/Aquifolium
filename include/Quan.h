@@ -122,6 +122,7 @@ class Quan
         Expression &InitialValueExpression() {return initial_value_expression;}
         bool calcinivalue() {return calculate_initial_value_from_expression;}
         vector<string> AllConstituents();
+        vector<string> AllReactionParameters();
     protected:
 
     private:

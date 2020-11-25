@@ -147,6 +147,15 @@ bool System::AddReaction(Reaction &rxn)
     return true;
 }
 
+bool System::AddReactionParameter(RxnParameter &rxnparam)
+{
+    reaction_parameters.push_back(rxnparam);
+    reactionparameter(rxnparam.GetName())->SetParent(this);
+    reactionparameter(rxnparam.GetName())->SetQuantities(metamodel, rxnparam.GetType());
+    reactionparameter(rxnparam.GetName())->SetParent(this);
+    return true;
+}
+
 bool System::AddLink(Link &lnk, const string &source, const string &destination)
 {
 	if (!block(source))
@@ -239,6 +248,15 @@ Reaction *System::reaction(const string &s)
     return nullptr;
 }
 
+RxnParameter *System::reactionparameter(const string &s)
+{
+    for (unsigned int i=0; i<reaction_parameters.size(); i++)
+        if (reaction_parameters[i].GetName() == s) return &reaction_parameters[i];
+
+    return nullptr;
+
+}
+
 Object *System::settings(const string &s)
 {
     for (unsigned int i=0; i<Settings.size(); i++)
@@ -288,6 +306,9 @@ Object *System::object(const string &s)
 
     for (unsigned int i=0; i<constituents.size(); i++)
         if (constituents[i].GetName() == s) return &constituents[i];
+
+    for (unsigned int i=0; i<reaction_parameters.size(); i++)
+        if (reaction_parameters[i].GetName() == s) return &reaction_parameters[i];
 
     for (unsigned int i=0; i<reactions.size(); i++)
         if (reactions[i].GetName() == s) return &reactions[i];
@@ -2045,6 +2066,16 @@ vector<string> System::AllConstituents()
         out.push_back(constituent(i)->GetName());
 
     return out;
+}
+
+vector<string> System::AllReactionParameters()
+{
+    vector<string> out;
+    for (unsigned int i=0; i<reaction_parameters.size();i++)
+        out.push_back(reactionparameter(i)->GetName());
+
+    return out;
+
 }
 
 

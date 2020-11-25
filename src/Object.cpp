@@ -510,3 +510,11 @@ vector<string> Object::AllConstituents()
     else
         return vector<string>();
 }
+
+vector<string> Object::AllReactionParameters()
+{
+    if (parent)
+        return parent->AllReactionParameters();
+    else
+        return vector<string>();
+}

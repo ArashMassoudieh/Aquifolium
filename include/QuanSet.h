@@ -50,6 +50,7 @@ class QuanSet
         vector<string> quantitative_variable_list();
         bool RenameProperty(const string &oldname, const string &newname);
         vector<string> AllConstituents();
+        vector<string> AllReactionParameters();
 #ifdef QT_version
         QStringList QQuanNames();
 		QuanSet(QJsonObject& object_types);
