@@ -782,6 +782,7 @@ bool Quan::SetProperty(const string &val, bool force_value)
     }
     if (type == _type::expression)
     {
+        _expression = val;
         return SetExpression(val);
     }
     if (type== _type::rule)
