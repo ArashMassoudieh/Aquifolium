@@ -502,3 +502,11 @@ bool Object::CalculateInitialValues()
     }
     return succeed;
 }
+
+vector<string> Object::AllConstituents()
+{
+    if (parent)
+        return parent->AllConstituents();
+    else
+        return vector<string>();
+}

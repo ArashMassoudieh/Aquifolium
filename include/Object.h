@@ -120,6 +120,7 @@ class Object
         }
         bool RenameConstituents(const string &oldname, const string &newname);
         bool CalculateInitialValues();
+        vector<string> AllConstituents();
     protected:
 
     private:

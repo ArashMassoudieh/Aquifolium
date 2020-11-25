@@ -2038,6 +2038,15 @@ bool System::AddAllConstituentRelateProperties()
 
 }
 
+vector<string> System::AllConstituents()
+{
+    vector<string> out;
+    for (unsigned int i=0; i<constituents.size();i++)
+        out.push_back(constituent(i)->GetName());
+
+    return out;
+}
+
 
 bool System::AddAllConstituentRelateProperties(Block *blk)
 {

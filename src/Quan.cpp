@@ -845,3 +845,11 @@ void Quan::SetInitialValueExpression(const string &expression)
     calculate_initial_value_from_expression = true;
     initial_value_expression = expression;
 }
+
+vector<string> Quan::AllConstituents()
+{
+    if (parent)
+        return parent->AllConstituents();
+    else
+        return vector<string>();
+}

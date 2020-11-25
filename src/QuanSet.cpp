@@ -417,4 +417,12 @@ bool QuanSet::RenameProperty(const string &oldname, const string &newname)
 
 }
 
+vector<string> QuanSet::AllConstituents()
+{
+    if (parent)
+        return parent->AllConstituents();
+    else
+        return vector<string>();
+}
+
 

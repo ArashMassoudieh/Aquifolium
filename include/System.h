@@ -290,6 +290,7 @@ class System: public Object
         bool AddAllConstituentRelateProperties(Block *blk);
         bool AddAllConstituentRelateProperties(Link *lnk);
         void RenameConstituents(const string &oldname, const string &newname);
+        vector<string> AllConstituents();
 
         //constituents
 #endif
