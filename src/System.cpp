@@ -141,9 +141,9 @@ bool System::AddConstituent(Constituent &cnst)
 bool System::AddReaction(Reaction &rxn)
 {
     reactions.push_back(rxn);
-    constituent(rxn.GetName())->SetParent(this);
-    constituent(rxn.GetName())->SetQuantities(metamodel, rxn.GetType());
-    constituent(rxn.GetName())->SetParent(this);
+    reaction(rxn.GetName())->SetParent(this);
+    reaction(rxn.GetName())->SetQuantities(metamodel, rxn.GetType());
+    reaction(rxn.GetName())->SetParent(this);
     return true;
 }
 
@@ -234,7 +234,7 @@ Constituent *System::constituent(const string &s)
 Reaction *System::reaction(const string &s)
 {
     for (unsigned int i=0; i<reactions.size(); i++)
-        if (constituents[i].GetName() == s) return &reactions[i];
+        if (reactions[i].GetName() == s) return &reactions[i];
 
     return nullptr;
 }
@@ -288,6 +288,9 @@ Object *System::object(const string &s)
 
     for (unsigned int i=0; i<constituents.size(); i++)
         if (constituents[i].GetName() == s) return &constituents[i];
+
+    for (unsigned int i=0; i<reactions.size(); i++)
+        if (reactions[i].GetName() == s) return &reactions[i];
 
     for (unsigned int i=0; i<ParametersCount(); i++)
         if (Parameters()[i]->GetName() == s) return Parameters()[i];
