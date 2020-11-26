@@ -487,6 +487,7 @@ bool Object::RenameConstituents(const string &oldname, const string &newname)
         succeed &= RenameProperty(oldfullname[i],newfullname[i]);
         var[newfullname[i]].Description() = newname + ":" + aquiutils::split(newfullname[i],':')[1];
     }
+    succeed &= GetVars()->RenameQuantity(oldname,newname);
     return succeed;
 }
 

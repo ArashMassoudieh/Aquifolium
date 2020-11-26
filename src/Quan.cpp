@@ -517,6 +517,12 @@ bool Quan::SetExpression(const string &E)
 	return true;
 }
 
+bool Quan::SetExpression(const Expression &E)
+{
+    _expression = E;
+    return true;
+}
+
 bool Quan::SetRule(const string &R)
 {
     _expression = R;
@@ -847,6 +853,12 @@ void Quan::SetInitialValueExpression(const string &expression)
     initial_value_expression = expression;
 }
 
+void Quan::SetInitialValueExpression(const Expression &expression)
+{
+    calculate_initial_value_from_expression = true;
+    initial_value_expression = expression;
+}
+
 vector<string> Quan::AllConstituents()
 {
     if (parent)
@@ -861,4 +873,11 @@ vector<string> Quan::AllReactionParameters()
         return parent->AllReactionParameters();
     else
         return vector<string>();
+}
+
+bool Quan::RenameQuantity(const string &oldname, const string &newname)
+{
+    _expression.RenameQuantity(oldname,newname);
+    initial_value_expression.RenameQuantity(oldname,newname);
+    return false;
 }

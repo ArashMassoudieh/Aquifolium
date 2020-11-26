@@ -827,7 +827,7 @@ void System::SetOutflowLimitedVector(vector<bool> &x)
 
 }
 
-bool System::OneStepSolve(int statevarno)
+bool System::OneStepSolve(unsigned int statevarno)
 {
 	string variable = solvevariableorder[statevarno];
 	Renew(variable);
@@ -2037,13 +2037,24 @@ vector<Quan> System::GetToBeCopiedQuantities(Constituent *consttnt, const object
         role = Quan::_role::copytosources;
 
     vector<Quan> quantitiestobecopiedtoallobjects;
-    vector<Quan> quans = consttnt->GetCopyofAllQuans();
+    vector<Quan> original_quans = consttnt->GetCopyofAllQuans();
+    vector<Quan> quans = original_quans;
+
     for (unsigned int j = 0; j < quans.size(); j++)
     {
         if (quans[j].WhenCopied() && (quans[j].GetRole() == role || role == Quan::_role::none))
         {
             quans[j].SetName(consttnt->GetName() + ":" + quans[j].GetName());
             quans[j].Description() = consttnt->GetName() + ":" + quans[j].Description();
+            if (quans[j].GetType() == Quan::_type::expression )
+            {   for (unsigned int i=0; i<original_quans.size(); i++)
+                   quans[j].SetExpression(quans[j].GetExpression()->ReviseConstituent(consttnt->GetName(),original_quans[i].GetName()));
+            }
+            if (quans[j].calcinivalue())
+            {
+                for (unsigned int i=0; i<original_quans.size(); i++)
+                    quans[j].SetInitialValueExpression(quans[j].InitialValueExpression().ReviseConstituent(consttnt->GetName(),original_quans[i].GetName()));
+            }
             quans[j].SetRole(Quan::_role::none);
             quantitiestobecopiedtoallobjects.push_back(quans[j]);
         }
@@ -2081,29 +2092,37 @@ vector<string> System::AllReactionParameters()
 
 bool System::AddAllConstituentRelateProperties(Block *blk)
 {
+    vector<string> quantityordertobechanged;
     for (unsigned int i=0; i<constituents.size();i++)
     {
         vector<Quan> quanstobecopied = GetToBeCopiedQuantities(constituent(i),object_type::block);
         for (unsigned int j=0; j<quanstobecopied.size(); j++)
         {
             if (blk->GetVars()->Count(quanstobecopied[j].GetName())==0)
-                blk->GetVars()->Append(quanstobecopied[j].GetName(),quanstobecopied[j]);
+            {   blk->GetVars()->Append(quanstobecopied[j].GetName(),quanstobecopied[j]);
+                quantityordertobechanged.push_back(quanstobecopied[j].GetName());
+            }
         }
     }
+    blk->GetVars()->Quantity_Order() = quantityordertobechanged;
     return true;
 }
 
 bool System::AddAllConstituentRelateProperties(Link *lnk)
 {
+    vector<string> quantityordertobechanged;
     for (unsigned int i=0; i<constituents.size();i++)
     {
         vector<Quan> quanstobecopied = GetToBeCopiedQuantities(constituent(i),object_type::link);
         for (unsigned int j=0; j<quanstobecopied.size(); j++)
         {
             if (lnk->GetVars()->Count(quanstobecopied[j].GetName())==0)
-                lnk->GetVars()->Append(quanstobecopied[j].GetName(),quanstobecopied[j]);
+            {   lnk->GetVars()->Append(quanstobecopied[j].GetName(),quanstobecopied[j]);
+                quantityordertobechanged.push_back(quanstobecopied[j].GetName());
+            }
         }
     }
+    lnk->GetVars()->Quantity_Order() = quantityordertobechanged;
     return true;
 
 }
@@ -2114,20 +2133,28 @@ bool System::AddConstituentRelateProperties(Constituent *consttnt)
     vector<Quan> quanstobecopied = GetToBeCopiedQuantities(consttnt,object_type::block);
     for (unsigned int i=0; i<blocks.size(); i++)
     {
+        vector<string> quantityordertobechanged;
         for (unsigned int j=0; j<quanstobecopied.size(); j++)
         {
             if (blocks[i].GetVars()->Count(quanstobecopied[j].GetName())==0)
-                block(i)->GetVars()->Append(quanstobecopied[j].GetName(),quanstobecopied[j]);
+            {   block(i)->GetVars()->Append(quanstobecopied[j].GetName(),quanstobecopied[j]);
+                quantityordertobechanged.push_back(quanstobecopied[j].GetName());
+            }
         }
+        blocks[i].GetVars()->Quantity_Order() = quantityordertobechanged;
     }
     quanstobecopied = GetToBeCopiedQuantities(consttnt,object_type::link);
     for (unsigned int i=0; i<links.size(); i++)
     {
+        vector<string> quantityordertobechanged;
         for (unsigned int j=0; j<quanstobecopied.size(); j++)
         {
             if (links[i].GetVars()->Count(quanstobecopied[j].GetName())==0)
-                link(i)->GetVars()->Append(quanstobecopied[j].GetName(),quanstobecopied[j]);
+            {   link(i)->GetVars()->Append(quanstobecopied[j].GetName(),quanstobecopied[j]);
+                quantityordertobechanged.push_back(quanstobecopied[j].GetName());
+            }
         }
+        links[i].GetVars()->Quantity_Order() = quantityordertobechanged;
     }
     return true; 
 }
@@ -2166,4 +2193,10 @@ bool System::CalcAllInitialValues()
     return true; 
 }
 
+bool System::OneStepSolve_mv(unsigned int statevarno) //solve a multivariate system of equations, used for multicomponent reactive transport
+{
+
+
+    return true;
+}
 

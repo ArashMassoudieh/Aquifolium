@@ -341,7 +341,7 @@ double Expression::calc(Object *W, const timing &tmg, bool limit)
 		term_vals.resize(terms.size());
 		for (unsigned int i = 0; i < terms.size(); i++) terms_calculated.push_back(false);
 
-		for (int i = operators.size() - 1; i >= 0; i--)
+        for (int i = operators.size() - 1; i >= 0; i--)
 		{
 			if (operators[i] == "^")
 				oprt(operators[i], i, i + 1, W, tmg, limit);
@@ -1137,5 +1137,60 @@ string aquiutils::GetOnlyFileName(const string &fullfilename)
 
 }
 
+Expression Expression::ReviseConstituent(const string &constituent_name, const string &quantity)
+{
+    Expression out = *this;
+    if (param_constant_expression=="parameter")
+    {
+        if (parameter==quantity)
+        {   out.parameter = constituent_name + ":" + quantity;
+            return out;
+        }
+    }
+    for (unsigned int i=0; i<terms.size(); i++)
+    {
+        if (terms[i].param_constant_expression == "parameter")
+        {
+            if (out.terms[i].parameter == quantity)
+            {
+                out.terms[i].parameter = constituent_name + ":" + quantity;
+            }
 
+        }
+        else if (terms[i].terms.size() > 0)
+        {
+            out.terms[i] = terms[i].ReviseConstituent(constituent_name,quantity);
+        }
+    }
+    return out;
+}
+
+bool Expression::RenameQuantity(const string &oldname, const string &newname)
+{
+    bool out=false;
+    if (param_constant_expression=="parameter")
+    {
+        if (parameter==oldname)
+        {   parameter = newname;
+            return true;
+        }
+    }
+    for (unsigned int i=0; i<terms.size(); i++)
+    {
+        if (terms[i].param_constant_expression == "parameter")
+        {
+            if (terms[i].parameter == oldname)
+            {
+                terms[i].parameter = newname;
+                out = true;
+            }
+
+        }
+        else if (terms[i].param_constant_expression == "expression")
+        {
+            out = out || terms[i].RenameQuantity(oldname,newname);
+        }
+    }
+    return out;
+}
 

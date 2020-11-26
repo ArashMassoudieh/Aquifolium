@@ -49,8 +49,10 @@ class QuanSet
         string toCommandSetAsParam();
         vector<string> quantitative_variable_list();
         bool RenameProperty(const string &oldname, const string &newname);
+        bool RenameInQuantityOrder(const string &oldname, const string &newname);
         vector<string> AllConstituents();
         vector<string> AllReactionParameters();
+        bool RenameQuantity(const string &oldname, const string &newname);
 #ifdef QT_version
         QStringList QQuanNames();
 		QuanSet(QJsonObject& object_types);
@@ -61,6 +63,7 @@ class QuanSet
         vector<string>& Quantity_Order() {
             return quantity_order;
         }
+        vector<string> ReviseQuanityOrder(const vector<string> &quantity, const string &constituent);
     protected:
 
     private:

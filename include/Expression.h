@@ -43,6 +43,8 @@ class Expression
         string ToString() const;
 		vector<string> GetAllRequieredStartingBlockProperties();
 		vector<string> GetAllRequieredEndingBlockProperties();
+        Expression ReviseConstituent(const string &constituent_name, const string &quantity);
+        bool RenameQuantity(const string &oldname, const string &newname);
     protected:
 
     private:

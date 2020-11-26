@@ -212,7 +212,8 @@ class System: public Object
         double &dt() {return SolverTempVars.dt;}
         double &tend() {return SimulationParameters.tend;}
         double &tstart() {return SimulationParameters.tstart;}
-        bool OneStepSolve(int i);
+        bool OneStepSolve(unsigned int i);
+        bool OneStepSolve_mv(unsigned int statevarno);
 		bool Renew(const string &variable);
 		bool Update(const string &variable);
         void UnUpdateAllVariables(); 

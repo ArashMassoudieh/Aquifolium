@@ -44,6 +44,7 @@ class Quan
         Rule* GetRule();
         Source* GetSource();
         bool SetExpression(const string &E);
+        bool SetExpression(const Expression &E);
         bool SetRule(const string &R);
         bool SetVal(const double &v, const Expression::timing &tmg=Expression::timing::past);
         bool SetSource(const string &sourcename);
@@ -118,11 +119,12 @@ class Quan
         bool ApplyLimit() { return applylimit; }
         bool isrigid() { return rigid; }
         void SetInitialValueExpression(const string &expression);
-
+        void SetInitialValueExpression(const Expression &expression);
         Expression &InitialValueExpression() {return initial_value_expression;}
         bool calcinivalue() {return calculate_initial_value_from_expression;}
         vector<string> AllConstituents();
         vector<string> AllReactionParameters();
+        bool RenameQuantity(const string &oldname, const string &newname);
     protected:
 
     private:
