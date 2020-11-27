@@ -458,6 +458,7 @@ vector<string> QuanSet::ReviseQuanityOrder(const vector<string> &quantity, const
             if (quantity_order[i] == quantity[j])
                 out[i] = constituent + ":" + quantity[j];
         }
+    quantity_order = out;
     return out;
 }
 
@@ -466,5 +467,10 @@ bool QuanSet::RenameQuantity(const string &oldname, const string &newname)
     bool out = false;
     for (map<string,Quan>::iterator it=quans.begin(); it!=quans.end(); it++)
         out = out || it->second.RenameQuantity(oldname, newname);
-    return out;
+    for (unsigned int i=0; i<quantity_order.size(); i++)
+    {
+        if (quantity_order[i] == oldname)
+            quantity_order[i]=newname;
+    }
+    return true;
 }

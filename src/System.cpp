@@ -2141,7 +2141,7 @@ bool System::AddConstituentRelateProperties(Constituent *consttnt)
                 quantityordertobechanged.push_back(quanstobecopied[j].GetName());
             }
         }
-        blocks[i].GetVars()->Quantity_Order() = quantityordertobechanged;
+        blocks[i].GetVars()->ReviseQuanityOrder(quantityordertobechanged,consttnt->GetName());
     }
     quanstobecopied = GetToBeCopiedQuantities(consttnt,object_type::link);
     for (unsigned int i=0; i<links.size(); i++)
@@ -2154,7 +2154,7 @@ bool System::AddConstituentRelateProperties(Constituent *consttnt)
                 quantityordertobechanged.push_back(quanstobecopied[j].GetName());
             }
         }
-        links[i].GetVars()->Quantity_Order() = quantityordertobechanged;
+        links[i].GetVars()->ReviseQuanityOrder(quantityordertobechanged,consttnt->GetName());
     }
     return true; 
 }
