@@ -31,6 +31,7 @@ bool Constituent::SetName(const string &newname, bool setprop)
     }
 
     Object::SetName(newname,setprop);
+    return true; 
 }
 
 

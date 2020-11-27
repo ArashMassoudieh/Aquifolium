@@ -446,8 +446,9 @@ bool System::Solve(bool applyparameters)
     SolverTempVars.dt_base = SimulationParameters.dt0;
     SolverTempVars.dt = SolverTempVars.dt_base;
     SolverTempVars.t = SimulationParameters.tstart;
+    
     CalculateAllExpressions();
-
+    CalcAllInitialValues();
     for (unsigned int i=0; i<ObjectiveFunctionsCount(); i++)
     {
         ObjectiveFunctions()[i]->GetTimeSeries()->clear();
@@ -460,7 +461,7 @@ bool System::Solve(bool applyparameters)
         rtw->SetYRange(0,SimulationParameters.dt0*timestepmaxfactor);
     }
 #endif
-    CalcAllInitialValues();
+    
     CalculateAllExpressions(Expression::timing::past);
     PopulateOutputs();
     int counter = 0; 
@@ -2104,7 +2105,8 @@ bool System::AddAllConstituentRelateProperties(Block *blk)
             }
         }
     }
-    blk->GetVars()->Quantity_Order() = quantityordertobechanged;
+    for (unsigned int i=0; i<quantityordertobechanged.size(); i++)
+        blk->GetVars()->Quantity_Order().push_back(quantityordertobechanged[i]);
     return true;
 }
 
@@ -2122,7 +2124,8 @@ bool System::AddAllConstituentRelateProperties(Link *lnk)
             }
         }
     }
-    lnk->GetVars()->Quantity_Order() = quantityordertobechanged;
+    for (unsigned int i = 0; i < quantityordertobechanged.size(); i++)
+        lnk->GetVars()->Quantity_Order().push_back(quantityordertobechanged[i]);
     return true;
 
 }
@@ -2137,11 +2140,8 @@ bool System::AddConstituentRelateProperties(Constituent *consttnt)
         for (unsigned int j=0; j<quanstobecopied.size(); j++)
         {
             if (blocks[i].GetVars()->Count(quanstobecopied[j].GetName())==0)
-            {   block(i)->GetVars()->Append(quanstobecopied[j].GetName(),quanstobecopied[j]);
-                quantityordertobechanged.push_back(quanstobecopied[j].GetName());
-            }
+                block(i)->GetVars()->Append(quanstobecopied[j].GetName(),quanstobecopied[j]);
         }
-        blocks[i].GetVars()->ReviseQuanityOrder(quantityordertobechanged,consttnt->GetName());
     }
     quanstobecopied = GetToBeCopiedQuantities(consttnt,object_type::link);
     for (unsigned int i=0; i<links.size(); i++)
@@ -2150,11 +2150,8 @@ bool System::AddConstituentRelateProperties(Constituent *consttnt)
         for (unsigned int j=0; j<quanstobecopied.size(); j++)
         {
             if (links[i].GetVars()->Count(quanstobecopied[j].GetName())==0)
-            {   link(i)->GetVars()->Append(quanstobecopied[j].GetName(),quanstobecopied[j]);
-                quantityordertobechanged.push_back(quanstobecopied[j].GetName());
-            }
+               link(i)->GetVars()->Append(quanstobecopied[j].GetName(),quanstobecopied[j]);
         }
-        links[i].GetVars()->ReviseQuanityOrder(quantityordertobechanged,consttnt->GetName());
     }
     return true; 
 }

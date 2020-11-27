@@ -487,18 +487,18 @@ bool Object::RenameConstituents(const string &oldname, const string &newname)
         succeed &= RenameProperty(oldfullname[i],newfullname[i]);
         var[newfullname[i]].Description() = newname + ":" + aquiutils::split(newfullname[i],':')[1];
     }
-    succeed &= GetVars()->RenameQuantity(oldname,newname);
+    
     return succeed;
 }
 
 bool Object::CalculateInitialValues()
 {
     bool succeed = true;
-    for (map<string, Quan>::iterator it = GetVars()->begin(); it != GetVars()->end(); it++)
+    for (unsigned int j = 0; j < QuantitOrder().size(); j++)
     {
-        if (it->second.calcinivalue())
-        {   double ini_value = Expression(it->second.InitialValueExpression()).calc(this,Expression::timing::past);
-            it->second.SetVal(ini_value,Expression::timing::both);
+        if (Variable(QuantitOrder()[j])->calcinivalue())
+        {   double ini_value = Expression(Variable(QuantitOrder()[j])->InitialValueExpression()).calc(this,Expression::timing::past);
+            Variable(QuantitOrder()[j])->SetVal(ini_value,Expression::timing::both);
         }
     }
     return succeed;

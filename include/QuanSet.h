@@ -50,6 +50,7 @@ class QuanSet
         vector<string> quantitative_variable_list();
         bool RenameProperty(const string &oldname, const string &newname);
         bool RenameInQuantityOrder(const string &oldname, const string &newname);
+        bool DeleteInQuantityOrder(const string& oldname);
         vector<string> AllConstituents();
         vector<string> AllReactionParameters();
         bool RenameQuantity(const string &oldname, const string &newname);

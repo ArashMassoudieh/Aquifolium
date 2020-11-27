@@ -410,9 +410,9 @@ bool QuanSet::RenameProperty(const string &oldname, const string &newname)
       Quan value = i->second;
       value.SetName(newname);
       quans.erase(i);
-      return Append(newname,value);
-      RenameInQuantityOrder(oldname, newname);
-      RenameQuantity(oldname,newname);
+      DeleteInQuantityOrder(oldname);
+      RenameQuantity(oldname, newname);
+      return Append(newname, value);
     }
     else
         return false;
@@ -431,6 +431,22 @@ bool QuanSet::RenameInQuantityOrder(const string &oldname, const string &newname
     return false;
 }
 
+bool QuanSet::DeleteInQuantityOrder(const string& oldname)
+{
+    bool out = false; 
+    vector<string> new_quantity_order; 
+    for (unsigned int i = 0; i < quantity_order.size(); i++)
+    {
+        if (quantity_order[i] != oldname)
+        {
+            new_quantity_order.push_back(quantity_order[i]);
+        }
+        else
+            out = true; 
+    }
+    quantity_order = new_quantity_order;
+    return out; 
+}
 
 vector<string> QuanSet::AllConstituents()
 {
@@ -467,10 +483,5 @@ bool QuanSet::RenameQuantity(const string &oldname, const string &newname)
     bool out = false;
     for (map<string,Quan>::iterator it=quans.begin(); it!=quans.end(); it++)
         out = out || it->second.RenameQuantity(oldname, newname);
-    for (unsigned int i=0; i<quantity_order.size(); i++)
-    {
-        if (quantity_order[i] == oldname)
-            quantity_order[i]=newname;
-    }
     return true;
 }
