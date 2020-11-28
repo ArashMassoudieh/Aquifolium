@@ -215,7 +215,7 @@ class System: public Object
         bool OneStepSolve(unsigned int i);
         bool OneStepSolve_mv(unsigned int statevarno);
 		bool Renew(const string &variable);
-		bool Update(const string &variable);
+		bool Update(const string &variable="");
         void UnUpdateAllVariables(); 
 		//bool Solve(const string &variable, bool ApplyParams = false);
 		bool Solve(bool ApplyParams = false);

@@ -1173,6 +1173,7 @@ double sum_interpolate(vector<CTimeSeries> BTC, double t)
 
 void CTimeSeries::assign_D()
 {
+	D.clear();
 	for (int i = 0; i<n; i++)
 	{
 		double counter = 0;
@@ -1185,6 +1186,10 @@ void CTimeSeries::assign_D()
                 break;
             }
 		}
+		if (i + 1 == n)
+			counter = t[n - 1] - t[n - 2];
+		if (counter==0)
+			counter = t[i] - t[i-1];
 		D.push_back(counter);
 	}
 }

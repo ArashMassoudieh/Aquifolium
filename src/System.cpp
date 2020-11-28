@@ -462,7 +462,7 @@ bool System::Solve(bool applyparameters)
     }
 #endif
     
-    CalculateAllExpressions(Expression::timing::past);
+    Update();
     PopulateOutputs();
     int counter = 0; 
     int fail_counter = 0; 
@@ -545,8 +545,9 @@ bool System::Solve(bool applyparameters)
                 SolverTempVars.NR_coefficient = (CVector(SolverTempVars.NR_coefficient.size()) + 1).vec;
             }
 
-            for (unsigned int i=0; i<solvevariableorder.size(); i++)
-                Update(solvevariableorder[i]);
+            //for (unsigned int i=0; i<solvevariableorder.size(); i++)
+            //    Update(solvevariableorder[i]);
+            Update();
             UpdateObjectiveFunctions(SolverTempVars.t);
             PopulateOutputs();
         }
@@ -1029,11 +1030,26 @@ bool System::Renew(const string & variable)
 bool System::Update(const string & variable)
 {
 	bool out = true;
-	for (unsigned int i = 0; i < blocks.size(); i++)
-    {	out &= blocks[i].Update(variable);
-        blocks[i].SetOutflowLimitFactor(blocks[i].GetOutflowLimitFactor(Expression::timing::present),Expression::timing::past);
+    if (variable == "")
+    {
+        for (unsigned int i = 0; i < blocks.size(); i++)
+        {
+            for (unsigned j=0; j<blocks[i].GetVars()->Quantity_Order().size(); j++)
+                out &= blocks[i].Update(blocks[i].GetVars()->Quantity_Order()[j]);
+            blocks[i].SetOutflowLimitFactor(blocks[i].GetOutflowLimitFactor(Expression::timing::present), Expression::timing::past);
+        }
+        for (unsigned int i = 0; i < links.size(); i++)
+            for (unsigned j = 0; j < links[i].GetVars()->Quantity_Order().size(); j++)
+                out &= links[i].Update(links[i].GetVars()->Quantity_Order()[j]);
     }
-
+    else
+    {
+        for (unsigned int i = 0; i < blocks.size(); i++)
+        {
+            out &= blocks[i].Update(variable);
+            blocks[i].SetOutflowLimitFactor(blocks[i].GetOutflowLimitFactor(Expression::timing::present), Expression::timing::past);
+        }
+    }
 
 //	for (unsigned int i = 0; i < links.size(); i++)
 //		out &= links[i].Update(variable);
@@ -1114,7 +1130,8 @@ CVector_arma System::GetResiduals(const string &variable, CVector_arma &X)
         {
             blocks[i].SetOutflowLimitFactor(max(X[i],0.0),Expression::timing::present);
             blocks[i].SetVal(variable, blocks[i].GetVal(variable, Expression::timing::past) * SolverSettings.landtozero_factor,Expression::timing::present);
-            F[i] = -blocks[i].GetVal(variable,Expression::timing::past)*(1.0-SolverSettings.landtozero_factor)/dt() - blocks[i].GetInflowValue(variable,Expression::timing::present);
+            double inflow = blocks[i].GetInflowValue(variable, Expression::timing::present);
+            F[i] = -blocks[i].GetVal(variable,Expression::timing::past)*(1.0-SolverSettings.landtozero_factor)/dt() - inflow;
         }
         else
             F[i] = (X[i]-blocks[i].GetVal(variable,Expression::timing::past))/dt() - blocks[i].GetInflowValue(variable,Expression::timing::present);
@@ -1170,7 +1187,7 @@ CVector_arma System::GetResiduals(const string &variable, CVector_arma &X)
             if (X[i]<0)
             {
                 //qDebug()<<"flow factor is negative!";
-                F[i] = X[i];
+                //F[i] = X[i];
             }
 
         }
