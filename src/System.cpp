@@ -447,7 +447,7 @@ bool System::Solve(bool applyparameters)
     SolverTempVars.dt = SolverTempVars.dt_base;
     SolverTempVars.t = SimulationParameters.tstart;
     
-    CalculateAllExpressions();
+    CalculateAllExpressions(Expression::timing::present);
     CalcAllInitialValues();
     for (unsigned int i=0; i<ObjectiveFunctionsCount(); i++)
     {
