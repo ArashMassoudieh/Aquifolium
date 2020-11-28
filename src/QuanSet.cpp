@@ -275,6 +275,11 @@ vector<CTimeSeries*> QuanSet::TimeSeries()
         if (quans[it->first].GetType() == Quan::_type::timeseries && quans[it->first].TimeSeries()!=nullptr)
             out.push_back(quans[it->first].TimeSeries());
     }
+    for (map<string, Quan>::iterator it = quans.begin(); it != quans.end(); it++)
+    {
+        if (quans[it->first].GetType() == Quan::_type::prec_timeseries && quans[it->first].TimeSeries() != nullptr)
+            out.push_back(quans[it->first].TimeSeries());
+    }
     return out;
 }
 
