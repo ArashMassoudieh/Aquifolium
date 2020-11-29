@@ -1912,6 +1912,14 @@ bool System::Delete(const string& objectname)
                 Delete(links_to_be_deleted[j]);
 
             blocks.erase(blocks.begin() + i);
+            for (int j = 0; j < links.size(); j++)
+            {
+                if (links[j].s_Block_No() >= i)
+                    links[j].ShiftLinkedBlock(-1, Expression::loc::source);
+                if (links[j].e_Block_No() >= i)
+                    links[j].ShiftLinkedBlock(-1, Expression::loc::destination);
+            }
+
             return true; 
         }
 

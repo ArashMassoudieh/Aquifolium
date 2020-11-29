@@ -57,7 +57,9 @@ class Object
         void SetType(const string &typ) {type = typ;}
         string GetType() {return type;}
         int s_Block_No() {return s_Block_no; }
+        void SetSBlockNo(int i) { s_Block_no = i; }
         int e_Block_No() {return e_Block_no; }
+        void SetEBlockNo(int i) { e_Block_no = i; }
         void Set_s_Block(Object *O) { s_Block = O; }
         void Set_e_Block(Object *O) { e_Block = O; }
         Object* Get_s_Block() { return s_Block; }

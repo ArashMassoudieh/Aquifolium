@@ -58,3 +58,12 @@ vector<string> Link::GetAllRequieredDestinationBlockProperties()
     return s;
 }
 
+bool Link::ShiftLinkedBlock(int shift, Expression::loc loc)
+{
+    if (loc == Expression::loc::source)
+        SetSBlockNo( s_Block_No() + shift);
+    if (loc == Expression::loc::destination)
+        SetEBlockNo(e_Block_No() + shift);
+
+    return true; 
+}

@@ -29,6 +29,7 @@ class Link: public Object
         string toCommand();
         vector<string> GetAllRequieredStartingBlockProperties(); 
         vector<string> GetAllRequieredDestinationBlockProperties();
+        bool ShiftLinkedBlock(int shift, Expression::loc loc);
     protected:
 
     private:
