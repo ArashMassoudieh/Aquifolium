@@ -869,7 +869,10 @@ bool System::OneStepSolve(unsigned int statevarno)
                     J.ScaleDiagonal(1.0 / SolverTempVars.NR_coefficient[statevarno]);
 				if (det(J) == 0)
 				{
-					SolverTempVars.fail_reason.push_back("at " + aquiutils::numbertostring(SolverTempVars.t) + ": The Jacobian Matrix is not full-ranked");
+#ifdef DEBUG
+                    J.writetofile("Jacobian_Matrix.txt");
+#endif
+                    SolverTempVars.fail_reason.push_back("at " + aquiutils::numbertostring(SolverTempVars.t) + ": The Jacobian Matrix is not full-ranked");
                     SetOutflowLimitedVector(outflowlimitstatus_old);
                     return false; 
 				}
@@ -1226,7 +1229,7 @@ void System::CorrectStoragesBasedonFluxes(const string& variable)
 
 bool System::CalculateFlows(const string &var, const Expression::timing &tmg)
 {
-    for (int i=0; i<links.size(); i++)
+    for (unsigned int i=0; i<links.size(); i++)
     {
         links[i].SetVal(var,links[i].CalcVal(var,tmg));
     }
@@ -1252,7 +1255,9 @@ CMatrix_arma System::Jacobian(const string &variable, CVector_arma &X)
 CVector_arma System::Jacobian(const string &variable, CVector_arma &V, CVector_arma &F0, int i)  //Works also w/o reference (&)
 {
   double epsilon;
-  epsilon = -1e-6*(fabs(V[i])+1);
+  double u;
+  if (unitrandom()>0.5) u=1; else u=-1;
+  epsilon = -1e-6*u*(fabs(V[i])+1);
   CVector_arma V1(V);
   V1[i] += epsilon;
   CVector_arma F1;
@@ -1260,7 +1265,7 @@ CVector_arma System::Jacobian(const string &variable, CVector_arma &V, CVector_a
   CVector_arma grad = (F1 - F0) / epsilon;
   if (grad.norm2() == 0 || !grad.is_finite())
   {
-    epsilon = +1e-6*(fabs(V[i]) + 1);
+    epsilon = +1e-6*u*(fabs(V[i]) + 1);
     V1 = V;
     V1[i] += epsilon;
     F1 = GetResiduals(variable,V1);
