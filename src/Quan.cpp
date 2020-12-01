@@ -555,6 +555,7 @@ bool Quan::SetVal(const double &v, const Expression::timing &tmg)
     {
         _val = v;
         _val_star = v;
+        value_star_updated = true;
         if (HasCriteria() && parent != nullptr)
         {
             bool validate = Criteria().calc(parent, tmg);
