@@ -30,6 +30,7 @@ public:
     CVector(const double x_min, const double x_max, int n);  //cvector:: is redundant. However, works fine here.
 	CVector(const CVector&);
     double& operator[](int);
+    double at(int i) const;
 	virtual ~CVector();
 	int num;
     int range(int);
@@ -77,7 +78,7 @@ public:
     void print(string s);
     CVector sub(int i, int j);
     bool is_finite();
-    string toString();
+    string toString() const;
     vector<int> negative_elements();
 
 

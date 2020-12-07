@@ -88,6 +88,14 @@ double& CVector::operator[](int i)
 		return *p;
 }
 
+double CVector::at(int i) const
+{
+    if ((i<num) & (i>-1))
+        return vec[i];
+    else
+        return -9999;
+}
+
 int CVector::range(int i)
 {
 	return i;
@@ -298,7 +306,7 @@ bool CVector::is_finite()
 	return r;
 }
 
-string CVector::toString()
+string CVector::toString() const
 {
 	string s;
 	s += aquiutils::numbertostring(vec);

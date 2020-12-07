@@ -1013,6 +1013,15 @@ string aquiutils::numbertostring(int x)
 	return Result;
 }
 
+string aquiutils::numbertostring(unsigned int x)
+{
+    string Result;          // string which will contain the result
+    ostringstream convert;   // stream used for the conversion
+    convert << x;      // insert the textual representation of 'Number' in the characters in the stream
+    Result = convert.str();
+    return Result;
+}
+
 string aquiutils::numbertostring(vector<int> x)
 {
 	string Result = "[";

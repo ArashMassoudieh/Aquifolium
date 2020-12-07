@@ -103,6 +103,7 @@ namespace aquiutils
 	double Pos(double x);
 	string numbertostring(double x);
 	string numbertostring(int x);
+    string numbertostring(unsigned int x);
 	string numbertostring(vector<double> x);
 	string numbertostring(vector<int> x);
 	string tail(std::string const& source, size_t const length);

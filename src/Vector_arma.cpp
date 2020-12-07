@@ -603,7 +603,7 @@ CVector_arma CVector_arma::sub(int i, int j)
 
 }
 
-string CVector_arma::toString()
+string CVector_arma::toString() const
 {
     string s = "[" + aquiutils::numbertostring(vect(0));
     for (int i=1; i<num; i++)

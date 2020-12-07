@@ -41,25 +41,6 @@ void System::PopulateOperatorsFunctions()
     functions->push_back("mbs");
 }
 
-#ifdef QT_version
-System::System(GraphWidget* diagramviewer,runtimeWindow *_rtw):Object::Object()
-{
-    diagramview = diagramviewer;
-    rtw = _rtw;
-    GetModelConfiguration();
-
-}
-System::System(GraphWidget* diagramviewer,runtimeWindow *_rtw, const string &modelfilename):Object::Object()
-{
-    diagramview = diagramviewer;
-    rtw = _rtw;
-    GetQuanTemplate(modelfilename);
-    GetModelConfiguration();
-
-}
-
-#endif
-
 System::~System()
 {
     //dtor
@@ -81,7 +62,7 @@ System::System(const System& other):Object::Object(other)
 	SolverTempVars = other.SolverTempVars;
     paths = other.paths;
     Settings = other.Settings;
-
+    solutionlogger = other.solutionlogger;
     SetAllParents();
     Object::AssignRandomPrimaryKey();
 }
@@ -103,6 +84,7 @@ System& System::operator=(const System& rhs)
 	SolverTempVars = rhs.SolverTempVars;
     paths = rhs.paths;
     Settings = rhs.Settings;
+    solutionlogger = rhs.solutionlogger;
     SetAllParents();
     PopulateOperatorsFunctions();
     Object::AssignRandomPrimaryKey();
@@ -425,7 +407,7 @@ void System::CopyQuansToMembers()
 vector<bool> System::OneStepSolve()
 {
 	vector<bool> success(solvevariableorder.size());
-	for (int i = 0; i < solvevariableorder.size(); i++)
+    for (unsigned int i = 0; i < solvevariableorder.size(); i++)
 		success[i] = OneStepSolve(i);
 
 	return success;
@@ -442,6 +424,7 @@ bool System::Solve(bool applyparameters)
     errorhandler.SetRunTimeWindow(rtw);
 	if (applyparameters) ApplyParameters();
     InitiateOutputs();
+    WriteObjectsToLogger();
 
     SolverTempVars.dt_base = SimulationParameters.dt0;
     SolverTempVars.dt = SolverTempVars.dt_base;
@@ -499,6 +482,9 @@ bool System::Solve(bool applyparameters)
                 QCoreApplication::processEvents();
             }
 #endif
+            if (GetSolutionLogger())
+                GetSolutionLogger()->WriteString(SolverTempVars.fail_reason[SolverTempVars.fail_reason.size() - 1] + ", dt = " + aquiutils::numbertostring(SolverTempVars.dt));
+
             SolverTempVars.dt_base *= SolverSettings.NR_timestep_reduction_factor_fail;
             SolverTempVars.SetUpdateJacobian(true);
 
@@ -516,6 +502,9 @@ bool System::Solve(bool applyparameters)
                     QCoreApplication::processEvents();
                 }
 #endif
+                if (GetSolutionLogger())
+                    GetSolutionLogger()->WriteString("The attempt to solve the problem failed!");
+
                 stop_triggered = true;
             }
         }
@@ -560,10 +549,13 @@ bool System::Solve(bool applyparameters)
             rtw->SetProgress(1);
         rtw->AddDataPoint(SolverTempVars.t,SolverTempVars.dt);
         rtw->AppendText("Simulation finished!" + QTime::currentTime().toString(Qt::RFC2822Date) + "!");
-        
         QCoreApplication::processEvents();
     }
 #endif
+    if (!stop_triggered)
+        if (GetSolutionLogger())
+            GetSolutionLogger()->WriteString("Simulation finished successfully!");
+
 
     #ifdef QT_version
     updateProgress(true);
@@ -573,6 +565,7 @@ bool System::Solve(bool applyparameters)
     }
     #else
     ShowMessage("Simulation finished!");
+    GetSolutionLogger()->Flush();
     #endif
     return true;
 }
@@ -712,6 +705,13 @@ bool System::SetProperty(const string &s, const string &val)
     if (s=="outputpath")
     {
         paths.outputpath = val; return true;
+    }
+    if (s=="write_solution_details")
+    {
+        if (aquiutils::trim(aquiutils::tolower(val))=="yes")
+            SolverSettings.write_solution_details = true;
+        else
+            SolverSettings.write_solution_details = false;
     }
 
     errorhandler.Append("","System","SetProperty","Property '" + s + "' was not found!", 622);
@@ -2225,5 +2225,46 @@ bool System::OneStepSolve_mv(unsigned int statevarno) //solve a multivariate sys
 
 
     return true;
+}
+
+void System::SetSolutionLogger(SolutionLogger &slnlogger)
+{
+    solutionlogger = &slnlogger;
+
+}
+
+bool System::SetSolutionLogger(const string &filename)
+{
+    solutionlogger = new SolutionLogger(filename);
+    return true;
+
+}
+
+SolutionLogger *System::GetSolutionLogger()
+{
+    return solutionlogger;
+
+}
+
+void System::WriteObjectsToLogger()
+{
+    if (GetSolutionLogger()==nullptr) return;
+    GetSolutionLogger()->WriteString("Blocks:");
+    for (unsigned int i=0; i<blocks.size(); i++)
+    {
+        GetSolutionLogger()->WriteString("    " + aquiutils::numbertostring(i) + ":   " + blocks[i].GetName());
+    }
+    GetSolutionLogger()->WriteString("Links:");
+    for (unsigned int i=0; i<links.size(); i++)
+    {
+        GetSolutionLogger()->WriteString("    " + aquiutils::numbertostring(i) + ":   " +  links[i].GetName());
+    }
+    GetSolutionLogger()->WriteString("Sources:");
+    for (unsigned int i=0; i<sources.size(); i++)
+    {
+        GetSolutionLogger()->WriteString("    " + aquiutils::numbertostring(i) + ":   " +  sources[i].GetName());
+    }
+    GetSolutionLogger()->WriteString("------------------------------------------------------------------------------------");
+    GetSolutionLogger()->Flush();
 }
 

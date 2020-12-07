@@ -77,7 +77,7 @@ public:
 	CVector_arma sub(int i, int j);
 	bool is_finite();
 	vector<int> get_nan_elements();
-	string toString();
+    string toString() const;
     vector<int> negative_elements();
 };
 

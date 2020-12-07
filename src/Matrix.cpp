@@ -939,7 +939,7 @@ CMatrix CMatrix::Preconditioner(double tol)
 
 	return M;
 }
-vector<string> CMatrix::toString(string format, vector<string> columnHeaders, vector<string> rowHeaders)
+vector<string> CMatrix::toString(string format, vector<string> columnHeaders, vector<string> rowHeaders) const
 {
 	vector<string> r;
 	bool rowH = false, colH = false;
@@ -976,7 +976,7 @@ vector<string> CMatrix::toString(string format, vector<string> columnHeaders, ve
 		}
 		for (int j = 0; j<numcols; j++)
 		{
-			r[i + rowOffset] += to_string(matr[i][j]);
+            r[i + rowOffset] += to_string(matr[i].at(j));
 			if (j < numcols - 1) r[i + rowOffset] += "\, ";
 		}
 	}

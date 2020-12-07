@@ -13,6 +13,7 @@
 #include "Parameter_Set.h"
 #include "reaction.h"
 #include "RxnParameter.h"
+#include "solutionlogger.h"
 #ifdef QT_version
     #include "runtimeWindow.h"
     class GWidget;
@@ -53,6 +54,7 @@ struct solversettings
     double landtozero_factor = 0.1; 
     bool optimize_lambda = true; 
     bool direct_jacobian = true; 
+    bool write_solution_details = false;
     
 
 };
@@ -275,6 +277,7 @@ class System: public Object
         bool VerifyAsDestination(Block* blk, Link* lnk);
         ErrorHandler VerifyAllQuantities();
         bool CalcAllInitialValues();
+        void WriteObjectsToLogger();
 #if defined(QT_version)
         logWindow *LogWindow() {return logwindow;}
         void SetLogWindow(logWindow *lgwnd) {logwindow=lgwnd;}
@@ -303,6 +306,10 @@ class System: public Object
         void RenameConstituents(const string &oldname, const string &newname);
         vector<string> AllConstituents();
         vector<string> AllReactionParameters();
+        void SetSolutionLogger(SolutionLogger &slnlogger);
+        bool SetSolutionLogger(const string &filename);
+        const solversettings& GetSolverSettings() const {return SolverSettings;}
+        SolutionLogger *GetSolutionLogger();
 
         //constituents
 #endif
@@ -354,6 +361,8 @@ class System: public Object
 			SolverTempVars.numiterations.resize(n);
 			SolverTempVars.updatejacobian.resize(n);
 		}
+        SolutionLogger *solutionlogger = nullptr;
+
 #ifdef Q_version
     RunTimeWindow *rtw = nullptr;
 #endif

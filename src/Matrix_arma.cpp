@@ -527,7 +527,7 @@ CMatrix_arma CMatrix_arma::Preconditioner(double tol)
 
 	return M;
 }
-vector<string> CMatrix_arma::toString(string format, vector<string> columnHeaders, vector<string> rowHeaders)
+vector<string> CMatrix_arma::toString(string format, vector<string> columnHeaders, vector<string> rowHeaders) const
 {
 	vector<string> r;
 	bool rowH = false, colH = false;
