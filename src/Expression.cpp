@@ -990,7 +990,8 @@ string aquiutils::numbertostring(double x)
 {
 	string Result;          // string which will contain the result
 	ostringstream convert;   // stream used for the conversion
-	convert << x;      // insert the textual representation of 'Number' in the characters in the stream
+    convert << std::scientific;
+    convert << x;      // insert the textual representation of 'Number' in the characters in the stream
 	Result = convert.str();
 	return Result;
 }

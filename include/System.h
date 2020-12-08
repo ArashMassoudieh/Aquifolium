@@ -278,6 +278,7 @@ class System: public Object
         ErrorHandler VerifyAllQuantities();
         bool CalcAllInitialValues();
         void WriteObjectsToLogger();
+        void WriteBlocksStates(const string &variable, const Expression::timing &tmg);
 #if defined(QT_version)
         logWindow *LogWindow() {return logwindow;}
         void SetLogWindow(logWindow *lgwnd) {logwindow=lgwnd;}

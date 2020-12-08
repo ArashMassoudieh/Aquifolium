@@ -565,51 +565,11 @@ bool System::Solve(bool applyparameters)
     }
     #else
     ShowMessage("Simulation finished!");
-    GetSolutionLogger()->Flush();
+    if (GetSolutionLogger())
+        GetSolutionLogger()->Flush();
     #endif
     return true;
 }
-
-#ifdef QT_version
-void System::updateProgress(bool finished)
-{
-    // t, dtt (graph), epoch_count
-    if (rtw != nullptr)
-    {
-        QMap<QString, QVariant> vars;
-        vars["mode"] = "forward";
-        if (finished)
-        {
-            vars["progress"] = 100;
-            vars["finished"] = true;
-        }
-        else
-        {
-            int progress;
-            progress = 100.0*(SolverTempVars.t - SimulationParameters.tstart) / (SimulationParameters.tend - SimulationParameters.tstart);
-            vars["t"] = SolverTempVars.t;
-            vars["progress"] = progress;
-            vars["dtt"] = SolverTempVars.dt;
-            vars["epoch count"] = SolverTempVars.epoch_count;
-            QString reason = QString::fromStdString(SolverTempVars.fail_reason[SolverTempVars.fail_reason.size()-1]);
-            ////qDebug() << reason;
-            if (!reason.toLower().contains("none"))
-                vars["label"] = reason;
-            ////qDebug()<< t<<dtt;
-
-            if (rtw->sln_dtl_active)
-                if (!reason.toLower().contains("none"))
-                    rtw->slndetails_append(QString::number(SolverTempVars.epoch_count) + ":" + reason + ", time step size: " + QString::number(SolverTempVars.dt));
-        }
-        rtw->update(vars);
-        if (finished)
-        {
-            //QMessageBox::StandardButton reply;
-            //QMessageBox::question(runtimewindow, "Simulation Ended", "Simulation Finished!", QMessageBox::Ok);
-        }
-    }
-}
-#endif
 
 bool System::SetProp(const string &s, const double &val)
 {
@@ -869,9 +829,21 @@ bool System::OneStepSolve(unsigned int statevarno)
                     J.ScaleDiagonal(1.0 / SolverTempVars.NR_coefficient[statevarno]);
 				if (det(J) == 0)
 				{
-#ifdef DEBUG
-                    J.writetofile("Jacobian_Matrix.txt");
-#endif
+                    if (GetSolutionLogger())
+                    {
+                        GetSolutionLogger()->WriteString("Jacobian Matrix is not full-ranksed!");
+                        GetSolutionLogger()->WriteMatrix(J);
+                        GetSolutionLogger()->WriteString("Residual Vector:");
+                        GetSolutionLogger()->WriteVector(F);
+                        GetSolutionLogger()->WriteString("State variable:");
+                        GetSolutionLogger()->WriteVector(X);
+                        GetSolutionLogger()->WriteString("Block states - present: ");
+                        WriteBlocksStates(variable, Expression::timing::present);
+                        GetSolutionLogger()->WriteString("Block states - past: ");
+                        WriteBlocksStates(variable, Expression::timing::past);
+                        GetSolutionLogger()->Flush();
+                    }
+
                     SolverTempVars.fail_reason.push_back("at " + aquiutils::numbertostring(SolverTempVars.t) + ": The Jacobian Matrix is not full-ranked");
                     SetOutflowLimitedVector(outflowlimitstatus_old);
                     return false; 
@@ -984,7 +956,7 @@ bool System::OneStepSolve(unsigned int statevarno)
                 switchvartonegpos = true;
                 SolverTempVars.updatejacobian[statevarno] = true;
             }
-            else if (X[i]>1 && blocks[i].GetLimitedOutflow())
+            else if (X[i]>=1 && blocks[i].GetLimitedOutflow())
             {
                 blocks[i].SetLimitedOutflow(false);
                 switchvartonegpos = true;
@@ -1172,12 +1144,12 @@ CVector_arma System::GetResiduals(const string &variable, CVector_arma &X)
         {
             double outflow = blocks[i].GetInflowValue(variable, Expression::timing::present);
             alloutflowszero &= !(outflow < 0);
-            for (int j = 0; j < blocks[i].GetLinksFrom().size(); j++)
+            for (unsigned int j = 0; j < blocks[i].GetLinksFrom().size(); j++)
             {
                 outflow = blocks[i].GetLinksFrom()[j]->GetVal(blocks[i].Variable(variable)->GetCorrespondingFlowVar(), Expression::timing::present);
                 alloutflowszero &= !(outflow > 0);
             }
-            for (int j = 0; j < blocks[i].GetLinksTo().size(); j++)
+            for (unsigned int j = 0; j < blocks[i].GetLinksTo().size(); j++)
             {
                 outflow = blocks[i].GetLinksTo()[j]->GetVal(blocks[i].Variable(variable)->GetCorrespondingFlowVar(), Expression::timing::present);
                 alloutflowszero &= !(outflow < 0);
@@ -2268,3 +2240,10 @@ void System::WriteObjectsToLogger()
     GetSolutionLogger()->Flush();
 }
 
+
+void System::WriteBlocksStates(const string &variable, const Expression::timing &tmg)
+{
+    for (unsigned int i=0; i<blocks.size(); i++)
+        GetSolutionLogger()->WriteString("    " + blocks[i].GetName() + "Storage: " + aquiutils::numbertostring(blocks[i].GetVal(variable,tmg)) + ", correction factor: " + aquiutils::numbertostring(blocks[i].GetOutflowLimitFactor(tmg)) + ", Outflow limiting status:" + aquiutils::numbertostring(blocks[i].GetLimitedOutflow()));
+
+}

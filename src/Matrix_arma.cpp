@@ -564,8 +564,11 @@ vector<string> CMatrix_arma::toString(string format, vector<string> columnHeader
 		}
 		for (int j = 0; j<numcols; j++)
 		{
-			r[i + rowOffset] += to_string(matr(i,j));
-			if (j < numcols - 1) r[i + rowOffset] += "\, ";
+            std::ostringstream streamObj;
+            streamObj << matr(i,j);
+            std::string strObj = streamObj.str();
+            r[i + rowOffset] += strObj;
+            if (j < numcols - 1) r[i + rowOffset] += "\, ";
 		}
 	}
 	return r;

@@ -976,7 +976,10 @@ vector<string> CMatrix::toString(string format, vector<string> columnHeaders, ve
 		}
 		for (int j = 0; j<numcols; j++)
 		{
-            r[i + rowOffset] += to_string(matr[i].at(j));
+            std::ostringstream streamObj;
+            streamObj << matr[i].at(j);
+            std::string strObj = streamObj.str();
+            r[i + rowOffset] += strObj;
 			if (j < numcols - 1) r[i + rowOffset] += "\, ";
 		}
 	}
