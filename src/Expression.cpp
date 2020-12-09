@@ -986,22 +986,23 @@ double aquiutils::Pos(double x)
 	if (x>0) return x; else return 0;
 }
 
-string aquiutils::numbertostring(double x)
+string aquiutils::numbertostring(double x, bool scientific)
 {
 	string Result;          // string which will contain the result
 	ostringstream convert;   // stream used for the conversion
-    convert << std::scientific;
+    if (scientific)
+        convert << std::scientific;
     convert << x;      // insert the textual representation of 'Number' in the characters in the stream
 	Result = convert.str();
 	return Result;
 }
 
-string aquiutils::numbertostring(vector<double> x)
+string aquiutils::numbertostring(vector<double> x, bool scientific)
 {
 	string Result = "[";
 	for (int i=0; i<x.size()-1;i++)
-        Result += aquiutils::numbertostring(x[i])+",";
-    Result += aquiutils::numbertostring(x[x.size()-1]) + "]";
+        Result += aquiutils::numbertostring(x[i],scientific)+",";
+    Result += aquiutils::numbertostring(x[x.size()-1],scientific) + "]";
 	return Result;
 }
 

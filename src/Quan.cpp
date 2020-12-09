@@ -828,7 +828,10 @@ bool Quan::AppendError(const string &objectname, const string &cls, const string
 string Quan::toCommand()
 {
     string s;
-    s += GetName() + "=" + GetProperty(true);
+    if (delegate=="UnitBox")
+        s += GetName() + "=" + GetProperty(true);
+    else
+        s += GetName() + "=" + GetProperty(false);
     return s;
 }
 

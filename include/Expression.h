@@ -101,10 +101,10 @@ namespace aquiutils
 	void writeendl(ofstream& f);
 	double Heavyside(double x);
 	double Pos(double x);
-	string numbertostring(double x);
+    string numbertostring(double x, bool scientific=false);
 	string numbertostring(int x);
     string numbertostring(unsigned int x);
-	string numbertostring(vector<double> x);
+    string numbertostring(vector<double> x, bool scientific=false);
 	string numbertostring(vector<int> x);
 	string tail(std::string const& source, size_t const length);
 	string tabs(int i);
