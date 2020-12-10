@@ -844,6 +844,10 @@ bool System::OneStepSolve(unsigned int statevarno)
                         WriteBlocksStates(variable, Expression::timing::present);
                         GetSolutionLogger()->WriteString("Block states - past: ");
                         WriteBlocksStates(variable, Expression::timing::past);
+                        GetSolutionLogger()->WriteString("Link states - present: ");
+                        WriteLinksStates(variable, Expression::timing::present);
+                        GetSolutionLogger()->WriteString("Links states - past: ");
+                        WriteLinksStates(variable, Expression::timing::past);
                         GetSolutionLogger()->Flush();
                     }
 
@@ -882,7 +886,7 @@ bool System::OneStepSolve(unsigned int statevarno)
             }
 			if (!X.is_finite())
 			{
-				SolverTempVars.fail_reason.push_back("at " + aquiutils::numbertostring(SolverTempVars.t) + ": X is infinite");
+                SolverTempVars.fail_reason.push_back("at " + aquiutils::numbertostring(SolverTempVars.t) + ": X is infinite");
                 SetOutflowLimitedVector(outflowlimitstatus_old);
                 return false;
 			}
@@ -894,6 +898,15 @@ bool System::OneStepSolve(unsigned int statevarno)
 			if (!F.is_finite())
 			{
 				SolverTempVars.fail_reason.push_back("at " + aquiutils::numbertostring(SolverTempVars.t) + ": F is infinite");
+                GetSolutionLogger()->WriteString("Block states - present: ");
+                WriteBlocksStates(variable, Expression::timing::present);
+                GetSolutionLogger()->WriteString("Block states - past: ");
+                WriteBlocksStates(variable, Expression::timing::past);
+                GetSolutionLogger()->WriteString("Link states - present: ");
+                WriteLinksStates(variable, Expression::timing::present);
+                GetSolutionLogger()->WriteString("Links states - past: ");
+                WriteLinksStates(variable, Expression::timing::past);
+                GetSolutionLogger()->Flush();
                 SetOutflowLimitedVector(outflowlimitstatus_old);
                 return false;
 			}
@@ -2250,5 +2263,12 @@ void System::WriteBlocksStates(const string &variable, const Expression::timing 
 {
     for (unsigned int i=0; i<blocks.size(); i++)
         GetSolutionLogger()->WriteString("    " + blocks[i].GetName() + ", Storage= " + aquiutils::numbertostring(blocks[i].GetVal(variable,tmg)) + ", correction factor= " + aquiutils::numbertostring(blocks[i].GetOutflowLimitFactor(tmg)) + ", Outflow limiting status:" + aquiutils::numbertostring(blocks[i].GetLimitedOutflow()));
+
+}
+
+void System::WriteLinksStates(const string &variable, const Expression::timing &tmg)
+{
+    for (unsigned int i=0; i<links.size(); i++)
+        GetSolutionLogger()->WriteString("    " + links[i].GetName() + ", Flow = " + aquiutils::numbertostring(links[i].GetVal(blocks[links[i].s_Block_No()].Variable(variable)->GetCorrespondingFlowVar(),tmg)) + ", correction factor= " + aquiutils::numbertostring(links[i].GetOutflowLimitFactor(tmg)));
 
 }

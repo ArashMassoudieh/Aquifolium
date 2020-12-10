@@ -320,15 +320,20 @@ double Expression::calc(Object *W, const timing &tmg, bool limit)
 		return constant;
 	if (param_constant_expression == "parameter")
 	{
-		if (location == loc::self)
-            return W->GetVal(parameter, tmg,limit);
+        double out=0;
+        if (location == loc::self)
+            out = W->GetVal(parameter, tmg,limit);
         else
         {
             if (W->GetConnectedBlock(location)!=nullptr)
-                return W->GetConnectedBlock(location)->GetVal(parameter, tmg, limit);
+                out = W->GetConnectedBlock(location)->GetVal(parameter, tmg, limit);
             else
-                return W->GetVal(parameter, tmg, limit);
+                out = W->GetVal(parameter, tmg, limit);
         }
+        if (function == "")
+            return out;
+        else if (count_operators(";")==0)
+            return func(function, out);
 	}
 	if (param_constant_expression == "expression")
 	{
@@ -458,7 +463,7 @@ double Expression::func(string &f, double cond, double val1, double val2)
 double Expression::oprt(string &f, double val1, double val2)
 {
     if (f == "^") return
-        pow(val1, val2);
+        pow(aquiutils::Pos(val1), val2);
     if (f == "+") return
         val1 + val2;
     if (f == "-") return
