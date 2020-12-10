@@ -63,6 +63,7 @@ System::System(const System& other):Object::Object(other)
     paths = other.paths;
     Settings = other.Settings;
     solutionlogger = other.solutionlogger;
+    SolverTempVars.SolutionFailed = false;
     SetAllParents();
     Object::AssignRandomPrimaryKey();
 }
@@ -85,6 +86,7 @@ System& System::operator=(const System& rhs)
     paths = rhs.paths;
     Settings = rhs.Settings;
     solutionlogger = rhs.solutionlogger;
+    SolverTempVars.SolutionFailed = false;
     SetAllParents();
     PopulateOperatorsFunctions();
     Object::AssignRandomPrimaryKey();
@@ -432,6 +434,7 @@ bool System::Solve(bool applyparameters)
     
     CalculateAllExpressions(Expression::timing::present);
     CalcAllInitialValues();
+    UnUpdateAllVariables();
     for (unsigned int i=0; i<ObjectiveFunctionsCount(); i++)
     {
         ObjectiveFunctions()[i]->GetTimeSeries()->clear();
@@ -504,7 +507,7 @@ bool System::Solve(bool applyparameters)
 #endif
                 if (GetSolutionLogger())
                     GetSolutionLogger()->WriteString("The attempt to solve the problem failed!");
-
+                SolverTempVars.SolutionFailed = true;
                 stop_triggered = true;
             }
         }
@@ -1420,6 +1423,8 @@ void System::UpdateObjectiveFunctions(double t)
 }
 double System::GetObjectiveFunctionValue()
 {
+    if (GetSolutionFailed())
+        return  +1e18;
     return objective_function_set.Calculate();
 }
 
@@ -2244,6 +2249,6 @@ void System::WriteObjectsToLogger()
 void System::WriteBlocksStates(const string &variable, const Expression::timing &tmg)
 {
     for (unsigned int i=0; i<blocks.size(); i++)
-        GetSolutionLogger()->WriteString("    " + blocks[i].GetName() + "Storage: " + aquiutils::numbertostring(blocks[i].GetVal(variable,tmg)) + ", correction factor: " + aquiutils::numbertostring(blocks[i].GetOutflowLimitFactor(tmg)) + ", Outflow limiting status:" + aquiutils::numbertostring(blocks[i].GetLimitedOutflow()));
+        GetSolutionLogger()->WriteString("    " + blocks[i].GetName() + ", Storage= " + aquiutils::numbertostring(blocks[i].GetVal(variable,tmg)) + ", correction factor= " + aquiutils::numbertostring(blocks[i].GetOutflowLimitFactor(tmg)) + ", Outflow limiting status:" + aquiutils::numbertostring(blocks[i].GetLimitedOutflow()));
 
 }

@@ -86,6 +86,7 @@ struct solvertemporaryvars
     double t;
     double dt;
     double dt_base;
+    bool SolutionFailed = false;
 
 
 };
@@ -311,7 +312,7 @@ class System: public Object
         bool SetSolutionLogger(const string &filename);
         const solversettings& GetSolverSettings() const {return SolverSettings;}
         SolutionLogger *GetSolutionLogger();
-
+        bool GetSolutionFailed() {return SolverTempVars.SolutionFailed;}
         //constituents
 #endif
 

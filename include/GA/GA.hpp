@@ -218,7 +218,6 @@ CGA<T>::CGA(const CGA<T> &C)
 template<class T>
 CGA<T> CGA<T>::operator=(CGA<T> &C)
 {
-    Object::operators(C);
     GA_params = C.GA_params;
 	filenames = C.filenames;
 	Ind = C.Ind;
@@ -302,8 +301,7 @@ void CGA<T>::assignfitnesses()
 			}
 		}
 
-		int jj = 0;
-		Ind[k].actual_fitness = 0;
+        Ind[k].actual_fitness = 0;
 
 		Models[k] = Model;
         Models[k].SetSilent(true);
@@ -314,7 +312,10 @@ void CGA<T>::assignfitnesses()
 	}
 
 
-omp_set_num_threads(numberOfThreads);
+#ifndef NO_OPENMP
+    omp_set_num_threads(numberOfThreads);
+#endif
+int counter=0;
 #pragma omp parallel for //private(ts,l)
 		for (int k=0; k<GA_params.maxpop; k++)
 		{
@@ -337,25 +338,29 @@ omp_set_num_threads(numberOfThreads);
             }
 			clock_t t0 = clock();
             Models[k].Solve();
+
 			Ind[k].actual_fitness = Models[k].GetObjectiveFunctionValue();
 			epochs[k] += Models[k].EpochCount();
 			time_[k] = ((float)(clock() - t0))/CLOCKS_PER_SEC;
+            counter++;
+#pragma omp critical
+{
 #ifdef Q_version
 			if (rtw != nullptr)
 			{
-				rtw->SetProgress2(double(k + 1) / GA_params.maxpop);
+                rtw->SetProgress2(double(counter + 1) / GA_params.maxpop);
 				QCoreApplication::processEvents();
 			}
 #endif
-#pragma omp critical
+
             {
                 FileOut = fopen((filenames.pathname+"detail_GA.txt").c_str(),"a");
-                fprintf(FileOut, "%i, fitness=%le, time=%e, epochs=%i\n", k, Ind[k].actual_fitness, time_[k], epochs[k]);
+                fprintf(FileOut, "%i, fitness=%e, time=%e\n", k, Ind[k].actual_fitness, time_[k]);
                 fclose(FileOut);
             }
 
 		}
-
+}
 	Model_out = Models[maxfitness()];
 
 
@@ -483,8 +488,6 @@ int CGA<T>::optimize()
 
 	vector<double> X(Ind[0].nParams);
 
-	Models.resize(GA_params.maxpop);
-
 	initialize();
 	double ininumenhancements = GA_params.numenhancements;
 	GA_params.numenhancements = 0;
@@ -495,7 +498,9 @@ int CGA<T>::optimize()
 	{
 
 		write_to_detailed_GA("Assigning fitnesses ...");
-		assignfitnesses();
+        Models.clear();
+        Models.resize(GA_params.maxpop);
+        assignfitnesses();
 
 		write_to_detailed_GA("Assigning fitnesses done!");
 		FileOut = fopen(RunFileName.c_str(),"a");
@@ -506,10 +511,10 @@ int CGA<T>::optimize()
 			fprintf(FileOut, "%s, ", paramname[k].c_str());
 		fprintf(FileOut, "%s, %s, %s", "likelihood", "Fitness", "Rank");
 		fprintf(FileOut, "\n");
-
+        write_to_detailed_GA("Generation: " + aquiutils::numbertostring(i));
 		for (int j1=0; j1<GA_params.maxpop; j1++)
 		{
-			write_to_detailed_GA("Generation: " + aquiutils::numbertostring(i));
+
 			fprintf(FileOut, "%i, ", j1);
 
 			for (int k=0; k<Ind[0].nParams; k++)
@@ -524,7 +529,6 @@ int CGA<T>::optimize()
 		fclose(FileOut);
 
 		int j = maxfitness();
-
 
 		Fitness[i][0] = Ind[j].actual_fitness;
 
@@ -549,13 +553,13 @@ int CGA<T>::optimize()
 
 		if (i>50)
 		{
-			if ((Fitness[i][0] == Fitness[i - 20][0]))
+            if (Fitness[i][0] == Fitness[i - 20][0])
 			{
 				GA_params.numenhancements *= 1.05;
 				if (GA_params.numenhancements == 0) GA_params.numenhancements = ininumenhancements;
 			}
 
-			if ((Fitness[i][0] == Fitness[i - 50][0]))
+            if (Fitness[i][0] == Fitness[i - 50][0])
 				GA_params.numenhancements = ininumenhancements * 10;
 		}
 
@@ -596,12 +600,13 @@ int CGA<T>::optimize()
 
 
 	}
-	assignfitnesses();
+    Models.clear();
+    Models.resize(GA_params.maxpop);
+    assignfitnesses();
 	FileOut = fopen(RunFileName.c_str(), "a");
 	fprintf(FileOut, "Final Enhancements\n");
-	double l_MaxFitness = 1;
-	int j = maxfitness();
 
+	int j = maxfitness();
 
 	MaxFitness = Ind[j].actual_fitness;
 	final_params.resize(GA_params.nParam);
@@ -636,19 +641,18 @@ double CGA<T>::assignfitnesses(vector<double> inp)
 {
 
 	double likelihood = 0;
-    T Models;
-	Models = Model;
+    T Model1;
+    Model1 = Model;
 
-	int l = 0;
 	for (int i = 0; i < GA_params.nParam; i++)
-        Models.SetParameterValue(i, inp[i]);
+        Model1.SetParameterValue(i, inp[i]);
 
-	Models.ApplyParameters();
-    Models.Solve();
-	likelihood -= Models.GetObjectiveFunctionValue();
+    Model1.ApplyParameters();
+    Model1.Solve();
+    likelihood -= Model1.GetObjectiveFunctionValue();
 
-	Model_out = Models;
-    Model_out.TransferResultsFrom(&Models);
+    Model_out = Model1;
+    Model_out.TransferResultsFrom(&Model1);
 	return likelihood;
 
 }

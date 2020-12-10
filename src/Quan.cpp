@@ -359,6 +359,7 @@ Quan::Quan(const Quan& other)
     role = other.role;
     initial_value_expression = other.initial_value_expression;
     calculate_initial_value_from_expression = other.calculate_initial_value_from_expression;
+    value_star_updated = other.value_star_updated;
 	//parent = other.parent;
 }
 
@@ -401,6 +402,7 @@ Quan& Quan::operator=(const Quan& rhs)
     role = rhs.role;
     initial_value_expression = rhs.initial_value_expression;
     calculate_initial_value_from_expression = rhs.calculate_initial_value_from_expression;
+    value_star_updated = rhs.value_star_updated;
     //parent = rhs.parent;
     return *this;
 }
