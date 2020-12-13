@@ -141,7 +141,7 @@ void CVector::swap(int i, int j)
 
 }
 
-int CVector::getsize() {return num;}
+int CVector::getsize() const {return num;}
 
 CVector& CVector::operator*=(double x)
 {
@@ -156,6 +156,16 @@ CVector& CVector::operator/=(double x)
 	for (int i=0; i<num; ++i)
 		vec[i] /= x;
 	return *this;
+
+}
+
+bool CVector::haszeros() const
+{
+    bool out = false;
+    for (int i=0; i<num; ++i)
+        if (vec[i] == 0) out = true;
+
+    return out;
 
 }
 

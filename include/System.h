@@ -87,6 +87,7 @@ struct solvertemporaryvars
     double dt;
     double dt_base;
     bool SolutionFailed = false;
+    CVector_arma Jacobia_Diagonal;
 
 
 };

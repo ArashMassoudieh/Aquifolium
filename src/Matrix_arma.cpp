@@ -142,23 +142,22 @@ CMatrix_arma operator-(const CMatrix_arma &m1, const CMatrix_arma &m2)
 	return mt;
 }
 
-CMatrix_arma mult(CMatrix_arma &m1, CMatrix_arma &m2)
+CMatrix_arma mult(const CMatrix_arma &m1, const CMatrix_arma &m2)
 {
 	CMatrix_arma M;
 	M.matr = m1.matr*m2.matr;
-	M.numcols = m2.numcols;
-	M.numrows = m1.numrows;
+    M.setnumcolrows();
 	return M;
 }
 
-CMatrix_arma operator*(CMatrix_arma m1, CMatrix_arma m2)
+CMatrix_arma operator*(const CMatrix_arma &m1, const CMatrix_arma &m2)
 {
 	CMatrix_arma a= mult(m1,m2);
 	return a;
 }
 
 
-CVector_arma mult(CMatrix_arma &m1, CVector_arma &v1)
+CVector_arma mult(const CMatrix_arma &m1, const CVector_arma &v1)
 {
 	int nr = m1.getnumrows();
 	CVector_arma vt(nr);
@@ -234,7 +233,7 @@ CMatrix_arma operator/(double d, CMatrix_arma m1)
 }
 
 
-CVector_arma operator*(CMatrix_arma m, CVector_arma v)
+CVector_arma operator*(const CMatrix_arma &m, const CVector_arma &v)
 {
 	return mult(m,v);
 }
@@ -250,6 +249,14 @@ CVector_arma operator/(CVector_arma &V, CMatrix_arma &M)
 	bool status = solve( X.vect, M.matr, V.vect);
 	if (status == false) X.num = 0;
 	return X;
+}
+
+CVector_arma operator/(const CVector_arma &V, const CMatrix_arma &M)
+{
+    CVector_arma X(M.getnumcols());
+    bool status = solve( X.vect, M.matr, V.vect);
+    if (status == false) X.num = 0;
+    return X;
 }
 
 CMatrix_arma Log(CMatrix_arma &M1)
@@ -307,15 +314,40 @@ double CMatrix_arma::det()
 }
 
 
-CVector_arma diag(CMatrix_arma m)
+CVector_arma diag(const CMatrix_arma &m)
 {
 	CVector_arma v(m.getnumcols());
 	for (int i=0; i<m.getnumcols(); ++i)
-		v[i] = m.get(i,i);
-	return v;
+        v[i] = m.matr(i,i);
+    return v;
 }
 
-CMatrix_arma operator*(CVector_arma v, CMatrix_arma m)
+CVector_arma maxelements(const CMatrix_arma &m)
+{
+    CVector_arma v(m.getnumcols());
+    for (int i=0; i<m.getnumcols(); ++i)
+    {   double maxval = -1e36;
+        for (int j=0; j<m.getnumrows(); ++j)
+            maxval = max(fabs(m.matr(i,j)),maxval);
+        v[i] = maxval;
+    }
+    return v;
+
+}
+
+CVector CMatrix_arma::maxelements() const
+{
+    CVector_arma v(getnumcols());
+    for (int i=0; i<getnumcols(); ++i)
+    {   double maxval = -1e36;
+        for (int j=0; j<getnumrows(); ++j)
+            maxval = max(fabs(matr(i,j)),maxval);
+        v[i] = maxval;
+    }
+    return v;
+}
+
+CMatrix_arma operator*(const CVector_arma &v, const CMatrix_arma &m)
 {
     auto tmpMat = CMatrix_arma(v);
     CMatrix_arma a = tmpMat*m;
@@ -441,7 +473,7 @@ void write_to_file(vector<CMatrix_arma> M, string filename)
 	ofstream Afile;
 	Afile.open(filename);
 	M.push_back(Average(M));
-	for (int k = 0; k<M.size(); k++)
+    for (unsigned int k = 0; k<M.size(); k++)
 	{	for (int i = 0; i<M[k].numrows; ++i)
 		{
 			for (int j = 0; j<M[k].numcols; ++j)
@@ -460,8 +492,8 @@ CMatrix_arma Average(vector<CMatrix_arma> M)
 {
 	CMatrix_arma AVG(M[0].numrows, M[0].numcols);
 	int n = M.size();
-	for (int k = 0; k<M.size(); k++)
-		for (int i = 0; i<M[k].numrows; ++i)
+    for (unsigned int k = 0; k<M.size(); k++)
+        for (unsigned int i = 0; i<M[k].numrows; ++i)
 			for (int j = 0; j<M[k].numcols; ++j)
 				AVG.get(i,j) += M[k].get(i,j)/n;
 	return AVG;
@@ -603,7 +635,7 @@ void CMatrix_arma::setcol(int i,  CVector V)
 		matr(j, i) = V[j];
 }
 
-CMatrix_arma normalize_diag( CMatrix_arma M1, const CMatrix_arma M2)
+CMatrix_arma normalize_diag( const CMatrix_arma &M1, const CMatrix_arma &M2)
 {
 	CMatrix_arma M(M1);
 	CVector_arma D = diag(M2);
@@ -616,16 +648,61 @@ CMatrix_arma normalize_diag( CMatrix_arma M1, const CMatrix_arma M2)
 
 }
 
-CVector_arma normalize_diag( CVector_arma V, CMatrix_arma M2)
+CVector_arma normalize_diag( const CVector_arma &V, const CMatrix_arma &M2)
 {
 	CVector_arma M(V);
-	CVector_arma D = diag(M2);
 
 	for (int i = 0; i<V.getsize(); i++)
 	{
-		M[i] = V[i] / D[i];
+        M[i] = V.vect[i] / M2.matr(i,i);
 	}
 	return M;
+}
+
+CVector_arma normalize_diag( const CVector_arma &V, const CVector_arma &D)
+{
+    CVector_arma M(V);
+
+    for (int i = 0; i<V.getsize(); i++)
+    {
+        M[i] = V.vect[i] / D.vect[i];
+    }
+    return M;
+}
+
+CMatrix_arma normalize_max( const CMatrix_arma &M1, const CMatrix_arma &M2)
+{
+    CMatrix_arma M(M1);
+    CVector_arma D = maxelements(M2);
+    for (int i = 0; i<M1.getnumcols(); i++)
+    {
+        for (int j=0; j<M1.getnumrows(); j++)
+            M.matr(i,j) = M1.matr(i,j) / D[i];
+    }
+    return M;
+
+}
+
+CVector_arma normalize_max( const CVector_arma &V, const CMatrix_arma &M2)
+{
+    CVector_arma M(V);
+    CVector_arma D = maxelements(M2);
+    for (int i = 0; i<V.getsize(); i++)
+    {
+        M[i] = V.vect[i] / D[i];
+    }
+    return M;
+}
+
+CVector_arma normalize_max( const CVector_arma &V, const CVector_arma &D)
+{
+    CVector_arma M(V);
+
+    for (int i = 0; i<V.getsize(); i++)
+    {
+        M[i] = V.vect[i] / D.vect[i];
+    }
+    return M;
 }
 
 void CMatrix_arma::ScaleDiagonal(double x)

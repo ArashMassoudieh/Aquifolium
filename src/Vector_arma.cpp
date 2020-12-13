@@ -137,7 +137,7 @@ void CVector_arma::swap(int i, int j)
 
 }
 
-int CVector_arma::getsize() {return num;}
+int CVector_arma::getsize() const {return num;}
 
 CVector_arma& CVector_arma::operator*=(double x)
 {
@@ -145,6 +145,14 @@ CVector_arma& CVector_arma::operator*=(double x)
 		vect(i) *= x;
 	return *this;
 
+}
+
+bool CVector_arma::haszeros() const
+{
+    bool out = false;
+    for (int i=0; i<num; ++i)
+        if (vect(i) == 0) out = true;
+    return out;
 }
 
 CVector_arma& CVector_arma::operator/=(double x)

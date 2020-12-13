@@ -16,6 +16,7 @@ class Link;
 class System;
 class Object;
 class Source;
+class QuanSet;
 
 
 class Quan
@@ -105,7 +106,7 @@ class Quan
         bool SetProperty(const string &val, bool force_value = false);
         string GetProperty(bool force_value = false);
 		string SourceName() { return sourcename;}
-		bool SetSourceName(const string& s) { sourcename = s; }
+        bool SetSourceName(const string& s) { sourcename = s; return true;}
         string toCommand();
         void SetOutputItem(const string& s) { OutputItem = s; }
         string GetOutputItem() { return OutputItem; }
@@ -125,6 +126,10 @@ class Quan
         vector<string> AllConstituents();
         vector<string> AllReactionParameters();
         bool RenameQuantity(const string &oldname, const string &newname);
+        void SetPrecalcIndependentVariable(const string &varname) {precalculateindependentvariable = varname;}
+        string PrecalcIndependentVariable() {return precalculateindependentvariable;}
+        double InterpolateBasedonPrecalcFunction(const double &val);
+        bool InitializePreCalcFunction(QuanSet *quanset, const double &x_min, const double &x_max);
     protected:
 
     private:
@@ -169,6 +174,8 @@ class Quan
         bool rigid = false; 
         bool calculate_initial_value_from_expression = false;
         Expression initial_value_expression;
+        string precalculateindependentvariable = "";
+        CTimeSeries precalcfunction;
 };
 
 string tostring(const Quan::_type &typ);

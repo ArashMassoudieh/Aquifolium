@@ -360,6 +360,7 @@ Quan::Quan(const Quan& other)
     initial_value_expression = other.initial_value_expression;
     calculate_initial_value_from_expression = other.calculate_initial_value_from_expression;
     value_star_updated = other.value_star_updated;
+    precalculateindependentvariable = other.precalculateindependentvariable;
 	//parent = other.parent;
 }
 
@@ -403,6 +404,7 @@ Quan& Quan::operator=(const Quan& rhs)
     initial_value_expression = rhs.initial_value_expression;
     calculate_initial_value_from_expression = rhs.calculate_initial_value_from_expression;
     value_star_updated = rhs.value_star_updated;
+    precalculateindependentvariable = rhs.precalculateindependentvariable;
     //parent = rhs.parent;
     return *this;
 }
@@ -886,4 +888,14 @@ bool Quan::RenameQuantity(const string &oldname, const string &newname)
     _expression.RenameQuantity(oldname,newname);
     initial_value_expression.RenameQuantity(oldname,newname);
     return false;
+}
+
+double Quan::InterpolateBasedonPrecalcFunction(const double &val)
+{
+    double out = 0;
+    return out;
+}
+bool Quan::InitializePreCalcFunction(QuanSet *quanset, const double &x_min, const double &x_max)
+{
+    return true;
 }

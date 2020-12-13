@@ -42,7 +42,8 @@ public:
 	//mat CVector::operator=(const CVector&);
     CVector& operator+();
     void swap(int , int );
-    int getsize();
+    int getsize() const;
+    bool haszeros() const;
     CVector& operator*=(double);
     CVector& operator/=(double);
     CVector& operator+=(const CVector&);

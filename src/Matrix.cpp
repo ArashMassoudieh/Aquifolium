@@ -167,7 +167,7 @@ CMatrix& CMatrix::operator+=(const CMatrix &m)
 {
 
 	for (int i=0; i<numrows; i++)
-		matr[i] += m.matr[i];
+        matr[i] += m.matr[i];
 	return *this;
 }
 
@@ -345,6 +345,11 @@ CVector gauss0(CMatrix M, CVector V)
 CVector operator/(CVector &V, CMatrix &M)
 {
 	return solve_ar(M,V);
+}
+
+CVector operator/(const CVector &V, const CMatrix &M)
+{
+    return solve_ar(M,V);
 }
 
 CMatrix Log(CMatrix &M1)
@@ -628,11 +633,11 @@ CMatrix CMatrix::LU_decomposition()
 
 }
 
-CVector diag(CMatrix m)
+CVector diag(const CMatrix &m)
 {
 	CVector v(m.getnumcols());
 	for (int i=0; i<m.getnumcols(); ++i)
-		v[i] = m[i][i];
+        v[i] = m.matr[i].at(i);
 	return v;
 }
 
@@ -761,6 +766,37 @@ CVector solve_ar(CMatrix &M, CVector &V)
 	return ansr;
 }
 
+CVector solve_ar(const CMatrix &M, const CVector &V)
+{
+
+    mat A(M.getnumrows(),M.getnumcols());
+    mat B(V.getsize(),1);
+
+    CVector ansr = V;
+
+    for (int i = 0;i<M.getnumrows(); ++i)
+    {
+        B(i,0) = V.at(i);
+        for (int j = 0;j<M.getnumcols(); ++j)
+            A(i,j) = M.matr[i].at(j);
+    };
+
+    mat C;
+    try {
+        C = solve(A,B);
+        throw 0;
+    }
+
+    catch(int rtt)
+    {
+
+    }
+    for (int i = 0;i<V.getsize(); ++i)
+        ansr[i] = C(i,0);
+
+    return ansr;
+}
+
 CMatrix inv(CMatrix M)
 {
 
@@ -879,6 +915,18 @@ CMatrix normalize_diag(CMatrix &M1, CMatrix&M2)
 
 }
 
+CVector normalize_diag( CVector V, CVector D)
+{
+    CVector M(V);
+
+    for (int i = 0; i<V.getsize(); i++)
+    {
+        M[i] = V[i] / D[i];
+    }
+    return M;
+}
+
+
 CVector normalize_diag(CVector &V, CMatrix&M2)
 {
 	CVector M(V);
@@ -889,6 +937,89 @@ CVector normalize_diag(CVector &V, CMatrix&M2)
 		M[i] = V[i]/D[i];
 	}
 	return M;
+}
+
+CVector normalize_diag(const CVector &V, const CMatrix&M2)
+{
+    CVector M(V);
+    CVector D = diag(M2);
+
+    for (int i=0; i<V.getsize(); i++)
+    {
+        M[i] = V.at(i)/D.at(i);
+    }
+    return M;
+}
+
+CVector maxelements(const CMatrix &m)
+{
+    CVector_arma v(m.getnumcols());
+    for (int i=0; i<m.getnumcols(); ++i)
+    {   double maxval = -1e36;
+        for (int j=0; j<m.getnumrows(); ++j)
+            maxval = max(fabs(m.matr[i].at(j)),maxval);
+        v[i] = maxval;
+    }
+    return v;
+}
+
+CVector CMatrix::maxelements() const
+{
+    CVector_arma v(getnumcols());
+    for (int i=0; i<getnumcols(); ++i)
+    {   double maxval = -1e36;
+        for (int j=0; j<getnumrows(); ++j)
+            maxval = max(fabs(matr[i].at(j)),maxval);
+        v[i] = maxval;
+    }
+    return v;
+}
+
+
+CVector normalize_diag(const CVector &V, const CVector&D)
+{
+    CVector M(V);
+
+    for (int i=0; i<V.getsize(); i++)
+    {
+        M[i] = V.at(i)/D.at(i);
+    }
+    return M;
+}
+
+CMatrix normalize_max( const CMatrix &M1, const CMatrix &M2)
+{
+    CMatrix M(M1);
+    CVector D = maxelements(M2);
+    for (int i = 0; i<M1.getnumcols(); i++)
+    {
+        for (int j=0; j<M1.getnumrows(); j++)
+            M.matr[i][j] = M1.matr[i].at(j) / D[i];
+    }
+    return M;
+
+}
+
+CVector normalize_max( const CVector &V, const CMatrix &M2)
+{
+    CVector M(V);
+    CVector D = maxelements(M2);
+    for (int i = 0; i<V.getsize(); i++)
+    {
+        M[i] = V.at(i) / D[i];
+    }
+    return M;
+}
+
+CVector normalize_max( const CVector &V, const CVector &D)
+{
+    CVector M(V);
+
+    for (int i = 0; i<V.getsize(); i++)
+    {
+        M[i] = V.at(i) / D.at(i);
+    }
+    return M;
 }
 
 vector<vector<bool>> CMatrix::non_posdef_elems(double tol)

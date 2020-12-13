@@ -52,7 +52,8 @@ public:
 	friend void triangulate(CMatrix&, CVector&);
 	friend void backsubst(CMatrix&, CVector&, CVector&);
 	friend CVector gauss0(CMatrix, CVector);
-	friend CVector diag(CMatrix);
+    friend CVector diag(const CMatrix&);
+    CVector maxelements() const;
 	friend CMatrix Cholesky_factor(CMatrix &M);
 	friend CMatrix LU_decomposition(CMatrix &M);
     CMatrix LU_decomposition();
@@ -101,14 +102,23 @@ CVector operator*(CMatrix, CVector);
 CMatrix operator*(CVector, CMatrix);
 CMatrix operator*(double, CMatrix);
 CVector operator/(CVector&, CMatrix&);
+CVector operator/(const CVector &V, const CMatrix &M);
 CMatrix Transpose(CMatrix &M1);
 CMatrix Invert(CMatrix M1);
 CVector SpareSolve(CMatrix, CVector);
 CMatrix oneoneprod(CMatrix &m1, CMatrix &m2);
 CVector solve_ar(CMatrix&, CVector&);
+CVector solve_ar(const CMatrix &M, const CVector &V);
 CMatrix inv(CMatrix);
+CVector maxelements(const CMatrix &m);
 CMatrix normalize_diag(CMatrix&, CMatrix&);
 CVector normalize_diag(CVector&, CMatrix&);
+CVector normalize_diag(const CVector &V, const CVector &D);
+CVector normalize_diag(const CVector &V, const CMatrix &M2);
+CMatrix normalize_max( const CMatrix &M1, const CMatrix &M2);
+CVector normalize_max( const CVector &V, const CMatrix &M2);
+CVector normalize_max( const CVector &V, const CVector &D);
+
 CMatrix Identity(int rows);
 
 

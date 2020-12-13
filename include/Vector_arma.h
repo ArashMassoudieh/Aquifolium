@@ -40,7 +40,8 @@ public:
 	CVector_arma operator=(mat);
 	CVector_arma& operator+();
 	void swap(int , int );
-	int getsize();
+    int getsize() const;
+    bool haszeros() const;
 	CVector_arma& operator*=(double);
 	CVector_arma& operator/=(double);
 	CVector_arma& operator+=(const CVector_arma&);
