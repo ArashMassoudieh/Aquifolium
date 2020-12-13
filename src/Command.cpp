@@ -84,7 +84,7 @@ Command::Command(const string &s, Script *parnt)
 	}
 
 
-    for (int i=1; i<firstlevelbreakup.size(); i++)
+    for (unsigned int i=1; i<firstlevelbreakup.size(); i++)
     {
         vector<string> properties = aquiutils::split(firstlevelbreakup[i],',');
         for (unsigned int j=0; j<properties.size(); j++)

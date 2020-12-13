@@ -4,6 +4,7 @@
 #include "Expression.h"
 #include "Rule.h"
 #include "BTC.h"
+#include "precalculatedfunction.h"
 #include <json/json.h>
 #include "Condition.h"
 
@@ -129,7 +130,7 @@ class Quan
         void SetPrecalcIndependentVariable(const string &varname) {precalculateindependentvariable = varname;}
         string PrecalcIndependentVariable() {return precalculateindependentvariable;}
         double InterpolateBasedonPrecalcFunction(const double &val);
-        bool InitializePreCalcFunction(QuanSet *quanset, const double &x_min, const double &x_max);
+        bool InitializePreCalcFunction(const double &x_min, const double &x_max, int n_inc=100);
     protected:
 
     private:
@@ -175,7 +176,7 @@ class Quan
         bool calculate_initial_value_from_expression = false;
         Expression initial_value_expression;
         string precalculateindependentvariable = "";
-        CTimeSeries precalcfunction;
+        PreCalculatedFunction precalcfunction;
 };
 
 string tostring(const Quan::_type &typ);

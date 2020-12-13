@@ -79,6 +79,11 @@ Quan::Quan(Json::ValueIterator &it)
     else
         applylimit = false;
 
+    if (it->isMember("precalcbasedon"))
+    {
+        precalculateindependentvariable = (*it)["precalcbasedon"].asString();
+    }
+
     if (it->isMember("rigid"))
     {
         if ((*it)["rigid"].asString() == "true")
@@ -225,7 +230,12 @@ Quan::Quan(QJsonObject& it)
 	if (it.keys().contains("unit"))
 		Unit() = it.value("unit").toString().toStdString();
 
-	if (it.keys().contains("default_unit"))
+    if (it.keys().contains("precalcbasedon"))
+    {
+        precalculateindependentvariable = it.value("precalcbasedon").toString().toStdString();
+    }
+
+    if (it.keys().contains("default_unit"))
 		DefaultUnit() = it.value("default_unit").toString().toStdString();
 
 	if (it.keys().contains("default"))
@@ -892,10 +902,21 @@ bool Quan::RenameQuantity(const string &oldname, const string &newname)
 
 double Quan::InterpolateBasedonPrecalcFunction(const double &val)
 {
-    double out = 0;
-    return out;
+    if (precalcfunction.logarithmic==true)
+        return precalcfunction.interpol(log(val));
+    else
+        return precalcfunction.interpol(val);
 }
-bool Quan::InitializePreCalcFunction(QuanSet *quanset, const double &x_min, const double &x_max)
+bool Quan::InitializePreCalcFunction(const double &x_min, const double &x_max, int n_inc)
 {
+    if (parent==nullptr) return false;
+    if (precalculateindependentvariable=="") return false;
+    precalcfunction.clear();
+    for (double x=x_min; x<=x_max; x+=(x_max-x_min)/double(n_inc))
+    {
+        parent->UnUpdateAllValues();
+        parent->SetVal(precalculateindependentvariable,x,Expression::timing::past);
+        precalcfunction.append(x,CalcVal(Expression::timing::past));
+    }
     return true;
 }
