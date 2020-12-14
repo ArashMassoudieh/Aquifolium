@@ -519,3 +519,8 @@ vector<string> Object::AllReactionParameters()
     else
         return vector<string>();
 }
+
+bool Object::InitializePrecalcFunctions()
+{
+    var.InitializePrecalcFunctions();
+}

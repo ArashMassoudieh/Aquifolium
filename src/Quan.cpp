@@ -81,7 +81,16 @@ Quan::Quan(Json::ValueIterator &it)
 
     if (it->isMember("precalcbasedon"))
     {
-        precalculateindependentvariable = (*it)["precalcbasedon"].asString();
+        vector<string> s = aquiutils::split((*it)["precalcbasedon"].asString(),':');
+        if (s.size()==4)
+        {
+            precalcfunction.SetIndependentVariable(s[0]);
+            if (s[1]=="log")
+                precalcfunction.SetLogarithmic(true);
+            else
+                precalcfunction.SetLogarithmic(false);
+            precalcfunction.setminmax(aquiutils::atof(s[2]),aquiutils::atof(s[3]));
+        }
     }
 
     if (it->isMember("rigid"))
@@ -182,12 +191,12 @@ Quan::Quan(QJsonObject& it)
 		}
 		if (it.value("type").toString() == "constant")
 			SetType(Quan::_type::constant);
-			if (it.value("type").toString() == "expression")
-			{
-				SetType(Quan::_type::expression);
-				SetExpression(it.value("expression").toString().toStdString());
-			}
-		if (it.value("type").toString() == "rule")
+        if (it.value("type").toString() == "expression")
+        {
+            SetType(Quan::_type::expression);
+            SetExpression(it.value("expression").toString().toStdString());
+        }
+        if (it.value("type").toString() == "rule")
 		{
 			SetType(Quan::_type::rule);
 			for (QJsonObject::Iterator itrule = it.value("rule").toObject().begin(); itrule != it.value("rule").toObject().begin(); ++itrule)
@@ -232,7 +241,16 @@ Quan::Quan(QJsonObject& it)
 
     if (it.keys().contains("precalcbasedon"))
     {
-        precalculateindependentvariable = it.value("precalcbasedon").toString().toStdString();
+        vector<string> s = aquiutils::split(it.value("precalcbasedon").toString().toStdString(),':');
+        if (s.size()==4)
+        {
+            precalcfunction.SetIndependentVariable(s[0]);
+            if (s[1]=="log")
+                precalcfunction.SetLogarithmic(true);
+            else
+                precalcfunction.SetLogarithmic(false);
+            precalcfunction.setminmax(aquiutils::atof(s[2]),aquiutils::atof(s[3]));
+        }
     }
 
     if (it.keys().contains("default_unit"))
@@ -370,7 +388,7 @@ Quan::Quan(const Quan& other)
     initial_value_expression = other.initial_value_expression;
     calculate_initial_value_from_expression = other.calculate_initial_value_from_expression;
     value_star_updated = other.value_star_updated;
-    precalculateindependentvariable = other.precalculateindependentvariable;
+    precalcfunction = other.precalcfunction;
 	//parent = other.parent;
 }
 
@@ -414,7 +432,7 @@ Quan& Quan::operator=(const Quan& rhs)
     initial_value_expression = rhs.initial_value_expression;
     calculate_initial_value_from_expression = rhs.calculate_initial_value_from_expression;
     value_star_updated = rhs.value_star_updated;
-    precalculateindependentvariable = rhs.precalculateindependentvariable;
+    precalcfunction = rhs.precalcfunction;
     //parent = rhs.parent;
     return *this;
 }
@@ -902,21 +920,30 @@ bool Quan::RenameQuantity(const string &oldname, const string &newname)
 
 double Quan::InterpolateBasedonPrecalcFunction(const double &val)
 {
-    if (precalcfunction.logarithmic==true)
+    if (precalcfunction.Logarithmic())
         return precalcfunction.interpol(log(val));
     else
         return precalcfunction.interpol(val);
 }
-bool Quan::InitializePreCalcFunction(const double &x_min, const double &x_max, int n_inc)
+bool Quan::InitializePreCalcFunction(int n_inc)
 {
     if (parent==nullptr) return false;
-    if (precalculateindependentvariable=="") return false;
+    if (precalcfunction.IndependentVariable()=="") return false;
     precalcfunction.clear();
-    for (double x=x_min; x<=x_max; x+=(x_max-x_min)/double(n_inc))
-    {
-        parent->UnUpdateAllValues();
-        parent->SetVal(precalculateindependentvariable,x,Expression::timing::past);
-        precalcfunction.append(x,CalcVal(Expression::timing::past));
-    }
+    if (!precalcfunction.Logarithmic())
+        for (double x=precalcfunction.xmin(); x<=precalcfunction.xmax(); x+=(precalcfunction.xmax()-precalcfunction.xmin())/double(n_inc))
+            {
+                parent->UnUpdateAllValues();
+                parent->SetVal(precalcfunction.IndependentVariable(),x,Expression::timing::past);
+                precalcfunction.append(x,CalcVal(Expression::timing::past));
+            }
+    else
+        for (double x=log(precalcfunction.xmin()); x<=log(precalcfunction.xmax()); x+=(log(precalcfunction.xmax())-log(precalcfunction.xmin()))/double(n_inc))
+            {
+                parent->UnUpdateAllValues();
+                parent->SetVal(precalcfunction.IndependentVariable(),exp(x),Expression::timing::past);
+                precalcfunction.append(x,CalcVal(Expression::timing::past));
+            }
+
     return true;
 }

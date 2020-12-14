@@ -124,6 +124,7 @@ class Object
         bool CalculateInitialValues();
         vector<string> AllConstituents();
         vector<string> AllReactionParameters();
+        bool InitializePrecalcFunctions();
     protected:
 
     private:

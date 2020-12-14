@@ -65,6 +65,7 @@ class QuanSet
             return quantity_order;
         }
         vector<string> ReviseQuanityOrder(const vector<string> &quantity, const string &constituent);
+        bool InitializePrecalcFunctions();
     protected:
 
     private:

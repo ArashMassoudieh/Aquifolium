@@ -127,10 +127,10 @@ class Quan
         vector<string> AllConstituents();
         vector<string> AllReactionParameters();
         bool RenameQuantity(const string &oldname, const string &newname);
-        void SetPrecalcIndependentVariable(const string &varname) {precalculateindependentvariable = varname;}
-        string PrecalcIndependentVariable() {return precalculateindependentvariable;}
+        bool SetPrecalcIndependentVariable(const string &varname) {return precalcfunction.SetIndependentVariable(varname);}
+        PreCalculatedFunction* PreCalcFunction() {return &precalcfunction;}
         double InterpolateBasedonPrecalcFunction(const double &val);
-        bool InitializePreCalcFunction(const double &x_min, const double &x_max, int n_inc=100);
+        bool InitializePreCalcFunction(int n_inc=100);
     protected:
 
     private:
@@ -175,7 +175,6 @@ class Quan
         bool rigid = false; 
         bool calculate_initial_value_from_expression = false;
         Expression initial_value_expression;
-        string precalculateindependentvariable = "";
         PreCalculatedFunction precalcfunction;
 };
 
