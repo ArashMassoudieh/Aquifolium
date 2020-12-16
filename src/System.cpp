@@ -432,6 +432,7 @@ bool System::Solve(bool applyparameters)
     SolverTempVars.dt = SolverTempVars.dt_base;
     SolverTempVars.t = SimulationParameters.tstart;
     
+    InitiatePrecalculatedFunctions();
     CalculateAllExpressions(Expression::timing::present);
     CalcAllInitialValues();
     UnUpdateAllVariables();
@@ -2344,4 +2345,25 @@ void System::WriteLinksStates(const string &variable, const Expression::timing &
     for (unsigned int i=0; i<links.size(); i++)
         GetSolutionLogger()->WriteString("    " + links[i].GetName() + ", Flow = " + aquiutils::numbertostring(links[i].GetVal(blocks[links[i].s_Block_No()].Variable(variable)->GetCorrespondingFlowVar(),tmg)) + ", correction factor= " + aquiutils::numbertostring(links[i].GetOutflowLimitFactor(tmg)));
 
+}
+
+bool System::InitiatePrecalculatedFunctions()
+{
+    bool out = true;
+    for (unsigned int i=0; i<blocks.size(); i++)
+    {
+        out &= blocks[i].InitializePrecalcFunctions();
+    }
+
+    for (unsigned int i=0; i<links.size(); i++)
+    {
+        out &= links[i].InitializePrecalcFunctions();
+    }
+
+    for (unsigned int i=0; i<sources.size(); i++)
+    {
+        out &= sources[i].InitializePrecalcFunctions();
+    }
+    return out;
+    UnUpdateAllValues();
 }

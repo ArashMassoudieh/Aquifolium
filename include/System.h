@@ -282,6 +282,7 @@ class System: public Object
         void WriteObjectsToLogger();
         void WriteBlocksStates(const string &variable, const Expression::timing &tmg);
         void WriteLinksStates(const string &variable, const Expression::timing &tmg);
+        bool InitiatePrecalculatedFunctions();
 #if defined(QT_version)
         logWindow *LogWindow() {return logwindow;}
         void SetLogWindow(logWindow *lgwnd) {logwindow=lgwnd;}

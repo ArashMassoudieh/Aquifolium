@@ -506,7 +506,10 @@ double Quan::CalcVal(const Expression::timing &tmg)
     }
     if (type == _type::expression)
     {   
-        return _expression.calc(parent,tmg);
+        if (precalcfunction.IndependentVariable()=="" || precalcfunction.Initiated()==false)
+            return _expression.calc(parent,tmg);
+        else
+            return precalcfunction.interpol(parent->GetVal(precalcfunction.IndependentVariable(),tmg));
     }
     if (type == _type::rule)
         return _rule.calc(parent,tmg);
@@ -921,12 +924,16 @@ bool Quan::RenameQuantity(const string &oldname, const string &newname)
 double Quan::InterpolateBasedonPrecalcFunction(const double &val)
 {
     if (precalcfunction.Logarithmic())
+    {
+        if (val<=0) return precalcfunction.C[0];
         return precalcfunction.interpol(log(val));
+    }
     else
         return precalcfunction.interpol(val);
 }
 bool Quan::InitializePreCalcFunction(int n_inc)
 {
+    double old_independent_variable_value = parent->GetVal(precalcfunction.IndependentVariable(),Expression::timing::present);
     if (parent==nullptr) return false;
     if (precalcfunction.IndependentVariable()=="") return false;
     precalcfunction.clear();
@@ -934,16 +941,17 @@ bool Quan::InitializePreCalcFunction(int n_inc)
         for (double x=precalcfunction.xmin(); x<=precalcfunction.xmax(); x+=(precalcfunction.xmax()-precalcfunction.xmin())/double(n_inc))
             {
                 parent->UnUpdateAllValues();
-                parent->SetVal(precalcfunction.IndependentVariable(),x,Expression::timing::past);
-                precalcfunction.append(x,CalcVal(Expression::timing::past));
+                parent->SetVal(precalcfunction.IndependentVariable(),x,Expression::timing::present);
+                precalcfunction.append(x,CalcVal(Expression::timing::present));
             }
     else
         for (double x=log(precalcfunction.xmin()); x<=log(precalcfunction.xmax()); x+=(log(precalcfunction.xmax())-log(precalcfunction.xmin()))/double(n_inc))
             {
                 parent->UnUpdateAllValues();
-                parent->SetVal(precalcfunction.IndependentVariable(),exp(x),Expression::timing::past);
-                precalcfunction.append(x,CalcVal(Expression::timing::past));
+                parent->SetVal(precalcfunction.IndependentVariable(),exp(x),Expression::timing::present);
+                precalcfunction.append(x,CalcVal(Expression::timing::present));
             }
-
+    parent->SetVal(precalcfunction.IndependentVariable(),old_independent_variable_value,Expression::timing::present);
+    precalcfunction.SetInitiated(true);
     return true;
 }
