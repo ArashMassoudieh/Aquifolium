@@ -420,9 +420,9 @@ double Expression::func(string &f, double val)
 		return sqrt(val);
     if (f == "sqt")
     {	if (val>0)
-            return sqrt(fabs(val));
+            return sqrt(val*val/(fabs(val)+1e-4));
         else
-            return -sqrt(fabs(val));
+            return -sqrt(val*val/(fabs(val)+1e-4));
     }
     if (f == "pos")
         return (val+fabs(val))/2.0;

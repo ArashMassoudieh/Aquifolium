@@ -509,7 +509,7 @@ double Quan::CalcVal(const Expression::timing &tmg)
         if (precalcfunction.IndependentVariable()=="" || precalcfunction.Initiated()==false)
             return _expression.calc(parent,tmg);
         else
-            return precalcfunction.interpol(parent->GetVal(precalcfunction.IndependentVariable(),tmg));
+            return InterpolateBasedonPrecalcFunction(parent->GetVal(precalcfunction.IndependentVariable(),tmg));
     }
     if (type == _type::rule)
         return _rule.calc(parent,tmg);
@@ -952,6 +952,7 @@ bool Quan::InitializePreCalcFunction(int n_inc)
                 precalcfunction.append(x,CalcVal(Expression::timing::present));
             }
     parent->SetVal(precalcfunction.IndependentVariable(),old_independent_variable_value,Expression::timing::present);
+    precalcfunction.structured=true;
     precalcfunction.SetInitiated(true);
     return true;
 }
