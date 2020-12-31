@@ -522,5 +522,5 @@ vector<string> Object::AllReactionParameters()
 
 bool Object::InitializePrecalcFunctions()
 {
-    var.InitializePrecalcFunctions();
+    return var.InitializePrecalcFunctions();
 }

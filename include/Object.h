@@ -11,7 +11,7 @@
 
 using namespace std;
 
-enum class object_type {none, block, link, source, parameter, objective_function};
+enum class object_type {none, block, link, source, parameter, objective_function, reaction, reaction_parameter, constituent};
 
 class Object
 {

@@ -308,6 +308,7 @@ class System: public Object
         bool AddConstituentRelateProperties(Constituent *constituent);
         bool AddAllConstituentRelateProperties(Block *blk);
         bool AddAllConstituentRelateProperties(Link *lnk);
+        bool AddAllConstituentRelateProperties(Reaction *rxn);
         void RenameConstituents(const string &oldname, const string &newname);
         vector<string> AllConstituents();
         vector<string> AllReactionParameters();

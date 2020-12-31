@@ -2130,6 +2130,8 @@ vector<Quan> System::GetToBeCopiedQuantities(Constituent *consttnt, const object
         role = Quan::_role::copytolinks;
     if (object_typ == object_type::source)
         role = Quan::_role::copytosources;
+    if (object_typ == object_type::reaction)
+        role = Quan::_role::copytoreactions;
 
     vector<Quan> quantitiestobecopiedtoallobjects;
     vector<Quan> original_quans = consttnt->GetCopyofAllQuans();
@@ -2204,6 +2206,25 @@ bool System::AddAllConstituentRelateProperties(Block *blk)
     return true;
 }
 
+bool System::AddAllConstituentRelateProperties(Reaction *rxn)
+{
+    vector<string> quantityordertobechanged;
+    for (unsigned int i=0; i<constituents.size();i++)
+    {
+        vector<Quan> quanstobecopied = GetToBeCopiedQuantities(constituent(i),object_type::reaction);
+        for (unsigned int j=0; j<quanstobecopied.size(); j++)
+        {
+            if (rxn->GetVars()->Count(quanstobecopied[j].GetName())==0)
+            {   rxn->GetVars()->Append(quanstobecopied[j].GetName(),quanstobecopied[j]);
+                quantityordertobechanged.push_back(quanstobecopied[j].GetName());
+            }
+        }
+    }
+    for (unsigned int i=0; i<quantityordertobechanged.size(); i++)
+        rxn->GetVars()->Quantity_Order().push_back(quantityordertobechanged[i]);
+    return true;
+}
+
 bool System::AddAllConstituentRelateProperties(Link *lnk)
 {
     vector<string> quantityordertobechanged;
@@ -2245,6 +2266,16 @@ bool System::AddConstituentRelateProperties(Constituent *consttnt)
         {
             if (links[i].GetVars()->Count(quanstobecopied[j].GetName())==0)
                link(i)->GetVars()->Append(quanstobecopied[j].GetName(),quanstobecopied[j]);
+        }
+    }
+    quanstobecopied = GetToBeCopiedQuantities(consttnt,object_type::reaction);
+    for (unsigned int i=0; i<reactions.size(); i++)
+    {
+        vector<string> quantityordertobechanged;
+        for (unsigned int j=0; j<quanstobecopied.size(); j++)
+        {
+            if (reactions[i].GetVars()->Count(quanstobecopied[j].GetName())==0)
+               reaction(i)->GetVars()->Append(quanstobecopied[j].GetName(),quanstobecopied[j]);
         }
     }
     return true; 

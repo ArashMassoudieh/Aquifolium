@@ -34,7 +34,7 @@ class Quan
         string GetStringValue() {return _string_value;}
         Quan& operator=(const Quan& other);
         enum class _type {constant, value, balance, expression, timeseries, prec_timeseries, global_quan, rule, source, string};
-        enum class _role {none, copytoblocks, copytolinks, copytosources};
+        enum class _role {none, copytoblocks, copytolinks, copytosources, copytoreactions};
         double CalcVal(Object *, const Expression::timing &tmg=Expression::timing::past);
         double CalcVal(const Expression::timing &tmg=Expression::timing::past);
         double GetVal(const Expression::timing &tmg=Expression::timing::past);
@@ -88,7 +88,7 @@ class Quan
         string ToString(int _tabs=1) const;
         bool &AskFromUser() {return ask_from_user;}
         bool WhenCopied() {
-            if (role == _role::copytoblocks || role==_role::copytolinks)
+            if (role == _role::copytoblocks || role==_role::copytolinks || role==_role::copytosources || role==_role::copytoreactions)
                 return true;
             else {
                 return false;
