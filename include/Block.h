@@ -21,6 +21,7 @@ class Block: public Object
         virtual ~Block();
         void AppendLink(int i, const Expression::loc &loc);
         double GetInflowValue(const string &variable,const Expression::timing &t);
+        double GetInflowValue(const string &variable, const string &constituent, const Expression::timing &tmg);
 		void shiftlinkIds(int i);
         bool deletelinkstofrom(const string& linkname="_all"); //deletes a specific links from the list of links to and from the block
         vector<Link*> GetLinksFrom();
@@ -29,7 +30,10 @@ class Block: public Object
             links_from_ids.clear(); links_to_ids.clear();
         }
         bool isrigid(const string& variable) { return Variable(variable)->isrigid(); }
-
+        vector<Quan*> GetAllConstituentProperties(const string &s);
+        CVector GetAllConstituentVals(const string &s, Expression::timing t);
+        CVector GetAllReactionRates(const string &s, Expression::timing t);
+        CVector GetAllReactionRates(const string &rate_expression, const string &stoichiometry, Expression::timing t);
 
     protected:
 

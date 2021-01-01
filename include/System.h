@@ -217,7 +217,7 @@ class System: public Object
         double &tend() {return SimulationParameters.tend;}
         double &tstart() {return SimulationParameters.tstart;}
         bool OneStepSolve(unsigned int i);
-        bool OneStepSolve_mv(unsigned int statevarno);
+        bool OneStepSolve_mv();
 		bool Renew(const string &variable);
 		bool Update(const string &variable="");
         void UnUpdateAllVariables(); 
@@ -335,6 +335,7 @@ class System: public Object
         map<string, Quan> addedpropertiestoalllinks;
         MetaModel metamodel;
         CVector_arma GetResiduals(const string &variable, CVector_arma &X);
+        CVector_arma GetResiduals_TR(const string &variable, CVector_arma &X);
 		void CorrectStoragesBasedonFluxes(const string& variable);
         CVector_arma CalcStateVariables(const string &variable, const Expression::timing &tmg = Expression::timing::past);
         CVector_arma GetStateVariables(const string &variable, const Expression::timing &tmg = Expression::timing::past);
@@ -345,6 +346,7 @@ class System: public Object
         CVector_arma Jacobian(const string &variable, CVector_arma &V, CVector_arma &F0, int i);  //Works also w/o reference (&)
         bool CalculateFlows(const string &var, const Expression::timing &tmg = Expression::timing::present);
         void SetStateVariables(const string &variable, CVector_arma &X, const Expression::timing &tmg = Expression::timing::present);
+        void SetStateVariables_TR(const string &variable, CVector_arma &X, const Expression::timing &tmg = Expression::timing::present);
         vector<bool> GetOutflowLimitedVector();
         void SetOutflowLimitedVector(vector<bool>& x);
         solvertemporaryvars SolverTempVars;

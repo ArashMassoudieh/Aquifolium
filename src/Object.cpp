@@ -84,6 +84,25 @@ double Object::GetVal(const string& s,const Expression::timing &tmg, bool limit)
 
 }
 
+double Object::GetVal(const string& variable, const string& consttnt, const Expression::timing &tmg, bool limit)
+{
+    string fullname = consttnt+":"+variable;
+    if (var.Count(fullname)==1)
+    {
+        if (!limit || !var[fullname].ApplyLimit())
+            return var[fullname].GetVal(tmg);
+        else
+            return var[fullname].GetVal(tmg)*GetOutflowLimitFactor(tmg);
+    }
+    else
+    {
+        Parent()->errorhandler.Append(GetName(),"Object","GetVal","property '" + fullname + "' does not exist!",1017);
+        last_operation_success = false;
+        return 0;
+    }
+
+}
+
 
 bool Object::AddQnantity(const string &name,const Quan &Q)
 {
@@ -284,6 +303,22 @@ Quan* Object::Variable(const string &s)
     }
     else
         return &var[s];
+}
+
+Quan* Object::Variable(const string &variable, const string &constituent)
+{
+    string variablefullname = constituent+":"+variable;
+    if (var.Count(variablefullname)==0)
+    {
+        //qDebug() << QString::fromStdString("In '" + name + "': " + "Variable '" + variablefullname + "' does not exist!");
+#ifdef Debug_mode
+        ShowMessage("In '" + name + "': " + "Variable '" + variablefullname + "' does not exist!");
+#endif
+        //Parent()->errorhandler.Append(GetName(),"Object","Variable","Variable '" + variablefullname +"' does not exist!",1010);
+        return nullptr;
+    }
+    else
+        return &var[variablefullname];
 }
 
 void Object::VerifyQuans(ErrorHandler *errorhandler)

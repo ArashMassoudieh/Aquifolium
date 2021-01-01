@@ -22,6 +22,7 @@ class Object
         Object& operator=(const Object& other);
         double CalcVal(const string& s, const Expression::timing &tmg=Expression::timing::past);
         double GetVal(const string& s, const Expression::timing &tmg=Expression::timing::past, bool limit=false);
+        double GetVal(const string& var, const string& consttnt, const Expression::timing &tmg, bool limit=false);
         bool AddQnantity(const string &name,const Quan &Q);
         bool SetQuantities(MetaModel &m, const string& typ);
         bool SetQuantities(MetaModel *m, const string& typ );
@@ -54,6 +55,7 @@ class Object
         void SetParent(System *s);
         Quan* CorrespondingFlowVariable(const string &s);
         Quan* Variable(const string &s);
+        Quan* Variable(const string &variable, const string &constituent);
         void SetType(const string &typ) {type = typ;}
         string GetType() {return type;}
         int s_Block_No() {return s_Block_no; }

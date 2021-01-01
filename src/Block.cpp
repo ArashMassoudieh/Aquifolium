@@ -50,12 +50,29 @@ double Block::GetInflowValue(const string &variable, const Expression::timing &t
     return 0;
 }
 
+double Block::GetInflowValue(const string &variable, const string &constituent, const Expression::timing &tmg)
+{
+    string variablefullname = constituent+":"+variable;
+    if (Variable(variablefullname)->GetCorrespondingInflowVar() != "")
+    {
+        if (Variable(Variable(variablefullname)->GetCorrespondingInflowVar()))
+        {
+            double inflow = CalcVal(Variable(variablefullname)->GetCorrespondingInflowVar());
+            Variable(Variable(variablefullname)->GetCorrespondingInflowVar())->SetVal(inflow, tmg);
+            return inflow;
+        }
+        else
+            return 0;
+    }
+    return 0;
+}
+
 void Block::shiftlinkIds(int i)
 {
-    for (int j = 0; j < links_from_ids.size(); j++)
+    for (unsigned int j = 0; j < links_from_ids.size(); j++)
         if (links_from_ids[j] > i) links_from_ids[j]--; 
 
-    for (int j = 0; j < links_to_ids.size(); j++)
+    for (unsigned int j = 0; j < links_to_ids.size(); j++)
         if (links_to_ids[j] > i) links_to_ids[j]--;
 }
 
@@ -139,6 +156,48 @@ vector<Link*> Block::GetLinksTo() {
 
     return v;
 
+}
+
+vector<Quan*> Block::GetAllConstituentProperties(const string &s)
+{
+    vector<Quan*> out;
+    for (unsigned int i=0; i<GetParent()->ConstituentsCount(); i++)
+    {
+        out.push_back(Variable(Parent()->constituent(i)->GetName() + ":" + s));
+    }
+    return out;
+}
+
+CVector Block::GetAllConstituentVals(const string &s, Expression::timing t)
+{
+    CVector out;
+    for (unsigned int i=0; i<GetParent()->ConstituentsCount(); i++)
+    {
+        out.append(Variable(Parent()->constituent(i)->GetName() + ":" + s)->GetVal(t));
+    }
+    return out;
+}
+
+CVector Block::GetAllReactionRates(const string &rate_expression, Expression::timing t)
+{
+    CVector out;
+    for (unsigned int i=0; i<GetParent()->ReactionsCount(); i++)
+    {
+        out.append(GetParent()->reaction(i)->CalcVal(rate_expression,t));
+    }
+    return out;
+}
+
+CVector Block::GetAllReactionRates(const string &rate_expression, const string &stoichiometry, Expression::timing t)
+{
+    CVector out(GetParent()->ConstituentsCount());
+    for (unsigned int i=0; i<GetParent()->ReactionsCount(); i++)
+    {
+        double rate = GetParent()->reaction(i)->CalcVal(rate_expression,t);
+        for (unsigned int j=0; j<GetParent()->ConstituentsCount(); j++)
+            out[j] += rate*GetParent()->reaction(i)->CalcVal(Parent()->constituent(i)->GetName() + ":" + stoichiometry );
+    }
+    return out;
 }
 
 

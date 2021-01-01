@@ -53,6 +53,9 @@ System::System(const System& other):Object::Object(other)
 	sources = other.sources;
 	blocks = other.blocks;
     links = other.links;
+    constituents = other.constituents;
+    reactions = other.reactions;
+    reaction_parameters = other.reaction_parameters;
     objective_function_set = other.objective_function_set;
     parameter_set = other.parameter_set;
     silent = other.silent;
@@ -77,6 +80,9 @@ System& System::operator=(const System& rhs)
     links = rhs.links;
     sources = rhs.sources;
     silent = rhs.silent;
+    constituents = rhs.constituents;
+    reactions = rhs.reactions;
+    reaction_parameters = rhs.reaction_parameters;
     objective_function_set = rhs.objective_function_set;
     parameter_set = rhs.parameter_set;
     SimulationParameters = rhs.SimulationParameters;
@@ -410,8 +416,10 @@ vector<bool> System::OneStepSolve()
 {
 	vector<bool> success(solvevariableorder.size());
     for (unsigned int i = 0; i < solvevariableorder.size(); i++)
-		success[i] = OneStepSolve(i);
+        success[i] = OneStepSolve(i);
 
+    if (ConstituentsCount()>0)
+        success[solvevariableorder.size()] = OneStepSolve_mv();
 	return success;
 }
 
@@ -1157,6 +1165,16 @@ void System::SetStateVariables(const string &variable, CVector_arma &X, const Ex
     }
 }
 
+void System::SetStateVariables_TR(const string &variable, CVector_arma &X, const Expression::timing &tmg)
+{
+    for (unsigned int i=0; i<blocks.size(); i++)
+    {
+        vector<Quan*> masses = blocks[i].GetAllConstituentProperties(variable);
+        for (unsigned int j=0; j<masses.size(); j++)
+            masses[j]->SetVal(X[j+masses.size()*i],tmg);
+    }
+}
+
 void System::CalculateAllExpressions(Expression::timing tmg)
 {
     for (unsigned int i=0; i<blocks.size(); i++)
@@ -1257,6 +1275,30 @@ CVector_arma System::GetResiduals(const string &variable, CVector_arma &X)
 
         }
         
+    }
+    return F;
+}
+
+CVector_arma System::GetResiduals_TR(const string &variable, CVector_arma &X)
+{
+    CVector_arma F(blocks.size());
+    SetStateVariables_TR(variable,X,Expression::timing::present);
+    UnUpdateAllVariables();
+    //CalculateFlows(Variable(variable)->GetCorrespondingFlowVar(),Expression::timing::present);
+
+    for (unsigned int j=0; j<ConstituentsCount(); j++)
+    {   for (unsigned int i=0; i<blocks.size(); i++)
+        {
+            for (unsigned int j=0; j<ConstituentsCount(); j++)
+                F[j+i*ConstituentsCount()] = (X[j+i*ConstituentsCount()]-blocks[i].GetVal(variable, constituent(i)->GetName(), Expression::timing::past))/dt() - blocks[i].GetInflowValue(variable,Expression::timing::present);
+        }
+
+        for (unsigned int i=0; i<links.size(); i++)
+        {
+            F[j+ConstituentsCount()*links[i].s_Block_No()] += links[i].GetVal(blocks[links[i].s_Block_No()].Variable(variable,constituent(i)->GetName())->GetCorrespondingFlowVar(),Expression::timing::present);
+            F[j+ConstituentsCount()*links[i].e_Block_No()] -= links[i].GetVal(blocks[links[i].s_Block_No()].Variable(variable,constituent(i)->GetName())->GetCorrespondingFlowVar(),Expression::timing::present);
+        }
+
     }
     return F;
 }
@@ -1851,6 +1893,15 @@ bool System::SavetoScriptFile(const string &filename, const string &templatefile
     for (unsigned int i=0; i<ObjectiveFunctionsCount(); i++)
         file << "create objectivefunction;" << ObjectiveFunctions()[i]->toCommand() << std::endl;
 
+    for (unsigned int i=0; i<ConstituentsCount(); i++)
+        file << "create constituent;" << constituents[i].toCommand() << std::endl;
+
+    for (unsigned int i=0; i<ReactionsCount(); i++)
+        file << "create reaction_parameter;" << reaction_parameters[i].toCommand() << std::endl;
+
+    for (unsigned int i=0; i<ReactionsCount(); i++)
+        file << "create reaction;" << reactions[i].toCommand() << std::endl;
+
     file.close();
 
     return true; 
@@ -2295,6 +2346,10 @@ void System::RenameConstituents(const string &oldname, const string &newname)
     {
         sources[i].RenameConstituents(oldname, newname);
     }
+    for (unsigned int i=0; i<reactions.size(); i++)
+    {
+        reactions[i].RenameConstituents(oldname, newname);
+    }
 
 }
 
@@ -2315,10 +2370,11 @@ bool System::CalcAllInitialValues()
     return true; 
 }
 
-bool System::OneStepSolve_mv(unsigned int statevarno) //solve a multivariate system of equations, used for multicomponent reactive transport
+bool System::OneStepSolve_mv() //solve a multivariate system of equations, used for multicomponent reactive transport
 {
 
-
+    CVector_arma X = CVector(blocks.size()*ConstituentsCount());
+    CVector_arma F = GetResiduals_TR("mass", X);
     return true;
 }
 
