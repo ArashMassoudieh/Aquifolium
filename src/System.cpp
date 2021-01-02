@@ -1281,7 +1281,7 @@ CVector_arma System::GetResiduals(const string &variable, CVector_arma &X)
 
 CVector_arma System::GetResiduals_TR(const string &variable, CVector_arma &X)
 {
-    CVector_arma F(blocks.size());
+    CVector_arma F(blocks.size()*ConstituentsCount());
     SetStateVariables_TR(variable,X,Expression::timing::present);
     UnUpdateAllVariables();
     //CalculateFlows(Variable(variable)->GetCorrespondingFlowVar(),Expression::timing::present);
@@ -1290,13 +1290,13 @@ CVector_arma System::GetResiduals_TR(const string &variable, CVector_arma &X)
     {   for (unsigned int i=0; i<blocks.size(); i++)
         {
             for (unsigned int j=0; j<ConstituentsCount(); j++)
-                F[j+i*ConstituentsCount()] = (X[j+i*ConstituentsCount()]-blocks[i].GetVal(variable, constituent(i)->GetName(), Expression::timing::past))/dt() - blocks[i].GetInflowValue(variable,Expression::timing::present);
+                F[j+i*ConstituentsCount()] = (X[j+i*ConstituentsCount()]-blocks[i].GetVal(variable, constituent(j)->GetName(), Expression::timing::past))/dt() - blocks[i].GetInflowValue(variable,constituent(j)->GetName(), Expression::timing::present);
         }
 
         for (unsigned int i=0; i<links.size(); i++)
         {
-            F[j+ConstituentsCount()*links[i].s_Block_No()] += links[i].GetVal(blocks[links[i].s_Block_No()].Variable(variable,constituent(i)->GetName())->GetCorrespondingFlowVar(),Expression::timing::present);
-            F[j+ConstituentsCount()*links[i].e_Block_No()] -= links[i].GetVal(blocks[links[i].s_Block_No()].Variable(variable,constituent(i)->GetName())->GetCorrespondingFlowVar(),Expression::timing::present);
+            F[j+ConstituentsCount()*links[i].s_Block_No()] += links[i].GetVal(blocks[links[i].s_Block_No()].Variable(variable,constituent(j)->GetName())->GetCorrespondingFlowVar(),Expression::timing::present);
+            F[j+ConstituentsCount()*links[i].e_Block_No()] -= links[i].GetVal(blocks[links[i].s_Block_No()].Variable(variable,constituent(j)->GetName())->GetCorrespondingFlowVar(),Expression::timing::present);
         }
 
     }
@@ -1860,7 +1860,7 @@ bool System::SavetoScriptFile(const string &filename, const string &templatefile
         file << "loadtemplate; filename = " << templatefilename << std::endl;
     }
 
-    for (int i=0; i<addedtemplates.size();i++)
+    for (unsigned int i=0; i<addedtemplates.size();i++)
     {
         file << "addtemplate; filename = " << addedtemplates[i] << std::endl;
     }
@@ -1875,6 +1875,9 @@ bool System::SavetoScriptFile(const string &filename, const string &templatefile
 
     for (unsigned int i=0; i<ParametersCount(); i++)
         file << "create parameter;" << Parameters()[i]->toCommand() << std::endl;
+
+    for (unsigned int i=0; i<ConstituentsCount(); i++)
+        file << "create constituent;" << constituents[i].toCommand() << std::endl;
 
     for (unsigned int i=0; i<blocks.size(); i++)
         file << "create block;" << blocks[i].toCommand() << std::endl;
@@ -1892,9 +1895,6 @@ bool System::SavetoScriptFile(const string &filename, const string &templatefile
 
     for (unsigned int i=0; i<ObjectiveFunctionsCount(); i++)
         file << "create objectivefunction;" << ObjectiveFunctions()[i]->toCommand() << std::endl;
-
-    for (unsigned int i=0; i<ConstituentsCount(); i++)
-        file << "create constituent;" << constituents[i].toCommand() << std::endl;
 
     for (unsigned int i=0; i<ReactionsCount(); i++)
         file << "create reaction_parameter;" << reaction_parameters[i].toCommand() << std::endl;
@@ -2292,6 +2292,26 @@ bool System::AddAllConstituentRelateProperties(Link *lnk)
     }
     for (unsigned int i = 0; i < quantityordertobechanged.size(); i++)
         lnk->GetVars()->Quantity_Order().push_back(quantityordertobechanged[i]);
+    return true;
+
+}
+
+bool System::AddAllConstituentRelateProperties(Source *src)
+{
+    vector<string> quantityordertobechanged;
+    for (unsigned int i=0; i<constituents.size();i++)
+    {
+        vector<Quan> quanstobecopied = GetToBeCopiedQuantities(constituent(i),object_type::link);
+        for (unsigned int j=0; j<quanstobecopied.size(); j++)
+        {
+            if (src->GetVars()->Count(quanstobecopied[j].GetName())==0)
+            {   src->GetVars()->Append(quanstobecopied[j].GetName(),quanstobecopied[j]);
+                quantityordertobechanged.push_back(quanstobecopied[j].GetName());
+            }
+        }
+    }
+    for (unsigned int i = 0; i < quantityordertobechanged.size(); i++)
+        src->GetVars()->Quantity_Order().push_back(quantityordertobechanged[i]);
     return true;
 
 }

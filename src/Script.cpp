@@ -80,6 +80,12 @@ void Script::FillMustBeSpecified()
         mustbespecifiedatcreation["create"]["source"] = vector<string>();
             mustbespecifiedatcreation["create"]["source"].push_back("name");
             mustbespecifiedatcreation["create"]["source"].push_back("type");
+        mustbespecifiedatcreation["create"]["constituent"] = vector<string>();
+            mustbespecifiedatcreation["create"]["constituent"].push_back("name");
+        mustbespecifiedatcreation["create"]["reaction"] = vector<string>();
+            mustbespecifiedatcreation["create"]["reaction"].push_back("name");
+        mustbespecifiedatcreation["create"]["reaction_parameter"] = vector<string>();
+            mustbespecifiedatcreation["create"]["reaction_parameter"].push_back("name");
     mustbespecifiedatcreation["loadtemplate"] = map<string, vector<string>>();
         mustbespecifiedatcreation["loadtemplate"]["*"] = vector<string>();
             mustbespecifiedatcreation["loadtemplate"]["*"].push_back("filename");

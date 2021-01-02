@@ -449,7 +449,7 @@ bool Command::Execute(System *_sys)
                 B.SetName(assignments["name"]);
                 B.SetType(assignments["type"]);
                 sys->AddBlock(B);
-
+                sys->AddAllConstituentRelateProperties(sys->block(assignments["name"]));
                 for (map<string,string>::iterator it=assignments.begin(); it!=assignments.end(); it++)
                 {
                     if (it->first!="type" && it->first!="to" && it->first!="from")
@@ -469,7 +469,8 @@ bool Command::Execute(System *_sys)
                 L.SetType(assignments["type"]);
 
 				if (sys->AddLink(L, assignments["from"], assignments["to"]))
-				{	L.SetName(assignments["name"]);
+                {	sys->AddAllConstituentRelateProperties(sys->link(assignments["name"]));
+                    L.SetName(assignments["name"]);
 					for (map<string, string>::iterator it = assignments.begin(); it != assignments.end(); it++)
 					{
 						if (it->first != "type" && it->first != "to" && it->first != "from")
@@ -541,6 +542,7 @@ bool Command::Execute(System *_sys)
                 B.SetName(assignments["name"]);
                 B.SetType(assignments["type"]);
                 sys->AddSource(B);
+                sys->AddAllConstituentRelateProperties(sys->source(assignments["name"]));
                 for (map<string,string>::iterator it=assignments.begin(); it!=assignments.end(); it++)
                 {
                     if (it->first!="type" && it->first!="to" && it->first!="from")
@@ -551,11 +553,67 @@ bool Command::Execute(System *_sys)
             else
                 return false;
         }
+        if (aquiutils::tolower(arguments[0])=="constituent")
+        {
+            if (Validate())
+            {
+                Constituent B;
+                B.SetName(assignments["name"]);
+                B.SetType(assignments["type"]);
+                sys->AddConstituent(B);
+                sys->AddConstituentRelateProperties(sys->constituent(assignments["name"]));
+                for (map<string,string>::iterator it=assignments.begin(); it!=assignments.end(); it++)
+                {
+                    if (it->first!="type")
+                        sys->constituent(assignments["name"])->SetProperty(it->first,it->second,true);
+                }
+                return true;
+            }
+            else
+                return false;
+        }
+        if (aquiutils::tolower(arguments[0])=="reaction_parameter")
+        {
+            if (Validate())
+            {
+                RxnParameter B;
+                B.SetName(assignments["name"]);
+                B.SetType(assignments["type"]);
+                sys->AddReactionParameter(B);
+                for (map<string,string>::iterator it=assignments.begin(); it!=assignments.end(); it++)
+                {
+                    if (it->first!="type")
+                        sys->reactionparameter(assignments["name"])->SetProperty(it->first,it->second,true);
+                }
+                return true;
+            }
+            else
+                return false;
+        }
+        if (aquiutils::tolower(arguments[0])=="reaction")
+        {
+            if (Validate())
+            {
+                Reaction B;
+                B.SetName(assignments["name"]);
+
+                sys->AddReaction(B);
+                sys->AddAllConstituentRelateProperties(sys->reaction(assignments["name"]));
+                for (map<string,string>::iterator it=assignments.begin(); it!=assignments.end(); it++)
+                {
+                    if (it->first!="type")
+                        sys->reaction(assignments["name"])->SetProperty(it->first,it->second,true);
+                }
+                return true;
+            }
+            else
+                return false;
+        }
 
         return true;
         sys->SetAllParents();
     }
-
+    return false;
 }
 
 bool Command::Validate(System *sys)
@@ -575,7 +633,7 @@ bool Command::Validate(System *sys)
             return false;
         }
     if (arguments.size()>0)
-        for (int i=0; i<parent->MustBeSpecified()->at(keyword)[arguments[0]].size(); i++)
+        for (unsigned int i=0; i<parent->MustBeSpecified()->at(keyword)[arguments[0]].size(); i++)
             if (assignments.count(parent->MustBeSpecified()->at(keyword)[arguments[0]][i])==0)
             {
                 last_error = "'" + parent->MustBeSpecified()->at(keyword)[arguments[0]][i] + "' must be specified when " + keyword + "ing a " + arguments[0] + "'";
@@ -583,7 +641,7 @@ bool Command::Validate(System *sys)
                 return false;
             }
 
-    for (int i=0; i<parent->MustBeSpecified()->at(keyword)["*"].size(); i++)
+    for (unsigned int i=0; i<parent->MustBeSpecified()->at(keyword)["*"].size(); i++)
         if (assignments.count(parent->MustBeSpecified()->at(keyword)["*"][i])==0)
         {
             last_error = "'" + parent->MustBeSpecified()->at(keyword)["*"][i] + "' must be specified when " + keyword + "ing";
@@ -591,7 +649,7 @@ bool Command::Validate(System *sys)
             return false;
         }
 
-    return true;
+    return out;
 }
 
 void Command::SetParent (Script *scr)
