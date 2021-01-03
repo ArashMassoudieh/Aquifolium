@@ -29,7 +29,7 @@ public:
     bool Initiated() const {return initiated;}
     void SetInitiated(bool x) {initiated = x;}
 private:
-    string indepenentvariable;
+    string indepenentvariable = "";
     bool logarithmic=false;
     double x_min;
     double x_max;

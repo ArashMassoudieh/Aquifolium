@@ -81,6 +81,7 @@ struct solvertemporaryvars
 			updatejacobian[i] = x;
     }
     vector<int> numiterations;
+    int numiteration_tr;
     int epoch_count;
     vector<string> fail_reason;
     double t;
@@ -216,9 +217,8 @@ class System: public Object
         double &dt() {return SolverTempVars.dt;}
         double &tend() {return SimulationParameters.tend;}
         double &tstart() {return SimulationParameters.tstart;}
-        bool OneStepSolve(unsigned int i);
-        bool OneStepSolve_mv();
-		bool Renew(const string &variable);
+        bool OneStepSolve(unsigned int i, bool transport=false);
+        bool Renew(const string &variable);
 		bool Update(const string &variable="");
         void UnUpdateAllVariables(); 
 		//bool Solve(const string &variable, bool ApplyParams = false);
@@ -339,14 +339,14 @@ class System: public Object
         CVector_arma GetResiduals_TR(const string &variable, CVector_arma &X);
 		void CorrectStoragesBasedonFluxes(const string& variable);
         CVector_arma CalcStateVariables(const string &variable, const Expression::timing &tmg = Expression::timing::past);
-        CVector_arma GetStateVariables(const string &variable, const Expression::timing &tmg = Expression::timing::past);
+        CVector_arma GetStateVariables(const string &variable, const Expression::timing &tmg = Expression::timing::past, bool transport=false);
         solversettings SolverSettings;
         simulationparameters SimulationParameters;
         vector<bool> OneStepSolve();
-        CMatrix_arma Jacobian(const string &variale, CVector_arma &X);
-        CVector_arma Jacobian(const string &variable, CVector_arma &V, CVector_arma &F0, int i);  //Works also w/o reference (&)
+        CMatrix_arma Jacobian(const string &variale, CVector_arma &X, bool transport=false);
+        CVector_arma Jacobian(const string &variable, CVector_arma &V, CVector_arma &F0, int i, bool transport=false);
         bool CalculateFlows(const string &var, const Expression::timing &tmg = Expression::timing::present);
-        void SetStateVariables(const string &variable, CVector_arma &X, const Expression::timing &tmg = Expression::timing::present);
+        void SetStateVariables(const string &variable, CVector_arma &X, const Expression::timing &tmg = Expression::timing::present, bool transport=false);
         void SetStateVariables_TR(const string &variable, CVector_arma &X, const Expression::timing &tmg = Expression::timing::present);
         vector<bool> GetOutflowLimitedVector();
         void SetOutflowLimitedVector(vector<bool>& x);

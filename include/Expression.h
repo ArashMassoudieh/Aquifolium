@@ -74,6 +74,10 @@ namespace aquiutils
 	double atoi(const string& S);
 	string trim(const string& s);
 	void push_back(vector<string>& s, const vector<string>& s1);
+
+    bool isnegative(const double &x);
+    bool ispositive(const double &x);
+    bool iszero(const double &x);
 	void replace(string& s, unsigned int i, string p);
 	void replace(string& s, unsigned int i, unsigned int j, string p);
 	bool replace(string& s, string s1, string s2);

@@ -11,7 +11,7 @@
 #include <cctype>
 #include "System.h"
 
-
+#define SMALLNUMBER 1e-23
 using namespace std;
 
 Expression::Expression(void)
@@ -748,6 +748,32 @@ void aquiutils::push_back(vector<string> &s, const vector<string> &s1)
     for (unsigned int i=0; i<s1.size(); i++)
         s.push_back(s1[i]);
 }
+
+bool aquiutils::isnegative(const double &x)
+{
+    if (x<-SMALLNUMBER)
+        return true;
+    else
+        return false;
+}
+
+bool aquiutils::ispositive(const double &x)
+{
+    if (x>SMALLNUMBER)
+        return true;
+    else
+        return false;
+}
+
+bool aquiutils::iszero(const double &x)
+{
+    if (fabs(x)<SMALLNUMBER)
+        return true;
+    else
+        return false;
+}
+
+
 
 vector<string> aquiutils::split(const string &s, char del)
 {

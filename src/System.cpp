@@ -433,16 +433,21 @@ bool System::Solve(bool applyparameters)
 	bool success = true;
     errorhandler.SetRunTimeWindow(rtw);
 	if (applyparameters) ApplyParameters();
+    qDebug()<<"Initiating outputs";
     InitiateOutputs();
+    qDebug()<<"Writing objects to logger";
     WriteObjectsToLogger();
 
     SolverTempVars.dt_base = SimulationParameters.dt0;
     SolverTempVars.dt = SolverTempVars.dt_base;
     SolverTempVars.t = SimulationParameters.tstart;
-    
+    qDebug()<<"Initiating pre-calculated functions";
     InitiatePrecalculatedFunctions();
+    qDebug()<<"Calculating all expressions";
     CalculateAllExpressions(Expression::timing::present);
+    qDebug()<<"Calculating initial values";
     CalcAllInitialValues();
+    qDebug()<<"Unupdating all values";
     UnUpdateAllVariables();
     for (unsigned int i=0; i<ObjectiveFunctionsCount(); i++)
     {
@@ -801,25 +806,39 @@ void System::SetOutflowLimitedVector(vector<bool> &x)
 
 }
 
-bool System::OneStepSolve(unsigned int statevarno)
+bool System::OneStepSolve(unsigned int statevarno, bool transport)
 {
-	string variable = solvevariableorder[statevarno];
-	Renew(variable);
-    for (unsigned int i = 0; i < links.size(); i++) links[i].SetOutflowLimitFactor(links[i].GetOutflowLimitFactor(Expression::timing::past), Expression::timing::present);
-    for (unsigned int i = 0; i < blocks.size(); i++) blocks[i].SetOutflowLimitFactor(blocks[i].GetOutflowLimitFactor(Expression::timing::past), Expression::timing::present);
+    string variable;
+    if (!transport)
+        variable = solvevariableorder[statevarno];
+    else
+        variable = "mass";
 
-    vector<bool> outflowlimitstatus_old = GetOutflowLimitedVector();
-    SolverTempVars.numiterations[statevarno] = 0;
+    Renew(variable);
+    if (!transport)
+    {
+        for (unsigned int i = 0; i < links.size(); i++) links[i].SetOutflowLimitFactor(links[i].GetOutflowLimitFactor(Expression::timing::past), Expression::timing::present);
+        for (unsigned int i = 0; i < blocks.size(); i++) blocks[i].SetOutflowLimitFactor(blocks[i].GetOutflowLimitFactor(Expression::timing::past), Expression::timing::present);
+        SolverTempVars.numiterations[statevarno] = 0;
+    }
+    vector<bool> outflowlimitstatus_old;
+    if (!transport)
+        outflowlimitstatus_old = GetOutflowLimitedVector();
+
     bool switchvartonegpos = true;
+    if (transport) switchvartonegpos = false;
+
     int attempts = 0;
     while (attempts<2 && switchvartonegpos)
     {
 		CVector_arma X = GetStateVariables(variable, Expression::timing::past);
-        for (unsigned int i = 0; i < blocks.size(); i++)
-		{
-			if (blocks[i].GetLimitedOutflow())
-				X[i] = blocks[i].GetOutflowLimitFactor(Expression::timing::past);
-		}
+        if (!transport)
+        {   for (unsigned int i = 0; i < blocks.size(); i++)
+            {
+                if (blocks[i].GetLimitedOutflow())
+                    X[i] = blocks[i].GetOutflowLimitFactor(Expression::timing::past);
+            }
+        }
 
 		CVector_arma X_past = X;
 
@@ -1090,14 +1109,28 @@ bool System::OneStepSolve(unsigned int statevarno)
 
 bool System::Renew(const string & variable)
 {
-	bool out = true;
-	for (unsigned int i = 0; i < blocks.size(); i++)
-		out &= blocks[i].Renew(variable);
+    bool out = true;
+    if (variable!="mass")
+    {   for (unsigned int i = 0; i < blocks.size(); i++)
+            out &= blocks[i].Renew(variable);
 
-	for (unsigned int i = 0; i < links.size(); i++)
-  		out &= links[i].Renew(Variable(variable)->GetCorrespondingFlowVar());
+        for (unsigned int i = 0; i < links.size(); i++)
+            out &= links[i].Renew(Variable(variable)->GetCorrespondingFlowVar());
 
-	return out;
+        return out;
+    }
+    else
+    {
+        for (unsigned int j=0; j<ConstituentsCount(); j++)
+        {
+            for (unsigned int i = 0; i < blocks.size(); i++)
+                out &= blocks[i].Renew(constituent(i)->GetName() + ":" + variable);
+
+            for (unsigned int i = 0; i < links.size(); i++)
+                out &= links[i].Renew(Variable(constituent(i)->GetName() + ":" + variable)->GetCorrespondingFlowVar());
+        }
+        return out;
+    }
 }
 
 bool System::Update(const string & variable)
@@ -1139,29 +1172,51 @@ CVector_arma System::CalcStateVariables(const string &variable, const Expression
     return X;
 }
 
-CVector_arma System::GetStateVariables(const string &variable, const Expression::timing &tmg)
+CVector_arma System::GetStateVariables(const string &variable, const Expression::timing &tmg, bool transport)
 {
-    CVector_arma X(blocks.size());
-    for (unsigned int i=0; i<blocks.size(); i++)
-        X[i] = blocks[i].GetVal(variable,tmg);
-    return X;
+    if (!transport)
+    {
+        CVector_arma X(blocks.size());
+        for (unsigned int i=0; i<blocks.size(); i++)
+            X[i] = blocks[i].GetVal(variable,tmg);
+        return X;
+    }
+    else
+    {
+        CVector_arma X(blocks.size()*ConstituentsCount());
+        for (unsigned int i=0; i<blocks.size(); i++)
+            for (unsigned int j=0; j<ConstituentsCount(); j++)
+                X[j+ConstituentsCount()*i] = GetVal(variable,constituent(j)->GetName(),tmg);
+
+        return X;
+    }
 }
 
-void System::SetStateVariables(const string &variable, CVector_arma &X, const Expression::timing &tmg)
+void System::SetStateVariables(const string &variable, CVector_arma &X, const Expression::timing &tmg, bool transport)
 {
-    for (unsigned int i=0; i<blocks.size(); i++)
+    if (!transport)
+    {   for (unsigned int i=0; i<blocks.size(); i++)
+        {
+            if (!blocks[i].GetLimitedOutflow())
+            {
+                blocks[i].SetVal(variable, X[i], tmg);
+                blocks[i].SetOutflowLimitFactor(1, tmg);
+            }
+            else
+            {
+                blocks[i].SetOutflowLimitFactor(X[i],tmg);
+                blocks[i].SetVal(variable, 0, tmg);
+            }
+        }
+    }
+    else
     {
-		if (!blocks[i].GetLimitedOutflow())
-		{
-			blocks[i].SetVal(variable, X[i], tmg);
-			blocks[i].SetOutflowLimitFactor(1, tmg);
-		}
-		else
-		{
-			blocks[i].SetOutflowLimitFactor(X[i],tmg);
-			blocks[i].SetVal(variable, 0, tmg);
-		}
-
+        for (unsigned int i=0; i<blocks.size(); i++)
+        {
+            vector<Quan*> masses = blocks[i].GetAllConstituentProperties(variable);
+            for (unsigned int j=0; j<masses.size(); j++)
+                masses[j]->SetVal(X[j+masses.size()*i],tmg);
+        }
     }
 }
 
@@ -1251,16 +1306,16 @@ CVector_arma System::GetResiduals(const string &variable, CVector_arma &X)
         if (blocks[i].GetLimitedOutflow())
         {
             double outflow = blocks[i].GetInflowValue(variable, Expression::timing::present);
-            alloutflowszero &= !(outflow < 0);
+            alloutflowszero &= !aquiutils::isnegative(outflow);
             for (unsigned int j = 0; j < blocks[i].GetLinksFrom().size(); j++)
             {
                 outflow = blocks[i].GetLinksFrom()[j]->GetVal(blocks[i].Variable(variable)->GetCorrespondingFlowVar(), Expression::timing::present);
-                alloutflowszero &= !(outflow > 0);
+                alloutflowszero &= !aquiutils::ispositive(outflow);
             }
             for (unsigned int j = 0; j < blocks[i].GetLinksTo().size(); j++)
             {
                 outflow = blocks[i].GetLinksTo()[j]->GetVal(blocks[i].Variable(variable)->GetCorrespondingFlowVar(), Expression::timing::present);
-                alloutflowszero &= !(outflow < 0);
+                alloutflowszero &= !aquiutils::isnegative(outflow);
             }
         
             if (alloutflowszero)
@@ -1340,14 +1395,17 @@ bool System::CalculateFlows(const string &var, const Expression::timing &tmg)
 	return true;
 }
 
-CMatrix_arma System::Jacobian(const string &variable, CVector_arma &X)
+CMatrix_arma System::Jacobian(const string &variable, CVector_arma &X, bool transport)
 {
     CMatrix_arma M(X.num);
-
-    CVector_arma F0 = GetResiduals(variable, X);
+    CVector_arma F0;
+    if (!transport)
+        F0 = GetResiduals(variable, X);
+    else
+        F0 = GetResiduals_TR(variable, X);
     for (int i=0; i < X.num; i++)
     {
-        CVector_arma V = Jacobian(variable, X, F0, i);
+        CVector_arma V = Jacobian(variable, X, F0, i,transport);
         for (int j=0; j<X.num; j++)
             M(i,j) = V[j];
     }
@@ -1356,28 +1414,40 @@ CMatrix_arma System::Jacobian(const string &variable, CVector_arma &X)
 }
 
 
-CVector_arma System::Jacobian(const string &variable, CVector_arma &V, CVector_arma &F0, int i)  //Works also w/o reference (&)
+CVector_arma System::Jacobian(const string &variable, CVector_arma &V, CVector_arma &F0, int i, bool transport)
 {
-  double epsilon;
-  double u;
-  if (unitrandom()>0.5) u=1; else u=-1;
-  epsilon = -1e-6*u*(fabs(V[i])+1);
-  CVector_arma V1(V);
-  V1[i] += epsilon;
-  CVector_arma F1;
-  F1 = GetResiduals(variable,V1);
-  CVector_arma grad = (F1 - F0) / epsilon;
-  if (grad.norm2() == 0 || !grad.is_finite())
-  {
-    epsilon = +1e-6*u*(fabs(V[i]) + 1);
-    V1 = V;
-    V1[i] += epsilon;
-    F1 = GetResiduals(variable,V1);
-    grad = (F1 - F0) / epsilon;
-  }
-  return grad;
+      double epsilon;
+      double u;
+      if (unitrandom()>0.5) u=1; else u=-1;
+      epsilon = -1e-6*u*(fabs(V[i])+1);
+      CVector_arma V1(V);
+      V1[i] += epsilon;
+      CVector_arma F1;
+      if (!transport)
+        F1 = GetResiduals(variable,V1);
+      else
+        F1 = GetResiduals_TR(variable,V1);
+      CVector_arma grad = (F1 - F0) / epsilon;
+      if (!grad.is_finite() || grad[i]==0)
+      {
+            epsilon = +1e-6*u*(fabs(V[i]) + 1);
+            V1 = V;
+            V1[i] += epsilon;
+            if (!transport)
+                F1 = GetResiduals(variable,V1);
+            else
+                F1 = GetResiduals_TR(variable,V1);
+            grad = (F1 - F0) / epsilon;
+      }
+      if (grad[i]==0)
+      {
+            qDebug()<<"Diagonal of jacobian is zero for block" << QString::fromStdString(blocks[i].GetName());
+      }
+      return grad;
 
 }
+
+
 
 void System::SetVariableParents()
 {
@@ -2459,16 +2529,19 @@ bool System::InitiatePrecalculatedFunctions()
     bool out = true;
     for (unsigned int i=0; i<blocks.size(); i++)
     {
+        qDebug()<<QString::fromStdString(blocks[i].GetName());
         out &= blocks[i].InitializePrecalcFunctions();
     }
 
     for (unsigned int i=0; i<links.size(); i++)
     {
+        qDebug()<<QString::fromStdString(links[i].GetName());
         out &= links[i].InitializePrecalcFunctions();
     }
 
     for (unsigned int i=0; i<sources.size(); i++)
     {
+        qDebug()<<QString::fromStdString(sources[i].GetName());
         out &= sources[i].InitializePrecalcFunctions();
     }
     return out;

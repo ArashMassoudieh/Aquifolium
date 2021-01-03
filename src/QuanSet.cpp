@@ -494,9 +494,13 @@ bool QuanSet::RenameQuantity(const string &oldname, const string &newname)
 bool QuanSet::InitializePrecalcFunctions()
 {
     bool out = true;
+
     for (map<string,Quan>::iterator it=quans.begin(); it!=quans.end(); it++)
         if (it->second.PreCalcFunction()->IndependentVariable()!="")
+        {   qDebug()<<QString::fromStdString(it->first);
             out &= it->second.InitializePreCalcFunction();
+        }
 
+    return out;
 
 }
