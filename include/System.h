@@ -335,7 +335,7 @@ class System: public Object
         map<string, Quan> addedpropertiestoallblocks;
         map<string, Quan> addedpropertiestoalllinks;
         MetaModel metamodel;
-        CVector_arma GetResiduals(const string &variable, CVector_arma &X);
+        CVector_arma GetResiduals(const string &variable, CVector_arma &X, bool transport=false);
         CVector_arma GetResiduals_TR(const string &variable, CVector_arma &X);
 		void CorrectStoragesBasedonFluxes(const string& variable);
         CVector_arma CalcStateVariables(const string &variable, const Expression::timing &tmg = Expression::timing::past);

@@ -414,13 +414,16 @@ void System::CopyQuansToMembers()
 
 vector<bool> System::OneStepSolve()
 {
-	vector<bool> success(solvevariableorder.size());
+    int transport = 0;
+    if (ConstituentsCount()>0) transport = 1;
+    vector<bool> success(solvevariableorder.size()+transport);
     for (unsigned int i = 0; i < solvevariableorder.size(); i++)
         success[i] = OneStepSolve(i);
 
     if (ConstituentsCount()>0)
-        success[solvevariableorder.size()] = OneStepSolve_mv();
-	return success;
+        success[solvevariableorder.size()] = OneStepSolve(0,true);
+
+    return success;
 }
 
 bool System::Solve(bool applyparameters)
@@ -841,8 +844,9 @@ bool System::OneStepSolve(unsigned int statevarno, bool transport)
         }
 
 		CVector_arma X_past = X;
+        CVector_arma F = GetResiduals(variable, X, transport);
 
-		CVector_arma F = GetResiduals(variable, X);
+
         double error_increase_counter = 0; 
 		double err_ini = F.norm2();
 		double err;
@@ -855,7 +859,7 @@ bool System::OneStepSolve(unsigned int statevarno, bool transport)
             SolverTempVars.numiterations[statevarno]++;
             if (SolverTempVars.updatejacobian[statevarno])
             {
-                CMatrix_arma J = Jacobian(variable, X);
+                CMatrix_arma J = Jacobian(variable, X, transport);
 
                 if (SolverSettings.scalediagonal)
                     J.ScaleDiagonal(1.0 / SolverTempVars.NR_coefficient[statevarno]);
@@ -952,7 +956,7 @@ bool System::OneStepSolve(unsigned int statevarno, bool transport)
                     }
 
                     SolverTempVars.fail_reason.push_back("at " + aquiutils::numbertostring(SolverTempVars.t) + ": The Jacobian Matrix is not full-ranked");
-                    SetOutflowLimitedVector(outflowlimitstatus_old);
+                    if (!transport) SetOutflowLimitedVector(outflowlimitstatus_old);
                     return false;
                 }
                 if (!SolverSettings.direct_jacobian)
@@ -992,10 +996,11 @@ bool System::OneStepSolve(unsigned int statevarno, bool transport)
                 return false;
 			}
 
-			F = GetResiduals(variable, X);
+            F = GetResiduals(variable, X, transport);
             CVector_arma F1;
             if (SolverSettings.optimize_lambda)
-                F1 = GetResiduals(variable, X1);
+                F1 = GetResiduals(variable, X1, transport);
+
 			if (!F.is_finite())
 			{
 				SolverTempVars.fail_reason.push_back("at " + aquiutils::numbertostring(SolverTempVars.t) + ": F is infinite");
@@ -1052,14 +1057,14 @@ bool System::OneStepSolve(unsigned int statevarno, bool transport)
             if (error_increase_counter > 10)
             {
                 SolverTempVars.fail_reason.push_back("at " + aquiutils::numbertostring(SolverTempVars.t) + ": Error kept increasing");
-                SetOutflowLimitedVector(outflowlimitstatus_old);
+                if (!transport) SetOutflowLimitedVector(outflowlimitstatus_old);
                 return false; 
             }
             
             if (SolverTempVars.numiterations[statevarno] > SolverSettings.NR_niteration_max)
             {
                 SolverTempVars.fail_reason.push_back("at " + aquiutils::numbertostring(SolverTempVars.t) + ": numbe of iterations exceeded the maximum threshold");
-                SetOutflowLimitedVector(outflowlimitstatus_old);
+                if (!transport) SetOutflowLimitedVector(outflowlimitstatus_old);
                 return false;
             }
         }
@@ -1124,10 +1129,10 @@ bool System::Renew(const string & variable)
         for (unsigned int j=0; j<ConstituentsCount(); j++)
         {
             for (unsigned int i = 0; i < blocks.size(); i++)
-                out &= blocks[i].Renew(constituent(i)->GetName() + ":" + variable);
+                out &= blocks[i].Renew(constituent(j)->GetName() + ":" + variable);
 
             for (unsigned int i = 0; i < links.size(); i++)
-                out &= links[i].Renew(Variable(constituent(i)->GetName() + ":" + variable)->GetCorrespondingFlowVar());
+                out &= links[i].Renew(constituent(j)->GetName() + ":" + Variable(variable)->GetCorrespondingFlowVar());
         }
         return out;
     }
@@ -1251,8 +1256,11 @@ void System::CalculateAllExpressions(Expression::timing tmg)
     }
 }
 
-CVector_arma System::GetResiduals(const string &variable, CVector_arma &X)
+CVector_arma System::GetResiduals(const string &variable, CVector_arma &X, bool transport)
 {
+    if (transport)
+        return GetResiduals_TR(variable, X);
+
     CVector_arma F(blocks.size());
     SetStateVariables(variable,X,Expression::timing::present);
     UnUpdateAllVariables(); 
@@ -1399,10 +1407,10 @@ CMatrix_arma System::Jacobian(const string &variable, CVector_arma &X, bool tran
 {
     CMatrix_arma M(X.num);
     CVector_arma F0;
-    if (!transport)
-        F0 = GetResiduals(variable, X);
-    else
-        F0 = GetResiduals_TR(variable, X);
+
+    F0 = GetResiduals(variable, X, transport);
+
+
     for (int i=0; i < X.num; i++)
     {
         CVector_arma V = Jacobian(variable, X, F0, i,transport);
@@ -1422,21 +1430,15 @@ CVector_arma System::Jacobian(const string &variable, CVector_arma &V, CVector_a
       epsilon = -1e-6*u*(fabs(V[i])+1);
       CVector_arma V1(V);
       V1[i] += epsilon;
-      CVector_arma F1;
-      if (!transport)
-        F1 = GetResiduals(variable,V1);
-      else
-        F1 = GetResiduals_TR(variable,V1);
+      CVector_arma F1 = GetResiduals(variable,V1,transport);
+
       CVector_arma grad = (F1 - F0) / epsilon;
       if (!grad.is_finite() || grad[i]==0)
       {
             epsilon = +1e-6*u*(fabs(V[i]) + 1);
             V1 = V;
             V1[i] += epsilon;
-            if (!transport)
-                F1 = GetResiduals(variable,V1);
-            else
-                F1 = GetResiduals_TR(variable,V1);
+            F1 = GetResiduals(variable,V1,transport);
             grad = (F1 - F0) / epsilon;
       }
       if (grad[i]==0)
@@ -2460,13 +2462,6 @@ bool System::CalcAllInitialValues()
     return true; 
 }
 
-bool System::OneStepSolve_mv() //solve a multivariate system of equations, used for multicomponent reactive transport
-{
-
-    CVector_arma X = CVector(blocks.size()*ConstituentsCount());
-    CVector_arma F = GetResiduals_TR("mass", X);
-    return true;
-}
 
 void System::SetSolutionLogger(SolutionLogger &slnlogger)
 {
