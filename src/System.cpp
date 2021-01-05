@@ -827,8 +827,8 @@ bool System::OneStepSolve(unsigned int statevarno, bool transport)
     {
         for (unsigned int i = 0; i < links.size(); i++) links[i].SetOutflowLimitFactor(links[i].GetOutflowLimitFactor(Expression::timing::past), Expression::timing::present);
         for (unsigned int i = 0; i < blocks.size(); i++) blocks[i].SetOutflowLimitFactor(blocks[i].GetOutflowLimitFactor(Expression::timing::past), Expression::timing::present);
-        SolverTempVars.numiterations[statevarno] = 0;
     }
+    SolverTempVars.numiterations[statevarno] = 0;
     vector<bool> outflowlimitstatus_old;
     if (!transport)
         outflowlimitstatus_old = GetOutflowLimitedVector();
