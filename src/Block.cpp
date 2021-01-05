@@ -1,6 +1,7 @@
 #include "Block.h"
 #include "Link.h"
 #include "System.h"
+#include "reaction.h"
 
 Block::Block() : Object::Object()
 {
@@ -178,24 +179,26 @@ CVector Block::GetAllConstituentVals(const string &s, Expression::timing t)
     return out;
 }
 
-CVector Block::GetAllReactionRates(const string &rate_expression, Expression::timing t)
-{
-    CVector out;
-    for (unsigned int i=0; i<GetParent()->ReactionsCount(); i++)
-    {
-        out.append(GetParent()->reaction(i)->CalcVal(rate_expression,t));
-    }
-    return out;
-}
-
-CVector Block::GetAllReactionRates(const string &rate_expression, const string &stoichiometry, Expression::timing t)
+CVector Block::GetAllReactionRates(vector<Reaction> *rxns, Expression::timing t)
 {
     CVector out(GetParent()->ConstituentsCount());
     for (unsigned int i=0; i<GetParent()->ReactionsCount(); i++)
     {
-        double rate = GetParent()->reaction(i)->CalcVal(rate_expression,t);
+        double rate = rxns->at(i).RateExpression()->calc(this,t);
         for (unsigned int j=0; j<GetParent()->ConstituentsCount(); j++)
-            out[j] += rate*GetParent()->reaction(i)->CalcVal(Parent()->constituent(i)->GetName() + ":" + stoichiometry );
+            out[j] += rate*rxns->at(i).Stoichiometric_Constant(GetParent()->constituent(j)->GetName())->calc(this,t);
+    }
+    return out;
+}
+
+CVector Block::GetAllReactionRates(Expression::timing t)
+{
+    CVector out(GetParent()->ConstituentsCount());
+    for (unsigned int i=0; i<GetParent()->ReactionsCount(); i++)
+    {
+        double rate = GetParent()->reaction(i)->RateExpression()->calc(this,t);
+        for (unsigned int j=0; j<GetParent()->ConstituentsCount(); j++)
+            out[j] += rate*GetParent()->reaction(i)->Stoichiometric_Constant(GetParent()->constituent(j)->GetName())->calc(this,t);
     }
     return out;
 }

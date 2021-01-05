@@ -58,9 +58,9 @@ class Object
         Quan* Variable(const string &variable, const string &constituent);
         void SetType(const string &typ) {type = typ;}
         string GetType() {return type;}
-        int s_Block_No() {return s_Block_no; }
+        unsigned int s_Block_No() {return s_Block_no; }
         void SetSBlockNo(int i) { s_Block_no = i; }
-        int e_Block_No() {return e_Block_no; }
+        unsigned int e_Block_No() {return e_Block_no; }
         void SetEBlockNo(int i) { e_Block_no = i; }
         void Set_s_Block(Object *O) { s_Block = O; }
         void Set_e_Block(Object *O) { e_Block = O; }
@@ -139,7 +139,7 @@ class Object
         string name;
         Object *s_Block;
         Object *e_Block;
-        int s_Block_no, e_Block_no;
+        unsigned int s_Block_no, e_Block_no;
         string type;
         double outflowlimitfactor_past = 1;
 		double outflowlimitfactor_current = 1;

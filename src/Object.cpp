@@ -151,7 +151,8 @@ bool Object::SetQuantities(MetaModel &m, const string& typ )
     SetDefaults();
     for (map<string, Quan>::const_iterator s = var.begin(); s != var.end(); ++s)
         var[s->first].SetParent(this);
-	return true;
+
+    return true;
 }
 
 bool Object::SetQuantities(MetaModel *m, const string& typ )
@@ -238,8 +239,8 @@ Object* Object::GetConnectedBlock(Expression::loc l)
         return e_Block;
     if (l==Expression::loc::source)
         return s_Block;
-    if (l==Expression::loc::self)
-        return this;
+
+    return this;
 
 }
 

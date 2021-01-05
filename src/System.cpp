@@ -829,12 +829,12 @@ bool System::OneStepSolve(unsigned int statevarno, bool transport)
         outflowlimitstatus_old = GetOutflowLimitedVector();
 
     bool switchvartonegpos = true;
-    if (transport) switchvartonegpos = false;
 
     int attempts = 0;
     while (attempts<2 && switchvartonegpos)
     {
-		CVector_arma X = GetStateVariables(variable, Expression::timing::past);
+        CVector_arma X = GetStateVariables(variable, Expression::timing::past,transport);
+
         if (!transport)
         {   for (unsigned int i = 0; i < blocks.size(); i++)
             {
@@ -1070,24 +1070,27 @@ bool System::OneStepSolve(unsigned int statevarno, bool transport)
         }
         switchvartonegpos = false;
         
-        for (unsigned int i=0; i<blocks.size(); i++)
+        if (!transport)
         {
-            if (X[i]<-1e-13 && !blocks[i].GetLimitedOutflow())
+            for (unsigned int i=0; i<blocks.size(); i++)
             {
-                blocks[i].SetLimitedOutflow(true);
-                switchvartonegpos = true;
-                SolverTempVars.updatejacobian[statevarno] = true;
-            }
-            else if (X[i]>=1 && blocks[i].GetLimitedOutflow())
-            {
-                blocks[i].SetLimitedOutflow(false);
-                switchvartonegpos = true;
-                SolverTempVars.updatejacobian[statevarno] = true;
-            }
-            else if (X[i]<0)
-            {
-                //qDebug()<<"X has negative elements";
-                blocks[i].SetOutflowLimitFactor(0,Expression::timing::present);
+                if (X[i]<-1e-13 && !blocks[i].GetLimitedOutflow())
+                {
+                    blocks[i].SetLimitedOutflow(true);
+                    switchvartonegpos = true;
+                    SolverTempVars.updatejacobian[statevarno] = true;
+                }
+                else if (X[i]>=1 && blocks[i].GetLimitedOutflow())
+                {
+                    blocks[i].SetLimitedOutflow(false);
+                    switchvartonegpos = true;
+                    SolverTempVars.updatejacobian[statevarno] = true;
+                }
+                else if (X[i]<0)
+                {
+                    //qDebug()<<"X has negative elements";
+                    blocks[i].SetOutflowLimitFactor(0,Expression::timing::present);
+                }
             }
         }
         if (switchvartonegpos) attempts++;
@@ -1191,7 +1194,7 @@ CVector_arma System::GetStateVariables(const string &variable, const Expression:
         CVector_arma X(blocks.size()*ConstituentsCount());
         for (unsigned int i=0; i<blocks.size(); i++)
             for (unsigned int j=0; j<ConstituentsCount(); j++)
-                X[j+ConstituentsCount()*i] = GetVal(variable,constituent(j)->GetName(),tmg);
+                X[j+ConstituentsCount()*i] = blocks[i].GetVal(variable,constituent(j)->GetName(),tmg);
 
         return X;
     }
@@ -1352,14 +1355,15 @@ CVector_arma System::GetResiduals_TR(const string &variable, CVector_arma &X)
     for (unsigned int j=0; j<ConstituentsCount(); j++)
     {   for (unsigned int i=0; i<blocks.size(); i++)
         {
-            for (unsigned int j=0; j<ConstituentsCount(); j++)
-                F[j+i*ConstituentsCount()] = (X[j+i*ConstituentsCount()]-blocks[i].GetVal(variable, constituent(j)->GetName(), Expression::timing::past))/dt() - blocks[i].GetInflowValue(variable,constituent(j)->GetName(), Expression::timing::present);
+            F[j+i*ConstituentsCount()] = (X[j+i*ConstituentsCount()]-blocks[i].GetVal(variable, constituent(j)->GetName(), Expression::timing::past))/dt() - blocks[i].GetInflowValue(variable,constituent(j)->GetName(), Expression::timing::present);
+            CVector V = blocks[i].GetAllReactionRates(variable,Expression::timing::present);
         }
 
         for (unsigned int i=0; i<links.size(); i++)
         {
-            F[j+ConstituentsCount()*links[i].s_Block_No()] += links[i].GetVal(blocks[links[i].s_Block_No()].Variable(variable,constituent(j)->GetName())->GetCorrespondingFlowVar(),Expression::timing::present);
-            F[j+ConstituentsCount()*links[i].e_Block_No()] -= links[i].GetVal(blocks[links[i].s_Block_No()].Variable(variable,constituent(j)->GetName())->GetCorrespondingFlowVar(),Expression::timing::present);
+            F[j+ConstituentsCount()*links[i].s_Block_No()] += links[i].GetVal(blocks[links[i].s_Block_No()].Variable(variable,constituent(j)->GetName())->GetCorrespondingFlowVar(),constituent(j)->GetName(),Expression::timing::present, true);
+            F[j+ConstituentsCount()*links[i].e_Block_No()] -= links[i].GetVal(blocks[links[i].s_Block_No()].Variable(variable,constituent(j)->GetName())->GetCorrespondingFlowVar(),constituent(j)->GetName(),Expression::timing::present, true);
+
         }
 
     }
@@ -1844,7 +1848,7 @@ vector<CTimeSeries*> System::TimeSeries()
     vector<CTimeSeries*> out;
     for (unsigned int i=0; i<links.size(); i++)
     {
-        for (int j=0; j<links[i].TimeSeries().size(); j++)
+        for (unsigned int j=0; j<links[i].TimeSeries().size(); j++)
         {
             links[i].TimeSeries()[j]->assign_D();
             out.push_back(links[i].TimeSeries()[j]);
@@ -1853,7 +1857,7 @@ vector<CTimeSeries*> System::TimeSeries()
 
     for (unsigned int i=0; i<blocks.size(); i++)
     {
-        for (int j=0; j<blocks[i].TimeSeries().size(); j++)
+        for (unsigned int j=0; j<blocks[i].TimeSeries().size(); j++)
         {
             blocks[i].TimeSeries()[j]->assign_D();
             out.push_back(blocks[i].TimeSeries()[j]);
@@ -1862,7 +1866,7 @@ vector<CTimeSeries*> System::TimeSeries()
 
     for (unsigned int i=0; i<sources.size(); i++)
     {
-        for (int j=0; j<sources[i].TimeSeries().size(); j++)
+        for (unsigned int j=0; j<sources[i].TimeSeries().size(); j++)
         {
             sources[i].TimeSeries()[j]->assign_D();
             out.push_back(sources[i].TimeSeries()[j]);
@@ -1876,7 +1880,7 @@ double System::GetMinimumNextTimeStepSize()
 {
     double x=1e12;
 
-    for (int i=0; i<alltimeseries.size(); i++)
+    for (unsigned int i=0; i<alltimeseries.size(); i++)
     {
         x = min(x,alltimeseries[i]->interpol_D(this->SolverTempVars.t));
     }
@@ -2104,7 +2108,7 @@ bool System::Delete(const string& objectname)
                 Delete(links_to_be_deleted[j]);
 
             blocks.erase(blocks.begin() + i);
-            for (int j = 0; j < links.size(); j++)
+            for (unsigned int j = 0; j < links.size(); j++)
             {
                 if (links[j].s_Block_No() >= i)
                     links[j].ShiftLinkedBlock(-1, Expression::loc::source);

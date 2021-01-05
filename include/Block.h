@@ -10,6 +10,7 @@ using namespace std;
 
 class System;
 class Link;
+class Reaction;
 
 class Block: public Object
 {
@@ -32,8 +33,9 @@ class Block: public Object
         bool isrigid(const string& variable) { return Variable(variable)->isrigid(); }
         vector<Quan*> GetAllConstituentProperties(const string &s);
         CVector GetAllConstituentVals(const string &s, Expression::timing t);
-        CVector GetAllReactionRates(const string &s, Expression::timing t);
-        CVector GetAllReactionRates(const string &rate_expression, const string &stoichiometry, Expression::timing t);
+        CVector GetAllReactionRates(vector<Reaction> *rxns, Expression::timing t);
+        CVector GetAllReactionRates(Expression::timing t);
+
 
     protected:
 
