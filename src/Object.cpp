@@ -89,7 +89,7 @@ double Object::GetVal(const string& variable, const string& consttnt, const Expr
     string fullname = consttnt+":"+variable;
     if (var.Count(fullname)==1)
     {
-        if (!limit || !var[fullname].ApplyLimit())
+        if (!limit)
             return var[fullname].GetVal(tmg);
         else
             return var[fullname].GetVal(tmg)*GetOutflowLimitFactor(tmg);

@@ -421,7 +421,7 @@ vector<bool> System::OneStepSolve()
         success[i] = OneStepSolve(i);
 
     if (ConstituentsCount()>0)
-        success[solvevariableorder.size()] = OneStepSolve(0,true);
+        success[solvevariableorder.size()] = OneStepSolve(solvevariableorder.size(),true);
 
     return success;
 }
@@ -431,8 +431,13 @@ bool System::Solve(bool applyparameters)
     double timestepminfactor = 100000;
     double timestepmaxfactor = 50; 
     SetAllParents();
-	SolverTempVars.SetUpdateJacobian(true);
-	alltimeseries = TimeSeries();
+
+    if (ConstituentsCount()>0)
+        SetNumberOfStateVariables(solvevariableorder.size()+1);
+    else
+        SetNumberOfStateVariables(solvevariableorder.size());
+    SolverTempVars.SetUpdateJacobian(true);
+    alltimeseries = TimeSeries();
 	bool success = true;
     errorhandler.SetRunTimeWindow(rtw);
 	if (applyparameters) ApplyParameters();
@@ -996,10 +1001,11 @@ bool System::OneStepSolve(unsigned int statevarno, bool transport)
                 return false;
 			}
 
-            F = GetResiduals(variable, X, transport);
             CVector_arma F1;
             if (SolverSettings.optimize_lambda)
                 F1 = GetResiduals(variable, X1, transport);
+
+            F = GetResiduals(variable, X, transport);
 
 			if (!F.is_finite())
 			{
@@ -1056,14 +1062,14 @@ bool System::OneStepSolve(unsigned int statevarno, bool transport)
              }
             if (error_increase_counter > 10)
             {
-                SolverTempVars.fail_reason.push_back("at " + aquiutils::numbertostring(SolverTempVars.t) + ": Error kept increasing");
+                SolverTempVars.fail_reason.push_back("at " + aquiutils::numbertostring(SolverTempVars.t) + ": Error kept increasing, state_variable:" + aquiutils::numbertostring(statevarno));
                 if (!transport) SetOutflowLimitedVector(outflowlimitstatus_old);
                 return false; 
             }
             
             if (SolverTempVars.numiterations[statevarno] > SolverSettings.NR_niteration_max)
             {
-                SolverTempVars.fail_reason.push_back("at " + aquiutils::numbertostring(SolverTempVars.t) + ": numbe of iterations exceeded the maximum threshold");
+                SolverTempVars.fail_reason.push_back("at " + aquiutils::numbertostring(SolverTempVars.t) + ": number of iterations exceeded the maximum threshold, state_variable:" + aquiutils::numbertostring(statevarno));
                 if (!transport) SetOutflowLimitedVector(outflowlimitstatus_old);
                 return false;
             }
@@ -1356,7 +1362,7 @@ CVector_arma System::GetResiduals_TR(const string &variable, CVector_arma &X)
     {   for (unsigned int i=0; i<blocks.size(); i++)
         {
             F[j+i*ConstituentsCount()] = (X[j+i*ConstituentsCount()]-blocks[i].GetVal(variable, constituent(j)->GetName(), Expression::timing::past))/dt() - blocks[i].GetInflowValue(variable,constituent(j)->GetName(), Expression::timing::present);
-            CVector V = blocks[i].GetAllReactionRates(variable,Expression::timing::present);
+            CVector V = blocks[i].GetAllReactionRates(Expression::timing::present);
         }
 
         for (unsigned int i=0; i<links.size(); i++)
