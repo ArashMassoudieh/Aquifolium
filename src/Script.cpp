@@ -46,7 +46,7 @@ Script::Script(const string &filename, System *sys)
 System* Script::CreateSystem()
 {
     system = new System();
-    for (int i=0; i<commands.size(); i++)
+    for (unsigned int i=0; i<commands.size(); i++)
     {
         if (!commands[i].Execute(system))
         {
