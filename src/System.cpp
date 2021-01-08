@@ -1358,21 +1358,25 @@ CVector_arma System::GetResiduals_TR(const string &variable, CVector_arma &X)
     UnUpdateAllVariables();
     //CalculateFlows(Variable(variable)->GetCorrespondingFlowVar(),Expression::timing::present);
 
-    for (unsigned int j=0; j<ConstituentsCount(); j++)
-    {   for (unsigned int i=0; i<blocks.size(); i++)
-        {
-            F[j+i*ConstituentsCount()] = (X[j+i*ConstituentsCount()]-blocks[i].GetVal(variable, constituent(j)->GetName(), Expression::timing::past))/dt() - blocks[i].GetInflowValue(variable,constituent(j)->GetName(), Expression::timing::present);
-            CVector V = blocks[i].GetAllReactionRates(Expression::timing::present);
-        }
 
-        for (unsigned int i=0; i<links.size(); i++)
+   for (unsigned int i=0; i<blocks.size(); i++)
+    {
+       CVector V = blocks[i].GetAllReactionRates(Expression::timing::present);
+       for (unsigned int j=0; j<ConstituentsCount(); j++)
+            F[j+i*ConstituentsCount()] = (X[j+i*ConstituentsCount()]-blocks[i].GetVal(variable, constituent(j)->GetName(), Expression::timing::past))/dt() - blocks[i].GetInflowValue(variable,constituent(j)->GetName(), Expression::timing::present) - V[j];
+    }
+
+    for (unsigned int i=0; i<links.size(); i++)
+    {
+        for (unsigned int j=0; j<ConstituentsCount(); j++)
         {
             F[j+ConstituentsCount()*links[i].s_Block_No()] += links[i].GetVal(blocks[links[i].s_Block_No()].Variable(variable,constituent(j)->GetName())->GetCorrespondingFlowVar(),constituent(j)->GetName(),Expression::timing::present, true);
             F[j+ConstituentsCount()*links[i].e_Block_No()] -= links[i].GetVal(blocks[links[i].s_Block_No()].Variable(variable,constituent(j)->GetName())->GetCorrespondingFlowVar(),constituent(j)->GetName(),Expression::timing::present, true);
-
         }
 
     }
+
+
     return F;
 }
 

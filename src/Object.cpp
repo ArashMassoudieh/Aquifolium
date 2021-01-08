@@ -77,7 +77,7 @@ double Object::GetVal(const string& s,const Expression::timing &tmg, bool limit)
     }
     else if (Parent()->constituent(s)!=nullptr && var.Count(s+":concentration")==1)
     {
-        return var[s+":concentration"].GetVal(tmg);
+        return aquiutils::Pos(var[s+":concentration"].GetVal(tmg));
     }
     else if (Parent()->reactionparameter(s)!=nullptr)
     {
