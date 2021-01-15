@@ -417,6 +417,7 @@ bool QuanSet::RenameProperty(const string &oldname, const string &newname)
       quans.erase(i);
       DeleteInQuantityOrder(oldname);
       RenameQuantity(oldname, newname);
+      value.RenameQuantity(oldname,newname);
       return Append(newname, value);
     }
     else
