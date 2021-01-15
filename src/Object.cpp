@@ -566,5 +566,6 @@ vector<string> Object::AllReactionParameters()
 
 bool Object::InitializePrecalcFunctions()
 {
-    return var.InitializePrecalcFunctions();
+    var.InitializePrecalcFunctions();
+    return true; 
 }
