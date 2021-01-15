@@ -198,7 +198,7 @@ CVector Block::GetAllReactionRates(Expression::timing t)
     {
         double rate = GetParent()->reaction(i)->RateExpression()->calc(this,t);
         for (unsigned int j=0; j<GetParent()->ConstituentsCount(); j++)
-            out[j] += rate*GetParent()->reaction(i)->Stoichiometric_Constant(GetParent()->constituent(j)->GetName())->calc(this,t);
+            out[j] += rate*GetParent()->reaction(i)->Stoichiometric_Constant(GetParent()->constituent(j)->GetName())->calc(this,t)*GetVal("Storage",t);
     }
     return out;
 }
