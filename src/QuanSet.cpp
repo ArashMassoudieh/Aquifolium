@@ -408,6 +408,7 @@ vector<string> QuanSet::quantitative_variable_list()
 
 bool QuanSet::RenameProperty(const string &oldname, const string &newname)
 {
+    RenameQuantity(oldname, newname);
     map<string,Quan>::iterator i = quans.find(oldname);
 
     if (i != quans.end())
@@ -416,7 +417,6 @@ bool QuanSet::RenameProperty(const string &oldname, const string &newname)
       value.SetName(newname);
       quans.erase(i);
       DeleteInQuantityOrder(oldname);
-      RenameQuantity(oldname, newname);
       value.RenameQuantity(oldname,newname);
       return Append(newname, value);
     }

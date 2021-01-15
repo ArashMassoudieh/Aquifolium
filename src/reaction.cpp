@@ -23,3 +23,12 @@ Reaction& Reaction::operator=(const Reaction& rhs)
     Object::operator=(rhs);
     return *this;
 }
+
+bool Reaction::RenameConstituents(const string& oldname, const string& newname)
+{
+    bool succeed = true;
+    succeed &= GetVars()->RenameQuantity(oldname, newname);
+    Object::RenameConstituents(oldname, newname);
+    return succeed;
+}
+

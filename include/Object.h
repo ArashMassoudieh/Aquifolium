@@ -137,8 +137,8 @@ class Object
         map<string, string> setting;
         System *parent = nullptr;
         string name;
-        Object *s_Block;
-        Object *e_Block;
+        Object *s_Block=nullptr;
+        Object *e_Block=nullptr;
         unsigned int s_Block_no, e_Block_no;
         string type;
         double outflowlimitfactor_past = 1;

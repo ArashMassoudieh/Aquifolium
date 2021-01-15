@@ -525,11 +525,38 @@ bool Object::RenameConstituents(const string &oldname, const string &newname)
             }
         }
     }
+    if (GetConnectedBlock(Expression::loc::source) != nullptr)
+    {
+        for (map<string, Quan>::iterator it = GetConnectedBlock(Expression::loc::source)->GetVars()->begin(); it != GetConnectedBlock(Expression::loc::source)->GetVars()->end(); it++)
+        {
+            if (aquiutils::split(it->first, ':').size() == 2)
+            {
+                if (aquiutils::split(it->first, ':')[0] == oldname)
+                {
+                    if (aquiutils::lookup(oldfullname, it->first) == -1)
+                    {
+                        oldfullname.push_back(it->first);
+                        newfullname.push_back(newname + ":" + aquiutils::split(it->first, ':')[1]);
+                    }
+                }
+                if (aquiutils::split(it->first, ':')[0] == newname)
+                {
+                    if (aquiutils::lookup(newfullname, it->first) == -1)
+                    {
+                        newfullname.push_back(it->first);
+                        oldfullname.push_back(oldname + ":" + aquiutils::split(it->first, ':')[1]);
+                    }
+                }
+            }
+        }
+    }
+
     bool succeed = true;
     for (unsigned int i=0; i<oldfullname.size(); i++)
     {
         succeed &= RenameProperty(oldfullname[i],newfullname[i]);
-        var[newfullname[i]].Description() = newname + ":" + aquiutils::split(newfullname[i],':')[1];
+        if (Variable(newfullname[i])!=nullptr)
+            Variable(newfullname[i])->Description() = newname + ":" + aquiutils::split(newfullname[i],':')[1];
     }
     
     return succeed;
