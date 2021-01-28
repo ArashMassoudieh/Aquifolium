@@ -28,7 +28,7 @@
 #include "QTime"
 #endif
 
-using namespace std; 
+using namespace std;
 
 
 #ifdef DEBUG
@@ -50,12 +50,12 @@ struct solversettings
     int NR_niteration_upper=40;
     int NR_niteration_max=100;
     bool makeresultsuniform = false;
-    bool scalediagonal = false; 
-    double landtozero_factor = 0.1; 
-    bool optimize_lambda = true; 
-    bool direct_jacobian = true; 
+    bool scalediagonal = false;
+    double landtozero_factor = 0.1;
+    bool optimize_lambda = true;
+    bool direct_jacobian = true;
     bool write_solution_details = false;
-    
+
 
 };
 
@@ -104,7 +104,7 @@ struct _directories
 {
     string inputpath;
     string outputpath;
-	string default_template_path; 
+	string default_template_path;
 };
 
 class System: public Object
@@ -122,7 +122,7 @@ class System: public Object
         bool TransferResultsFrom(System *other);
         System& operator=(const System& other);
         void CreateFromScript(Script& scr, const string &settingsfilename="");
-        double &GetTime() 
+        double &GetTime()
         {
             return SolverTempVars.t;
         }
@@ -220,7 +220,7 @@ class System: public Object
         bool OneStepSolve(unsigned int i, bool transport=false);
         bool Renew(const string &variable);
 		bool Update(const string &variable="");
-        void UnUpdateAllVariables(); 
+        void UnUpdateAllVariables();
 		//bool Solve(const string &variable, bool ApplyParams = false);
 		bool Solve(bool ApplyParams = false);
 		bool SetProp(const string &s, const double &val);
@@ -287,13 +287,14 @@ class System: public Object
         logWindow *LogWindow() {return logwindow;}
         void SetLogWindow(logWindow *lgwnd) {logwindow=lgwnd;}
 #endif
-#if defined(QT_version) || defined (Q_version)
         bool stop_triggered = false;
+#if defined(QT_version) || defined (Q_version)
         QStringList QGetAllCategoryTypes();
 		QStringList QGetAllObjectsofTypes(QString _type);
 		QStringList QGetAllObjectsofTypeCategory(QString _type);
         RunTimeWindow *RunTimewindow() {return rtw;}
         void SetRunTimeWindow(RunTimeWindow* _rtw) {rtw = _rtw;}
+#endif
         vector<string> *operators;
         vector<string> *functions;
         void SetOutputItems();
@@ -319,7 +320,7 @@ class System: public Object
         SolutionLogger *GetSolutionLogger();
         bool GetSolutionFailed() {return SolverTempVars.SolutionFailed;}
         //constituents
-#endif
+
 
     protected:
 

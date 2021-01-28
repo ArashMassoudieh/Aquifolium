@@ -30,7 +30,7 @@ QuanSet::QuanSet(Json::ValueIterator& object_types)
 {
     parent = nullptr;
     Name() = object_types.key().asString();
-	ObjectType = "Entity"; 
+	ObjectType = "Entity";
 	BlockLink = blocklink::entity;
 	for (Json::ValueIterator it=object_types->begin(); it!=object_types->end(); ++it)
     {
@@ -40,7 +40,7 @@ QuanSet::QuanSet(Json::ValueIterator& object_types)
 			typecategory = (*object_types)[it.key().asString()].asString();
         else if (it.key()=="type")
         {
-			string _type = (*object_types)[it.key().asString()].asString(); 
+			string _type = (*object_types)[it.key().asString()].asString();
 			if (_type == "block")
 			{
 				BlockLink = blocklink::block;
@@ -56,7 +56,7 @@ QuanSet::QuanSet(Json::ValueIterator& object_types)
 				BlockLink = blocklink::source;
 				ObjectType = "Source";
 			}
-			else 
+			else
 			{
 				BlockLink = blocklink::entity;
 				ObjectType = "Entity";
@@ -86,9 +86,9 @@ QuanSet::QuanSet(const QuanSet& other)
     iconfilename = other.iconfilename;
     description = other.description;
     BlockLink = other.BlockLink;
-	ObjectType = other.ObjectType; 
+	ObjectType = other.ObjectType;
     name = other.name;
-	typecategory = other.typecategory; 
+	typecategory = other.typecategory;
     quantity_order = other.quantity_order;
     parent = nullptr;
 
@@ -102,7 +102,7 @@ QuanSet& QuanSet::operator=(const QuanSet& rhs)
     iconfilename = rhs.iconfilename;
     description = rhs.description;
     BlockLink = rhs.BlockLink;
-	ObjectType = rhs.ObjectType; 
+	ObjectType = rhs.ObjectType;
 	typecategory = rhs.typecategory;
     quantity_order = rhs.quantity_order;
     parent = nullptr;
@@ -307,12 +307,12 @@ QuanSet::QuanSet(QJsonObject& object_types)
 	Name() = object_types.keys()[0].toStdString();
 	ObjectType = "Entity";
 	BlockLink = blocklink::entity;
-	QStringList keys = object_types.keys(); 
+	QStringList keys = object_types.keys();
     //qDebug() << keys;
     //qDebug() << object_types[keys[0]] << endl;
 	//for each (QJsonObject it in object_types.value(object_types.keys()[0]).toArray())
 	//{
-		//qDebug() << it.value; 
+		//qDebug() << it.value;
 		/*if (it.key() == "icon")
 			IconFileName() = it.value["filename"].asString();
 		else if (it.key() == "typecategory")
@@ -439,8 +439,8 @@ bool QuanSet::RenameInQuantityOrder(const string &oldname, const string &newname
 
 bool QuanSet::DeleteInQuantityOrder(const string& oldname)
 {
-    bool out = false; 
-    vector<string> new_quantity_order; 
+    bool out = false;
+    vector<string> new_quantity_order;
     for (unsigned int i = 0; i < quantity_order.size(); i++)
     {
         if (quantity_order[i] != oldname)
@@ -448,10 +448,10 @@ bool QuanSet::DeleteInQuantityOrder(const string& oldname)
             new_quantity_order.push_back(quantity_order[i]);
         }
         else
-            out = true; 
+            out = true;
     }
     quantity_order = new_quantity_order;
-    return out; 
+    return out;
 }
 
 vector<string> QuanSet::AllConstituents()
@@ -498,7 +498,8 @@ bool QuanSet::InitializePrecalcFunctions()
 
     for (map<string,Quan>::iterator it=quans.begin(); it!=quans.end(); it++)
         if (it->second.PreCalcFunction()->IndependentVariable()!="")
-        {   qDebug()<<QString::fromStdString(it->first);
+        {
+            //qDebug()<<QString::fromStdString(it->first);
             out &= it->second.InitializePreCalcFunction();
         }
 

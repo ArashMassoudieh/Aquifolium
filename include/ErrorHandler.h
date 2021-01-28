@@ -69,7 +69,9 @@ class ErrorHandler
 
     private:
         vector<_error> errors;
+        #ifdef Q_version
         RunTimeWindow *rtw = nullptr;
+        #endif // Q_version
 
 };
 

@@ -148,7 +148,7 @@ CGA<T>::CGA(T *model)
 		Ind[i] = CIndividual(GA_params.nParam);
 		Ind_old[i] = CIndividual(GA_params.nParam);
 	}
-	
+
 	for (int j = 0; j < GA_params.nParam; j++)
 		Setminmax(j, minval[j], maxval[j], 4);
 
@@ -319,7 +319,7 @@ int counter=0;
 #pragma omp parallel for //private(ts,l)
 		for (int k=0; k<GA_params.maxpop; k++)
 		{
-			cout << "Individual " << k << std::endl; 
+			cout << "Individual " << k << std::endl;
 			FILE *FileOut;
 #pragma omp critical
             {
@@ -473,7 +473,9 @@ void CGA<T>::SetParameters(Object *obj)
 template<class T>
 int CGA<T>::optimize()
 {
+	#ifdef Q_version
 	QCoreApplication::processEvents();
+	#endif // Q_version
 	string RunFileName = filenames.pathname + filenames.outputfilename;
 
 	FILE *FileOut;

@@ -6,7 +6,9 @@
 #include <map>
 #include "Quan.h"
 #include "MetaModel.h"
+#ifdef Q_version
 #include <qdebug.h>
+#endif
 #include "ErrorHandler.h"
 
 using namespace std;
@@ -30,7 +32,7 @@ class Object
         bool HasQuantity(const string &q);
         bool SetVal(const string& s, double value, const Expression::timing &tmg = Expression::timing::both);
         bool SetVal(const string& s, const string & value, const Expression::timing &tmg = Expression::timing::both);
-        double GetProperty(const string& s) { 
+        double GetProperty(const string& s) {
             if (Variable(s) != nullptr)
             {
                 return Variable(s)->GetVal();
@@ -42,7 +44,7 @@ class Object
                 return 0;
             }
         }
-        System *GetParent() const 
+        System *GetParent() const
         {
             return parent;
         }
@@ -77,23 +79,23 @@ class Object
                 return &var;
             }
         vector<Quan> GetCopyofAllQuans();
-        void SetOutflowLimitFactor(const double &val, const Expression::timing &tmg) 
+        void SetOutflowLimitFactor(const double &val, const Expression::timing &tmg)
 		{
 			if (tmg == Expression::timing::past)
                 outflowlimitfactor_past = val; // max(0.0,val);
-			else 
+			else
                 outflowlimitfactor_current = val; //max(0.0,val);
 		}
         double GetOutflowLimitFactor(const Expression::timing &tmg)
 		{
-			
+
 			if (tmg == Expression::timing::past)
 				return outflowlimitfactor_past;
 			else
 				return outflowlimitfactor_current;
-		
+
 		}
-        void SetLimitedOutflow(bool x) 
+        void SetLimitedOutflow(bool x)
         {
             limitoutflow = x;
         }

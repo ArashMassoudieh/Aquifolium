@@ -1,7 +1,9 @@
 #include "Object.h"
 #include "System.h"
 #include <string>
+#ifdef Q_version
 #include <qdebug.h>
+#endif
 
 Object::Object()
 {
