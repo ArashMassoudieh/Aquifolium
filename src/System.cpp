@@ -1753,7 +1753,7 @@ bool System::ApplyParameters()
         for (unsigned int j=0; j<GetParameter(i)->GetLocations().size();j++)
         {
             if (object(GetParameter(i)->GetLocations()[j])!=nullptr)
-                object(GetParameter(i)->GetLocations()[j])->SetVal(GetParameter(i)->GetQuans()[i],GetParameter(i)->GetValue());
+                object(GetParameter(i)->GetLocations()[j])->SetVal(GetParameter(i)->GetQuans()[j],GetParameter(i)->GetValue());
             else
             {
                 errorhandler.Append(GetName(),"System","ApplyParameters" ,"Location '" + GetParameter(i)->GetLocations()[j] + "' does not exist!", 607);
