@@ -57,6 +57,7 @@ System::System(const System& other):Object::Object(other)
     reactions = other.reactions;
     reaction_parameters = other.reaction_parameters;
     objective_function_set = other.objective_function_set;
+    observations = other.observations;
     parameter_set = other.parameter_set;
     silent = other.silent;
     SimulationParameters = other.SimulationParameters;
@@ -91,6 +92,7 @@ System& System::operator=(const System& rhs)
 	SolverTempVars = rhs.SolverTempVars;
     paths = rhs.paths;
     Settings = rhs.Settings;
+    observations = rhs.observations;
     solutionlogger = rhs.solutionlogger;
     SolverTempVars.SolutionFailed = false;
     SetAllParents();
@@ -144,6 +146,16 @@ bool System::AddReactionParameter(RxnParameter &rxnparam)
     reactionparameter(rxnparam.GetName())->SetQuantities(metamodel, rxnparam.GetType());
     reactionparameter(rxnparam.GetName())->SetParent(this);
     return true;
+}
+
+bool System::AddObservation(Observation &obs)
+{
+    observations.push_back(obs);
+    observation(obs.GetName())->SetParent(this);
+    observation(obs.GetName())->SetQuantities(metamodel, obs.GetType());
+    observation(obs.GetName())->SetParent(this);
+    return true;
+
 }
 
 bool System::AddLink(Link &lnk, const string &source, const string &destination)
@@ -247,6 +259,15 @@ RxnParameter *System::reactionparameter(const string &s)
 
 }
 
+Observation *System::observation(const string &s)
+{
+    for (unsigned int i=0; i<observations.size(); i++)
+        if (observations[i].GetName() == s) return &observations[i];
+
+    return nullptr;
+
+}
+
 Object *System::settings(const string &s)
 {
     for (unsigned int i=0; i<Settings.size(); i++)
@@ -303,6 +324,9 @@ Object *System::object(const string &s)
     for (unsigned int i=0; i<reactions.size(); i++)
         if (reactions[i].GetName() == s) return &reactions[i];
 
+    for (unsigned int i=0; i<observations.size(); i++)
+        if (observations[i].GetName() == s) return &observations[i];
+
     for (unsigned int i=0; i<ParametersCount(); i++)
         if (Parameters()[i]->GetName() == s) return Parameters()[i];
 
@@ -329,6 +353,9 @@ ErrorHandler System::VerifyAllQuantities()
     for (unsigned int i=0; i<sources.size(); i++)
         sources[i].VerifyQuans(&errs);
 
+    for (unsigned int i=0; i<observations.size(); i++)
+        observations[i].VerifyQuans(&errs);
+
     for (unsigned int i=0; i<ParametersCount(); i++)
         Parameters()[i]->VerifyQuans(&errs);
 
@@ -348,6 +375,9 @@ void System::UnUpdateAllVariables()
 
     for (unsigned int i = 0; i < sources.size(); i++)
         sources[i].UnUpdateAllValues();
+
+    for (unsigned int i = 0; i < observations.size(); i++)
+        observations[i].UnUpdateAllValues();
 
     for (unsigned int i = 0; i < ObjectiveFunctionsCount(); i++)
         ObjectiveFunctions()[i]->UnUpdateAllValues();
@@ -709,6 +739,7 @@ bool System::SetProperty(const string &s, const string &val)
 void System::InitiateOutputs()
 {
     Outputs.AllOutputs.clear();
+    Outputs.ObservedOutputs.clear();
     for (unsigned int i=0; i<blocks.size(); i++)
     {
         for (map<string, Quan>::iterator it = blocks[i].GetVars()->begin(); it != blocks[i].GetVars()->end(); it++)
@@ -733,6 +764,12 @@ void System::InitiateOutputs()
     {
         Outputs.AllOutputs.append(CBTC(), "Obj_" + objective_function_set[i]->GetName());
         objective_function_set[i]->SetOutputItem("Obj_" + objective_function_set[i]->GetName());
+    }
+
+    for (unsigned int i=0; i<observations.size(); i++)
+    {
+        Outputs.ObservedOutputs.append(CBTC(), observations[i].GetName());
+        observations[i].SetOutputItem(observations[i].GetName());
     }
 
 }
@@ -760,6 +797,11 @@ void System::SetOutputItems()
     for (unsigned int i=0; i<objective_function_set.size(); i++)
     {
         objective_function_set[i]->SetOutputItem("Obj_" + objective_function_set[i]->GetName());
+    }
+
+    for (unsigned int i=0; i<observations.size(); i++)
+    {
+        observations[i].SetOutputItem(observations[i].GetName());
     }
 
 }
@@ -795,6 +837,11 @@ void System::PopulateOutputs()
     for (unsigned int i=0; i<objective_function_set.size(); i++)
     {
         Outputs.AllOutputs["Obj_" + objective_function_set[i]->GetName()].append(SolverTempVars.t,objectivefunction(objective_function_set[i]->GetName())->Value());
+    }
+
+    for (unsigned int i=0; i<observations.size(); i++)
+    {
+        Outputs.ObservedOutputs[observations[i].GetName()].append(SolverTempVars.t,observation(observations[i].GetName())->Value());
     }
 
 }
@@ -1565,6 +1612,15 @@ vector<string> System::GetAllReactionNames()
 
 }
 
+vector<string> System::GetAllObservationNames()
+{
+    vector<string> out;
+    for (unsigned int i=0; i<observations.size(); i++)
+        out.push_back(observations[i].GetName());
+    return out;
+
+}
+
 
 vector<string> System::GetAllTypesOf(const string &type)
 {
@@ -1691,6 +1747,7 @@ bool System::SetAsParameter(const string &location, const string &quantity, cons
             return true;
         }
     }
+    return false;
 }
 
 bool System::AppendParameter(const string &paramname, const double &lower_limit, const double &upper_limit, const string &prior_distribution)
@@ -1851,7 +1908,7 @@ bool System::Echo(const string &obj, const string &quant, const string &feature)
             }
         }
     }
-
+    return false;
 
 }
 

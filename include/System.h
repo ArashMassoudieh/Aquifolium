@@ -10,6 +10,7 @@
 #include "MetaModel.h"
 #include "BTCSet.h"
 #include "Objective_Function_Set.h"
+#include "observation.h"
 #include "Parameter_Set.h"
 #include "reaction.h"
 #include "RxnParameter.h"
@@ -131,6 +132,7 @@ class System: public Object
         bool AddLink(Link &lnk, const string &source, const string &destination);
         bool AddConstituent(Constituent &cnst);
         bool AddReaction(Reaction &rxn);
+        bool AddObservation(Observation &obs);
         bool AddReactionParameter(RxnParameter &rxn);
         Block *block(const string &s);
         Block *block(unsigned int i)
@@ -152,6 +154,7 @@ class System: public Object
         unsigned long LinksCount() {return links.size();}
         unsigned long SourcesCount() {return sources.size();}
         unsigned long ReactionsCount() {return reactions.size();}
+        unsigned long ObservationsCount() {return observations.size();}
         unsigned long ParametersCount() {return Parameters().size();}
         unsigned long ObjectiveFunctionsCount() {return ObjectiveFunctions().size();}
         unsigned long ConstituentsCount() {return constituents.size();}
@@ -160,6 +163,7 @@ class System: public Object
         vector<string> GetAllBlockNames();
         vector<string> GetAllLinkNames();
         vector<string> GetAllReactionNames();
+        vector<string> GetAllObservationNames();
 
         Link *link(const string &s);
         Link *link(unsigned int i)
@@ -173,6 +177,7 @@ class System: public Object
         Constituent *constituent(const string &s);
         Reaction *reaction(const string &s);
         RxnParameter *reactionparameter(const string &s);
+        Observation *observation(const string &s);
         Source *source(unsigned int i)
         {   if (i<sources.size())
                 return &sources[i];
@@ -194,6 +199,12 @@ class System: public Object
         Reaction *reaction(unsigned int i)
         {   if (i<reactions.size())
                 return &reactions[i];
+            else
+                return nullptr;
+        }
+        Observation *observation(unsigned int i)
+        {   if (i<observations.size())
+                return &observations[i];
             else
                 return nullptr;
         }
@@ -333,6 +344,7 @@ class System: public Object
         vector<Reaction> reactions;
         vector<RxnParameter> reaction_parameters;
         vector<Object> Settings;
+        vector<Observation> observations;
         map<string, Quan> addedpropertiestoallblocks;
         map<string, Quan> addedpropertiestoalllinks;
         MetaModel metamodel;
