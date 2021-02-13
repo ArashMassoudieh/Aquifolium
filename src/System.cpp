@@ -595,6 +595,7 @@ bool System::Solve(bool applyparameters)
             //    Update(solvevariableorder[i]);
             Update();
             UpdateObjectiveFunctions(SolverTempVars.t);
+            UpdateObservations(SolverTempVars.t);
             PopulateOutputs();
         }
 
@@ -1696,6 +1697,14 @@ void System::UpdateObjectiveFunctions(double t)
     objective_function_set.Update(t);
     return;
 }
+
+void System::UpdateObservations(double t)
+{
+    for (unsigned int i=0; i<ObservationsCount(); i++)
+        observations[i].append_value(t);
+    return;
+}
+
 double System::GetObjectiveFunctionValue()
 {
     if (GetSolutionFailed())
@@ -1838,6 +1847,11 @@ void System::SetAllParents()
     {
         objective_function_set[i]->SetParent(this);
         objective_function_set[i]->SetSystem(this);
+    }
+    for (unsigned int i = 0; i < observations.size(); i++)
+    {
+        observations[i].SetParent(this);
+        observations[i].SetSystem(this);
     }
     for (unsigned int i = 0; i < ParametersCount(); i++)
     {
@@ -2042,6 +2056,9 @@ bool System::SavetoScriptFile(const string &filename, const string &templatefile
 
     for (unsigned int i=0; i<ObjectiveFunctionsCount(); i++)
         file << "create objectivefunction;" << ObjectiveFunctions()[i]->toCommand() << std::endl;
+
+    for (unsigned int i=0; i<ObservationsCount(); i++)
+        file << "create observation;" << observation(i)->toCommand() << std::endl;
 
     for (unsigned int i=0; i<ReactionsCount(); i++)
         file << "create reaction_parameter;" << reaction_parameters[i].toCommand() << std::endl;

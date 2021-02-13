@@ -248,7 +248,7 @@ bool Command::Execute(System *_sys)
                 cout<<"-----------------------------------------------------------------------------"<<std::endl;
                 return true;
             }
-            for (int i=0; i<arguments.size(); i++)
+            for (unsigned int i=0; i<arguments.size(); i++)
                 cout<<arguments[i]<<" ";
             cout<<std::endl;
             return true;
@@ -547,6 +547,25 @@ bool Command::Execute(System *_sys)
                 {
                     if (it->first!="type" && it->first!="to" && it->first!="from")
                         sys->source(assignments["name"])->SetProperty(it->first,it->second,true);
+                }
+                return true;
+            }
+            else
+                return false;
+        }
+        if (aquiutils::tolower(arguments[0])=="observation")
+        {
+            if (Validate())
+            {
+                Observation B;
+                B.SetName(assignments["name"]);
+                B.SetType(assignments["type"]);
+                sys->AddObservation(B);
+
+                for (map<string,string>::iterator it=assignments.begin(); it!=assignments.end(); it++)
+                {
+                    if (it->first!="type" && it->first!="to" && it->first!="from")
+                        sys->observation(assignments["name"])->SetProperty(it->first,it->second);
                 }
                 return true;
             }

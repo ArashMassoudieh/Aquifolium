@@ -237,6 +237,7 @@ class System: public Object
 		bool SetProp(const string &s, const double &val);
 		bool SetProperty(const string &s, const string &val);
         CBTCSet& GetOutputs() {return Outputs.AllOutputs;}
+        CBTCSet& GetObservedOutputs() {return Outputs.ObservedOutputs;}
         vector<string> GetAllBlockTypes();
         vector<string> GetAllLinkTypes();
 		vector<string> GetAllSourceTypes();
@@ -248,6 +249,8 @@ class System: public Object
         int lookup_observation(const string &s) {return 0;}
         int EpochCount() {return SolverTempVars.epoch_count;}
         ErrorHandler *GetErrorHandler() {return &errorhandler;}
+        void UpdateObservations(double t);
+
  //Objective Functions
         void AppendObjectiveFunction(const string &name, const Objective_Function&, double weight=1);
         bool AppendObjectiveFunction(const string &name, const string &location, const Expression &exp, double weight=1);
