@@ -1672,6 +1672,8 @@ void System::AppendObjectiveFunction(const string &name, const Objective_Functio
     return;
 }
 
+
+
 bool System::AppendObjectiveFunction(const string &name, const string &location, const Expression &expr, double weight)
 {
     Objective_Function obj(this,expr,location);
