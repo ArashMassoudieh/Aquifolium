@@ -493,6 +493,11 @@ bool System::Solve(bool applyparameters)
     {
         ObjectiveFunctions()[i]->GetTimeSeries()->clear();
     }
+    for (unsigned int i=0; i<ObservationsCount(); i++)
+    {
+        observation(i)->GetTimeSeries()->clear();
+    }
+
 #ifdef Q_version
     if (rtw)
     {
@@ -769,9 +774,11 @@ void System::InitiateOutputs()
 
     for (unsigned int i=0; i<observations.size(); i++)
     {
+        Outputs.AllOutputs.append(CBTC(), "Obs_" + observations[i].GetName());
+        objective_function_set[i]->SetOutputItem("Obs_" + observations[i].GetName());
         Outputs.ObservedOutputs.append(CBTC(), observations[i].GetName());
-        observations[i].SetOutputItem(observations[i].GetName());
     }
+
 
 }
 
@@ -802,7 +809,7 @@ void System::SetOutputItems()
 
     for (unsigned int i=0; i<observations.size(); i++)
     {
-        observations[i].SetOutputItem(observations[i].GetName());
+        observations[i].SetOutputItem("Obs_" + observations[i].GetName());
     }
 
 }
@@ -842,7 +849,8 @@ void System::PopulateOutputs()
 
     for (unsigned int i=0; i<observations.size(); i++)
     {
-        Outputs.ObservedOutputs[observations[i].GetName()].append(SolverTempVars.t,observation(observations[i].GetName())->Value());
+       Outputs.AllOutputs["Obs_" + observations[i].GetName()].append(SolverTempVars.t,observation(observations[i].GetName())->Value());
+       Outputs.ObservedOutputs[observations[i].GetName()].append(SolverTempVars.t,observation(observations[i].GetName())->Value());
     }
 
 }
