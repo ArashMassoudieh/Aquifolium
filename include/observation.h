@@ -30,6 +30,7 @@ class Observation: public Object
         void SetOutputItem(const string& s) { outputitem = s; }
         string GetOutputItem() { return outputitem; }
         vector<string> ItemswithOutput();
+        double CalcMisfit();
     protected:
 
     private:

@@ -1717,7 +1717,23 @@ double System::GetObjectiveFunctionValue()
 {
     if (GetSolutionFailed())
         return  +1e18;
-    return objective_function_set.Calculate();
+    if (ParameterEstimationMode == parameter_estimation_options::optimize)
+        return objective_function_set.Calculate();
+    else
+        return CalcMisfit();
+}
+
+double System::CalcMisfit()
+{
+    double out=0;
+    for (unsigned int i=0; i<ObservationsCount(); i++)
+        out+=observation(i)->CalcMisfit();
+    return out;
+}
+
+void System::SetParameterEstimationMode(parameter_estimation_options mode)
+{
+    ParameterEstimationMode = mode;
 }
 
 bool System::RemoveAsParameter(const string &location, const string &quantity, const string &parametername)

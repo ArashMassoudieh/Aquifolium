@@ -39,6 +39,8 @@ using namespace std;
 
 class Script;
 
+enum class parameter_estimation_options {none, optimize, inverse_model};
+
 struct solversettings
 {
     double C_N_weight; //Crank-Nicholson Weight
@@ -112,11 +114,6 @@ class System: public Object
 {
     public:
         System();
-#ifdef QT_version
-        System(GraphWidget* DiagramViewer,runtimeWindow *rtw);
-        System(GraphWidget* diagramviewer,runtimeWindow *_rtw, const string &modelfilename);
-        void GetModelConfiguration();
-#endif
         virtual ~System();
         System(const System& other);
         System(Script& scr);
@@ -246,11 +243,10 @@ class System: public Object
         MetaModel *GetMetaModel() {return  &metamodel;}
         QuanSet* GetModel(const string &type) {if (metamodel.Count(type)==1) return metamodel[type]; else return nullptr;}
         void clear();
-        int lookup_observation(const string &s) {return 0;}
         int EpochCount() {return SolverTempVars.epoch_count;}
         ErrorHandler *GetErrorHandler() {return &errorhandler;}
         void UpdateObservations(double t);
-
+        double CalcMisfit(); //calculates the difference between modeled and measured data
  //Objective Functions
         void AppendObjectiveFunction(const string &name, const Objective_Function&, double weight=1);
         bool AppendObjectiveFunction(const string &name, const string &location, const Expression &exp, double weight=1);
@@ -333,8 +329,7 @@ class System: public Object
         const solversettings& GetSolverSettings() const {return SolverSettings;}
         SolutionLogger *GetSolutionLogger();
         bool GetSolutionFailed() {return SolverTempVars.SolutionFailed;}
-        //constituents
-
+        void SetParameterEstimationMode(parameter_estimation_options mode = parameter_estimation_options::none);
 
     protected:
 
@@ -387,7 +382,7 @@ class System: public Object
 			SolverTempVars.updatejacobian.resize(n);
 		}
         SolutionLogger *solutionlogger = nullptr;
-
+        parameter_estimation_options ParameterEstimationMode = parameter_estimation_options::none;
 #ifdef Q_version
     RunTimeWindow *rtw = nullptr;
 #endif

@@ -83,6 +83,25 @@ double Observation::GetValue(const Expression::timing &tmg)
     return 0;
 }
 
+double Observation::CalcMisfit()
+{
+    if (Variable("observed_data")->GetTimeSeries()!=nullptr)
+    {
+        if (Variable("error_structure")->GetProperty()=="normal")
+        {
+            return diff2(Variable("observed_data")->GetTimeSeries(),modeled_time_series)/Variable("standard_deviation")->GetVal();
+        }
+        else if (Variable("error_structure")->GetProperty()=="log-normal" || Variable("error_structure")->GetProperty()=="lognormal")
+        {
+            return diff2(Variable("observed_data")->GetTimeSeries()->Log(1e-8),modeled_time_series.Log(1e-8))/Variable("standard_deviation")->GetVal();
+        }
+        else
+            return 0;
+    }
+    else return 0;
+
+}
+
 void Observation::append_value(double t, double val)
 {
     modeled_time_series.append(t,val);
