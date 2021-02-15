@@ -775,7 +775,7 @@ void System::InitiateOutputs()
     for (unsigned int i=0; i<observations.size(); i++)
     {
         Outputs.AllOutputs.append(CBTC(), "Obs_" + observations[i].GetName());
-        objective_function_set[i]->SetOutputItem("Obs_" + observations[i].GetName());
+        observations[i].SetOutputItem("Obs_" + observations[i].GetName());
         Outputs.ObservedOutputs.append(CBTC(), observations[i].GetName());
     }
 

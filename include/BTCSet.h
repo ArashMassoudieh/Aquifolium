@@ -65,6 +65,7 @@ public:
 	bool file_not_found=false;
 	CTimeSeries &operator[](int index);
 	CTimeSeries &operator[](string BTCName);
+    bool Contains(string BTCName);
 #ifdef QT_version
 	CTimeSeries &operator[](QString BTCName) {
 		return operator[](BTCName.toStdString());}

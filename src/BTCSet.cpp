@@ -979,6 +979,14 @@ CTimeSeries &CTimeSeriesSet::operator[](string BTCName)
     }
 }
 
+bool CTimeSeriesSet::Contains(string BTCName)
+{
+    if (lookup(BTCName) != -1)
+        return true;
+    else
+        return false;
+}
+
 void CTimeSeriesSet::pushBackName(string name)
 {
 	names.push_back(name);
