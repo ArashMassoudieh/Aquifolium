@@ -10,9 +10,10 @@
 //#include "StringOP.h"
 #include "Expression.h"
 #include "NormalDist.h"
-#ifdef QT_version
+#ifdef Q_version
 #include "qfile.h"
 #include "qdatastream.h"
+#include <qdebug.h>
 #endif
 
 
@@ -373,11 +374,9 @@ double diff_mixed(CTimeSeries &BTC_p, CTimeSeries &BTC_d, double lowlim, double 
 double diff2(CTimeSeries BTC_p, CTimeSeries BTC_d)
 {
 	double sum = 0;
-	double sumvar1 = 0;
 	for (int i=0; i<BTC_d.n; i++)
 	{
 		sum += pow(BTC_d.C[i] - BTC_p.interpol(BTC_d.t[i]),2);
-		sumvar1 += BTC_d.C[i]*BTC_d.C[i];
 	}
 
 	return sum;
@@ -386,40 +385,34 @@ double diff2(CTimeSeries BTC_p, CTimeSeries BTC_d)
 double diff2(CTimeSeries *BTC_p, CTimeSeries BTC_d)
 {
     double sum = 0;
-    double sumvar1 = 0;
     for (int i=0; i<BTC_d.n; i++)
     {
         sum += pow(BTC_d.C[i] - BTC_p->interpol(BTC_d.t[i]),2);
-        sumvar1 += BTC_d.C[i]*BTC_d.C[i];
     }
 
-    return sum;
+    return sum/double(BTC_d.n);
 }
 
 double diff2(CTimeSeries BTC_p, CTimeSeries *BTC_d)
 {
     double sum = 0;
-    double sumvar1 = 0;
     for (int i=0; i<BTC_d->n; i++)
     {
         sum += pow(BTC_d->C[i] - BTC_p.interpol(BTC_d->t[i]),2);
-        sumvar1 += BTC_d->C[i]*BTC_d->C[i];
     }
 
-    return sum;
+    return sum/double(BTC_d->n);
 }
 
 double diff2(CTimeSeries &BTC_p, CTimeSeries &BTC_d)
 {
     double sum = 0;
-    double sumvar1 = 0;
     for (int i=0; i<BTC_d.n; i++)
     {
         sum += pow(BTC_d.C[i] - BTC_p.interpol(BTC_d.t[i]),2);
-        sumvar1 += BTC_d.C[i]*BTC_d.C[i];
     }
 
-    return sum;
+    return sum/double(BTC_d.n);
 }
 
 

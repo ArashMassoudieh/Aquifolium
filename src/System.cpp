@@ -1728,6 +1728,7 @@ double System::CalcMisfit()
     double out=0;
     for (unsigned int i=0; i<ObservationsCount(); i++)
         out+=observation(i)->CalcMisfit();
+
     return out;
 }
 

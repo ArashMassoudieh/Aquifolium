@@ -22,7 +22,7 @@ using namespace std;
 class CTimeSeries
 {
 public:
-	bool structured;
+    bool structured=true;
 	CTimeSeries();
 	CTimeSeries(int n);
 	virtual ~CTimeSeries();
