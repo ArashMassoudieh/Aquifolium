@@ -37,7 +37,7 @@ class Parameter : public Object
         {
             if (!Object::HasQuantity("prior_distribution"))
                 return "normal";
-            return Object::Variable("priot_distribution")->GetStringValue();
+            return Object::Variable("prior_distribution")->GetStringValue();
         }
         void SetValue(const double &val) {value = val; SetProperty("value", aquiutils::numbertostring(val));}
         double GetValue() {return Object::GetVal("value");}
