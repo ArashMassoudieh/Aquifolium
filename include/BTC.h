@@ -37,11 +37,11 @@ public:
 
     vector<double> D;
 
-	double interpol(const double &x); //interpolate at location x
+    double interpol(const double &x) const; //interpolate at location x
 	CTimeSeries MA_smooth(int span); //Moving average smoothing with span of 1+2*span
 	double interpol_D(double x); //interpolate the distance to the next non-zero data point
 	CTimeSeries interpol(vector<double> x); //interpolate at each value in vector x
-	CTimeSeries interpol(CTimeSeries &x); //interpolate at times in the time axis of x
+    CTimeSeries interpol(CTimeSeries &x) const; //interpolate at times in the time axis of x
 	CTimeSeries(const CTimeSeries &C);
 	CTimeSeries(string Filename); //create BTC based on the filename
 	CTimeSeries& operator = (const CTimeSeries &C);
@@ -114,10 +114,9 @@ double diff_log(CTimeSeries &BTC_p, CTimeSeries &BTC_d, double lowlim);
 double diff_norm(CTimeSeries &BTC_p, CTimeSeries &BTC_d);
 double diff(CTimeSeries BTC_p, CTimeSeries BTC_d, int scale);
 double diff(CTimeSeries BTC_p, CTimeSeries BTC_d, CTimeSeries Q);
-double diff2(CTimeSeries BTC_p, CTimeSeries BTC_d);
 double diff2(CTimeSeries *BTC_p, CTimeSeries BTC_d);
 double diff2(CTimeSeries BTC_p, CTimeSeries *BTC_d);
-double diff2(CTimeSeries &BTC_p, CTimeSeries &BTC_d);
+double diff2(const CTimeSeries &BTC_p, const CTimeSeries &BTC_d);
 double diff_mixed(CTimeSeries &BTC_p, CTimeSeries &BTC_d, double lowlim, double std_n, double std_ln);
 double ADD(CTimeSeries &BTC_p, CTimeSeries &BTC_d);
 double diff_relative(CTimeSeries &BTC_p, CTimeSeries &BTC_d, double m);

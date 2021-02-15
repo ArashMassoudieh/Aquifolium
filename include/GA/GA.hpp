@@ -34,7 +34,6 @@ CGA<T>::CGA(string filename, const T &model)
 	GA_params.nParam = 0;
 	GA_params.pcross = 1;
 	GA_params.N = 1;
-	GA_params.fixedstd = true;
 	GA_params.RCGA = false;
     numberOfThreads = 8;
 	filenames.pathname = Model.OutputPath();
@@ -107,12 +106,11 @@ CGA<T>::CGA(T *model)
 	GA_params.nParam = 0;
 	GA_params.pcross = 1;
 	GA_params.N = 1;
-	GA_params.fixedstd = true;
 	GA_params.RCGA = false;
     numberOfThreads = 8;
     filenames.pathname = Model.OutputPath();
     GA_params.maxpop = max(1,GA_params.maxpop);
-	for (int i=0; i<Model.Parameters().size(); i++)
+    for (unsigned int i=0; i<Model.Parameters().size(); i++)
 	{
         GA_params.nParam++;
         params.push_back(i);

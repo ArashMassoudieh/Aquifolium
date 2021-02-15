@@ -508,7 +508,6 @@ bool System::Solve(bool applyparameters)
 #endif
 
     Update();
-    PopulateOutputs();
     int counter = 0;
     int fail_counter = 0;
     while (SolverTempVars.t<SimulationParameters.tend+SolverTempVars.dt && !stop_triggered)

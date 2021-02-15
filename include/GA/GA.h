@@ -36,13 +36,12 @@ struct GA_Twiking_parameters
 	// bool justreadmcmc; //MCMC
 	// bool mcmc_realization; //MCMC
 	// bool calculate_correlation; // MCMC
-	bool sens_out;
+        bool sens_out = false;
 	// bool global_sensitivity; //MCMC
 	// bool calculate_percentile; // MCMC
 	// bool noinipurt; //MCMC
-	bool RCGA;
-	bool logtrans, fixedstd, mixederror;
-	bool readfromgafile;
+        bool RCGA = false;
+        bool readfromgafile;
 	// bool calc_distributions; //MCMC
 	// bool noise_realization_writeout; // MCMC
 	// bool obs_realization_writeout; //MCMC
@@ -54,24 +53,24 @@ struct GA_Twiking_parameters
 	// double purt_fac; //MCMC
 
 	double N;
-	double pcross;
-	double pmute;
+        double pcross=1;
+        double pmute=0.02;
 
-	double exponentcoeff;
-	double biasfact;
-	double shakescale, shakescalered;
+        double exponentcoeff=1;
+        double shakescale=0.05;
+        double shakescalered=0.75;
 	// double pertscale, nonpurt; //MCMC
 	// bool mcmc_run; // MCMC
-    char fitnesstype;
+         char fitnesstype;
 };
 
 struct _filenames
 {
     string initialpopfilemame;
-	string pathname;
-	string getfromfilename;
-	string outputfilename;
-	string mcmcoutputfile;
+    string pathname;
+    string getfromfilename;
+    string outputfilename;
+    string mcmcoutputfile;
 };
 
 using namespace std;
@@ -85,26 +84,26 @@ public:
 	double MaxFitness;
     GA_Twiking_parameters GA_params;
     _filenames filenames;
-	vector<double> calc_output_percentiles;
-	vector<vector<double>> initial_pop;
-	vector<double> final_params;
-	vector<int> params;
-	vector<int> loged;
-	vector<int> to_ts;
-	vector<double> fixedinputvale;
-	vector<double> minval, maxval;
-	vector<bool> apply_to_all;
-	vector<vector<int>> outcompare;
-	vector<CIndividual> Ind;
-	vector<CIndividual> Ind_old;
-	vector<string> paramname;
+    vector<double> calc_output_percentiles;
+    vector<vector<double>> initial_pop;
+    vector<double> final_params;
+    vector<int> params;
+    vector<int> loged;
+    vector<int> to_ts;
+    vector<double> fixedinputvale;
+    vector<double> minval, maxval;
+    vector<bool> apply_to_all;
+    vector<vector<int>> outcompare;
+    vector<CIndividual> Ind;
+    vector<CIndividual> Ind_old;
+    vector<string> paramname;
     vector<T> Models;
-	T Model_out;
-	T Model;
+    T Model_out;
+    T Model;
 
-	CGA();
-	virtual ~CGA();
-	CGA(const CGA &C);
+    CGA();
+    virtual ~CGA();
+    CGA(const CGA &C);
     CGA operator=(CGA &C);
     CGA(string filename, const T&);
     CGA(T*);

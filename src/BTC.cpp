@@ -180,7 +180,7 @@ CTimeSeries CTimeSeries::Log(double m)
 }
 
 
-double CTimeSeries::interpol(const double &x)
+double CTimeSeries::interpol(const double &x) const
 {
 	if (n==0)
         return 0;
@@ -268,7 +268,7 @@ CTimeSeries CTimeSeries::interpol(vector<double> x)
 
 }
 
-CTimeSeries CTimeSeries::interpol(CTimeSeries &x)
+CTimeSeries CTimeSeries::interpol(CTimeSeries &x) const
 {
 	CTimeSeries BTCout;
 	for (int i=0; i<x.n; i++)
@@ -371,24 +371,11 @@ double diff_mixed(CTimeSeries &BTC_p, CTimeSeries &BTC_d, double lowlim, double 
 }
 
 
-double diff2(CTimeSeries BTC_p, CTimeSeries BTC_d)
-{
-	double sum = 0;
-	for (int i=0; i<BTC_d.n; i++)
-	{
-		sum += pow(BTC_d.C[i] - BTC_p.interpol(BTC_d.t[i]),2);
-	}
-
-	return sum;
-}
-
 double diff2(CTimeSeries *BTC_p, CTimeSeries BTC_d)
 {
     double sum = 0;
     for (int i=0; i<BTC_d.n; i++)
-    {
         sum += pow(BTC_d.C[i] - BTC_p->interpol(BTC_d.t[i]),2);
-    }
 
     return sum/double(BTC_d.n);
 }
@@ -404,7 +391,7 @@ double diff2(CTimeSeries BTC_p, CTimeSeries *BTC_d)
     return sum/double(BTC_d->n);
 }
 
-double diff2(CTimeSeries &BTC_p, CTimeSeries &BTC_d)
+double diff2(const CTimeSeries &BTC_p, const CTimeSeries &BTC_d)
 {
     double sum = 0;
     for (int i=0; i<BTC_d.n; i++)
@@ -617,7 +604,8 @@ void CTimeSeries::readfile(string Filename)
 
 		}
 	}
-	file.close();
+    file_not_found = false;
+    file.close();
 
 }
 
