@@ -1652,6 +1652,10 @@ void System::clear()
     sources.clear();
     objective_function_set.clear();
     parameter_set.clear();
+    reactions.clear();
+    reaction_parameters.clear();
+    observations.clear();
+    constituents.clear();
 }
 
 void System::TransferQuantitiesFromMetaModel()
@@ -2036,9 +2040,10 @@ QStringList System::QGetAllObjectsofTypeCategory(QString _type)
 #endif // Qt_version
 
 
-bool System::SavetoScriptFile(const string &filename, const string &templatefilename, const vector<string> addedtemplates)
+bool System::SavetoScriptFile(const string &filename, const string &templatefilename, const vector<string> &_addedtemplates)
 {
-
+    if (_addedtemplates.size()!=0)
+        addedtemplates = _addedtemplates;
     fstream file(filename,ios_base::out);
     if (templatefilename!="")
     {

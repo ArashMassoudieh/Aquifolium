@@ -278,7 +278,7 @@ class System: public Object
         vector<CTimeSeries*> TimeSeries();
         double GetMinimumNextTimeStepSize();
         Object *GetObjectBasedOnPrimaryKey(const string &s);
-        bool SavetoScriptFile(const string &filename, const string &templatefilename="", const vector<string> addedtemplates = vector<string>());
+        bool SavetoScriptFile(const string &filename, const string &templatefilename="", const vector<string> &addedtemplates = vector<string>());
         bool ReadSystemSettingsTemplate(const string &filename);
         void SetSystemSettings();
         void DisconnectLink(const string linkname);
