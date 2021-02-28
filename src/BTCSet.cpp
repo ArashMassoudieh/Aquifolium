@@ -80,9 +80,7 @@ void CTimeSeriesSet::writetofile(char outputfile[])
 	{
 		for (int i=0; i<nvars; i++)
 		{
-			//MM
-			//if (i<BTC[i].n)
-			if (i<BTC[i].n+1)
+            if (j<BTC[i].n)
 				fprintf(Fil, "%lf, %le,", BTC[i].t[j], BTC[i].C[j]);
 			else
 				fprintf(Fil, ", ,");

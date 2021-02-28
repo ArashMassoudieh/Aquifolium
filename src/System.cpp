@@ -542,6 +542,8 @@ bool System::Solve(bool applyparameters)
                 }
                 QCoreApplication::processEvents();
             }
+#else
+            cout<<SolverTempVars.fail_reason[SolverTempVars.fail_reason.size() - 1] << ", dt = " << SolverTempVars.dt<<endl;
 #endif
             if (GetSolutionLogger())
                 GetSolutionLogger()->WriteString(SolverTempVars.fail_reason[SolverTempVars.fail_reason.size() - 1] + ", dt = " + aquiutils::numbertostring(SolverTempVars.dt));
@@ -565,6 +567,7 @@ bool System::Solve(bool applyparameters)
 #endif
                 if (GetSolutionLogger())
                     GetSolutionLogger()->WriteString("The attempt to solve the problem failed!");
+                cout<<"The attempt to solve the problem failed!"<<endl;
                 SolverTempVars.SolutionFailed = true;
                 stop_triggered = true;
             }

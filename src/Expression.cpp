@@ -401,7 +401,7 @@ double Expression::calc(Object *W, const timing &tmg, bool limit)
             return func(function, term_vals[0], term_vals[1], term_vals[2]);
 	}
 
-
+    return 0;
 }
 
 
