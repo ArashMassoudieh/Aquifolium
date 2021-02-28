@@ -737,9 +737,11 @@ bool System::SetProperty(const string &s, const string &val)
             SolverSettings.write_solution_details = true;
         else
             SolverSettings.write_solution_details = false;
+        return true;
     }
 
     errorhandler.Append("","System","SetProperty","Property '" + s + "' was not found!", 622);
+
     return false;
 }
 

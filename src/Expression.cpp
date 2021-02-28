@@ -417,7 +417,7 @@ double Expression::func(string &f, double val)
 	if (f == "sgn")
 		return (val>0?+1:-1);
 	if (f == "sqr")
-		return sqrt(val);
+        return sqrt(aquiutils::Pos(val));
     if (f == "sqt")
     {	if (val>0)
             return sqrt(val*val/(fabs(val)+1e-4));
