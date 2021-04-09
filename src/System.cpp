@@ -273,8 +273,6 @@ Object *System::settings(const string &s)
     for (unsigned int i=0; i<Settings.size(); i++)
         if (Settings[i].GetName() == s) return &Settings[i];
 
-    //errorhandler.Append(GetName(),"System","link","Link '" + s + "' was not found",104);
-
     return nullptr;
 }
 

@@ -37,35 +37,39 @@ void Block::AppendLink(int i, const Expression::loc &loc)
 
 double Block::GetInflowValue(const string &variable, const Expression::timing &tmg)
 {
-	if (Variable(variable)->GetCorrespondingInflowVar() != "")
-	{
-		if (Variable(Variable(variable)->GetCorrespondingInflowVar()))
-		{
-			double inflow = CalcVal(Variable(variable)->GetCorrespondingInflowVar());
-			Variable(Variable(variable)->GetCorrespondingInflowVar())->SetVal(inflow, tmg);
-			return inflow;
-		}
-		else
-			return 0;
-	}
-    return 0;
+    double inflow = 0;
+    for (unsigned int i=0; i<Variable(variable)->GetCorrespondingInflowVar().size(); i++)
+    {
+        if (Variable(variable)->GetCorrespondingInflowVar()[i] != "")
+        {
+            if (Variable(Variable(variable)->GetCorrespondingInflowVar()[i]))
+            {
+                double inflow1 = CalcVal(Variable(variable)->GetCorrespondingInflowVar()[i]);
+                Variable(Variable(variable)->GetCorrespondingInflowVar()[i])->SetVal(inflow1, tmg);
+                inflow += inflow1;
+            }
+        }
+    }
+    return inflow;
 }
 
 double Block::GetInflowValue(const string &variable, const string &constituent, const Expression::timing &tmg)
 {
     string variablefullname = constituent+":"+variable;
-    if (Variable(variablefullname)->GetCorrespondingInflowVar() != "")
+    double inflow=0;
+    for (unsigned int i=0; i<Variable(variablefullname)->GetCorrespondingInflowVar().size(); i++)
     {
-        if (Variable(Variable(variablefullname)->GetCorrespondingInflowVar()))
+        if (Variable(variablefullname)->GetCorrespondingInflowVar()[i] != "")
         {
-            double inflow = CalcVal(Variable(variablefullname)->GetCorrespondingInflowVar());
-            Variable(Variable(variablefullname)->GetCorrespondingInflowVar())->SetVal(inflow, tmg);
-            return inflow;
+            if (Variable(Variable(variablefullname)->GetCorrespondingInflowVar()[i]))
+            {
+                double inflow1 = CalcVal(Variable(variablefullname)->GetCorrespondingInflowVar()[i]);
+                Variable(Variable(variablefullname)->GetCorrespondingInflowVar()[i])->SetVal(inflow1, tmg);
+                inflow += inflow1;
+            }
         }
-        else
-            return 0;
     }
-    return 0;
+    return inflow;
 }
 
 void Block::shiftlinkIds(int i)

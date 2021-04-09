@@ -686,7 +686,8 @@ void Quan::SetCorrespondingFlowVar(const string &s)
 
 void Quan::SetCorrespondingInflowVar(const string &s)
 {
-    corresponding_inflow_quan = s;
+    vector<string> corresponding_inflow_variables = aquiutils::split(s,',');
+    corresponding_inflow_quan = corresponding_inflow_variables;
 }
 
 

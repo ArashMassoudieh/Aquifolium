@@ -16,21 +16,25 @@ using namespace std;
 
 Expression::Expression(void)
 {
-	funcs.push_back("_min");
-	funcs.push_back("_max");
-	funcs.push_back("_exp");
-	funcs.push_back("_log");
-	funcs.push_back("_abs");
-	funcs.push_back("_sqr");
+    funcs.push_back("_min");
+    funcs.push_back("_max");
+    funcs.push_back("_exp");
+    funcs.push_back("_log");
+    funcs.push_back("_abs");
+    funcs.push_back("_sgn");
+    funcs.push_back("_sqr");
     funcs.push_back("_sqt");
-	funcs.push_back("_pos");
-	funcs.push_back("_hsd");
-	opts.push_back("+");
-	opts.push_back("-");
-	opts.push_back("*");
-	opts.push_back(";");
-	opts.push_back("/");
-	opts.push_back("^");
+    funcs.push_back("_pos");
+    funcs.push_back("_hsd");
+    funcs.push_back("_ups");
+    funcs.push_back("_mon");
+    funcs.push_back("_mbs");
+    opts.push_back("+");
+    opts.push_back("-");
+    opts.push_back("*");
+    opts.push_back(";");
+    opts.push_back("/");
+    opts.push_back("^");
 
 }
 
@@ -64,7 +68,7 @@ Expression::Expression(string S)
 	vector<string> out;
 	//bool inside_quote = false;
 	unsigned int paranthesis_level = 0;
-	unsigned int last_operator_location = -1;
+    int last_operator_location = -1;
 	if (!aquiutils::parantheses_balance(S))
 	{
 		_errors.push_back("Parentheses do not match in" + S);
