@@ -1323,6 +1323,15 @@ void System::CalculateAllExpressions(Expression::timing tmg)
                 links[i].Variable(links[i].QuantitOrder()[j])->SetVal(links[i].Variable(links[i].QuantitOrder()[j])->CalcVal(tmg), tmg);
         }
     }
+
+    for (unsigned int i=0; i<sources.size(); i++)
+    {
+        for (unsigned int j = 0; j < sources[i].QuantitOrder().size(); j++)
+        {
+            if (sources[i].Variable(sources[i].QuantitOrder()[j])->GetType() == Quan::_type::expression)
+                sources[i].Variable(sources[i].QuantitOrder()[j])->SetVal(sources[i].Variable(sources[i].QuantitOrder()[j])->CalcVal(tmg), tmg);
+        }
+    }
 }
 
 CVector_arma System::GetResiduals(const string &variable, CVector_arma &X, bool transport)
