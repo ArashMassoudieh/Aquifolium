@@ -308,6 +308,7 @@ class System: public Object
         vector<string> *operators;
         vector<string> *functions;
         void SetOutputItems();
+        double & GetSimulationTime();
         vector<string> addedtemplates;
         //constituents
         void AddPropertytoAllBlocks(const string &name, Quan &quan);

@@ -787,13 +787,17 @@ void System::InitiateOutputs()
         {
             if (it->second.IncludeInOutput())
             {
-                Outputs.AllOutputs.append(CBTC(), "Src_" + sources[i].GetName());
-                observations[i].SetOutputItem("Src_" + sources[i].GetName());
-                Outputs.ObservedOutputs.append(CBTC(), sources[i].GetName());
+                Outputs.AllOutputs.append(CBTC(), sources[i].GetName() + "_" + it->first);
+                it->second.SetOutputItem(sources[i].GetName() + "_" + it->first);
             }
         }
     }
 
+}
+
+double & System::GetSimulationTime()
+{
+    return SolverTempVars.t;
 }
 
 void System::SetOutputItems()
@@ -813,6 +817,15 @@ void System::SetOutputItems()
             if (it->second.IncludeInOutput())
             {
                 it->second.SetOutputItem(links[i].GetName() + "_" + it->first);
+            }
+    }
+
+    for (unsigned int i=0; i<sources.size(); i++)
+    {
+        for (map<string, Quan>::iterator it = sources[i].GetVars()->begin(); it != sources[i].GetVars()->end(); it++)
+            if (it->second.IncludeInOutput())
+            {
+                it->second.SetOutputItem(sources[i].GetName() + "_" + it->first);
             }
     }
 
@@ -861,7 +874,7 @@ void System::PopulateOutputs()
         for (map<string, Quan>::iterator it = sources[i].GetVars()->begin(); it != sources[i].GetVars()->end(); it++)
             if (it->second.IncludeInOutput())
             {
-                sources[i].CalcExpressions(Expression::timing::present);
+                //sources[i].CalcExpressions(Expression::timing::present);
                 Outputs.AllOutputs[sources[i].GetName() + "_" + it->first].append(SolverTempVars.t,sources[i].GetVal(it->first,Expression::timing::present,true));
             }
     }
@@ -1351,7 +1364,10 @@ void System::CalculateAllExpressions(Expression::timing tmg)
         for (unsigned int j = 0; j < sources[i].QuantitOrder().size(); j++)
         {
             if (sources[i].Variable(sources[i].QuantitOrder()[j])->GetType() == Quan::_type::expression)
-                sources[i].Variable(sources[i].QuantitOrder()[j])->SetVal(sources[i].Variable(sources[i].QuantitOrder()[j])->CalcVal(tmg), tmg);
+            {
+                if (sources[i].Variable(sources[i].QuantitOrder()[j])->GetName()!="coefficient")
+                    sources[i].Variable(sources[i].QuantitOrder()[j])->SetVal(sources[i].Variable(sources[i].QuantitOrder()[j])->CalcVal(tmg), tmg);
+            }
         }
     }
 }

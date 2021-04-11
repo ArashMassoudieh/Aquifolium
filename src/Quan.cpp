@@ -487,9 +487,19 @@ double Quan::GetVal(const Expression::timing &tmg)
                 _val_star = CalcVal(tmg);
                 value_star_updated = true;
             }
+            if (type == _type::timeseries)
+            {
+                _val_star = GetTimeSeries()->interpol(GetSimulationTime());
+                value_star_updated = true;
+            }
             return _val_star;
         }
     }
+}
+
+double &Quan::GetSimulationTime() const
+{
+    return parent->GetParent()->GetSimulationTime();
 }
 
 CTimeSeries* Quan::GetTimeSeries()
