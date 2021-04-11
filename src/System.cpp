@@ -781,6 +781,18 @@ void System::InitiateOutputs()
         Outputs.ObservedOutputs.append(CBTC(), observations[i].GetName());
     }
 
+    for (unsigned int i=0; i<sources.size(); i++)
+    {
+        for (map<string, Quan>::iterator it = sources[i].GetVars()->begin(); it != sources[i].GetVars()->end(); it++)
+        {
+            if (it->second.IncludeInOutput())
+            {
+                Outputs.AllOutputs.append(CBTC(), "Src_" + sources[i].GetName());
+                observations[i].SetOutputItem("Src_" + sources[i].GetName());
+                Outputs.ObservedOutputs.append(CBTC(), sources[i].GetName());
+            }
+        }
+    }
 
 }
 
@@ -841,6 +853,16 @@ void System::PopulateOutputs()
             {
 				links[i].CalcExpressions(Expression::timing::present);
 				Outputs.AllOutputs[links[i].GetName() + "_" + it->first].append(SolverTempVars.t,links[i].GetVal(it->first,Expression::timing::present,true));
+            }
+    }
+
+    for (unsigned int i=0; i<sources.size(); i++)
+    {
+        for (map<string, Quan>::iterator it = sources[i].GetVars()->begin(); it != sources[i].GetVars()->end(); it++)
+            if (it->second.IncludeInOutput())
+            {
+                sources[i].CalcExpressions(Expression::timing::present);
+                Outputs.AllOutputs[sources[i].GetName() + "_" + it->first].append(SolverTempVars.t,sources[i].GetVal(it->first,Expression::timing::present,true));
             }
     }
 
