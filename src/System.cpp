@@ -2166,14 +2166,16 @@ System::System(Script& scr)
 
 }
 
-void System::CreateFromScript(Script& scr, const string& settingsfilename)
+bool System::CreateFromScript(Script& scr, const string& settingsfilename)
 {
+    bool success = true;
     for (int i=0; i<scr.CommandsCount(); i++)
     {
         if (!scr[i]->Execute(this))
         {
             errorhandler.Append("","Script","CreateSystem",scr[i]->LastError(),6001);
             scr.Errors().push_back(scr[i]->LastError());
+            success = false;
         }
         if (scr[i]->Keyword() == "loadtemplate")
         {
@@ -2183,6 +2185,8 @@ void System::CreateFromScript(Script& scr, const string& settingsfilename)
     }
     PopulateOperatorsFunctions();
     SetVariableParents();
+    return success;
+
 
 }
 
