@@ -75,7 +75,7 @@ struct solvertemporaryvars
     vector<bool> updatejacobian;
 	int MaxNumberOfIterations()
 	{
-		return aquiutils::max(numiterations);
+		return aquiutils::Max(numiterations);
 	}
 
 	void SetUpdateJacobian(bool x)

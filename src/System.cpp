@@ -565,7 +565,7 @@ bool System::Solve(bool applyparameters)
 #endif
                 if (GetSolutionLogger())
                     GetSolutionLogger()->WriteString("The attempt to solve the problem failed!");
-                cout<<"The attempt to solve the problem failed!"<<endl;
+                cout<<"The attempt to solve the problem failed!"<<std::endl;
                 SolverTempVars.SolutionFailed = true;
                 stop_triggered = true;
             }
@@ -1836,6 +1836,66 @@ bool System::SetAsParameter(const string &location, const string &quantity, cons
             return true;
         }
     }
+
+    if (observation(location) != nullptr)
+    {
+        if (!observation(location)->HasQuantity(quantity))
+        {
+            lasterror() = "In observation" + location + ": variable " + quantity + " does not exist";
+            errorhandler.Append(GetName(), "System", "SetAsParameter", lasterror(), 605);
+            return false;
+        }
+        else
+        {
+            GetParameter(parametername)->AppendLocationQuan(location, quantity);
+            return true;
+        }
+    }
+
+    if (reactionparameter(location) != nullptr)
+    {
+        if (!reactionparameter(location)->HasQuantity(quantity))
+        {
+            lasterror() = "In reaction parameter" + location + ": variable " + quantity + " does not exist";
+            errorhandler.Append(GetName(), "System", "SetAsParameter", lasterror(), 606);
+            return false;
+        }
+        else
+        {
+            GetParameter(parametername)->AppendLocationQuan(location, quantity);
+            return true;
+        }
+    }
+
+    if (source(location) != nullptr)
+    {
+        if (!source(location)->HasQuantity(quantity))
+        {
+            lasterror() = "In source" + location + ": variable " + quantity + " does not exist";
+            errorhandler.Append(GetName(), "System", "SetAsParameter", lasterror(), 607);
+            return false;
+        }
+        else
+        {
+            GetParameter(parametername)->AppendLocationQuan(location, quantity);
+            return true;
+        }
+    }
+
+    if (constituent(location) != nullptr)
+    {
+        if (!constituent(location)->HasQuantity(quantity))
+        {
+            lasterror() = "In constituent" + location + ": variable " + quantity + " does not exist";
+            errorhandler.Append(GetName(), "System", "SetAsParameter", lasterror(), 608);
+            return false;
+        }
+        else
+        {
+            GetParameter(parametername)->AppendLocationQuan(location, quantity);
+            return true;
+        }
+    }
     return false;
 }
 
@@ -2125,6 +2185,18 @@ bool System::SavetoScriptFile(const string &filename, const string &templatefile
     for (unsigned int i=0; i<links.size(); i++)
         file << "create link;" << links[i].toCommand() << std::endl;
 
+    for (unsigned int i = 0; i < ObjectiveFunctionsCount(); i++)
+        file << "create objectivefunction;" << ObjectiveFunctions()[i]->toCommand() << std::endl;
+
+    for (unsigned int i = 0; i < ObservationsCount(); i++)
+        file << "create observation;" << observation(i)->toCommand() << std::endl;
+
+    for (unsigned int i = 0; i < ReactionsCount(); i++)
+        file << "create reaction_parameter;" << reaction_parameters[i].toCommand() << std::endl;
+
+    for (unsigned int i = 0; i < ReactionsCount(); i++)
+        file << "create reaction;" << reactions[i].toCommand() << std::endl;
+
     for (unsigned int i=0; i<blocks.size(); i++)
         if (blocks[i].toCommandSetAsParam()!="")
 			file << blocks[i].toCommandSetAsParam() << std::endl;
@@ -2133,18 +2205,21 @@ bool System::SavetoScriptFile(const string &filename, const string &templatefile
 		if (links[i].toCommandSetAsParam() != "")
 			file << links[i].toCommandSetAsParam() << std::endl;
 
-    for (unsigned int i=0; i<ObjectiveFunctionsCount(); i++)
-        file << "create objectivefunction;" << ObjectiveFunctions()[i]->toCommand() << std::endl;
+    for (unsigned int i = 0; i < observations.size(); i++)
+        if (observations[i].toCommandSetAsParam() != "")
+            file << observations[i].toCommandSetAsParam() << std::endl;
 
-    for (unsigned int i=0; i<ObservationsCount(); i++)
-        file << "create observation;" << observation(i)->toCommand() << std::endl;
+    for (unsigned int i = 0; i < sources.size(); i++)
+        if (sources[i].toCommandSetAsParam() != "")
+            file << sources[i].toCommandSetAsParam() << std::endl;
 
-    for (unsigned int i=0; i<ReactionsCount(); i++)
-        file << "create reaction_parameter;" << reaction_parameters[i].toCommand() << std::endl;
+    for (unsigned int i = 0; i < reaction_parameters.size(); i++)
+        if (reaction_parameters[i].toCommandSetAsParam() != "")
+            file << reaction_parameters[i].toCommandSetAsParam() << std::endl;
 
-    for (unsigned int i=0; i<ReactionsCount(); i++)
-        file << "create reaction;" << reactions[i].toCommand() << std::endl;
-
+    for (unsigned int i = 0; i < constituents.size(); i++)
+        if (constituents[i].toCommandSetAsParam() != "")
+            file << constituents[i].toCommandSetAsParam() << std::endl;
     file.close();
 
     return true;
