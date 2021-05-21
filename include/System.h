@@ -231,6 +231,7 @@ class System: public Object
         void UnUpdateAllVariables();
 		//bool Solve(const string &variable, bool ApplyParams = false);
 		bool Solve(bool ApplyParams = false);
+        void MakeTimeSeriesUniform(const double &increment);
 		bool SetProp(const string &s, const double &val);
 		bool SetProperty(const string &s, const string &val);
         CBTCSet& GetOutputs() {return Outputs.AllOutputs;}

@@ -60,8 +60,9 @@ public:
 	int lookup(string S);
 	vector<double> getrow(int a);
 	void setname(int i, string name);
-
-
+    void resize(unsigned int _size);
+    void ResizeIfNeeded(unsigned int _increment);
+    void adjust_size();
 	bool file_not_found=false;
 	CTimeSeries &operator[](int index);
 	CTimeSeries &operator[](string BTCName);
