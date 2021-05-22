@@ -598,3 +598,12 @@ bool Object::InitializePrecalcFunctions()
     var.InitializePrecalcFunctions();
     return true; 
 }
+
+void Object::MakeTimeSeriesUniform(const double &increment)
+{
+    for (map<string, Quan>::const_iterator s = var.begin(); s != var.end(); ++s)
+        if (var[s->first].GetType() == Quan::_type::timeseries || var[s->first].GetType() == Quan::_type::prec_timeseries)
+        {
+            *(var[s->first].TimeSeries()) = var[s->first].TimeSeries()->make_uniform(increment);
+        }
+}

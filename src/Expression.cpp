@@ -381,6 +381,10 @@ double Expression::calc(Object *W, const timing &tmg, bool limit)
 				oprt(operators[i], i, i + 1, W, tmg,limit);
 			}
 		}
+        if (operators.size()==0)
+        {
+            term_vals[0]=terms[0].calc(W,tmg,limit);
+        }
         unsigned int seploc=0;
         for (int i = operators.size() - 1; i >= 0; i--)
         {
@@ -802,7 +806,7 @@ vector<string> aquiutils::split(const string &s, char del)
 
 int Expression::lookup_operators(const string &s)
 {
-    for (int i=0; i<operators.size(); i++)
+    for (unsigned int i=0; i<operators.size(); i++)
         if (operators[i]==s)
             return i;
     return -1;
@@ -812,7 +816,7 @@ int Expression::lookup_operators(const string &s)
 int Expression::count_operators(const string &s)
 {
     int count = 0;
-    for (int i=0; i<operators.size(); i++)
+    for (unsigned int i=0; i<operators.size(); i++)
         if (operators[i]==s)
             count ++;
     return count;
@@ -1035,7 +1039,7 @@ string aquiutils::numbertostring(double x, bool scientific)
 string aquiutils::numbertostring(vector<double> x, bool scientific)
 {
 	string Result = "[";
-	for (int i=0; i<x.size()-1;i++)
+    for (unsigned int i=0; i<x.size()-1;i++)
         Result += aquiutils::numbertostring(x[i],scientific)+",";
     Result += aquiutils::numbertostring(x[x.size()-1],scientific) + "]";
 	return Result;
@@ -1063,7 +1067,7 @@ string aquiutils::numbertostring(vector<int> x)
 {
 	string Result = "[";
 	if (x.size()>0)
-    {   for (int i=0; i<x.size()-1;i++)
+    {   for (unsigned int i=0; i<x.size()-1;i++)
            Result += aquiutils::numbertostring(x[i])+",";
         Result += aquiutils::numbertostring(x[x.size()-1]) + "]";
     }
@@ -1096,7 +1100,7 @@ string Expression::ToString() const
     }
     if (function!="") out += function;
     out += "(";
-    for (int i=0; i<terms.size();i++)
+    for (unsigned int i=0; i<terms.size();i++)
     {
         out += terms[i].ToString();
         if (i<terms.size()-1) out += operators[i];
@@ -1113,11 +1117,11 @@ string aquiutils::tabs(int i)
     return out;
 }
 
-bool aquiutils::And(vector<bool> x) { bool out = true;  for (int i = 0; i < x.size(); i++) out &= x[i]; return out; }
-double aquiutils::max(vector<double> x) { double out = -1e+24;  for (int i = 0; i < x.size(); i++) out=std::max(out, x[i]); return out; }
-int aquiutils::max(vector<int> x)
+bool aquiutils::And(vector<bool> x) { bool out = true;  for (unsigned int i = 0; i < x.size(); i++) out &= x[i]; return out; }
+double aquiutils::Max(vector<double> x) { double out = -1e+24;  for (unsigned int i = 0; i < x.size(); i++) out=std::max(out, x[i]); return out; }
+int aquiutils::Max(vector<int> x)
 {	int out = -37000;
-	for (int i = 0; i < x.size(); i++)
+    for (unsigned int i = 0; i < x.size(); i++)
 		out=std::max(out, x[i]);
 	return out;
 

@@ -998,29 +998,69 @@ double CTimeSeries::mean_log(int limit)
 	return sum/double(n-limit);
 }
 
-void CTimeSeries::append(double x)
+bool CTimeSeries::append(double x)
 {
-	n++;
-	t.push_back(0);
-	C.push_back(x);
-	max_fabs = max(max_fabs,std::fabs(x));
 
+    bool increase = false;
+    if (C.size()==n-1) increase = true;
+    if (C.size()<n+1)
+    {   t.push_back(0);
+        C.push_back(x);
+    }
+    else
+    {   C[n]=x;
+        t[n]=0;
+    }
+	max_fabs = max(max_fabs,std::fabs(x));
+    n++;
+    return increase;
 }
 
-void CTimeSeries::append(double tt, double xx)
+bool CTimeSeries::append(double tt, double xx)
 {
-	n++;
-	t.push_back(tt);
-	C.push_back(xx);
-	if (n>2)
+
+
+    bool increase = false;
+    if (C.size()==n-1) increase = true;
+    if (C.size()<n+1)
+    {
+        t.push_back(tt);
+        C.push_back(xx);
+    }
+    else
+    {
+        C[n]=xx;
+        t[n]=tt;
+    }
+    n++;
+    if (n>2)
 		if (t[n-1]-t[n-2]!=t[n-2]-t[n-3])
 			structured = false;
 	max_fabs = max(max_fabs,std::fabs(xx));
+
+    return increase;
 }
+
+void CTimeSeries::ResizeIfNeeded(int _increment)
+{
+    if (C.size()==n)
+    {
+        C.resize(C.size()+_increment);
+        t.resize(t.size()+_increment);
+        D.resize(D.size()+_increment);
+    }
+}
+
 void CTimeSeries::append(CTimeSeries &CC)
 {
 	for (int i = 0; i<CC.n; i++) append(CC.t[i], CC.C[i]);
+}
 
+void CTimeSeries::adjust_size()
+{
+    C.resize(n);
+    t.resize(n);
+    D.resize(n);
 }
 
 CTimeSeries& CTimeSeries::operator+=(CTimeSeries &v)
@@ -1069,7 +1109,6 @@ CTimeSeries CTimeSeries::make_uniform(double increment)
 	out.structured = true;
 
 	return out;
-
 }
 
 double prcntl(vector<double> C, double x)
@@ -1470,6 +1509,20 @@ CTimeSeries CTimeSeries::unCompact(QDataStream &data)
 }
 #endif // QT_version
 
+
+bool CTimeSeries::resize(unsigned int _size)
+{
+    if (C.size()>_size) return false;
+    C.resize(_size);
+    t.resize(_size);
+    D.resize(_size);
+    return true;
+}
+
+unsigned int CTimeSeries::Capacity()
+{
+    return C.size();
+}
 
 CTimeSeries::CTimeSeries(double a, double b, const vector<double> &x)
 {

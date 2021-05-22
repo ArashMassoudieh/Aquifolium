@@ -75,7 +75,7 @@ struct solvertemporaryvars
     vector<bool> updatejacobian;
 	int MaxNumberOfIterations()
 	{
-		return aquiutils::max(numiterations);
+		return aquiutils::Max(numiterations);
 	}
 
 	void SetUpdateJacobian(bool x)
@@ -119,7 +119,7 @@ class System: public Object
         System(Script& scr);
         bool TransferResultsFrom(System *other);
         System& operator=(const System& other);
-        void CreateFromScript(Script& scr, const string &settingsfilename="");
+        bool CreateFromScript(Script& scr, const string &settingsfilename="");
         double &GetTime()
         {
             return SolverTempVars.t;
@@ -231,6 +231,7 @@ class System: public Object
         void UnUpdateAllVariables();
 		//bool Solve(const string &variable, bool ApplyParams = false);
 		bool Solve(bool ApplyParams = false);
+        void MakeTimeSeriesUniform(const double &increment);
 		bool SetProp(const string &s, const double &val);
 		bool SetProperty(const string &s, const string &val);
         CBTCSet& GetOutputs() {return Outputs.AllOutputs;}
@@ -308,6 +309,7 @@ class System: public Object
         vector<string> *operators;
         vector<string> *functions;
         void SetOutputItems();
+        double & GetSimulationTime();
         vector<string> addedtemplates;
         //constituents
         void AddPropertytoAllBlocks(const string &name, Quan &quan);

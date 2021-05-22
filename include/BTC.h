@@ -68,9 +68,10 @@ public:
 	double average(double t); // integral to time t devided by domain length
     double slope(); //slope of time-series at its end
 	CTimeSeries distribution(int n_bins, int limit); //extract the histogram of values
-	void append(double x); //appends a data point with value x
-	void append(double tt, double xx); //appends a datapoint with value xx at time tt
+    bool append(double x); //appends a data point with value x
+    bool append(double tt, double xx); //appends a datapoint with value xx at time tt
 	void append(CTimeSeries &CC);// appends a time-series to the time-series
+    void ResizeIfNeeded(int _increment); //increases the size of the vectors more capacity is needed
 	CTimeSeries& operator+=(CTimeSeries &v); //adds another time-series to the existing one
 	CTimeSeries& operator%=(CTimeSeries &v); //adds another time-series by corresponding indexes
 	CTimeSeries make_uniform(double increment); //create a new time-series with uniformly distributed time-axis
@@ -91,9 +92,11 @@ public:
 	CTimeSeries getcummulative();
 	CTimeSeries Exp();
 	CTimeSeries fabs();
+    void adjust_size();
 	//GUI
 	//QList <QMap <QVariant, QVariant>> compact() const;
-
+    bool resize(unsigned int _size);
+    unsigned int Capacity();
 	CTimeSeries(double a, double b, const vector<double>&x);
 	CTimeSeries(double a, double b, const CTimeSeries &btc);
 	CTimeSeries(const vector<double> &t, const vector<double> &C);

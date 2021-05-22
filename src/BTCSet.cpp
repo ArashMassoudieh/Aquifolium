@@ -1010,6 +1010,26 @@ void CTimeSeriesSet::setname(int index, string name)
 
 }
 
+void CTimeSeriesSet::resize(unsigned int _size)
+{
+    for (unsigned int i = 0; i < BTC.size(); i++)
+        BTC[i].resize(_size);
+}
+
+void CTimeSeriesSet::ResizeIfNeeded(unsigned int _increment)
+{
+
+    for (unsigned int i = 0; i < BTC.size(); i++)
+        BTC[i].ResizeIfNeeded(_increment);
+}
+
+void CTimeSeriesSet::adjust_size()
+{
+    for (unsigned int i = 0; i < BTC.size(); i++)
+        BTC[i].adjust_size();
+}
+
+
 #ifdef QT_version
 void CTimeSeriesSet::compact(QDataStream &data) const
 {

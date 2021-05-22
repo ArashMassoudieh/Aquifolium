@@ -31,14 +31,21 @@ double Source::GetValue(Object *obj)
         coeff = 1;
     else
         coeff = Variable("coefficient")->CalcVal(obj,Expression::timing::present);
-    double value;
 
+    double value;
     if (Variable("timeseries")!=nullptr)
         value = Variable("timeseries")->CalcVal(Expression::timing::present);
     else
         value = 1;
 
+    double rate;
+    if (Variable("rate")!=nullptr)
+        rate = Variable("rate")->CalcVal(Expression::timing::present);
+    else
+        rate = 1;
 
-    return coeff*value;
+
+
+    return coeff*value*rate;
 
 }

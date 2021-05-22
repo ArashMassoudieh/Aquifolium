@@ -129,6 +129,7 @@ class Object
         vector<string> AllConstituents();
         vector<string> AllReactionParameters();
         bool InitializePrecalcFunctions();
+        void MakeTimeSeriesUniform(const double &increment);
     protected:
 
     private:

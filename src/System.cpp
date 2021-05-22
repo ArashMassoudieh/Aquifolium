@@ -4,6 +4,7 @@
 #pragma warning(disable : 4996)
 #include <json/json.h>
 #include <Script.h>
+#include <omp.h>
 #include <valgrind/callgrind.h>
 //#define NormalizeByDiagonal
 
@@ -15,12 +16,16 @@
 
 System::System():Object::Object()
 {
-   PopulateOperatorsFunctions();
-   Object::AssignRandomPrimaryKey();
+    PopulateOperatorsFunctions();
+    Object::AssignRandomPrimaryKey();
 }
 
 void System::PopulateOperatorsFunctions()
 {
+#ifndef NO_OPENMP
+    omp_set_num_threads(8);
+#endif
+
     operators = new vector<string>;
     operators->push_back("+");
     operators->push_back("-");
@@ -455,6 +460,23 @@ vector<bool> System::OneStepSolve()
     return success;
 }
 
+void System::MakeTimeSeriesUniform(const double &increment)
+{
+
+    rtw->AppendText("Uniformizing of time-series...");
+    for (unsigned int i=0; i<sources.size(); i++)
+        sources[i].MakeTimeSeriesUniform(increment);
+
+    for (unsigned int i=0; i<links.size(); i++)
+        links[i].MakeTimeSeriesUniform(increment);
+
+    for (unsigned int i=0; i<blocks.size(); i++)
+        blocks[i].MakeTimeSeriesUniform(increment);
+
+    rtw->AppendText("Uniformizing of time-series (done!)");
+
+}
+
 bool System::Solve(bool applyparameters)
 {
     double timestepminfactor = 100000;
@@ -476,7 +498,7 @@ bool System::Solve(bool applyparameters)
     InitiateOutputs();
     //qDebug()<<"Writing objects to logger";
     WriteObjectsToLogger();
-
+    MakeTimeSeriesUniform(SimulationParameters.dt0);
     SolverTempVars.dt_base = SimulationParameters.dt0;
     SolverTempVars.dt = SolverTempVars.dt_base;
     SolverTempVars.t = SimulationParameters.tstart;
@@ -568,7 +590,7 @@ bool System::Solve(bool applyparameters)
 #endif
                 if (GetSolutionLogger())
                     GetSolutionLogger()->WriteString("The attempt to solve the problem failed!");
-                cout<<"The attempt to solve the problem failed!"<<endl;
+                cout<<"The attempt to solve the problem failed!"<<std::endl;
                 SolverTempVars.SolutionFailed = true;
                 stop_triggered = true;
             }
@@ -632,6 +654,7 @@ bool System::Solve(bool applyparameters)
         LogWindow()->append("Simulation finished!");
     }
     #else
+    Outputs.AllOutputs.adjust_size();
     ShowMessage("Simulation finished!");
     if (GetSolutionLogger())
         GetSolutionLogger()->Flush();
@@ -786,7 +809,23 @@ void System::InitiateOutputs()
         Outputs.ObservedOutputs.append(CBTC(), observations[i].GetName());
     }
 
+    for (unsigned int i=0; i<sources.size(); i++)
+    {
+        for (map<string, Quan>::iterator it = sources[i].GetVars()->begin(); it != sources[i].GetVars()->end(); it++)
+        {
+            if (it->second.IncludeInOutput())
+            {
+                Outputs.AllOutputs.append(CBTC(), sources[i].GetName() + "_" + it->first);
+                it->second.SetOutputItem(sources[i].GetName() + "_" + it->first);
+            }
+        }
+    }
 
+}
+
+double & System::GetSimulationTime()
+{
+    return SolverTempVars.t;
 }
 
 void System::SetOutputItems()
@@ -806,6 +845,15 @@ void System::SetOutputItems()
             if (it->second.IncludeInOutput())
             {
                 it->second.SetOutputItem(links[i].GetName() + "_" + it->first);
+            }
+    }
+
+    for (unsigned int i=0; i<sources.size(); i++)
+    {
+        for (map<string, Quan>::iterator it = sources[i].GetVars()->begin(); it != sources[i].GetVars()->end(); it++)
+            if (it->second.IncludeInOutput())
+            {
+                it->second.SetOutputItem(sources[i].GetName() + "_" + it->first);
             }
     }
 
@@ -829,30 +877,51 @@ bool System::TransferResultsFrom(System *other)
 
 void System::PopulateOutputs()
 {
+
+    Outputs.AllOutputs.ResizeIfNeeded(1000);
+
+#pragma omp parallel for
+    for (unsigned int i=0; i<blocks.size(); i++)
+        blocks[i].CalcExpressions(Expression::timing::present);
+
+#pragma omp parallel for
+    for (unsigned int i=0; i<links.size(); i++)
+        links[i].CalcExpressions(Expression::timing::present);
+
     for (unsigned int i=0; i<blocks.size(); i++)
     {
         for (map<string, Quan>::iterator it = blocks[i].GetVars()->begin(); it != blocks[i].GetVars()->end(); it++)
 			if (it->second.IncludeInOutput())
-			{
-				blocks[i].CalcExpressions(Expression::timing::present);
-				Outputs.AllOutputs[blocks[i].GetName() + "_" + it->first].append(SolverTempVars.t, blocks[i].GetVal(it->first, Expression::timing::present));
-			}
+                Outputs.AllOutputs[blocks[i].GetName() + "_" + it->first].append(SolverTempVars.t, blocks[i].GetVal(it->first, Expression::timing::present));
+
     }
+
 
     for (unsigned int i=0; i<links.size(); i++)
     {
         for (map<string, Quan>::iterator it = links[i].GetVars()->begin(); it != links[i].GetVars()->end(); it++)
             if (it->second.IncludeInOutput())
             {
-				links[i].CalcExpressions(Expression::timing::present);
 				Outputs.AllOutputs[links[i].GetName() + "_" + it->first].append(SolverTempVars.t,links[i].GetVal(it->first,Expression::timing::present,true));
             }
     }
+
+    for (unsigned int i=0; i<sources.size(); i++)
+    {
+        for (map<string, Quan>::iterator it = sources[i].GetVars()->begin(); it != sources[i].GetVars()->end(); it++)
+            if (it->second.IncludeInOutput())
+            {
+                //sources[i].CalcExpressions(Expression::timing::present);
+                Outputs.AllOutputs[sources[i].GetName() + "_" + it->first].append(SolverTempVars.t,sources[i].GetVal(it->first,Expression::timing::present,true));
+            }
+    }
+
 
     for (unsigned int i=0; i<objective_function_set.size(); i++)
     {
         Outputs.AllOutputs["Obj_" + objective_function_set[i]->GetName()].append(SolverTempVars.t,objectivefunction(objective_function_set[i]->GetName())->Value());
     }
+
 
     for (unsigned int i=0; i<observations.size(); i++)
     {
@@ -1349,6 +1418,18 @@ void System::CalculateAllExpressions(Expression::timing tmg)
                 links[i].Variable(links[i].QuantitOrder()[j])->SetVal(links[i].Variable(links[i].QuantitOrder()[j])->CalcVal(tmg), tmg);
         }
     }
+
+    for (unsigned int i=0; i<sources.size(); i++)
+    {
+        for (unsigned int j = 0; j < sources[i].QuantitOrder().size(); j++)
+        {
+            if (sources[i].Variable(sources[i].QuantitOrder()[j])->GetType() == Quan::_type::expression)
+            {
+                if (sources[i].Variable(sources[i].QuantitOrder()[j])->GetName()!="coefficient")
+                    sources[i].Variable(sources[i].QuantitOrder()[j])->SetVal(sources[i].Variable(sources[i].QuantitOrder()[j])->CalcVal(tmg), tmg);
+            }
+        }
+    }
 }
 
 CVector_arma System::GetResiduals(const string &variable, CVector_arma &X, bool transport)
@@ -1360,7 +1441,7 @@ CVector_arma System::GetResiduals(const string &variable, CVector_arma &X, bool 
     SetStateVariables(variable,X,Expression::timing::present);
     UnUpdateAllVariables();
     //CalculateFlows(Variable(variable)->GetCorrespondingFlowVar(),Expression::timing::present);
-
+    CVector LinkFlow(links.size());
     for (unsigned int i=0; i<blocks.size(); i++)
     {
         if (blocks[i].isrigid(variable))
@@ -1390,12 +1471,21 @@ CVector_arma System::GetResiduals(const string &variable, CVector_arma &X, bool 
 
     }
 
+{
+
+#pragma omp parallel for
+    for (unsigned int i=0; i<links.size(); i++)
+        LinkFlow[i] = links[i].GetVal(blocks[links[i].s_Block_No()].Variable(variable)->GetCorrespondingFlowVar(),Expression::timing::present)*links[i].GetOutflowLimitFactor(Expression::timing::present);
+
     for (unsigned int i=0; i<links.size(); i++)
     {
-        F[links[i].s_Block_No()] += links[i].GetVal(blocks[links[i].s_Block_No()].Variable(variable)->GetCorrespondingFlowVar(),Expression::timing::present)*links[i].GetOutflowLimitFactor(Expression::timing::present);
-        F[links[i].e_Block_No()] -= links[i].GetVal(blocks[links[i].s_Block_No()].Variable(variable)->GetCorrespondingFlowVar(),Expression::timing::present)*links[i].GetOutflowLimitFactor(Expression::timing::present);
+        //#ifndef NO_OPENMP
+        //cout<<"Thread: " << i << "," << omp_get_thread_num()<<endl;
+        //#endif
+        F[links[i].s_Block_No()] += LinkFlow[i];
+        F[links[i].e_Block_No()] -= LinkFlow[i];
     }
-
+}
     for (unsigned int i = 0; i < links.size(); i++)
         if (links[i].GetOutflowLimitFactor(Expression::timing::present) < 0)
         {
@@ -1815,6 +1905,66 @@ bool System::SetAsParameter(const string &location, const string &quantity, cons
             return true;
         }
     }
+
+    if (observation(location) != nullptr)
+    {
+        if (!observation(location)->HasQuantity(quantity))
+        {
+            lasterror() = "In observation" + location + ": variable " + quantity + " does not exist";
+            errorhandler.Append(GetName(), "System", "SetAsParameter", lasterror(), 605);
+            return false;
+        }
+        else
+        {
+            GetParameter(parametername)->AppendLocationQuan(location, quantity);
+            return true;
+        }
+    }
+
+    if (reactionparameter(location) != nullptr)
+    {
+        if (!reactionparameter(location)->HasQuantity(quantity))
+        {
+            lasterror() = "In reaction parameter" + location + ": variable " + quantity + " does not exist";
+            errorhandler.Append(GetName(), "System", "SetAsParameter", lasterror(), 606);
+            return false;
+        }
+        else
+        {
+            GetParameter(parametername)->AppendLocationQuan(location, quantity);
+            return true;
+        }
+    }
+
+    if (source(location) != nullptr)
+    {
+        if (!source(location)->HasQuantity(quantity))
+        {
+            lasterror() = "In source" + location + ": variable " + quantity + " does not exist";
+            errorhandler.Append(GetName(), "System", "SetAsParameter", lasterror(), 607);
+            return false;
+        }
+        else
+        {
+            GetParameter(parametername)->AppendLocationQuan(location, quantity);
+            return true;
+        }
+    }
+
+    if (constituent(location) != nullptr)
+    {
+        if (!constituent(location)->HasQuantity(quantity))
+        {
+            lasterror() = "In constituent" + location + ": variable " + quantity + " does not exist";
+            errorhandler.Append(GetName(), "System", "SetAsParameter", lasterror(), 608);
+            return false;
+        }
+        else
+        {
+            GetParameter(parametername)->AppendLocationQuan(location, quantity);
+            return true;
+        }
+    }
     return false;
 }
 
@@ -2026,7 +2176,7 @@ double System::GetMinimumNextTimeStepSize()
     {
         x = min(x,alltimeseries[i]->interpol_D(this->SolverTempVars.t));
     }
-    return x;
+    return max(x,0.001);
 }
 
 #if defined(QT_version) || defined(Q_version)
@@ -2104,6 +2254,18 @@ bool System::SavetoScriptFile(const string &filename, const string &templatefile
     for (unsigned int i=0; i<links.size(); i++)
         file << "create link;" << links[i].toCommand() << std::endl;
 
+    for (unsigned int i = 0; i < ObjectiveFunctionsCount(); i++)
+        file << "create objectivefunction;" << ObjectiveFunctions()[i]->toCommand() << std::endl;
+
+    for (unsigned int i = 0; i < ObservationsCount(); i++)
+        file << "create observation;" << observation(i)->toCommand() << std::endl;
+
+    for (unsigned int i = 0; i < ReactionsCount(); i++)
+        file << "create reaction_parameter;" << reaction_parameters[i].toCommand() << std::endl;
+
+    for (unsigned int i = 0; i < ReactionsCount(); i++)
+        file << "create reaction;" << reactions[i].toCommand() << std::endl;
+
     for (unsigned int i=0; i<blocks.size(); i++)
         if (blocks[i].toCommandSetAsParam()!="")
 			file << blocks[i].toCommandSetAsParam() << std::endl;
@@ -2112,18 +2274,21 @@ bool System::SavetoScriptFile(const string &filename, const string &templatefile
 		if (links[i].toCommandSetAsParam() != "")
 			file << links[i].toCommandSetAsParam() << std::endl;
 
-    for (unsigned int i=0; i<ObjectiveFunctionsCount(); i++)
-        file << "create objectivefunction;" << ObjectiveFunctions()[i]->toCommand() << std::endl;
+    for (unsigned int i = 0; i < observations.size(); i++)
+        if (observations[i].toCommandSetAsParam() != "")
+            file << observations[i].toCommandSetAsParam() << std::endl;
 
-    for (unsigned int i=0; i<ObservationsCount(); i++)
-        file << "create observation;" << observation(i)->toCommand() << std::endl;
+    for (unsigned int i = 0; i < sources.size(); i++)
+        if (sources[i].toCommandSetAsParam() != "")
+            file << sources[i].toCommandSetAsParam() << std::endl;
 
-    for (unsigned int i=0; i<ReactionsCount(); i++)
-        file << "create reaction_parameter;" << reaction_parameters[i].toCommand() << std::endl;
+    for (unsigned int i = 0; i < reaction_parameters.size(); i++)
+        if (reaction_parameters[i].toCommandSetAsParam() != "")
+            file << reaction_parameters[i].toCommandSetAsParam() << std::endl;
 
-    for (unsigned int i=0; i<ReactionsCount(); i++)
-        file << "create reaction;" << reactions[i].toCommand() << std::endl;
-
+    for (unsigned int i = 0; i < constituents.size(); i++)
+        if (constituents[i].toCommandSetAsParam() != "")
+            file << constituents[i].toCommandSetAsParam() << std::endl;
     file.close();
 
     return true;
@@ -2145,14 +2310,16 @@ System::System(Script& scr)
 
 }
 
-void System::CreateFromScript(Script& scr, const string& settingsfilename)
+bool System::CreateFromScript(Script& scr, const string& settingsfilename)
 {
+    bool success = true;
     for (int i=0; i<scr.CommandsCount(); i++)
     {
         if (!scr[i]->Execute(this))
         {
             errorhandler.Append("","Script","CreateSystem",scr[i]->LastError(),6001);
             scr.Errors().push_back(scr[i]->LastError());
+            success = false;
         }
         if (scr[i]->Keyword() == "loadtemplate")
         {
@@ -2162,6 +2329,8 @@ void System::CreateFromScript(Script& scr, const string& settingsfilename)
     }
     PopulateOperatorsFunctions();
     SetVariableParents();
+    return success;
+
 
 }
 
