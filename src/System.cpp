@@ -4,6 +4,7 @@
 #pragma warning(disable : 4996)
 #include <json/json.h>
 #include <Script.h>
+#include <valgrind/callgrind.h>
 //#define NormalizeByDiagonal
 
 #ifdef Q_version
@@ -508,6 +509,8 @@ bool System::Solve(bool applyparameters)
     Update();
     int counter = 0;
     int fail_counter = 0;
+    CALLGRIND_START_INSTRUMENTATION;
+    CALLGRIND_TOGGLE_COLLECT;
     while (SolverTempVars.t<SimulationParameters.tend+SolverTempVars.dt && !stop_triggered)
     {
         counter++;
@@ -605,6 +608,8 @@ bool System::Solve(bool applyparameters)
         }
 
     }
+    CALLGRIND_TOGGLE_COLLECT;
+    CALLGRIND_STOP_INSTRUMENTATION;
 #ifdef Q_version
     if (rtw)
     {
@@ -877,11 +882,13 @@ void System::SetOutflowLimitedVector(vector<bool> &x)
 bool System::OneStepSolve(unsigned int statevarno, bool transport)
 {
     string variable;
+    //GetSolutionLogger()->WriteString(aquiutils::numbertostring(statevarno));
+
     if (!transport)
         variable = solvevariableorder[statevarno];
     else
         variable = "mass";
-
+    //GetSolutionLogger()->WriteString(variable);
     Renew(variable);
     if (!transport)
     {
@@ -907,7 +914,9 @@ bool System::OneStepSolve(unsigned int statevarno, bool transport)
                     X[i] = blocks[i].GetOutflowLimitFactor(Expression::timing::past);
             }
         }
-
+        //GetSolutionLogger()->WriteString("X vector:");
+        //GetSolutionLogger()->WriteVector(X);
+        //GetSolutionLogger()->Flush();
 		CVector_arma X_past = X;
         CVector_arma F = GetResiduals(variable, X, transport);
 
@@ -918,14 +927,27 @@ bool System::OneStepSolve(unsigned int statevarno, bool transport)
 		double err_p = err = err_ini;
 
 		//if (SolverTempVars.NR_coefficient[statevarno]==0)
-            SolverTempVars.NR_coefficient[statevarno] = 1;
+        SolverTempVars.NR_coefficient[statevarno] = 1;
 		while ((err>SolverSettings.NRtolerance && err>1e-12) || SolverTempVars.numiterations[statevarno]>SolverSettings.NR_niteration_max)
         {
             SolverTempVars.numiterations[statevarno]++;
+            GetSolutionLogger()->WriteString("Before calculating jacobian");
+            GetSolutionLogger()->Flush();
             if (SolverTempVars.updatejacobian[statevarno])
             {
-                CMatrix_arma J = Jacobian(variable, X, transport);
 
+                //GetSolutionLogger()->WriteString("Calculating jacobian");
+                CMatrix_arma J = Jacobian(variable, X, transport);
+                //GetSolutionLogger()->WriteString("Jacobian Calculated!");
+                //GetSolutionLogger()->Flush();
+                //GetSolutionLogger()->WriteString("X vector:");
+                //GetSolutionLogger()->WriteString(aquiutils::numbertostring(X.getsize()));
+                //GetSolutionLogger()->WriteString("J:");
+                //GetSolutionLogger()->Flush();
+                //GetSolutionLogger()->WriteString("J number of rows = " + aquiutils::numbertostring(J.getnumrows()));
+                //GetSolutionLogger()->Flush();
+                //GetSolutionLogger()->WriteMatrix(J);
+                //GetSolutionLogger()->Flush();
                 if (SolverSettings.scalediagonal)
                     J.ScaleDiagonal(1.0 / SolverTempVars.NR_coefficient[statevarno]);
 #ifdef NormalizeByDiagonal
@@ -999,6 +1021,10 @@ bool System::OneStepSolve(unsigned int statevarno, bool transport)
                 }
             }
 #else
+                //GetSolutionLogger()->WriteString(aquiutils::numbertostring(J.getnumrows()));
+                //GetSolutionLogger()->WriteString(aquiutils::numbertostring(J.getnumcols()));
+                //GetSolutionLogger()->WriteString(aquiutils::numbertostring(F.getsize()));
+                //GetSolutionLogger()->Flush();
                 if (det(J) == 0)
                 {
                     if (GetSolutionLogger())
