@@ -3,6 +3,7 @@
 
 #include "QuanSet.h"
 #include <map>
+#include <unordered_map>
 
 class MetaModel
 {

@@ -128,10 +128,19 @@ bool QuanSet::Append(const string &s, const Quan &q)
 
 }
 
+bool QuanSet::Contains(const string &s)
+{
+    if (find(s)!=end())
+        return true;
+    else
+        return false;
+
+}
+
 void QuanSet::Append(QuanSet &qset)
 {
 
-    for (map<string, Quan>::iterator it = qset.begin(); it!=qset.end(); it++)
+    for (unordered_map<string, Quan>::iterator it = qset.begin(); it!=qset.end(); it++)
     {
     #ifdef Debug_mode
     ShowMessage(it->second.GetName() + "  " + qset[it->first].GetName() + "  " + it->first);
@@ -143,22 +152,22 @@ void QuanSet::Append(QuanSet &qset)
 
 Quan& QuanSet::operator[] (const string &s)
 {
-    if (quans.count(s)==0)
+    if (quans.find(s)==quans.end())
     {
         last_error = "Variable " + s + " does not exist!";
     }
     else
-        return quans[s];
+        return quans.at(s);
 }
 
 Quan& QuanSet::GetVar(const string &s)
 {
-    if (quans.count(s)==0)
+    if (quans.find(s)==quans.end())
     {
         AppendError(Name(),"QuanSet","GetVar","Variable " + s + " does not exist!",2001);
     }
     else
-        return quans[s];
+        return quans.at(s);
 }
 
 Quan* QuanSet::GetVar(int i)
@@ -171,7 +180,7 @@ Quan* QuanSet::GetVar(int i)
     else
     {
         int j=0;
-        for (map<string,Quan>::iterator it=quans.begin(); it!=quans.end(); it++)
+        for (unordered_map<string,Quan>::iterator it=quans.begin(); it!=quans.end(); it++)
         {
             if (j==i)
                 return &it->second;
@@ -183,14 +192,14 @@ Quan* QuanSet::GetVar(int i)
 
 void QuanSet::UnUpdateAllValues()
 {
-    for (map<string, Quan>::iterator it = quans.begin(); it != quans.end(); it++)
+    for (unordered_map<string, Quan>::iterator it = quans.begin(); it != quans.end(); it++)
         it->second.Set_Value_Update(false);
 }
 
 Quan* QuanSet::GetVarAskable(int i)
 {
     int j=0;
-    for (map<string,Quan>::iterator it=quans.begin(); it!=quans.end(); it++)
+    for (unordered_map<string,Quan>::iterator it=quans.begin(); it!=quans.end(); it++)
     {
         if (j==i && it->second.AskFromUser() && !it->second.WhenCopied())
            return &it->second;
@@ -208,7 +217,7 @@ Quan* QuanSet::GetVarAskable(int i)
 unsigned long QuanSet::AskableSize()
 {
     unsigned int j=0;
-    for (map<string,Quan>::iterator it=quans.begin(); it!=quans.end(); it++)
+    for (unordered_map<string,Quan>::iterator it=quans.begin(); it!=quans.end(); it++)
     {
         if (it->second.AskFromUser() && !it->second.WhenCopied() ) j++;
     }
@@ -232,7 +241,7 @@ string QuanSet::ToString(int _tabs)
     }
 
 
-    for (map<string,Quan>::iterator it=quans.begin(); it!=quans.end(); it++)
+    for (unordered_map<string,Quan>::iterator it=quans.begin(); it!=quans.end(); it++)
     {
         out += quans[it->first].ToString(_tabs+1) + "\n";
     }
@@ -251,7 +260,7 @@ void QuanSet::ShowMessage(const string &msg)
 
 void QuanSet::SetAllParents()
 {
-    for (map<string,Quan>::iterator it=quans.begin(); it!=quans.end(); it++)
+    for (unordered_map<string,Quan>::iterator it=quans.begin(); it!=quans.end(); it++)
         quans[it->first].SetParent(parent);
 }
 
@@ -270,12 +279,12 @@ vector<CTimeSeries*> QuanSet::TimeSeries()
 {
 
     vector<CTimeSeries*> out;
-    for (map<string,Quan>::iterator it=quans.begin(); it!=quans.end(); it++)
+    for (unordered_map<string,Quan>::iterator it=quans.begin(); it!=quans.end(); it++)
     {
         if (quans[it->first].GetType() == Quan::_type::timeseries && quans[it->first].TimeSeries()!=nullptr)
             out.push_back(quans[it->first].TimeSeries());
     }
-    for (map<string, Quan>::iterator it = quans.begin(); it != quans.end(); it++)
+    for (unordered_map<string, Quan>::iterator it = quans.begin(); it != quans.end(); it++)
     {
         if (quans[it->first].GetType() == Quan::_type::prec_timeseries && quans[it->first].TimeSeries() != nullptr)
             out.push_back(quans[it->first].TimeSeries());
@@ -286,7 +295,7 @@ vector<CTimeSeries*> QuanSet::TimeSeries()
 vector<string> QuanSet::QuanNames()
 {
     vector<string> out;
-    for (map<string,Quan>::iterator it=quans.begin(); it!=quans.end(); it++)
+    for (unordered_map<string,Quan>::iterator it=quans.begin(); it!=quans.end(); it++)
         out.push_back(it->first);
     return out;
 }
@@ -295,7 +304,7 @@ vector<string> QuanSet::QuanNames()
 QStringList QuanSet::QQuanNames()
 {
     QStringList out;
-    for (map<string,Quan>::iterator it=quans.begin(); it!=quans.end(); it++)
+    for (unordered_map<string,Quan>::iterator it=quans.begin(); it!=quans.end(); it++)
         out<< QString::fromStdString(it->first);
     return out;
 }
@@ -359,7 +368,7 @@ string QuanSet::toCommand()
 {
     string s;
     int i=0;
-    for (map<string,Quan>::iterator it=quans.begin(); it!=quans.end(); it++)
+    for (unordered_map<string,Quan>::iterator it=quans.begin(); it!=quans.end(); it++)
     {
         if (it->second.AskFromUser())
         {
@@ -375,7 +384,7 @@ string QuanSet::toCommandSetAsParam()
 {
     string s;
     int i=0;
-    for (map<string,Quan>::iterator it=quans.begin(); it!=quans.end(); it++)
+    for (unordered_map<string,Quan>::iterator it=quans.begin(); it!=quans.end(); it++)
     {
         if (it->second.AskFromUser())
         {
@@ -395,7 +404,7 @@ string QuanSet::toCommandSetAsParam()
 vector<string> QuanSet::quantitative_variable_list()
 {
     vector<string> s;
-    for (map<string,Quan>::iterator it=quans.begin(); it!=quans.end(); it++)
+    for (unordered_map<string,Quan>::iterator it=quans.begin(); it!=quans.end(); it++)
     {
         if (it->second.GetType() == Quan::_type::value || it->second.GetType() == Quan::_type::balance || it->second.GetType() == Quan::_type::constant || it->second.GetType() == Quan::_type::timeseries || it->second.GetType() == Quan::_type::expression)
         {
@@ -409,7 +418,7 @@ vector<string> QuanSet::quantitative_variable_list()
 bool QuanSet::RenameProperty(const string &oldname, const string &newname)
 {
     RenameQuantity(oldname, newname);
-    map<string,Quan>::iterator i = quans.find(oldname);
+    unordered_map<string,Quan>::iterator i = quans.find(oldname);
 
     if (i != quans.end())
     {
@@ -487,7 +496,7 @@ vector<string> QuanSet::ReviseQuanityOrder(const vector<string> &quantity, const
 bool QuanSet::RenameQuantity(const string &oldname, const string &newname)
 {
     bool out = false;
-    for (map<string,Quan>::iterator it=quans.begin(); it!=quans.end(); it++)
+    for (unordered_map<string,Quan>::iterator it=quans.begin(); it!=quans.end(); it++)
         out = out || it->second.RenameQuantity(oldname, newname);
     return true;
 }
@@ -496,7 +505,7 @@ bool QuanSet::InitializePrecalcFunctions()
 {
     bool out = true;
 
-    for (map<string,Quan>::iterator it=quans.begin(); it!=quans.end(); it++)
+    for (unordered_map<string,Quan>::iterator it=quans.begin(); it!=quans.end(); it++)
         if (it->second.PreCalcFunction()->IndependentVariable()!="")
         {
             //qDebug()<<QString::fromStdString(it->first);

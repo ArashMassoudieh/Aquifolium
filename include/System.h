@@ -345,8 +345,8 @@ class System: public Object
         vector<RxnParameter> reaction_parameters;
         vector<Object> Settings;
         vector<Observation> observations;
-        map<string, Quan> addedpropertiestoallblocks;
-        map<string, Quan> addedpropertiestoalllinks;
+        unordered_map<string, Quan> addedpropertiestoallblocks;
+        unordered_map<string, Quan> addedpropertiestoalllinks;
         MetaModel metamodel;
         CVector_arma GetResiduals(const string &variable, CVector_arma &X, bool transport=false);
         CVector_arma GetResiduals_TR(const string &variable, CVector_arma &X);

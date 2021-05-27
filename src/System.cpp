@@ -4,7 +4,9 @@
 #pragma warning(disable : 4996)
 #include <json/json.h>
 #include <Script.h>
+#ifndef NO_OPENMP
 #include <omp.h>
+#endif
 #include <valgrind/callgrind.h>
 //#define NormalizeByDiagonal
 
@@ -602,6 +604,8 @@ bool System::Solve(bool applyparameters)
             {
                 rtw->SetProgress((SolverTempVars.t - SimulationParameters.tstart) / (SimulationParameters.tend - SimulationParameters.tstart));
                 rtw->AddDataPoint(SolverTempVars.t, SolverTempVars.dt);
+                if (counter%100==0 || rtw->detailson)
+                    rtw->Replot();
                 if (rtw->detailson) rtw->AppendtoDetails("Number of iterations:" + QString::number(SolverTempVars.MaxNumberOfIterations()) + ",dt = " + QString::number(SolverTempVars.dt) + ",t = " + QString::number(SolverTempVars.t, 'f', 6) + ", NR_factor = " + QString::fromStdString(CVector(SolverTempVars.NR_coefficient).toString()));
                 if (rtw->stoptriggered) stop_triggered = true;
                 QCoreApplication::processEvents();
@@ -700,7 +704,7 @@ bool System::SetSystemSettingsObjectProperties(const string &s, const string &va
 {
     for (unsigned int i=0; i<Settings.size(); i++)
     {
-        for (map<string, Quan>::iterator j=Settings[i].GetVars()->begin(); j!=Settings[i].GetVars()->end(); j++)
+        for (unordered_map<string, Quan>::iterator j=Settings[i].GetVars()->begin(); j!=Settings[i].GetVars()->end(); j++)
         {   if (j->first==s)
             {   j->second.SetProperty(val);
                 return true;
@@ -778,7 +782,7 @@ void System::InitiateOutputs()
     Outputs.ObservedOutputs.clear();
     for (unsigned int i=0; i<blocks.size(); i++)
     {
-        for (map<string, Quan>::iterator it = blocks[i].GetVars()->begin(); it != blocks[i].GetVars()->end(); it++)
+        for (unordered_map<string, Quan>::iterator it = blocks[i].GetVars()->begin(); it != blocks[i].GetVars()->end(); it++)
             if (it->second.IncludeInOutput())
             {
                 Outputs.AllOutputs.append(CBTC(), blocks[i].GetName() + "_" + it->first);
@@ -788,7 +792,7 @@ void System::InitiateOutputs()
 
     for (unsigned int i=0; i<links.size(); i++)
     {
-        for (map<string, Quan>::iterator it = links[i].GetVars()->begin(); it != links[i].GetVars()->end(); it++)
+        for (unordered_map<string, Quan>::iterator it = links[i].GetVars()->begin(); it != links[i].GetVars()->end(); it++)
             if (it->second.IncludeInOutput())
             {
                 Outputs.AllOutputs.append(CBTC(), links[i].GetName() + "_" + it->first);
@@ -811,7 +815,7 @@ void System::InitiateOutputs()
 
     for (unsigned int i=0; i<sources.size(); i++)
     {
-        for (map<string, Quan>::iterator it = sources[i].GetVars()->begin(); it != sources[i].GetVars()->end(); it++)
+        for (unordered_map<string, Quan>::iterator it = sources[i].GetVars()->begin(); it != sources[i].GetVars()->end(); it++)
         {
             if (it->second.IncludeInOutput())
             {
@@ -832,7 +836,7 @@ void System::SetOutputItems()
 {
     for (unsigned int i=0; i<blocks.size(); i++)
     {
-        for (map<string, Quan>::iterator it = blocks[i].GetVars()->begin(); it != blocks[i].GetVars()->end(); it++)
+        for (unordered_map<string, Quan>::iterator it = blocks[i].GetVars()->begin(); it != blocks[i].GetVars()->end(); it++)
             if (it->second.IncludeInOutput())
             {
                 it->second.SetOutputItem(blocks[i].GetName() + "_" + it->first);
@@ -841,7 +845,7 @@ void System::SetOutputItems()
 
     for (unsigned int i=0; i<links.size(); i++)
     {
-        for (map<string, Quan>::iterator it = links[i].GetVars()->begin(); it != links[i].GetVars()->end(); it++)
+        for (unordered_map<string, Quan>::iterator it = links[i].GetVars()->begin(); it != links[i].GetVars()->end(); it++)
             if (it->second.IncludeInOutput())
             {
                 it->second.SetOutputItem(links[i].GetName() + "_" + it->first);
@@ -850,7 +854,7 @@ void System::SetOutputItems()
 
     for (unsigned int i=0; i<sources.size(); i++)
     {
-        for (map<string, Quan>::iterator it = sources[i].GetVars()->begin(); it != sources[i].GetVars()->end(); it++)
+        for (unordered_map<string, Quan>::iterator it = sources[i].GetVars()->begin(); it != sources[i].GetVars()->end(); it++)
             if (it->second.IncludeInOutput())
             {
                 it->second.SetOutputItem(sources[i].GetName() + "_" + it->first);
@@ -890,7 +894,7 @@ void System::PopulateOutputs()
 
     for (unsigned int i=0; i<blocks.size(); i++)
     {
-        for (map<string, Quan>::iterator it = blocks[i].GetVars()->begin(); it != blocks[i].GetVars()->end(); it++)
+        for (unordered_map<string, Quan>::iterator it = blocks[i].GetVars()->begin(); it != blocks[i].GetVars()->end(); it++)
 			if (it->second.IncludeInOutput())
                 Outputs.AllOutputs[blocks[i].GetName() + "_" + it->first].append(SolverTempVars.t, blocks[i].GetVal(it->first, Expression::timing::present));
 
@@ -899,7 +903,7 @@ void System::PopulateOutputs()
 
     for (unsigned int i=0; i<links.size(); i++)
     {
-        for (map<string, Quan>::iterator it = links[i].GetVars()->begin(); it != links[i].GetVars()->end(); it++)
+        for (unordered_map<string, Quan>::iterator it = links[i].GetVars()->begin(); it != links[i].GetVars()->end(); it++)
             if (it->second.IncludeInOutput())
             {
 				Outputs.AllOutputs[links[i].GetName() + "_" + it->first].append(SolverTempVars.t,links[i].GetVal(it->first,Expression::timing::present,true));
@@ -908,7 +912,7 @@ void System::PopulateOutputs()
 
     for (unsigned int i=0; i<sources.size(); i++)
     {
-        for (map<string, Quan>::iterator it = sources[i].GetVars()->begin(); it != sources[i].GetVars()->end(); it++)
+        for (unordered_map<string, Quan>::iterator it = sources[i].GetVars()->begin(); it != sources[i].GetVars()->end(); it++)
             if (it->second.IncludeInOutput())
             {
                 //sources[i].CalcExpressions(Expression::timing::present);
@@ -1473,7 +1477,7 @@ CVector_arma System::GetResiduals(const string &variable, CVector_arma &X, bool 
 
 {
 
-#pragma omp parallel for
+//#pragma omp parallel for
     for (unsigned int i=0; i<links.size(); i++)
         LinkFlow[i] = links[i].GetVal(blocks[links[i].s_Block_No()].Variable(variable)->GetCorrespondingFlowVar(),Expression::timing::present)*links[i].GetOutflowLimitFactor(Expression::timing::present);
 
@@ -2235,7 +2239,7 @@ bool System::SavetoScriptFile(const string &filename, const string &templatefile
     }
 
     for (unsigned int i=0; i<Settings.size(); i++)
-        for (map<string, Quan>::iterator j=Settings[i].GetVars()->begin(); j!=Settings[i].GetVars()->end(); j++)
+        for (unordered_map<string, Quan>::iterator j=Settings[i].GetVars()->begin(); j!=Settings[i].GetVars()->end(); j++)
             if (j->second.AskFromUser())
                 file << "setvalue; object=system, quantity=" + j->first + ", value=" << j->second.GetProperty() << std::endl;
 
@@ -2375,7 +2379,7 @@ void System::SetSystemSettings()
 {
     for (unsigned int i=0; i<Settings.size(); i++)
     {
-        for (map<string, Quan>::iterator j=Settings[i].GetVars()->begin(); j!=Settings[i].GetVars()->end(); j++)
+        for (unordered_map<string, Quan>::iterator j=Settings[i].GetVars()->begin(); j!=Settings[i].GetVars()->end(); j++)
             SetProperty(j->first,j->second.GetProperty());
 
     }
@@ -2519,7 +2523,7 @@ void System::AddPropertytoAllLinks(const string &name, Quan &quan)
 }
 void System::UpdateAddedPropertiestoAllBlockLinks()
 {
-    for (map<string,Quan>::iterator it = addedpropertiestoallblocks.begin(); it!=addedpropertiestoallblocks.end(); it++  )
+    for (unordered_map<string,Quan>::iterator it = addedpropertiestoallblocks.begin(); it!=addedpropertiestoallblocks.end(); it++  )
     {
         for (unsigned int i=0; i<blocks.size(); i++)
         {
@@ -2530,7 +2534,7 @@ void System::UpdateAddedPropertiestoAllBlockLinks()
         }
     }
 
-    for (map<string,Quan>::iterator it = addedpropertiestoalllinks.begin(); it!=addedpropertiestoalllinks.end(); it++  )
+    for (unordered_map<string,Quan>::iterator it = addedpropertiestoalllinks.begin(); it!=addedpropertiestoalllinks.end(); it++  )
     {
         for (unsigned int i=0; i<links.size(); i++)
         {
