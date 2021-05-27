@@ -465,7 +465,8 @@ vector<bool> System::OneStepSolve()
 void System::MakeTimeSeriesUniform(const double &increment)
 {
 
-    rtw->AppendText("Uniformizing of time-series...");
+    if (rtw)
+        rtw->AppendText("Uniformizing of time-series...");
     for (unsigned int i=0; i<sources.size(); i++)
         sources[i].MakeTimeSeriesUniform(increment);
 
@@ -475,7 +476,8 @@ void System::MakeTimeSeriesUniform(const double &increment)
     for (unsigned int i=0; i<blocks.size(); i++)
         blocks[i].MakeTimeSeriesUniform(increment);
 
-    rtw->AppendText("Uniformizing of time-series (done!)");
+    if (rtw)
+        rtw->AppendText("Uniformizing of time-series (done!)");
 
 }
 
@@ -1004,8 +1006,8 @@ bool System::OneStepSolve(unsigned int statevarno, bool transport)
 		while ((err>SolverSettings.NRtolerance && err>1e-12) || SolverTempVars.numiterations[statevarno]>SolverSettings.NR_niteration_max)
         {
             SolverTempVars.numiterations[statevarno]++;
-            GetSolutionLogger()->WriteString("Before calculating jacobian");
-            GetSolutionLogger()->Flush();
+            //GetSolutionLogger()->WriteString("Before calculating jacobian");
+            //GetSolutionLogger()->Flush();
             if (SolverTempVars.updatejacobian[statevarno])
             {
 
